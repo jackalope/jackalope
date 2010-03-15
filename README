@@ -1,0 +1,19 @@
+*********
+Jackalope
+*********
+Implementation of a PHP client for the Jackrabbit server, an implementation of the Java Content Repository JCR.
+Implements the phpCR interface.
+
+http://liip.to/jackalope
+
+ebi at liip.ch
+david at liip.ch
+chregu at liip.ch
+
+
+*****
+Setup
+*****
+
+This is only the frontend. In order to actually do something, you need the Jackrabbit server.
+Please download Jackrabbit here: http://jackrabbit.apache.org
