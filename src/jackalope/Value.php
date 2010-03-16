@@ -38,6 +38,9 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @param mixed Data that the value should contain
      */
     public function __construct($type, $data) {
+        if ('Date' === $type || 'Binary' === $type) {
+            throw new jackalope_NotImplementedException();
+        }
         $this->type = PHPCR_PropertyType::valueFromName($type);
         $this->data = $data;
     }
