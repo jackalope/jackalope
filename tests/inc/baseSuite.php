@@ -1,7 +1,7 @@
 <?php
 //require_once(dirname(__FILE__) . '/importexport.php');
 require_once 'PHPUnit/Framework.php';
-require_once dirname(__FILE__) . '/../../src/autoloader.php';
+require_once dirname(__FILE__) . '/../../src/jackalope/autoloader.php';
 
 abstract class jackalope_baseSuite extends PHPUnit_Framework_TestSuite {
     protected $path = '';

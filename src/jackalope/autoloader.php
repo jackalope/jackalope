@@ -8,14 +8,14 @@
 /** load a class named $class */
 function jackalope_autoloader($class) {
     if (0 === strpos($class, 'PHPCR_')) {
-        $incFile = dirname(__FILE__) . '/../lib/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
+        $incFile = dirname(__FILE__) . '/lib/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
         if (@fopen($incFile, "r", TRUE)) {
             include($incFile);
             return $incFile;
         }
     } else if (0 === strpos($class, 'jackalope_')) {
-        $incFile = dirname(__FILE__) . '/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
-echo $incFile."\n";
+        //Hardcoded length of jackalope_
+        $incFile = dirname(__FILE__) . '/' . str_replace("_", DIRECTORY_SEPARATOR, substr($class, 9)) . ".php";
         if (@fopen($incFile, "r", TRUE)) {
             include($incFile);
             return $incFile;
