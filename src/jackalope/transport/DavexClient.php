@@ -51,7 +51,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             }
         }
         var_dump($xml);
-        $dom = DOMDocument::loadXML($xml);
+        $dom = new DOMDocument();
+        $dom->loadXML($xml);
         $set = $dom->getElementsByTagNameNS(self::NS_DCR, 'workspaceName');
         if ($set->length != 1) {
             throw new PHPCR_RepositoryException('Invalid answer from server: '.$xml);
@@ -85,7 +86,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ($xml === false) {
             throw new PHPCR_RepositoryException('fail: '.curl_error($curl));
         }
-        $dom = DOMDocument::loadXML($xml);
+        $dom = new DOMDocument();
+        $dom->loadXML($xml);
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
         $descriptors = array();
         foreach($descs as $desc) {
