@@ -12,7 +12,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
         if ($transport==null) {
             $transport = new jackalope_transport_DavexClient($uri);
         }
-        $this->descriptors = $transport->getRepositoryDescriptors();
+        $this->descriptors = $transport::getRepositoryDescriptors();
     }
 
     /**
