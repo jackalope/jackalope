@@ -8,7 +8,7 @@
 /** load a class named $class */
 function jackalope_autoloader($class) {
     if (0 === strpos($class, 'PHPCR_')) {
-        $incFile = dirname(__FILE__) . '/lib/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
+        $incFile = dirname(__FILE__) . '/../../lib/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
         if (@fopen($incFile, "r", TRUE)) {
             include($incFile);
             return $incFile;
