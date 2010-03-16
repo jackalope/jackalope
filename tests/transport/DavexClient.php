@@ -3,7 +3,8 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testGetRepositoryDescriptors() {
-        $desc = jackalope_transport_DavexClient::getRepositoryDescriptors($this->config['url']);
+        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
         foreach($desc as $key => $value) {
             $this->assertType('string', $key);
@@ -20,28 +21,34 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @expectedException PHPCR_RepositoryException
      */
     public function testGetRepositoryDescriptorsNoserver() {
-        $d = jackalope_transport_DavexClient::getRepositoryDescriptors('http://localhost:1/server');
+        $t = new jackalope_transport_DavexClient('http://localhost:1/server');
+        $d = $t->getRepositoryDescriptors();
     }
 
     public function testLogin() {
-        $d = new jackalope_transport_DavexClient($this->credentials, $this->config['url'], $this->config['workspace']);
+        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $x = $t->login($this->credentials, $this->config['workspace']);
+//TODO
     }
     /**
      * @expectedException PHPCR_NoSuchWorkspaceException
      */
     public function testLoginNoServer() {
-        $d = new jackalope_transport_DavexClient($this->credentials, 'http://localhost:1/server', $this->config['workspace']);
+        $t = new jackalope_transport_DavexClient('http://localhost:1/server');
+        $t->login($this->credentials, $this->config['workspace']);
     }
     /**
      * @expectedException PHPCR_NoSuchWorkspaceException
      */
     public function testLoginNoSuchWorkspace() {
-        $d = new jackalope_transport_DavexClient($this->credentials, $this->config['url'], 'non-existing-workspace');
+        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $t->login($this->credentials, 'not-an-existing-workspace');
     }
     /**
-     * @expectedException PHPCR_LoginException
+     * Should be expectedException PHPCR_LoginException
      */
     public function testLoginInvalidPw() {
-        $d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
+        $this->markTestSkipped('make jackrabbit restrict user rights to test this');
+        //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
 }
