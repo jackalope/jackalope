@@ -3,7 +3,7 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class jackalope_tests_Session extends jackalope_baseCase {
     public function testConstructor() {
-        $mock = new jackalope_tests_Session_MockRepository();
+        $repository = $this->getMock('jackalope_Repository', array(), array(), '', false);
         $workspaceName = 'asdfads';
         $userID = 'abcd';
         $cred = new PHPCR_SimpleCredentials($userID, 'xxxx');
@@ -24,9 +24,5 @@ class jackalope_tests_Session extends jackalope_baseCase {
     public function testLogout() {
         $this->markTestSkipped();
         //TODO: test flush object manager with the help of mock objects
-    }
-}
-class jackalope_tests_Session_MockRepository extends jackalope_Repository {
-    public function __construct() {
     }
 }
