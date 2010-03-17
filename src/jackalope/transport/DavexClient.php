@@ -15,8 +15,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     const REPOSITORY_DESCRIPTORS = '<?xml version="1.0" encoding="UTF-8"?><dcr:repositorydescriptors xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     const WORKSPACE_NAME = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/><D:workspace/></D:prop></D:propfind>';
     
+    const GET = 'GET';
     const REPORT = 'REPORT';
-    const PROPGET = 'PROPGET';
+    const PROPFIND = 'PROPFIND';
 
     /** Create a transport pointing to a server url.
      *  @param serverUri location of the server
@@ -93,7 +94,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             throw new PHPCR_RepositoryException('Wrong workspace in answer from server: '.$xml);
         }
     }
-
+    
+    
+    
     /**
      * Get the repository descriptors from the jackrabbit server
      * This happens without login or accessing a specific workspace.
@@ -128,19 +131,39 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         return $descriptors;
     }
     
+    public function getItem($path) {
+        // $path = $this->server . $this->workspace . $path;
+        $curl = $this->prepareRequest(self::GET, $path . '.json');
+        $node = json_decode(curl_exec($curl));
+        if (NULL === $node) {
+            throw new PHPCR_RepositoryException('Error while retrieving node');
+        }
+        
+        $curl = $this->prepareRequest(self::PROPFIND, $path, '', 1);
+        $xml = curl_exec($curl);
+        if (empty($xml)) {
+            throw new PHPCR_RepositoryException('fail: '.curl_error($this->curl));
+        }
+        $dom = new DOMDocument();
+        $dom->loadXML($xml);
+        $xp = new DOMXpath($dom);
+        $result = $xp->query('//D:response');
+        return array($node, $result);
+    }
+    
     /**
      * @param array properties to search for
      * @return string XML to post in the body
      */
     protected function propfind($properties) {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:">';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
         if (!is_array($properties)) {
             $properties = array($properties);
         }
         foreach($properties as $property) {
             $xml .= $this->propfindStr($property);
         }
-        $xml .= '</D:propfind>';
+        $xml .= '</D:prop></D:propfind>';
         return $xml;
     }
     
@@ -149,7 +172,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @return string the XML to include in the whole property search
      */
     protected function propfindStr($property) {
-        return '<D:prop><dcr:' . $property . ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/></D:prop>';
+        return '<'. $property . '/>';
     }
     
     
