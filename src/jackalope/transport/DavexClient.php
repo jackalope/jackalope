@@ -14,7 +14,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
     const REPOSITORY_DESCRIPTORS = '<?xml version="1.0" encoding="UTF-8"?><dcr:repositorydescriptors xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     const WORKSPACE_NAME = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/><D:workspace/></D:prop></D:propfind>';
-    
+
     const REPORT = 'REPORT';
     const PROPGET = 'PROPGET';
 
@@ -33,6 +33,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      *
      * @param credentials A PHPCR_SimpleCredentials instance (this is the only type currently understood)
      * @param workspaceName The workspace name for this transport.
+     * @return true on success (exceptions on failure)
      * @throws PHPCR_LoginException if authentication or authorization (for the specified workspace) fails
      * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws PHPCR_RepositoryException if another error occurs
@@ -60,7 +61,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, self::WORKSPACE_NAME);
-        
+
         $xml = curl_exec($this->curl);
 
         if ($xml === false) {
@@ -92,6 +93,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ($set->item(0)->textContent != $this->workspace) {
             throw new PHPCR_RepositoryException('Wrong workspace in answer from server: '.$xml);
         }
+        return true;
     }
 
     /**
@@ -107,7 +109,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ($xml === false) {
             throw new PHPCR_RepositoryException('fail: '.curl_error($this->curl));
         }
-        
+
         $dom = new DOMDocument();
         $dom->loadXML($xml);
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
@@ -127,7 +129,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $descriptors;
     }
-    
+
     /**
      * @param array properties to search for
      * @return string XML to post in the body
@@ -143,7 +145,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $xml .= '</D:propfind>';
         return $xml;
     }
-    
+
     /**
      * @param string property to use fetch
      * @return string the XML to include in the whole property search
@@ -151,8 +153,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     protected function propfindStr($property) {
         return '<D:prop><dcr:' . $property . ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/></D:prop>';
     }
-    
-    
+
+
     /**
      * @param string the http method to use¨
      * @param string the uri to request
@@ -171,7 +173,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-        
+
         return $curl;
     }
 }
