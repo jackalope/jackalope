@@ -100,6 +100,31 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     }
     
     /**
+     * @param array properties to search for
+     * @return string XML to post in the body
+     */
+    protected function propfind($properties) {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:">';
+        if (!is_array($properties)) {
+            $properties = array($properties);
+        }
+        foreach($properties as $property) {
+            $xml .= $this->propfindStr($property);
+        }
+        $xml .= '</D:propfind>';
+        return $xml;
+    }
+    
+    /**
+     * @param string property to use fetch
+     * @return string the XML to include in the whole property search
+     */
+    protected function propfindStr($property) {
+        return '<D:prop><dcr:' . $property . ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/></D:prop>';
+    }
+    
+    
+    /**
      * @param string the http method to use¨
      * @param string the uri to request
      * @param string the body to send as post
