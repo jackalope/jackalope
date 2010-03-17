@@ -73,7 +73,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_RepositoryException if error occurs
      */
     public static function getRepositoryDescriptors($serverUri) {
-        $curl = self::prepareRequest(self::REPORT, $serverUri, 0, self::REPOSITORY_DESCRIPTORS);
+        $curl = self::prepareRequest(self::REPORT, $serverUri, self::REPOSITORY_DESCRIPTORS);
         $xml = curl_exec($curl);
         if ($xml === false) {
             throw new PHPCR_RepositoryException('fail: '.curl_error($curl));
@@ -99,10 +99,16 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         return $descriptors;
     }
     
-    protected static function prepareRequest($type, $uri, $depth, $body) {
+    /**
+     * @param string the http method to use¨
+     * @param string the uri to request
+     * @param string the body to send as post
+     * @param int How far the request should go default is 0
+     */
+    protected static function prepareRequest($type, $uri, $body = '', $deepth = 0) {
         $curl = curl_init();
         $headers = array(
-            'Depth: ' . $depth,
+            'Depth: ' . $deepth,
             'Content-Type: text/xml; charset=UTF-8',
             'User-Agent: '.self::USER_AGENT
         );
