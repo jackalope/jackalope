@@ -12,8 +12,8 @@ class jackalope_tests_Session extends jackalope_baseCase {
         //TODO: Fix this
         $transport = new jackalope_transport_DavexClient('http://example.com');
         $objMngr = new jackalope_ObjectManager($transport);
-        $s = new jackalope_Session($mock, $workspaceName, $cred, $objMngr);
-        $this->assertSame($mock, $s->getRepository());
+        $s = new jackalope_Session($repository, $workspaceName, $cred, $objMngr);
+        $this->assertSame($repository, $s->getRepository());
         $this->assertEquals($userID, $s->getUserID());
         $this->assertEquals(array('test', 'other'), $s->getAttributeNames());
         $this->assertEquals('toast', $s->getAttribute('test'));
