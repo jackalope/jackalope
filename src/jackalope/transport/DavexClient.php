@@ -4,11 +4,14 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     protected $curl;
     protected $server;
     protected $workspace;
+    
     const USER_AGENT = 'jackalope-php/1.0';
     const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
     const REPOSITORY_DESCRIPTORS = '<?xml version="1.0" encoding="UTF-8"?><dcr:repositorydescriptors xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     const WORKSPACE_NAME = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/><D:workspace/></D:prop></D:propfind>';
-
+    
+    const REPORT = 'REPORT';
+    const PROPGET = 'PROPGET';
     /** Create a new transport with username / password for the server
      * @throws PHPCR_LoginException if authentication or authorization (for the specified workspace) fails
      * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
@@ -36,7 +39,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, self::WORKSPACE_NAME);
-
+        
         $xml = curl_exec($this->curl);
 
         if ($xml === false) {var_dump(curl_errno($this->curl));
@@ -70,22 +73,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_RepositoryException if error occurs
      */
     public static function getRepositoryDescriptors($serverUri) {
-        $curl = curl_init();
-        $headers = array(
-            'Depth: 0',
-            'Content-Type: text/xml; charset=UTF-8',
-            'User-Agent: '.self::USER_AGENT
-        );
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'REPORT');
-        curl_setopt($curl, CURLOPT_URL, $serverUri);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, self::REPOSITORY_DESCRIPTORS);
-
+        $curl = self::prepareRequest(self::REPORT, $serverUri, 0, self::REPOSITORY_DESCRIPTORS);
         $xml = curl_exec($curl);
         if ($xml === false) {
             throw new PHPCR_RepositoryException('fail: '.curl_error($curl));
         }
+        
         $dom = new DOMDocument();
         $dom->loadXML($xml);
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
@@ -104,5 +97,21 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             }
         }
         return $descriptors;
+    }
+    
+    protected static function prepareRequest($type, $uri, $depth, $body) {
+        $curl = curl_init();
+        $headers = array(
+            'Depth: ' . $depth,
+            'Content-Type: text/xml; charset=UTF-8',
+            'User-Agent: '.self::USER_AGENT
+        );
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $type);
+        curl_setopt($curl, CURLOPT_URL, $uri);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+        
+        return $curl;
     }
 }
