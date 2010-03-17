@@ -28,7 +28,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testLogin() {
         $t = new jackalope_transport_DavexClient($this->config['url']);
         $x = $t->login($this->credentials, $this->config['workspace']);
-//TODO
+        $this->assertTrue($x);
     }
     /**
      * @expectedException PHPCR_NoSuchWorkspaceException
