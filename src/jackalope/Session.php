@@ -16,13 +16,15 @@
 class jackalope_Session implements PHPCR_SessionInterface {
     protected $repository;
     protected $workspace;
+    protected $objectManager;
     protected $credentials;
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(jackalope_Repository $repository, $workspaceName, PHPCR_SimpleCredentials $credentials) {
+    public function __construct(jackalope_Repository $repository, $workspaceName, PHPCR_SimpleCredentials $credentials, jackalope_ObjectManager $objectManager) {
         $this->repository = $repository;
         $this->workspace = jackalope_Factory::get('Workspace', array($this, $workspaceName));
+        $this->objectManager = $objectManager;
         $this->credentials = $credentials;
     }
     /**
@@ -161,7 +163,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getNode($absPath) {
-        throw new jackalope_NotImplementedException();
+        return $this->objectManager->getNodeByPath($absPath);
     }
 
     /**

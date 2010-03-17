@@ -52,7 +52,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
 
         $headers = array(
-            'Depth: 0',
+            'depth: 0',
             'Content-Type: text/xml; charset=UTF-8',
             'User-Agent: '.self::USER_AGENT
         );
@@ -134,20 +134,16 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     }
     
     public function getItem($path) {
+        $path = 'http://localhost:8080/server/tests' . $path;
         // $path = $this->server . $this->workspace . $path;
-        $curl = $this->prepareRequest(self::GET, $path . '.json');
-        $node = json_decode(curl_exec($curl));
-        if (NULL === $node) {
-            throw new PHPCR_RepositoryException('Error while retrieving node');
+        if ('/' !== substr($path, -1, 1)) {
+            $path .= '/';
         }
+        $curl = $this->prepareRequest(self::GET, $path);
+        $node = $this->getDomFromCurl($curl);
         
         $curl = $this->prepareRequest(self::PROPFIND, $path, '', 1);
-        $xml = curl_exec($curl);
-        if (empty($xml)) {
-            throw new PHPCR_RepositoryException('fail: '.curl_error($this->curl));
-        }
-        $dom = new DOMDocument();
-        $dom->loadXML($xml);
+        $dom = $this->getDomFromCurl($curl);
         $xp = new DOMXpath($dom);
         $result = $xp->query('//D:response');
         return array($node, $result);
@@ -184,10 +180,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @param string the body to send as post
      * @param int How far the request should go default is 0
      */
-    protected function prepareRequest($type, $uri, $body = '', $deepth = 0) {
+    protected function prepareRequest($type, $uri, $body = '', $depth = 0) {
         $curl = curl_init();
         $headers = array(
-            'Depth: ' . $deepth,
+            'depth: ' . $depth,
             'Content-Type: text/xml; charset=UTF-8',
             'User-Agent: '.self::USER_AGENT
         );
@@ -198,5 +194,22 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
 
         return $curl;
+    }
+    
+    /**
+     * Returns a DOMDocument from a prepared curl resource or throws exception
+     * @param CurlHandler The curl handle you want to fetch from
+     * @return DOMDocument the loaded XML
+     * @throws PHPCR_RepositoryException
+     */
+    protected function getDomFromCurl($curl) {
+        $xml = curl_exec($curl);
+        if (NULL === $xml || empty($xml)) {
+            throw new PHPCR_RepositoryException('Error while retrieving node');
+        }
+        
+        $dom = new DOMDocument();
+        $dom->loadXML($xml);
+        return $dom;
     }
 }
