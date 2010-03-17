@@ -12,7 +12,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
         if ($transport==null) {
             $transport = new jackalope_transport_DavexClient($uri);
         }
-        $this->descriptors = $transport::getRepositoryDescriptors();
+        $this->descriptors = $transport->getRepositoryDescriptors();
     }
 
     /**
@@ -43,7 +43,9 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     * @api
     */
     public function login($credentials = NULL, $workspaceName = NULL) {
-        throw new jackalope_NotImplementedException();
+        if ($workspaceName == null) throw new jackalope_NotImplementedException('what should the default workspace be?');
+
+
     }
 
     /**
