@@ -12,29 +12,14 @@ class jackalope_tests_Repository extends jackalope_baseCase {
             ->will($this->returnValue(true));
         $transport->expects($this->once())
             ->method('getRepositoryDescriptors')
-            ->will($this->returnValue(array('bla', 'bli')));
+            ->will($this->returnValue(array('bla'=>'bli')));
 
         $repo = new jackalope_Repository(null, $transport);
         $session = $repo->login($credentials, $workspaceName);
         $this->assertType('jackalope_Session', $session);
+
+        $this->assertEquals(array('bla'), $repo->getDescriptorKeys());
+        $this->assertEquals('bli', $repo->getDescriptorValue('bla'));
     }
     //descriptors are tested by jackalope-api-tests AccessTest/RepositoryDescriptors.php
-}
-
-class jackalope_tests_RepositoryMockTransport implements jackalope_TransportInterface {
-    private $cred;
-    private $workspace;
-
-    function __construct($cred, $workspace) {
-        $this->cred = $cred;
-        $this->workspace = $workspace;
-    }
-    public function login(PHPCR_CredentialsInterface $credentials, $workspaceName) {
-        if ($this->cred !== $credentials) throw new Exception('credentials mismatch');
-        if ($this->workspace != $workspaceName) throw new Exception('workspace name mismatch');
-        return true;
-    }
-    public function getRepositoryDescriptors() {
-        return array();
-    }
 }

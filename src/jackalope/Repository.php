@@ -19,12 +19,9 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     /**
     * Authenticates the user using the supplied credentials. If workspaceName is recognized as the
     * name of an existing workspace in the repository and authorization to access that workspace
-    * is granted, then a new Session object is returned. The format of the string workspaceName
-    * depends upon the implementation.
-    * If credentials is null, it is assumed that authentication is handled by a mechanism external
-    * to the repository itself and that the repository implementation exists within a context
-    * (for example, an application server) that allows it to handle authorization of the request
-    * for access to the specified workspace.
+    * is granted, then a new Session object is returned. workspaceName is a single string token.
+    *
+    * null credentials are currently not supported
     *
     * If workspaceName is null, a default workspace is automatically selected by the repository
     * implementation. This may, for example, be the "home workspace" of the user whose credentials
@@ -65,7 +62,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function getDescriptorKeys() {
-        throw new jackalope_NotImplementedException();
+        return array_keys($this->descriptors);
     }
 
     /**
@@ -78,7 +75,9 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function isStandardDescriptor($key) {
-        throw new jackalope_NotImplementedException();
+        $ref = new ReflectionClass('PHPCR_RepositoryInterface');
+        $consts = $ref->getConstantcs();
+        return in_array($key, $consts);
     }
 
     /**
@@ -90,7 +89,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function isSingleValueDescriptor($key) {
-        throw new jackalope_NotImplementedException();
+        return isset($this->descriptors[$key]) && ! is_array($this->descriptors[$key]);
     }
 
     /**
@@ -104,7 +103,8 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function getDescriptorValue($key) {
-        throw new jackalope_NotImplementedException();
+        if (! $this->isSingleValueDescriptor($key)) return null;
+        return $this->descriptors[$key];
     }
 
     /**
@@ -119,14 +119,16 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function getDescriptorValues($key) {
-        throw new jackalope_NotImplementedException();
+        if (! isset($this->descriptors[$key])) return null;
+        if (! is_array($this->descriptors[$key])) return array($this->descriptors[$key]);
+        return $this->descriptors[$key];
     }
 
     /**
      * A convenience method. The call
      *  String s = repository.getDescriptor(key);
      * is equivalent to
-     *  Value v = repository.getDescriptor(key);
+     *  Value v = repository.getDescriptorValue(key);
      *  String s = (v == null) ? null : v.getString();
      *
      * @param string $key a descriptor key.
@@ -134,7 +136,8 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function getDescriptor($key) {
-        throw new jackalope_NotImplementedException();
+        $v = $this->getDescriptorValue($key);
+        return ($v == null) ? null : $v->getString();
     }
 
 }
