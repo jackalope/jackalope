@@ -52,6 +52,13 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
 
+    public function testGetItem() {
+        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $t->login($this->credentials, $this->config['workspace']);
+        $json = $t->getItem('/jcr:root');
+        $this->assertType('object', $json);
+    }
+
     public function testGetNamespaces() {
         $t = new jackalope_transport_DavexClient($this->config['url']);
         $x = $t->login($this->credentials, $this->config['workspace']);
@@ -63,4 +70,5 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
             $this->assertType('string', $uri);
         }
     }
+
 }
