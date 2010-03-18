@@ -12,7 +12,6 @@ class jackalope_tests_JackalopeObjects extends jackalope_baseSuite {
 
     public static function suite() {
         $suite = new jackalope_tests_JackalopeObjects('JackalopeObjects');
-        //Repo gives a Bus Error!?
         // $suite->addTestSuite('jackalope_tests_Repository');
         $suite->addTestSuite('jackalope_tests_Session');
         $suite->addTestSuite('jackalope_tests_Workspace');

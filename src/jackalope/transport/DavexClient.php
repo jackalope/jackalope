@@ -143,14 +143,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ('/' !== substr($path, -1, 1)) {
             $path .= '/';
         }
-        $curl = $this->prepareRequest(self::GET, $path);
-        $node = $this->getDomFromCurl($curl);
-
-        $curl = $this->prepareRequest(self::PROPFIND, $path, '', 1);
-        $dom = $this->getDomFromCurl($curl);
-        $xp = new DOMXpath($dom);
-        $result = $xp->query('//D:response');
-        return array($node, $result);
+        $curl = $this->prepareRequest(self::GET, $path . '.0.json');
+        return json_decode(curl_exec($curl));
     }
 
     /** get the registered namespaces mappings from the backend

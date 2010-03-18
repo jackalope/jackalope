@@ -46,8 +46,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new PHPCR_RepositoryException('transport failed to login without telling why');
         }
-        $objectManager = jackalope_Factory::get('ObjectManager', $this->transport);
-        $session = jackalope_Factory::get('Session', array($this, $workspaceName, $credentials, $objectManager));
+        $session = jackalope_Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
 
         return $session;
     }
