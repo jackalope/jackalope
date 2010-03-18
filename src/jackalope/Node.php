@@ -1,23 +1,23 @@
 <?php
 
 class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
-    
+
     protected $index = 1;
     protected $primaryType;
-    
+
     protected $properties = array();
     protected $nodes = array();
-    
+
     public function __construct($rawData, $path,  $session, $objectManager) {
         parent::__construct($rawData, $path,  $session, $objectManager);
         $this->isNode = true;
-        
+
         foreach ($rawData as $key => $value) {
             if (is_object($value)) {
                 array_push($this->nodes, $key);
             } else {
                 if ( 0 === strpos($key, ':')) continue; //It's a property type
-                
+
                 switch ($key) {
                     case 'jcr:index':
                         $this->index = $value;
@@ -29,7 +29,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
             }
         }
     }
-    
+
     /**
      * Creates a new node at $relPath.
      *
@@ -65,7 +65,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -98,7 +98,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -152,7 +152,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function setProperty($name, $value, $type = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -377,7 +377,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * If the name parameter is null then all referring WEAKREFERENCE are returned
      * regardless of name.
      *
-     * Some level 2 implementations may only return properties that have been
+     * Some write implementations may only return properties that have been
      * saved (in a transactional setting this includes both those properties that
      * have been saved but not yet committed, as well as properties that have
      * been committed). Other level 2 implementations may additionally return
@@ -516,7 +516,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function setPrimaryType($nodeTypeName) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -550,7 +550,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function addMixin($mixinName) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -569,7 +569,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeMixin($mixinName) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -593,7 +593,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function canAddMixin($mixinName) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -639,7 +639,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function update($srcWorkspace) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -690,7 +690,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeSharedSet() {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -708,7 +708,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeShare() {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -758,7 +758,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function followLifecycleTransition($transition) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -770,6 +770,6 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getAllowedLifecycleTransitions() {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 }

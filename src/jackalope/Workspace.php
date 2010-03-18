@@ -41,7 +41,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * not implemented
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -49,14 +49,14 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      */
      //clone is a reserved keyword in php and may not be used as a function name.
     public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function move($srcAbsPath, $destAbsPath) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -84,8 +84,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
 
     /**
      * Returns the NamespaceRegistry object, which is used to access the mapping
-     * between prefixes and namespaces. In level 2 repositories the NamespaceRegistry
-     * can also be used to change the namespace mappings.
+     * between prefixes and namespaces.
      *
      * @return PHPCR_NamespaceRegistryInterface the NamespaceRegistry.
      * @throws PHPCR_RepositoryException if an error occurs.
@@ -157,14 +156,14 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * not implemented
      */
     public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function importXML($parentAbsPath, $in, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
