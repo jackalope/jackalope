@@ -1,6 +1,35 @@
 <?php
 
 class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
+    
+    protected $index = 1;
+    protected $primaryType;
+    
+    protected $properties = array();
+    protected $nodes = array();
+    
+    public function __construct($rawData, $path,  $session, $objectManager) {
+        parent::__construct($rawData, $path,  $session, $objectManager);
+        $this->isNode = true;
+        
+        foreach ($rawData as $key => $value) {
+            if (is_object($value)) {
+                array_push($this->nodes, $key);
+            } else {
+                if ( 0 === strpos($key, ':')) continue; //It's a property type
+                
+                switch ($key) {
+                    case 'jcr:index':
+                        $this->index = $value;
+                        break;
+                    default:
+                        array_push($this->properties, $key);
+                        break;
+                }
+            }
+        }
+    }
+    
     /**
      * Creates a new node at $relPath.
      *
@@ -311,7 +340,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getIndex() {
-        throw new jackalope_NotImplementedException();
+        return $this->index;
     }
 
     /**
@@ -380,7 +409,12 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function hasNode($relPath) {
-        throw new jackalope_NotImplementedException();
+        if (false === strpos($relPath, '/')) {
+            //TODO: Fetch real things
+            throw new jackalope_NotImplementedException('Only direct children at the moment');
+        } else {
+            return isset($this->nodes[$relPath]);
+        }
     }
 
     /**
@@ -405,7 +439,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function hasNodes() {
-        throw new jackalope_NotImplementedException();
+        return (! empty($this->nodes));
     }
 
     /**
@@ -417,7 +451,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function hasProperties() {
-        throw new jackalope_NotImplementedException();
+        return (! empty($this->properties));
     }
 
     /**

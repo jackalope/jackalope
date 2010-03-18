@@ -18,7 +18,7 @@ class jackalope_tests_Session extends jackalope_baseCase {
         $this->assertEquals('toast', $s->getAttribute('test'));
         $this->assertEquals('value', $s->getAttribute('other'));
         
-        $s->getNode('/jcr:root/tests_level1_access_base/idExample/jcr:content');
+        $s->getNode('/jcr:root/tests_level1_access_base/idExample');
     }
     public function testLogout() {
         $this->markTestSkipped();
