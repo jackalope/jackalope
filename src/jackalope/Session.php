@@ -488,7 +488,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function logout() {
-        //TODO: flush object manager
+        //OPTIMIZATION: flush object manager
         $this->logout = true;
     }
 

@@ -6,6 +6,9 @@
 class jackalope_RangeIterator implements PHPCR_RangeIteratorInterface {
     protected $items;
     protected $pos;
+    /**
+     * @param $items consecutive array of node resp property objects
+     */
     public function __construct($items) {
         $this->items = $items;
         $this->pos = 0;
@@ -38,7 +41,7 @@ class jackalope_RangeIterator implements PHPCR_RangeIteratorInterface {
      * @return integer
      */
     public function getSize() {
-        return size($this->items);
+        return count($this->items);
     }
 
     /**
@@ -56,10 +59,24 @@ class jackalope_RangeIterator implements PHPCR_RangeIteratorInterface {
     }
 
     /** php has no strong typing, so we can just do this here */
-    protected function next() {
+    public function next() {
         if ($this->pos >= $this->getSize()) {
             throw new OutOfBoundsException('skipping past end');
         }
         return $this->items[$this->pos++];
+    }
+
+    public function current() {
+        if (!isset($this->items[$this->pos])) return null;
+        return $this->items[$this->pos];
+    }
+    public function key() {
+        return $this->pos;
+    }
+    public function valid() {
+        return isset($this->items[$this->pos]);
+    }
+    public function rewind() {
+        $this->pos = 0;
     }
 }

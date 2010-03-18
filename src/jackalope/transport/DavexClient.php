@@ -222,7 +222,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspaceException
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
-        //TODO: re-use connection. JACK-7
+        //OPTIMIZE: re-use connection. JACK-7
         $curl = curl_init();
         $this->prepareRequest($curl, $type, $uri, $body, $depth);
         $xml = $this->getRawFromBackend($curl);
@@ -254,7 +254,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_RepositoryException
      */
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
-        //TODO: re-use connection. JACK-7
+        //OPTIMIZE: re-use connection. JACK-7
         $curl = curl_init();
         $this->prepareRequest($curl, $type, $uri, $body, $depth);
         $jsonstring = $this->getRawFromBackend($curl);
