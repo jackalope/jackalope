@@ -1,20 +1,30 @@
 <?php
 
 class jackalope_ObjectManager {
+    protected $session;
     protected $transport;
     
     protected $objectsByPath;
     protected $objectsByUuid;
     
-    public function __construct(jackalope_TransportInterface $transport) {
+    public function __construct(jackalope_TransportInterface $transport, PHPCR_SessionInterface $session) {
         $this->transport = $transport;
+        $this->session = $session;
     }
     
     public function getNodeByPath($path) {
-        $data = $this->transport->getItem($path);
-        
-        var_dump($data[1]->item(0)->ownerDocument->saveXML());
-        // var_dump($data->);
-        // $obj = jackalope_Factory::get('Node', $this->transport->getItem($path));
+        if (empty($this->objectsByPath[$path])) {
+            $data = $this->transport->getItem($path);
+            $this->objectsByPath[$path] = jackalope_Factory::get(
+                'Node',
+                array(
+                    $this->transport->getItem($path),
+                    $path,
+                    $this->session,
+                    $this
+                )
+            );
+        }
+        return $this->objectsByPath[$path];
     }
 }
