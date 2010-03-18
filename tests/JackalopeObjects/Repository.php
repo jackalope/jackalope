@@ -5,7 +5,7 @@ class jackalope_tests_Repository extends jackalope_baseCase {
     public function testConstructor() {
         $credentials = new PHPCR_SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMock('jackalope_transport_DavexClient', array('login', 'getRepositoryDescriptors'), array('http://test'));
+        $transport = $this->getMock('jackalope_transport_DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))
