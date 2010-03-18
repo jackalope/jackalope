@@ -51,4 +51,16 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $this->markTestSkipped('make jackrabbit restrict user rights to test this');
         //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
+
+    public function testGetNamespaces() {
+        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $x = $t->login($this->credentials, $this->config['workspace']);
+        $this->assertTrue($x);
+        $ns = $t->getNamespaces();
+        $this->assertType('array', $ns);
+        foreach($ns as $prefix => $uri) {
+            $this->assertType('string', $prefix);
+            $this->assertType('string', $uri);
+        }
+    }
 }

@@ -92,7 +92,10 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getNamespaceRegistry() {
-        throw new jackalope_NotImplementedException(); //TODO
+        if ($this->namespaceRegistry == false) {
+            $this->namespaceRegistry = jackalope_Factory::get('NamespaceRegistry', array($this->transport));
+        }
+        return $this->namespaceRegistry;
     }
 
     /**

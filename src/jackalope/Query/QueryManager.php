@@ -3,8 +3,12 @@
  * This interface encapsulates methods for the management of search queries.
  * Provides methods for the creation and retrieval of search queries.
  */
-interface jackalope_Query_QueryManager {
+class jackalope_Query_QueryManager implements PHPCR_Query_QueryManager {
+    protected $objectmanager;
 
+    public function __construct(jackalope_ObjectManager $objectmanager) {
+        $this->objectmanager = $objectmanager;
+    }
     /**
      * Creates a new query by specifying the query statement itself and the language
      * in which the query is stated. The $language must be a string from among
@@ -18,7 +22,14 @@ interface jackalope_Query_QueryManager {
      * @api
      */
     public function createQuery($statement, $language) {
-        throw new jackalope_NotImplementedException();
+        switch($language) {
+            case PHPCR_Query_Query::JCR_SQL2:
+                return new jackalope_Query_SqlQuery($statement, $this->objectmanager);
+            case PHPCR_Query_Query::JCR_JQOM:
+                throw new jackalope_NotImplementedException();
+            default:
+                throw new PHPCR_Query_InvalidQueryException("No such query language: $language");
+        }
     }
 
     /**
@@ -34,10 +45,6 @@ interface jackalope_Query_QueryManager {
 
     /*
      * Retrieves an existing persistent query.
-     *
-     * Persistent queries are created by first using QueryManager.createQuery to
-     * create a Query object and then calling Query.save to persist the query to
-     * a location in the workspace.
      *
      * @param PHPCR_NodeInterface $node a persisted query (that is, a node of type nt:query).
      * @return PHPCR_Query_QueryInterface a Query object.
