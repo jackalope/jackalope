@@ -14,7 +14,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
     const REPOSITORY_DESCRIPTORS = '<?xml version="1.0" encoding="UTF-8"?><dcr:repositorydescriptors xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     const WORKSPACE_NAME = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/><D:workspace/></D:prop></D:propfind>';
-    
+    const REGISTERED_NAMESPACES = '<?xml version="1.0" encoding="UTF-8"?><dcr:registerednamespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
+
     const GET = 'GET';
     const REPORT = 'REPORT';
     const PROPFIND = 'PROPFIND';
@@ -96,9 +97,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return true;
     }
-    
-    
-    
+
+
+
     /**
      * Get the repository descriptors from the jackrabbit server
      * This happens without login or accessing a specific workspace.
@@ -132,23 +133,44 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $descriptors;
     }
-    
+
+    /**
+     * Get the item from an absolute path
+     * @param path absolute path to item
+     */
     public function getItem($path) {
-        $path = 'http://localhost:8080/server/tests' . $path;
-        // $path = $this->server . $this->workspace . $path;
+        $path = $this->server . '/' . $this->workspace . $path;
         if ('/' !== substr($path, -1, 1)) {
             $path .= '/';
         }
         $curl = $this->prepareRequest(self::GET, $path);
         $node = $this->getDomFromCurl($curl);
-        
+
         $curl = $this->prepareRequest(self::PROPFIND, $path, '', 1);
         $dom = $this->getDomFromCurl($curl);
         $xp = new DOMXpath($dom);
         $result = $xp->query('//D:response');
         return array($node, $result);
     }
-    
+
+    /** get the registered namespaces mappings from the backend
+     *  @return associative array of prefix => uri
+     */
+    public function getNamespaces() {
+        $url = $this->server . '/' . $this->workspace;
+        $curl = $this->prepareRequest(self::REPORT, $url, self::REGISTERED_NAMESPACES);
+        $dom = $this->getDomFromCurl($curl);
+        if ($dom->firstChild->localName != 'registerednamespaces-report' || $dom->firstChild->namespaceURI != self::NS_DCR) {
+            throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+        }
+        $mappings = array();
+        $namespaces = $dom->getElementsByTagNameNS(self::NS_DCR, 'namespace');
+        foreach($namespaces as $elem) {
+            $mappings[$elem->firstChild->textContent] = $elem->lastChild->textContent;
+        }
+        return $mappings;
+    }
+
     /**
      * @param array properties to search for
      * @return string XML to post in the body
@@ -195,7 +217,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
         return $curl;
     }
-    
+
     /**
      * Returns a DOMDocument from a prepared curl resource or throws exception
      * @param CurlHandler The curl handle you want to fetch from
@@ -207,7 +229,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if (NULL === $xml || empty($xml)) {
             throw new PHPCR_RepositoryException('Error while retrieving node');
         }
-        
+
         $dom = new DOMDocument();
         $dom->loadXML($xml);
         return $dom;
