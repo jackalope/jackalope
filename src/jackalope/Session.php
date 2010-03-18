@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The Session object provides read and (in level 2) write access to the
+ * The Session object provides read and (if implemented) write access to the
  * content of a particular workspace in the repository.
  *
  * The Session object is returned by Repository.login(). It encapsulates both
@@ -222,28 +222,28 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * not implemented
      */
     public function move($srcAbsPath, $destAbsPath) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function removeItem($absPath) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function save() {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function refresh($keepChanges) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -255,14 +255,14 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function hasPendingChanges() {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function getValueFactory() {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -327,14 +327,14 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * not implemented
      */
     public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function importXML($parentAbsPath, $in, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**

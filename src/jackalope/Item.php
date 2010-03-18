@@ -1,33 +1,33 @@
 <?php
 class jackalope_Item implements PHPCR_ItemInterface {
-    
+
     protected $session;
-    
+
     protected $new = true;
     protected $modified = false;
-    
+
     protected $path;
     protected $name;
     protected $parent;
     protected $depth;
     protected $isNode = false;
     protected $uuid = null;
-    
+
     public function __construct($rawData, $path,  $session, $objectManager) {
         $this->path = $path;
         $this->session = $session;
-        
+
         $path = explode('/', $path);
         $this->depth = count($path) - 1;
         $this->name = array_pop($path);
         $this->parent = implode('/', $path);
-        
+
         if (isset($rawData->{'jcr:uuid'})) {
             $this->uuid = $rawData->{'jcr:uuid'};
             unset($rawData->{'jcr:uuid'});
         }
     }
-    
+
     /**
      * Returns the normalized absolute path to this item.
      *
@@ -233,7 +233,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function refresh($keepChanges) {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
@@ -258,6 +258,6 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function remove() {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Write');
     }
 }

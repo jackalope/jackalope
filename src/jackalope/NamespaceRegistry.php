@@ -56,7 +56,7 @@ jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
      */
     public function registerNamespace($prefix, $uri) {
         $this->checkPrefix($prefix);
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
         //first try putting the stuff in backend, and only afterwards update lokal info
         //validation happens on the server, see second request trace below
         /*
@@ -123,7 +123,7 @@ Server: Jetty(6.1.x)
             //defaultNamespaces would throw an exception in checkPrefix already
             throw new PHPCR_NamespaceException("Prefix $prefix is not currently registered");
         }
-        throw new jackalope_NotImplementedException('Level 2');
+        throw new jackalope_NotImplementedException('Write');
     }
 
     /**
