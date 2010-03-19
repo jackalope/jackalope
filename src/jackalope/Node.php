@@ -30,10 +30,28 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
+                        $this->properties[$key] = jackalope_Factory::get(
+                            'Property',
+                            array(
+                                array('type' => $rawData->{':jcr:primaryType'},  'value' => $value),
+                                $this->getPath() . '/jcr:primaryType',
+                                $this->session,
+                                $this->objectManager,
+                            )
+                        );
                         break;
                     //TODO: more special information?
                     default:
-                        array_push($this->properties, $key);
+                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
+                        $this->properties[$key] = jackalope_Factory::get(
+                            'Property',
+                            array(
+                                array('type' => $type, 'value' => $value),
+                                $this->getPath() . '/'. $key,
+                                $this->session,
+                                $this->objectManager,
+                            )
+                        );
                         break;
                 }
             }
@@ -153,7 +171,15 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getProperty($relPath) {
-        throw new jackalope_NotImplementedException();
+        if (false === strpos($relPath, '/')) {
+            if (isset($this->properties[$relPath])) {
+                return $this->properties[$relPath];
+            } else {
+                throw new PHPCR_PathNotFoundException($relPath);
+            }
+        } else {
+            throw new jackalope_NotImplementedException();
+        }
     }
 
     /**
