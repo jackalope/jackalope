@@ -9,7 +9,6 @@ class jackalope_tests_Session extends jackalope_baseCase {
         $cred = new PHPCR_SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        //TODO: Fix this
         $transport = new jackalope_transport_DavexClient('http://example.com');
         $s = new jackalope_Session($repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());

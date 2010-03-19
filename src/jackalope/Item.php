@@ -1,7 +1,10 @@
 <?php
 class jackalope_Item implements PHPCR_ItemInterface {
 
+    /** session this node belongs to */
     protected $session;
+    /** object manager to get nodes from */
+    protected $objectManager;
 
     protected $new = true;
     protected $modified = false;
@@ -13,9 +16,11 @@ class jackalope_Item implements PHPCR_ItemInterface {
     protected $isNode = false;
     protected $uuid = null;
 
-    public function __construct($rawData, $path,  $session, $objectManager) {
+    public function __construct($rawData, $path,  jackalope_Session $session,
+                                jackalope_ObjectManager $objectManager) {
         $this->path = $path;
         $this->session = $session;
+        $this->objectManager = $objectManager;
 
         $path = explode('/', $path);
         $this->depth = count($path) - 1;

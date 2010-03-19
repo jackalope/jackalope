@@ -8,17 +8,15 @@ class jackalope_tests_ObjectManager extends jackalope_baseCase {
         $om = new jackalope_ObjectManager($this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
         $this->assertType('jackalope_Node', $node);
-        $this->assertEquals('rep:root', $node->getPrimaryNodeType());
-        $children = $this->getNodes();
+        $children = $node->getNodes();
         $this->assertType('jackalope_NodeIterator', $children);
-        $this->assertEqual(2, $children->size());
+        $this->assertEquals(2, $children->getSize());
     }
 
     private function getTransportStub($path) {
         $transport = $this->getMock('jackalope_transport_DavexClient', array('getItem'), array('http://example.com'));
-        $transport->expects($this->once())
+        $transport->expects($this->any())
             ->method('getItem')
-            ->with($this->equalTo($path))
             ->will($this->returnValue(json_decode($this->JSON)));
         return $transport;
     }
