@@ -48,10 +48,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
         $this->credentials = $credentials;
         $this->workspace = $workspaceName;
-        $this->workspaceUri = $this->server . '/' . $workspaceName;
-
+        if ('/' !== substr($this->server, -1, 1)) {
+            $this->server .= '/';
+        }
+        $this->workspaceUri = $this->server . $workspaceName;
         $dom = $this->getDomFromBackend(self::PROPFIND,
-                                        $this->server . '/' . $this->workspace,
+                                        $this->workspaceUri,
                                         self::buildPropfindRequest(array('D:workspace', 'dcr:workspaceName')));
 
         $set = $dom->getElementsByTagNameNS(self::NS_DCR, 'workspaceName');
