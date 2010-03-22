@@ -253,6 +253,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      *
      * @param curl The curl handle you want to fetch from
      * @return DOMDocument the loaded XML
+     * @throws PHPCR_ItemNotFoundException if the response is not valid
      * @throws PHPCR_RepositoryException
      */
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
@@ -262,7 +263,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $jsonstring = $this->getRawFromBackend($curl);
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
-            throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring'");
+            $status = curl_getinfo($curl);
+            if (404 === $status['http_code']) {
+                throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
+            } else {
+                throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring'");
+            }
         }
         //TODO: are there error responses in json format? if so, handle them
         return $json;
