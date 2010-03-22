@@ -21,6 +21,7 @@ class jackalope_tests_ObjectManager extends jackalope_baseCase {
         $children = $node->getNodes();
         $this->assertType('jackalope_NodeIterator', $children);
         $this->assertEquals(2, $children->getSize());
+        $this->assertEquals($node, $om->getNode($path));
     }
 
     private function getTransportStub($path) {

@@ -21,6 +21,7 @@ class jackalope_ObjectManager {
      * @return jackalope_Node
      */
     public function getNodeByPath($path) {
+        $path = $this->normalizePath($path);
         if (empty($this->objectsByPath[$path])) {
             $this->objectsByPath[$path] = jackalope_Factory::get(
                 'Node',
@@ -33,6 +34,24 @@ class jackalope_ObjectManager {
             );
         }
         return $this->objectsByPath[$path];
+    }
+    
+    /**
+     * Get the node idenfied by an uuid or path or root path and relative
+     * path. If you have an absolute path use getNodeByPath.
+     * @param string uuid or relative path
+     * @param string optional root if you are in a node context
+     * @return return jackalope_Node
+     * @throws PHPCR_ItemNotFoundException If the path was not found
+     * @throws PHPCR_RepositoryException if another error occurs.
+     */
+    public function getNode($identifier, $root = '/'){
+        if ($this->isUUID($identifier)) {
+            throw new jackalope_NotImplementedException();
+        } else {
+            $path = $this->absolutePath($root, $identifier);
+            return $this->getNodeByPath($path);
+        }
     }
     
     /**
@@ -57,7 +76,17 @@ class jackalope_ObjectManager {
                     break;
             }
         }
-        return '/' . implode('/', $finalPath) . '/';
+        return $this->normalizePath(implode('/', $finalPath));
+    }
+    
+    /**
+     * Replaces unwanted characters and ads leading / trailing slashes
+     * @param string the path to normalize
+     * @return string normalized path
+     */
+    protected function normalizePath($path) {
+        $path = '/' . $path . '/';
+        return str_replace('//', '/', $path);
     }
     
     /**
