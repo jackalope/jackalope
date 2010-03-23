@@ -39,7 +39,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      */
     public function __construct($type, $data) {
         if ('Binary' === $type) {
-            throw new jackalope_NotImplementedException();
+            throw new jackalope_NotImplementedException('Binaries not implemented');
         }
         $this->type = PHPCR_PropertyType::valueFromName($type);
         $this->data = $data;
@@ -67,7 +67,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @api
      */
     public function getBinary() {
-        throw new jackalope_NotImplementedException();
+        throw new jackalope_NotImplementedException('Binaries not implemented');
     }
 
     /**
