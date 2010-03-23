@@ -1,0 +1,1576 @@
+<?xml version="1.0"?>
+<nodeTypes>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:created">
+        <supertypes/>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:created" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:createdBy" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:created" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:created" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Date">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:etag">
+        <supertypes/>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:etag" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:etag" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:language">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:language" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:language" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:lastModified">
+        <supertypes/>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:lastModified" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:lastModifiedBy" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:lastModified" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:lastModified" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="Date">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:lifecycle">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:lifecycle" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:lifecyclePolicy" onParentVersion="INITIALIZE" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:lifecycle" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:currentLifecycleState" onParentVersion="INITIALIZE" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:lockable">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:lockable" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:lockIsDeep" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:lockable" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:lockOwner" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:mimeType">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:mimeType" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:encoding" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:mimeType" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:mimeType" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:referenceable">
+        <supertypes/>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:referenceable" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:uuid" onParentVersion="INITIALIZE" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:shareable">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:simpleVersionable">
+        <supertypes/>
+        <propertyDefinition autoCreated="true" declaringNodeType="mix:simpleVersionable" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isCheckedOut" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Boolean">
+            <defaultValues>
+                <defaultValue>true</defaultValue>
+            </defaultValues>
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:title">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:title" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:description" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:title" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:title" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:versionable">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>mix:simpleVersionable</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="true" multiple="true" name="jcr:predecessors" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:configuration" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:configuration</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:activity" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:activity</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:mergeFailed" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:versionHistory" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:versionHistory</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="mix:versionable" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:baseVersion" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:activity">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:activity" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:activityTitle" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:address">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:workspace" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:path" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="Path">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:host" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:port" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:protocol" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:repository" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:address" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:id" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="WeakReference">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="true" isMixin="false" isQueryable="true" name="nt:base">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:base" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:mixinTypes" onParentVersion="COMPUTE" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:base" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:primaryType" onParentVersion="COMPUTE" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:childNodeDefinition">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="true" name="jcr:requiredPrimaryTypes" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <defaultValues>
+                <defaultValue>nt:base</defaultValue>
+            </defaultValues>
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:autoCreated" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:defaultPrimaryType" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:protected" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:name" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:sameNameSiblings" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:mandatory" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:childNodeDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:onParentVersion" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints>
+                <valueConstraint>COPY</valueConstraint>
+                <valueConstraint>VERSION</valueConstraint>
+                <valueConstraint>INITIALIZE</valueConstraint>
+                <valueConstraint>COMPUTE</valueConstraint>
+                <valueConstraint>IGNORE</valueConstraint>
+                <valueConstraint>ABORT</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:configuration">
+        <supertypes>
+            <supertype>mix:versionable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:configuration" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:root" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:file" primaryItemName="jcr:content">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:file" mandatory="true" name="jcr:content" onParentVersion="COPY" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:folder">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:folder" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:hierarchyNode</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="true" isAbstract="false" isMixin="false" isQueryable="true" name="nt:frozenNode">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:frozenNode" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="true">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:frozenNode" fullTextSearchable="true" mandatory="false" multiple="false" name="*" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:frozenNode" fullTextSearchable="true" mandatory="false" multiple="true" name="*" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:frozenNode" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:frozenUuid" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:frozenNode" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:frozenPrimaryType" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:frozenNode" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:frozenMixinTypes" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="true" isMixin="false" isQueryable="true" name="nt:hierarchyNode">
+        <supertypes>
+            <supertype>mix:created</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:linkedFile" primaryItemName="jcr:content">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:linkedFile" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:content" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="Reference">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:nodeType">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:nodeType" defaultPrimaryType="nt:childNodeDefinition" mandatory="false" name="jcr:childNodeDefinition" onParentVersion="COPY" protected="true" sameNameSiblings="true">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:childNodeDefinition</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:nodeType" defaultPrimaryType="nt:propertyDefinition" mandatory="false" name="jcr:propertyDefinition" onParentVersion="COPY" protected="true" sameNameSiblings="true">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:propertyDefinition</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:hasOrderableChildNodes" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isQueryable" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isMixin" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:nodeTypeName" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isAbstract" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:primaryItemName" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:nodeType" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:supertypes" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:propertyDefinition">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:autoCreated" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isQueryOrderable" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:protected" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:name" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:valueConstraints" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:isFullTextSearchable" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:onParentVersion" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints>
+                <valueConstraint>COPY</valueConstraint>
+                <valueConstraint>VERSION</valueConstraint>
+                <valueConstraint>INITIALIZE</valueConstraint>
+                <valueConstraint>COMPUTE</valueConstraint>
+                <valueConstraint>IGNORE</valueConstraint>
+                <valueConstraint>ABORT</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:requiredType" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints>
+                <valueConstraint>STRING</valueConstraint>
+                <valueConstraint>URI</valueConstraint>
+                <valueConstraint>BINARY</valueConstraint>
+                <valueConstraint>LONG</valueConstraint>
+                <valueConstraint>DOUBLE</valueConstraint>
+                <valueConstraint>DECIMAL</valueConstraint>
+                <valueConstraint>BOOLEAN</valueConstraint>
+                <valueConstraint>DATE</valueConstraint>
+                <valueConstraint>NAME</valueConstraint>
+                <valueConstraint>PATH</valueConstraint>
+                <valueConstraint>REFERENCE</valueConstraint>
+                <valueConstraint>WEAKREFERENCE</valueConstraint>
+                <valueConstraint>UNDEFINED</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:multiple" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="true" name="jcr:availableQueryOperators" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:defaultValues" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:propertyDefinition" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:mandatory" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Boolean">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:query">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:query" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:statement" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:query" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:language" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:resource" primaryItemName="jcr:data">
+        <supertypes>
+            <supertype>mix:lastModified</supertype>
+            <supertype>mix:mimeType</supertype>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:resource" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:data" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="Binary">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="true" isAbstract="false" isMixin="false" isQueryable="true" name="nt:unstructured">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:unstructured" defaultPrimaryType="nt:unstructured" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="true">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:unstructured" fullTextSearchable="true" mandatory="false" multiple="true" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:unstructured" fullTextSearchable="true" mandatory="false" multiple="false" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:version">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:version" mandatory="false" name="jcr:frozenNode" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:frozenNode</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:version" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:predecessors" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:version" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:activity" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:activity</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:version" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:created" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Date">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:version" fullTextSearchable="true" mandatory="false" multiple="true" name="jcr:successors" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:versionHistory">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:versionHistory" defaultPrimaryType="nt:version" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:version</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="true" declaringNodeType="nt:versionHistory" defaultPrimaryType="nt:versionLabels" mandatory="true" name="jcr:versionLabels" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:versionLabels</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="true" declaringNodeType="nt:versionHistory" defaultPrimaryType="nt:version" mandatory="true" name="jcr:rootVersion" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:version</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:versionHistory" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:copiedFrom" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="WeakReference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:versionHistory" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:versionableUuid" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:versionLabels">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:versionLabels" fullTextSearchable="true" mandatory="false" multiple="false" name="*" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:version</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:versionedChild">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="true" declaringNodeType="nt:versionedChild" fullTextSearchable="true" mandatory="true" multiple="false" name="jcr:childVersionHistory" onParentVersion="ABORT" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints>
+                <valueConstraint>nt:versionHistory</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:ACE">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:ACE" fullTextSearchable="true" mandatory="false" multiple="false" name="*" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:ACE" fullTextSearchable="true" mandatory="true" multiple="true" name="rep:privileges" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Name">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:ACE" fullTextSearchable="true" mandatory="false" multiple="false" name="rep:glob" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:ACE" fullTextSearchable="true" mandatory="false" multiple="false" name="rep:nodePath" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Path">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:ACE" fullTextSearchable="true" mandatory="true" multiple="false" name="rep:principalName" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="true" isAbstract="false" isMixin="false" isQueryable="true" name="rep:ACL">
+        <supertypes>
+            <supertype>rep:Policy</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:ACL" defaultPrimaryType="rep:GrantACE" mandatory="false" name="*" onParentVersion="IGNORE" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:ACE</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:AccessControl">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:AccessControl" mandatory="false" name="*" onParentVersion="IGNORE" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:AccessControl</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:AccessControl" mandatory="false" name="*" onParentVersion="IGNORE" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:PrincipalAccessControl</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="rep:AccessControllable">
+        <supertypes/>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:AccessControllable" mandatory="false" name="rep:policy" onParentVersion="IGNORE" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Policy</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:Activities">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:Activities" defaultPrimaryType="rep:Activities" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Activities</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:Activities" defaultPrimaryType="nt:activity" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:activity</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="true" isMixin="false" isQueryable="true" name="rep:Authorizable">
+        <supertypes>
+            <supertype>mix:referenceable</supertype>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:Authorizable" defaultPrimaryType="nt:unstructured" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:Authorizable" fullTextSearchable="true" mandatory="false" multiple="false" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:Authorizable" fullTextSearchable="true" mandatory="false" multiple="true" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:Authorizable" fullTextSearchable="true" mandatory="true" multiple="false" name="rep:principalName" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:AuthorizableFolder">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:AuthorizableFolder" defaultPrimaryType="rep:User" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Authorizable</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:AuthorizableFolder" defaultPrimaryType="rep:AuthorizableFolder" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:AuthorizableFolder</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:Configurations">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:Configurations" defaultPrimaryType="rep:Configurations" mandatory="false" name="*" onParentVersion="ABORT" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Configurations</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:Configurations" defaultPrimaryType="nt:configuration" mandatory="false" name="*" onParentVersion="ABORT" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:configuration</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:DenyACE">
+        <supertypes>
+            <supertype>rep:ACE</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:GrantACE">
+        <supertypes>
+            <supertype>rep:ACE</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:Group">
+        <supertypes>
+            <supertype>rep:Authorizable</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:Group" fullTextSearchable="true" mandatory="false" multiple="true" name="rep:members" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="WeakReference">
+            <valueConstraints>
+                <valueConstraint>rep:Authorizable</valueConstraint>
+            </valueConstraints>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="rep:Impersonatable">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:Impersonatable" fullTextSearchable="true" mandatory="false" multiple="true" name="rep:impersonators" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="true" isMixin="false" isQueryable="true" name="rep:Policy">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:PrincipalAccessControl">
+        <supertypes>
+            <supertype>rep:AccessControl</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:PrincipalAccessControl" mandatory="false" name="rep:policy" onParentVersion="IGNORE" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Policy</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="rep:RetentionManageable">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:RetentionManageable" fullTextSearchable="true" mandatory="false" multiple="false" name="rep:retentionPolicy" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:RetentionManageable" fullTextSearchable="true" mandatory="false" multiple="true" name="rep:hold" onParentVersion="IGNORE" protected="true" queryOrderable="true" requiredType="undefined">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:User">
+        <supertypes>
+            <supertype>rep:Authorizable</supertype>
+            <supertype>rep:Impersonatable</supertype>
+        </supertypes>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:User" fullTextSearchable="true" mandatory="true" multiple="false" name="rep:password" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="rep:VersionReference">
+        <supertypes/>
+        <propertyDefinition autoCreated="false" declaringNodeType="rep:VersionReference" fullTextSearchable="true" mandatory="false" multiple="true" name="rep:versions" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="Reference">
+            <valueConstraints/>
+            <availableQueryOperators>
+                <availableQueryOperator>jcr.operator.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.not.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.greater.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.less.than.or.equal.to</availableQueryOperator>
+                <availableQueryOperator>jcr.operator.like</availableQueryOperator>
+            </availableQueryOperators>
+        </propertyDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:nodeTypes">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:nodeTypes" defaultPrimaryType="nt:nodeType" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:nodeType</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="true" isAbstract="false" isMixin="false" isQueryable="true" name="rep:root">
+        <supertypes>
+            <supertype>nt:unstructured</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:root" defaultPrimaryType="rep:system" mandatory="true" name="jcr:system" onParentVersion="IGNORE" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:system</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="true" isAbstract="false" isMixin="false" isQueryable="true" name="rep:system">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:system" defaultPrimaryType="nt:base" mandatory="false" name="*" onParentVersion="IGNORE" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:system" defaultPrimaryType="rep:versionStorage" mandatory="true" name="jcr:versionStorage" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:versionStorage</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:system" defaultPrimaryType="rep:Activities" mandatory="true" name="jcr:activities" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Activities</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:system" defaultPrimaryType="rep:Configurations" mandatory="false" name="jcr:configurations" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:Configurations</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:system" defaultPrimaryType="rep:nodeTypes" mandatory="true" name="jcr:nodeTypes" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:nodeTypes</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="rep:versionStorage">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:versionStorage" defaultPrimaryType="nt:versionHistory" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:versionHistory</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <childNodeDefinition autoCreated="false" declaringNodeType="rep:versionStorage" defaultPrimaryType="rep:versionStorage" mandatory="false" name="*" onParentVersion="ABORT" protected="true" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>rep:versionStorage</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+</nodeTypes>

@@ -23,12 +23,25 @@ class jackalope_tests_ObjectManager extends jackalope_baseCase {
         $this->assertEquals(2, $children->getSize());
         $this->assertEquals($node, $om->getNode($path));
     }
-
+    
+    public function testGetNodeTypes() {
+        $om = new jackalope_ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $nodetypes = $om->getNodeTypes();
+        $this->assertType('DOMDocument', $nodetypes);
+        $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
+        $this->assertType('DOMDocument', $nodetypes);
+    }
+    
     private function getTransportStub($path) {
-        $transport = $this->getMock('jackalope_transport_DavexClient', array('getItem'), array('http://example.com'));
+        $transport = $this->getMock('jackalope_transport_DavexClient', array('getItem', 'getNodeTypes'), array('http://example.com'));
         $transport->expects($this->any())
             ->method('getItem')
             ->will($this->returnValue(json_decode($this->JSON)));
+        $dom = new DOMDocument();
+        $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
+        $transport->expects($this->any())
+            ->method('getNodeTypes')
+            ->will($this->returnValue($dom));
         return $transport;
     }
     private function getSessionMock() {

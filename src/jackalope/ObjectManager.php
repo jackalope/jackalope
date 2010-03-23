@@ -4,15 +4,15 @@ class jackalope_ObjectManager {
     protected $session;
     protected $transport;
 
-    protected $objectsByPath;
-    protected $objectsByUuid;
+    protected $objectsByPath = array();
+    protected $objectsByUuid = array();
 
     public function __construct(jackalope_TransportInterface $transport,
                                 PHPCR_SessionInterface $session) {
         $this->transport = $transport;
         $this->session = $session;
     }
-
+    
     /**
      * Get the node identified by an absolute path.
      * Uses the factory to instantiate Node
@@ -52,6 +52,25 @@ class jackalope_ObjectManager {
             $path = $this->absolutePath($root, $identifier);
             return $this->getNodeByPath($path);
         }
+    }
+    
+    /**
+     * This is only a proxy to the transport it returns all node types if none
+     * is given or only the ones given as array.
+     * @param array empty for all or selected node types by name
+     * @return DOMDoocument containing the nodetype information
+     */
+    public function getNodeTypes($nodeTypes = array()) {
+        return $this->transport->getNodeTypes($nodeTypes);
+    }
+    
+    /**
+     * Get a single nodetype @see getNodeTypes
+     * @param string the nodetype you want
+     * @return DOMDocument containing the nodetype information
+     */
+    public function getNodeType($nodeType) {
+        return $this->getNodeTypes(array($nodeType));
     }
     
     /**
