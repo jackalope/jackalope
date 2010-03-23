@@ -118,8 +118,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         return $this->getJsonFromBackend(self::GET, $path . '.0.json');
     }
 
-    /** get the registered namespaces mappings from the backend
-     *  @return associative array of prefix => uri
+    /**
+     * get the registered namespaces mappings from the backend
+     * @return associative array of prefix => uri
      */
     public function getNamespaces() {
         if (empty($this->workspaceUri)) {
@@ -138,7 +139,41 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $mappings;
     }
-
+    
+    /**
+     * Returns node types
+     * @param array nodetypes to request
+     * @return dom with the definitions
+     */
+    public function getNodeTypes(Array $nodeTypes) {
+        if (empty($this->workspaceUri)) {
+            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
+        }
+        $dom = $this->getDomFromBackend(
+            self::REPORT, $this->workspaceUri . '/jcr:root/tests_level1_access_base',
+            self::buildNodeTypesRequest($nodeTypes)
+        );
+        
+        if ($dom->firstChild->localName != 'nodeTypes') {
+            throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+        }
+        return $dom;
+    }
+    
+    /**
+     * Returns the XML required to request nodetypes
+     * @param array the nodetypes you want to request
+     * @return string XML with the request
+     */
+    protected static function buildNodeTypesRequest(Array $nodeTypes) {
+        $xmlStr = '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
+        foreach ($nodeTypes as $nodetype) {
+            $xmlStr .= '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
+        }
+        $xmlStr .='</jcr:nodetypes>';
+        return $xmlStr;
+    }
+    
     /**
      * Build PROPFIND request XML for the specified property names
      *
@@ -239,6 +274,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
                     throw new PHPCR_NoSuchWorkspaceException($errMsg);
+                    break;
+                case 'javax.jcr.nodetype.NoSuchNodeTypeException':
+                    throw new PHPCR_NodeType_NoSuchNodeTypeException($errMsg);
+                    break;
                 //TODO: map more errors here
                 default:
                     throw new PHPCR_RepositoryException("$errMsg ($errClass)");
