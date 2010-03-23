@@ -145,7 +145,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @param array nodetypes to request
      * @return dom with the definitions
      */
-    public function getNodeTypes(Array $nodeTypes) {
+    public function getNodeTypes($nodeTypes = array()) {
         if (empty($this->workspaceUri)) {
             throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
@@ -153,7 +153,6 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             self::REPORT, $this->workspaceUri . '/jcr:root/tests_level1_access_base',
             self::buildNodeTypesRequest($nodeTypes)
         );
-        
         if ($dom->firstChild->localName != 'nodeTypes') {
             throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
@@ -167,10 +166,15 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      */
     protected static function buildNodeTypesRequest(Array $nodeTypes) {
         $xmlStr = '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
-        foreach ($nodeTypes as $nodetype) {
-            $xmlStr .= '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
+        if (empty($nodeTypes)) {
+            $xmlStr .= '<jcr:all-nodetypes/>';
+        } else {
+            foreach ($nodeTypes as $nodetype) {
+                $xmlStr .= '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
+            }
         }
         $xmlStr .='</jcr:nodetypes>';
+        
         return $xmlStr;
     }
     
