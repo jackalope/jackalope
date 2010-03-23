@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
 
 class OMT extends jackalope_ObjectManager {
     public function absolutePath($root, $relativePath) {
@@ -11,8 +11,7 @@ class OMT extends jackalope_ObjectManager {
     }
 }
 
-class jackalope_tests_ObjectManager extends jackalope_baseCase {
-    private $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
+class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
     public function testGetNodeByPath() {
         $path = '/jcr:root';
         $om = new jackalope_ObjectManager($this->getTransportStub($path), $this->getSessionMock());
@@ -30,22 +29,6 @@ class jackalope_tests_ObjectManager extends jackalope_baseCase {
         $this->assertType('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
         $this->assertType('DOMDocument', $nodetypes);
-    }
-    
-    private function getTransportStub($path) {
-        $transport = $this->getMock('jackalope_transport_DavexClient', array('getItem', 'getNodeTypes'), array('http://example.com'));
-        $transport->expects($this->any())
-            ->method('getItem')
-            ->will($this->returnValue(json_decode($this->JSON)));
-        $dom = new DOMDocument();
-        $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
-        $transport->expects($this->any())
-            ->method('getNodeTypes')
-            ->will($this->returnValue($dom));
-        return $transport;
-    }
-    private function getSessionMock() {
-        return $this->getMock('jackalope_Session', array(), array(), '', false);
     }
     
     public function testIsUUID() {
