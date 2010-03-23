@@ -5,6 +5,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     protected $value;
     protected $isMultiple = false;
     protected $type;
+    protected $definition;
     
     public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager) {
         parent::__construct(null, $path, $session, $objectManager);
@@ -70,7 +71,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getValue() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value;
     }
 
     /**
@@ -86,7 +87,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getValues() {
         $this->checkMultiple(false);
-        throw new jackalope_NotImplementedException();
+        return $this->value;
     }
 
     /**
@@ -100,7 +101,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getString() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getString();
     }
 
     /**
@@ -114,7 +115,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getBinary() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getBinary();
     }
 
     /**
@@ -128,7 +129,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getLong() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getLong();
     }
 
     /**
@@ -142,7 +143,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getDouble() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getDouble();
     }
 
     /**
@@ -156,7 +157,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getDecimal() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getDecimal();
     }
 
     /**
@@ -170,7 +171,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getDate() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getDate();
     }
 
     /**
@@ -184,7 +185,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getBoolean() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->value->getBoolean();
     }
 
     /**
@@ -204,7 +205,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getNode() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        return $this->objectManager->getNode($this->value->getString(), $this->getPath());
     }
 
     /**
@@ -226,7 +227,6 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      * @api
      */
     public function getProperty() {
-        $this->checkMultiple();
         throw new jackalope_NotImplementedException();
     }
 
@@ -247,7 +247,11 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getLength() {
         $this->checkMultiple();
-        throw new jackalope_NotImplementedException();
+        if (PHPCR_PropertyType::BINARY === $this->type) {
+            throw new jackalope_NotImplementedException('Binaries not implemented');
+        } else {
+            return strlen($this->value->getString());
+        }
     }
 
     /**
@@ -262,7 +266,15 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getLengths() {
         $this->checkMultiple(false);
-        throw new jackalope_NotImplementedException();
+        $ret = array();
+        foreach ($this->value as $value) {
+            if (PHPCR_PropertyType::BINARY === $this->type) {
+                throw new jackalope_NotImplementedException('Binaries not implemented');
+            } else {
+                array_push($ret, strlen($value->getString()));
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -280,7 +292,10 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      * @api
      */
     public function getDefinition() {
-        throw new jackalope_NotImplementedException();
+        if (empty($this->definition)) {
+            
+        }
+        return $this->definition;
     }
 
     /**

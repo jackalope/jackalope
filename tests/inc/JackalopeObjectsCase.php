@@ -20,4 +20,16 @@ class jackalope_JackalopeObjectsCase extends jackalope_baseCase {
     protected function getSessionMock() {
         return $this->getMock('jackalope_Session', array(), array(), '', false);
     }
+    
+    
+    protected function getNodeTypeManager() {
+        $dom = new DOMDocument();
+        $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
+        $om = $this->getMock('jackalope_ObjectManager', array('getNodeTypes'), array($this->getTransportStub('/jcr:root'), $this->getSessionMock()));
+        $om->expects($this->any())
+            ->method('getNodeTypes')
+            ->will($this->returnValue($dom));
+        return new jackalope_NodeType_NodeTypeManager($om);
+    }
+    
 }

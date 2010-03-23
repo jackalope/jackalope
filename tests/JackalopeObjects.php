@@ -5,6 +5,7 @@ require_once(dirname(__FILE__) . '/JackalopeObjects/Session.php');
 require_once(dirname(__FILE__) . '/JackalopeObjects/Workspace.php');
 require_once(dirname(__FILE__) . '/JackalopeObjects/Node.php');
 require_once(dirname(__FILE__) . '/JackalopeObjects/Value.php');
+require_once(dirname(__FILE__) . '/JackalopeObjects/NodeTypeManager.php');
 
 /** Test constructors and other implementation specific methods.
  *  Normal API compliance is tested by the API tests.
@@ -18,6 +19,7 @@ class jackalope_tests_JackalopeObjects extends jackalope_baseSuite {
         $suite->addTestSuite('jackalope_tests_Workspace');
         $suite->addTestSuite('jackalope_tests_Node');
         $suite->addTestSuite('jackalope_tests_Value');
+        $suite->addTestSuite('jackalope_tests_NodeTypeManager');
         return $suite;
     }
 }

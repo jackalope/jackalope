@@ -1,6 +1,38 @@
 <?php
-
+/**
+ * The NodeTypeDefinition interface provides methods for discovering the
+ * static definition of a node type. These are accessible both before and
+ * after the node type is registered. Its subclass NodeType adds methods
+ * that are relevant only when the node type is "live"; that is, after it
+ * has been registered. Note that the separate NodeDefinition interface only
+ * plays a significant role in implementations that support node type
+ * registration. In those cases it serves as the superclass of both NodeType
+ * and NodeTypeTemplate. In implementations that do not support node type
+ * registration, only objects implementing the subinterface NodeType will
+ * be encountered.
+ */
 class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDefinitionInterface {
+    protected $name;
+    protected $isAbstract;
+    protected $isMixin;
+    protected $isQueryable;
+    protected $hasOrderableChildNodes;
+    
+    protected $propertyDefinitions;
+    protected $nodeDefinitions;
+    
+    /**
+     * Initializes the NodeTypeDefinition from the given DOM
+     * @param DOMElement NodeTypeElement
+     */
+    public function __construct(DOMElement $node) {
+        $this->name = $node->getAttribute('name');
+        $this->isAbstract = (bool) $node->getAttribute('isAbstract');
+        $this->isMixin = (bool) $node->getAttribute('isMixin');
+        $this->isQueryable = (bool) $node->getAttribute('isQueryable');
+        $this->hasOrderableChildNodes = (bool) $node->getAttribute('hasOrderableChildNodes');
+    }
+    
     /**
      * Returns the name of the node type.
      * In implementations that support node type registration, if this
@@ -8,10 +40,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return null.
      *
      * @return string a String
-     * @api
      */
     public function getName() {
-        throw new jackalope_NotImplementedException();
+        return $this->name;
     }
 
     /**
@@ -22,7 +53,6 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * single string indicating the node type nt:base.
      *
      * @return array an array of Strings
-     * @api
      */
     public function getDeclaredSupertypeNames() {
         throw new jackalope_NotImplementedException();
@@ -39,10 +69,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return false.
      *
      * @return boolean a boolean
-     * @api
      */
     public function isAbstract() {
-        throw new jackalope_NotImplementedException();
+        return $this->isAbstract;
     }
 
     /**
@@ -52,10 +81,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return false.
      *
      * @return boolean a boolean
-     * @api
      */
     public function isMixin() {
-        throw new jackalope_NotImplementedException();
+        return $this->isMixin;
     }
 
     /*
@@ -71,10 +99,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return false.
      *
      * @return boolean a boolean
-     * @api
      */
     public function hasOrderableChildNodes() {
-        throw new jackalope_NotImplementedException();
+        return $this->hasOrderableChildNodes;
     }
 
     /**
@@ -89,10 +116,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * property definitions have no effect.
      *
      * @return boolean a boolean
-     * @api
      */
     public function isQueryable() {
-        throw new jackalope_NotImplementedException();
+        return $this->isQueryable;
     }
 
     /**
@@ -104,7 +130,6 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return null.
      *
      * @return string a String
-     * @api
      */
     public function getPrimaryItemName() {
         throw new jackalope_NotImplementedException();
@@ -118,10 +143,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return null.
      *
      * @return array an array of PropertyDefinitions
-     * @api
      */
     public function getDeclaredPropertyDefinitions() {
-        throw new jackalope_NotImplementedException();
+        return $this->propertyDefinitions;
     }
 
     /**
@@ -132,9 +156,8 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * NodeTypeTemplate, then this method will return null.
      *
      * @return array an array of NodeDefinitions
-     * @api
      */
     public function getDeclaredChildNodeDefinitions() {
-        throw new jackalope_NotImplementedException();
+        return $this->nodeDefinitions;
     }
 }

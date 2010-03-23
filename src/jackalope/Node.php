@@ -17,7 +17,6 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
         $this->isNode = true;
 
         //TODO: determine the index if != 1
-
         foreach ($rawData as $key => $value) {
             if (is_object($value)) {
                 array_push($this->nodes, $key);
