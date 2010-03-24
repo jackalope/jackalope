@@ -17,6 +17,9 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     protected $isMixin;
     protected $isQueryable;
     protected $hasOrderableChildNodes;
+    protected $primaryItemName;
+    
+    protected $superTypeNames = array();
     
     protected $propertyDefinitions;
     protected $nodeDefinitions;
@@ -27,10 +30,21 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      */
     public function __construct(DOMElement $node) {
         $this->name = $node->getAttribute('name');
-        $this->isAbstract = (bool) $node->getAttribute('isAbstract');
-        $this->isMixin = (bool) $node->getAttribute('isMixin');
-        $this->isQueryable = (bool) $node->getAttribute('isQueryable');
-        $this->hasOrderableChildNodes = (bool) $node->getAttribute('hasOrderableChildNodes');
+        $this->isAbstract = $this->getBoolAttribute($node, 'isAbstract');
+        $this->isMixin = $this->getBoolAttribute($node, 'isMixin');
+        $this->isQueryable = $this->getBoolAttribute($node, 'isQueryable');
+        $this->hasOrderableChildNodes = $this->getBoolAttribute($node, 'hasOrderableChildNodes');
+        
+        $this->primaryItemName = $node->getAttribute('primaryItemName');
+        if (empty($this->primaryItemName)) {
+            $this->primaryItemName = null;
+        }
+        
+        $xp = new DOMXPath($node->ownerDocument);
+        $supertypes = $xp->query('supertypes/supertype', $node);
+        foreach ($supertypes as $supertype) {
+            array_push($this->superTypeNames, $supertype->nodeValue);
+        }
     }
     
     /**
@@ -55,7 +69,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of Strings
      */
     public function getDeclaredSupertypeNames() {
-        throw new jackalope_NotImplementedException();
+        return $this->superTypeNames;
     }
 
     /**
@@ -132,7 +146,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return string a String
      */
     public function getPrimaryItemName() {
-        throw new jackalope_NotImplementedException();
+        return $this->primaryItemName;
     }
 
     /**
@@ -145,6 +159,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of PropertyDefinitions
      */
     public function getDeclaredPropertyDefinitions() {
+        throw new jackalope_NotImplementedException();
         return $this->propertyDefinitions;
     }
 
@@ -158,6 +173,21 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of NodeDefinitions
      */
     public function getDeclaredChildNodeDefinitions() {
+        throw new jackalope_NotImplementedException();
         return $this->nodeDefinitions;
+    }
+    
+    /**
+     * Returns an attribute casted to boolean
+     * @param DOMElement node to fetch from
+     * @param string attribute to fetch
+     * @return bool the value converted to bool
+     */
+    protected function getBoolAttribute($node, $attribute) {
+        if ('false' === $node->getAttribute($attribute)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
