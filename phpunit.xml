@@ -7,5 +7,14 @@
         <var name="jcr.transport" value="davex" />
     </php>
     
-    <!-- TODO: Add proper test suites again -->
+    <testsuites>
+      <testsuite name="Jackalope Objects">
+        <directory>.</directory>
+        <file>tests/JackalopeObjects.php</file>
+      </testsuite>
+      <testsuite name="Implementation Helpers">
+        <directory>.</directory>
+        <file>tests/ImplementationHelpers.php</file>
+      </testsuite>
+    </testsuites>
 </phpunit>
