@@ -50,7 +50,11 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(true, $property->isFullTextSearchable());
         $this->assertSame(true, $property->isQueryOrderable());
         
-        //TODO: Test with property value constraints
+        $nt = $ntm->getNodeType('mix:versionable');
+        $properties = $nt->getDeclaredPropertyDefinitions();
+        $property = $properties[0];
+        $this->assertSame(array('nt:version'), $property->getValueConstraints());
+        
         //TODO: Property default values
     }
     
