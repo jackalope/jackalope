@@ -44,7 +44,7 @@ declare(ENCODING = 'utf-8');
  * @license http://opensource.org/licenses/bsd-license.php Simplified BSD License
  * @api
  */
-final class PHPCR_OnParentVersionAction {
+final class PHPCR_Version_OnParentVersionAction {
 
 	/**
 	 * The COPY action constant.

@@ -21,7 +21,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     
     protected $superTypeNames = array();
     
-    protected $propertyDefinitions;
+    protected $propertyDefinitions = array();
     protected $nodeDefinitions;
     
     /**
@@ -30,10 +30,10 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      */
     public function __construct(DOMElement $node) {
         $this->name = $node->getAttribute('name');
-        $this->isAbstract = $this->getBoolAttribute($node, 'isAbstract');
-        $this->isMixin = $this->getBoolAttribute($node, 'isMixin');
-        $this->isQueryable = $this->getBoolAttribute($node, 'isQueryable');
-        $this->hasOrderableChildNodes = $this->getBoolAttribute($node, 'hasOrderableChildNodes');
+        $this->isAbstract = jackalope_Helper::getBoolAttribute($node, 'isAbstract');
+        $this->isMixin = jackalope_Helper::getBoolAttribute($node, 'isMixin');
+        $this->isQueryable = jackalope_Helper::getBoolAttribute($node, 'isQueryable');
+        $this->hasOrderableChildNodes = jackalope_Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
         
         $this->primaryItemName = $node->getAttribute('primaryItemName');
         if (empty($this->primaryItemName)) {
@@ -44,6 +44,14 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
             array_push($this->superTypeNames, $supertype->nodeValue);
+        }
+        
+        $properties = $xp->query('propertyDefinition', $node);
+        foreach ($properties as $property) {
+            array_push($this->propertyDefinitions, jackalope_Factory::get(
+                'NodeType_PropertyDefinition',
+                array($property, $this)
+            ));
         }
     }
     
@@ -159,7 +167,6 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of PropertyDefinitions
      */
     public function getDeclaredPropertyDefinitions() {
-        throw new jackalope_NotImplementedException();
         return $this->propertyDefinitions;
     }
 
@@ -175,19 +182,5 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     public function getDeclaredChildNodeDefinitions() {
         throw new jackalope_NotImplementedException();
         return $this->nodeDefinitions;
-    }
-    
-    /**
-     * Returns an attribute casted to boolean
-     * @param DOMElement node to fetch from
-     * @param string attribute to fetch
-     * @return bool the value converted to bool
-     */
-    protected function getBoolAttribute($node, $attribute) {
-        if ('false' === $node->getAttribute($attribute)) {
-            return false;
-        } else {
-            return true;
-        }
     }
 }

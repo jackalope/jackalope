@@ -14,7 +14,10 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false, $nt->hasOrderableChildNodes());
         $this->assertSame(true, $nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
-        // $this->assertSame('nt:folder', $nt->getDeclaredPropertyDefinitions());
+        
+        $properties = $nt->getDeclaredPropertyDefinitions();
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertEquals(0, count($properties));
         // $this->assertSame('nt:folder', $nt->getDeclaredChildNodeDefinitions());
         
         $nt = $ntm->getNodeType('mix:created');
@@ -26,6 +29,17 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false, $nt->hasOrderableChildNodes());
         $this->assertSame(true, $nt->isQueryable());
         $this->assertSame(null, $nt->getPrimaryItemName());
+        
+        $properties = $nt->getDeclaredPropertyDefinitions();
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertEquals(2, count($properties));
+        $property = $properties[0];
+        $this->assertSame($nt, $property->getDeclaringNodeType());
+        $this->assertSame('jcr:createdBy',$property->getName());
+        $this->assertSame(true,$property->isAutoCreated());
+        $this->assertSame(false,$property->isMandatory());
+        $this->assertSame(PHPCR_Version_OnParentVersionAction::COPY,$property->getOnParentVersion());
+        $this->assertSame(true,$property->isProtected());
     }
     
 }
