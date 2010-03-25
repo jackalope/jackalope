@@ -1,8 +1,31 @@
 <?php
 
 class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_PropertyDefinitionInterface {
+    protected $requiredType;
+    protected $valueConstraints = array();
+    protected $defaultValues = array();
+    protected $isMultiple;
+    protected $availableQueryOperators = array();
+    protected $isFullTextSearchable;
+    protected $isQueryOrderable;
+    
     public function __construct(DOMElement $node, jackalope_NodeType_NodeType $parent) {
         parent::__construct($node, $parent);
+        $this->requiredType = PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
+        $this->isMultiple = jackalope_Helper::getBoolAttribute($node, 'multiple');
+        $this->isFullTextSearchable = jackalope_Helper::getBoolAttribute($node, 'fullTextSearchable');
+        $this->isQueryOrderable = jackalope_Helper::getBoolAttribute($node, 'queryOrderable');
+        
+        $xp = new DOMXpath($node->ownerDocument);
+        $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
+        foreach ($valueConstraints as $valueConstraint) {
+            array_push($this->valueConstraints, $valueConstraint->nodeValue);
+        }
+        
+        $availableQueryOperators = $xp->query('availableQueryOperators/availableQueryOperator', $node);
+        foreach ($availableQueryOperators as $availableQueryOperator) {
+            array_push($this->availableQueryOperators, $availableQueryOperator->nodeValue);
+        }
     }
     
     /**
@@ -30,7 +53,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return integer an int constant member of PropertyType.
      */
     public function getRequiredType() {
-        throw new jackalope_NotImplementedException();
+        return $this->requiredType;
     }
 
     /**
@@ -159,7 +182,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return array a String array.
      */
     public function getValueConstraints() {
-        throw new jackalope_NotImplementedException();
+        return $this->valueConstraints;
     }
 
     /**
@@ -209,7 +232,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return boolean a boolean
      */
     public function isMultiple() {
-        throw new jackalope_NotImplementedException();
+        return $this->isMultiple;
     }
 
     /**
@@ -238,7 +261,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return array a string array
      */
     public function getAvailableQueryOperators() {
-        throw new jackalope_NotImplementedException();
+        return $this->availableQueryOperators;
     }
 
     /**
@@ -252,7 +275,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return boolean a boolean
      */
     public function isFullTextSearchable() {
-        throw new jackalope_NotImplementedException();
+        return $this->isFullTextSearchable;
     }
 
     /**
@@ -266,6 +289,6 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return boolean a boolean
      */
     public function isQueryOrderable() {
-        throw new jackalope_NotImplementedException();
+        return $this->isQueryOrderable;
     }
 }

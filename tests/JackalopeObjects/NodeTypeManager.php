@@ -30,6 +30,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(true, $nt->isQueryable());
         $this->assertSame(null, $nt->getPrimaryItemName());
         
+        //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
         $this->assertEquals(2, count($properties));
@@ -40,6 +41,17 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false,$property->isMandatory());
         $this->assertSame(PHPCR_Version_OnParentVersionAction::COPY,$property->getOnParentVersion());
         $this->assertSame(true,$property->isProtected());
+        
+        //PropertyDefinition
+        $this->assertSame(PHPCR_PropertyType::STRING, $property->getRequiredType());
+        $this->assertSame(array(), $property->getValueConstraints());
+        $this->assertSame(false, $property->isMultiple());
+        $this->assertSame(array('jcr.operator.equal.to', 'jcr.operator.not.equal.to', 'jcr.operator.greater.than', 'jcr.operator.greater.than.or.equal.to', 'jcr.operator.less.than', 'jcr.operator.less.than.or.equal.to', 'jcr.operator.like'), $property->getAvailableQueryOperators());
+        $this->assertSame(true, $property->isFullTextSearchable());
+        $this->assertSame(true, $property->isQueryOrderable());
+        
+        //TODO: Test with property value constraints
+        //TODO: Property default values
     }
     
 }
