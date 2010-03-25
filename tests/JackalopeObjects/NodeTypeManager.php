@@ -41,6 +41,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false,$property->isMandatory());
         $this->assertSame(PHPCR_Version_OnParentVersionAction::COPY,$property->getOnParentVersion());
         $this->assertSame(true,$property->isProtected());
+        $this->assertSame(array(),$property->getDefaultValues());
         
         //PropertyDefinition
         $this->assertSame(PHPCR_PropertyType::STRING, $property->getRequiredType());
@@ -55,7 +56,14 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $property = $properties[0];
         $this->assertSame(array('nt:version'), $property->getValueConstraints());
         
-        //TODO: Property default values
+        $nt = $ntm->getNodeType('mix:simpleVersionable');
+        $properties = $nt->getDeclaredPropertyDefinitions();
+        $property = $properties[0];
+        $defaultValues = $property->getDefaultValues();
+        $this->assertEquals(1, count($defaultValues));
+        $this->assertType('jackalope_Value', $defaultValues[0]);
+        $this->assertSame('true', $defaultValues[0]->getString());
+        $this->assertSame(true, $defaultValues[0]->getBoolean());
     }
     
 }

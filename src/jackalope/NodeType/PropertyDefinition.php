@@ -26,6 +26,14 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
         foreach ($availableQueryOperators as $availableQueryOperator) {
             array_push($this->availableQueryOperators, $availableQueryOperator->nodeValue);
         }
+        
+        $defaultValues = $xp->query('defaultValues/defaultValue', $node);
+        foreach ($defaultValues as $defaultValue) {
+            array_push(
+                $this->defaultValues,
+                jackalope_Factory::get('Value', array(PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
+            );
+        }
     }
     
     /**
@@ -214,7 +222,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
      * @return array an array of Value objects.
      */
     public function getDefaultValues() {
-        throw new jackalope_NotImplementedException();
+        return $this->defaultValues;
     }
 
     /**
