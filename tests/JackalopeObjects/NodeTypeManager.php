@@ -14,7 +14,11 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false, $nt->hasOrderableChildNodes());
         $this->assertSame(true, $nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
-        
+    }
+    
+    public function testGetDefinedPropertysAndPropertyDefinition() {
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
         $this->assertEquals(0, count($properties));
