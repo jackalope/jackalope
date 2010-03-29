@@ -23,8 +23,8 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     
     protected $declaredSuperTypeNames = array();
     
-    protected $propertyDefinitions = array();
-    protected $nodeDefinitions = array();
+    protected $declaredPropertyDefinitions = array();
+    protected $declaredNodeDefinitions = array();
     
     /**
      * Initializes the NodeTypeDefinition from the given DOM
@@ -52,15 +52,15 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
-            array_push($this->propertyDefinitions, jackalope_Factory::get(
+            array_push($this->declaredPropertyDefinitions, jackalope_Factory::get(
                 'NodeType_PropertyDefinition',
                 array($property, $nodeTypeManager)
             ));
         }
         
-        $nodeDefinitions = $xp->query('childNodeDefinition', $node);
-        foreach ($nodeDefinitions as $nodeDefinition) {
-            array_push($this->nodeDefinitions, jackalope_Factory::get(
+        $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
+        foreach ($declaredNodeDefinitions as $nodeDefinition) {
+            array_push($this->declaredNodeDefinitions, jackalope_Factory::get(
                 'NodeType_NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
             ));
@@ -179,7 +179,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of PropertyDefinitions
      */
     public function getDeclaredPropertyDefinitions() {
-        return $this->propertyDefinitions;
+        return $this->declaredPropertyDefinitions;
     }
 
     /**
@@ -192,6 +192,6 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of NodeDefinitions
      */
     public function getDeclaredChildNodeDefinitions() {
-        return $this->nodeDefinitions;
+        return $this->declaredNodeDefinitions;
     }
 }
