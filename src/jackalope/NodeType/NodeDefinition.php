@@ -5,15 +5,18 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
     
     protected $requiredPrimaryTypes = array();
     protected $requiredPrimaryTypeNames = array();
-    protected $defaultPrimaryType;
     protected $defaultPrimaryTypeName;
     protected $allowsSameNameSiblings;
     
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodetypeManager) {
-        parent::__construct($node, $nodetypeManager);
+    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+        parent::__construct($node, $nodeTypeManager);
         
         $this->allowsSameNameSiblings = jackalope_Helper::getBoolAttribute($node, 'sameNameSiblings');
+        $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
+        if (empty($this->defaultPrimaryTypeName)) {
+            $this->defaultPrimaryTypeName = null;
+        }
         
         $xp = new DOMXpath($node->ownerDocument);
         $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
@@ -24,6 +27,7 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
         } else {
             array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
         }
+        
         
     }
     
@@ -85,7 +89,10 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return PHPCR_NodeType_NodeTypeInterface a NodeType.
      */
     public function getDefaultPrimaryType() {
-        throw new jackalope_NotImplementedException();
+        if (null === $this->defaultPrimaryTypeName) {
+            return null;
+        }
+        return $this->nodeTypeManager->getNodeType($this->defaultPrimaryTypeName);
     }
 
     /**
@@ -101,7 +108,7 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return string a String
      */
     public function getDefaultPrimaryTypeName() {
-        throw new jackalope_NotImplementedException();
+        return $this->defaultPrimaryTypeName;
     }
 
     /**

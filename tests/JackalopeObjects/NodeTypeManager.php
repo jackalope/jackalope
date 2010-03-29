@@ -27,8 +27,8 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame('*', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:hierarchyNode')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:hierarchyNode'), $node->getRequiredPrimaryTypeNames());
-        // $this->assertSame('*', $node->getDefaultPrimaryType());
-        // $this->assertSame('*', $node->getDefaultPrimaryTypeName());
+        $this->assertSame(null, $node->getDefaultPrimaryTypeName());
+        $this->assertSame(null, $node->getDefaultPrimaryType());
         // $this->assertSame('*', $node->allowsSameNameSiblings());
         
         $ntm = $this->getNodeTypeManager();
@@ -41,6 +41,17 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame('jcr:content', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:base'), $ntm->getNodeType('nt:folder')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:base', 'nt:folder'), $node->getRequiredPrimaryTypeNames());
+        $this->assertSame(null, $node->getDefaultPrimaryTypeName());
+        $this->assertSame(null, $node->getDefaultPrimaryType());
+        
+        //Test defaultPrimaryType
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:nodeType');
+        $nodes = $nt->getDeclaredChildNodeDefinitions();
+        $this->assertEquals(2, count($nodes));
+        $node = $nodes[0];
+        $this->assertSame('nt:childNodeDefinition', $node->getDefaultPrimaryTypeName());
+        $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
         
     }
     
