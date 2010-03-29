@@ -3,7 +3,10 @@
  * A NodeType object represents a "live" node type that is registered in the repository.
  */
 class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeInterface {
-    protected $superTypes = array();
+    protected $declaredSupertypes = null;
+    protected $superTypeNames = array();
+    protected $superTypes = null;
+    
     
     /**
      * Initializes the NodeTypeDefinition from the given DOM
@@ -21,9 +24,11 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return array of PHPCR_NodeType_NodeType objects.
      */
     public function getSupertypes() {
-        if (empty($this->superTypes)) {
-            foreach ($this->superTypeNames as $superTypeName) {
-                array_push($this->superTypes, $this->nodeTypeManager->getNodeType($superTypeName));
+        if (null === $this->superTypes) {
+            $this->superTypes = array();
+            foreach ($this->getDeclaredSupertypes() as $superType) {
+                array_push($this->superTypes, $superType);
+                $this->superTypes = array_merge($this->superTypes, $superType->getSupertypes());
             }
         }
         return $this->superTypes;
@@ -39,7 +44,13 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return array of PHPCR_NodeType_NodeType objects.
      */
     public function getDeclaredSupertypes() {
-        throw new jackalope_NotImplementedException();
+        if (null === $this->declaredSupertypes) {
+            $this->declaredSupertypes = array();
+            foreach ($this->declaredSuperTypeNames as $declaredSuperTypeName) {
+                array_push($this->declaredSupertypes, $this->nodeTypeManager->getNodeType($declaredSuperTypeName));
+            }
+        }
+        return $this->declaredSupertypes;
     }
 
     /**

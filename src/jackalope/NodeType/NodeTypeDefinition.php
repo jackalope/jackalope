@@ -21,7 +21,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     protected $hasOrderableChildNodes;
     protected $primaryItemName;
     
-    protected $superTypeNames = array();
+    protected $declaredSuperTypeNames = array();
     
     protected $propertyDefinitions = array();
     protected $nodeDefinitions = array();
@@ -47,7 +47,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         $xp = new DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
-            array_push($this->superTypeNames, $supertype->nodeValue);
+            array_push($this->declaredSuperTypeNames, $supertype->nodeValue);
         }
         
         $properties = $xp->query('propertyDefinition', $node);
@@ -89,7 +89,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of Strings
      */
     public function getDeclaredSupertypeNames() {
-        return $this->superTypeNames;
+        return $this->declaredSuperTypeNames;
     }
 
     /**

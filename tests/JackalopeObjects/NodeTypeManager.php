@@ -19,8 +19,8 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
     public function testNodeTypeMethods() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
-        $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
-        // $this->assertSame(,$nt->getDeclaredSupertypes());
+        $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
+        $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         // $this->assertSame(,$nt->getSubtypes());
         // $this->assertSame(,$nt->getDeclaredSubtypes());
         // $this->assertSame(,$nt->isNodeType());
@@ -32,7 +32,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         // $this->assertSame(,$nt->canRemoveProperty());
         
         $nt = $ntm->getNodeType('mix:created');
-        $this->assertSame(array(), $nt->getSupertypes());
+        // $this->assertSame(array(), $nt->getSupertypes());
     }
     
     public function testGetDefinedChildNodesAndNodeDefinitions() {
