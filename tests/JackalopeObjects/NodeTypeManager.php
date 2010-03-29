@@ -29,7 +29,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(array('nt:hierarchyNode'), $node->getRequiredPrimaryTypeNames());
         $this->assertSame(null, $node->getDefaultPrimaryTypeName());
         $this->assertSame(null, $node->getDefaultPrimaryType());
-        // $this->assertSame('*', $node->allowsSameNameSiblings());
+        $this->assertSame(false, $node->allowsSameNameSiblings());
         
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
@@ -52,7 +52,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $node = $nodes[0];
         $this->assertSame('nt:childNodeDefinition', $node->getDefaultPrimaryTypeName());
         $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
-        
+        $this->assertSame(true, $node->allowsSameNameSiblings());
     }
     
     public function testGetDefinedPropertysAndPropertyDefinition() {

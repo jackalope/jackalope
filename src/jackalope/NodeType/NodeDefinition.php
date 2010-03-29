@@ -122,7 +122,7 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return boolean a boolean.
      */
     public function allowsSameNameSiblings() {
-        throw new jackalope_NotImplementedException();
+        return $this->allowsSameNameSiblings;
     }
     
 }
