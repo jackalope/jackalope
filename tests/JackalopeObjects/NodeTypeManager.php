@@ -23,7 +23,10 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         // $this->assertSame(,$nt->getSubtypes());
         // $this->assertSame(,$nt->getDeclaredSubtypes());
-        // $this->assertSame(,$nt->isNodeType());
+        $this->assertSame(true,$nt->isNodeType('nt:configuration'));
+        $this->assertSame(true,$nt->isNodeType('nt:base'));
+        $this->assertSame(true,$nt->isNodeType('mix:simpleVersionable'));
+        $this->assertSame(false,$nt->isNodeType('notanodetype'));
         // $this->assertSame(,$nt->getPropertyDefinitions());
         // $this->assertSame(,$nt->getChildNodeDefinitions());
         // $this->assertSame(,$nt->canSetProperty());

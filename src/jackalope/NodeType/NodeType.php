@@ -4,7 +4,7 @@
  */
 class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeInterface {
     protected $declaredSupertypes = null;
-    protected $superTypeNames = array();
+    protected $superTypeNames = null;
     protected $superTypes = null;
     
     
@@ -33,6 +33,21 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
         }
         return $this->superTypes;
     }
+    
+    /**
+     * Returns all names of the supertypes
+     *
+     * @return array of strings with names of the supertypes
+     */
+     protected function getSupertypeNames() {
+         if (null === $this->superTypeNames) {
+             $this->superTypeNames = array();
+             foreach ($this->getSupertypes() as $superType) {
+                 array_push($this->superTypeNames, $superType->getName());
+             }
+        }
+        return $this->superTypeNames;
+     }
 
     /**
      * Returns the direct supertypes of this node type in the node type
@@ -86,7 +101,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return boolean
      */
     public function isNodeType($nodeTypeName) {
-        throw new jackalope_NotImplementedException();
+        return $this->getName() == $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
     }
 
     /**
