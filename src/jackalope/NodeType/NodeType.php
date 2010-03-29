@@ -122,7 +122,13 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return array an array of PHPCR_NodeType_PropertyDefinition containing the property definitions.
      */
     public function getPropertyDefinitions() {
-        throw new jackalope_NotImplementedException();
+        if (null === $this->propertyDefinitions) {
+            $this->propertyDefinitions = $this->getDeclaredPropertyDefinitions();
+            foreach ($this->getSupertypes() as $nodeType) {
+                $this->propertyDefinitions = array_merge($this->propertyDefinitions, $nodeType->getDeclaredPropertyDefinitions());
+            }
+        }
+        return $this->propertyDefinitions;
     }
 
     /**
@@ -133,7 +139,13 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return array an array of PHPCR_NodeType_NodeDefinition containing the child node definitions.
      */
     public function getChildNodeDefinitions() {
-        throw new jackalope_NotImplementedException();
+        if (null === $this->childNodeDefinitions) {
+            $this->childNodeDefinitions = $this->getDeclaredChildNodeDefinitions();
+            foreach ($this->getSupertypes() as $nodeType) {
+                $this->childNodeDefinitions = array_merge($this->childNodeDefinitions, $nodeType->getDeclaredChildNodeDefinitions());
+            }
+        }
+        return $this->childNodeDefinitions;
     }
 
     /**

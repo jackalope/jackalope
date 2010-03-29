@@ -36,13 +36,15 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(true,$nt->isNodeType('nt:base'));
         $this->assertSame(true,$nt->isNodeType('mix:simpleVersionable'));
         $this->assertSame(false,$nt->isNodeType('notanodetype'));
-        
-        // $this->assertSame(,$nt->getPropertyDefinitions());
-        // $this->assertSame(,$nt->getChildNodeDefinitions());
-        // $this->assertSame(,$nt->canSetProperty());
-        // $this->assertSame(,$nt->canAddChildNode());
-        // $this->assertSame(,$nt->canRemoveNode());
-        // $this->assertSame(,$nt->canRemoveProperty());
+        $expectedProperties = array('jcr:root', 'jcr:predecessors', 'jcr:configuration', 'jcr:activity', 'jcr:mergeFailed', 'jcr:versionHistory', 'jcr:baseVersion', 'jcr:uuid', 'jcr:isCheckedOut', 'jcr:mixinTypes', 'jcr:primaryType');
+        $this->assertSame(count($expectedProperties), count($nt->getPropertyDefinitions()));
+        $i = 0;
+        foreach ($nt->getPropertyDefinitions() as $propDef) {
+            $this->assertType('jackalope_NodeType_PropertyDefinition', $propDef);
+            $this->assertSame($expectedProperties[$i], $propDef->getName());
+            $i++;
+        }
+        $this->assertSame(array(),$nt->getChildNodeDefinitions());
         
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
@@ -58,6 +60,16 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $subnode = $subTypes->nextNodeType();
         $this->assertType('jackalope_NodeType_NodeType', $subnode);
         $this->assertSame('rep:Group', $subnode->getName());
+        
+        $nt = $ntm->getNodeType('rep:PrincipalAccessControl');
+        $expectedChildNodes = array('rep:policy', '*', '*');
+        $this->assertSame(count($expectedChildNodes), count($nt->getChildNodeDefinitions()));
+        $i = 0;
+        foreach ($nt->getChildNodeDefinitions() as $childNode) {
+            $this->assertType('jackalope_NodeType_NodeDefinition', $childNode);
+            $this->assertSame($expectedChildNodes[$i], $childNode->getName());
+            $i++;
+        }
     }
     
     public function testGetDefinedChildNodesAndNodeDefinitions() {
