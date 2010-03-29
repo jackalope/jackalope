@@ -3,6 +3,7 @@
  * A NodeType object represents a "live" node type that is registered in the repository.
  */
 class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeInterface {
+    protected $superTypes = array();
     
     /**
      * Initializes the NodeTypeDefinition from the given DOM
@@ -18,10 +19,14 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * include at least nt:base. For mixin types, there is no required supertype.
      *
      * @return array of PHPCR_NodeType_NodeType objects.
-     * @api
      */
     public function getSupertypes() {
-        throw new jackalope_NotImplementedException();
+        if (empty($this->superTypes)) {
+            foreach ($this->superTypeNames as $superTypeName) {
+                array_push($this->superTypes, $this->nodeTypeManager->getNodeType($superTypeName));
+            }
+        }
+        return $this->superTypes;
     }
 
     /**
@@ -32,7 +37,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * types this array may be of size greater than 1.
      *
      * @return array of PHPCR_NodeType_NodeType objects.
-     * @api
      */
     public function getDeclaredSupertypes() {
         throw new jackalope_NotImplementedException();
@@ -45,7 +49,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @see getDeclaredSubtypes()
      *
      * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
-     * @api
      */
     public function getSubtypes() {
         throw new jackalope_NotImplementedException();
@@ -59,7 +62,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @see getSubtypes()
      *
      * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
-     * @api
      */
     public function getDeclaredSubtypes() {
         throw new jackalope_NotImplementedException();
@@ -71,7 +73,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      *
      * @param string $nodeTypeName the name of a node type.
      * @return boolean
-     * @api
      */
     public function isNodeType($nodeTypeName) {
         throw new jackalope_NotImplementedException();
@@ -83,7 +84,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * in this node type and those inherited from the supertypes of this type.
      *
      * @return array an array of PHPCR_NodeType_PropertyDefinition containing the property definitions.
-     * @api
      */
     public function getPropertyDefinitions() {
         throw new jackalope_NotImplementedException();
@@ -95,7 +95,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * node type and those inherited from the supertypes of this node type.
      *
      * @return array an array of PHPCR_NodeType_NodeDefinition containing the child node definitions.
-     * @api
      */
     public function getChildNodeDefinitions() {
         throw new jackalope_NotImplementedException();
@@ -108,7 +107,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @param string $propertyName The name of the property
      * @param PHPCR_ValueInterface|array $value A PHPCR_ValueInterface object or an array of PHPCR_ValueInterface objects.
      * @return boolean
-     * @api
      */
     public function canSetProperty($propertyName, $value) {
         throw new jackalope_NotImplementedException();
@@ -126,7 +124,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @param string $childNodeName The name of the child node.
      * @param string $nodeTypeName The name of the node type of the child node.
      * @return boolean
-     * @api
      */
     public function canAddChildNode($childNodeName, $nodeTypeName = NULL) {
         throw new jackalope_NotImplementedException();
@@ -138,7 +135,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      *
      * @param string $nodeName The name of the child node
      * @return boolean
-     * @api
      */
     public function canRemoveNode($nodeName) {
         throw new jackalope_NotImplementedException();
@@ -150,7 +146,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      *
      * @param string $propertyName The name of the property
      * @return boolean
-     * @api
      */
     public function canRemoveProperty($propertyName) {
         throw new jackalope_NotImplementedException();

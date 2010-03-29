@@ -16,6 +16,25 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
     }
     
+    public function testNodeTypeMethods() {
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:configuration');
+        $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
+        // $this->assertSame(,$nt->getDeclaredSupertypes());
+        // $this->assertSame(,$nt->getSubtypes());
+        // $this->assertSame(,$nt->getDeclaredSubtypes());
+        // $this->assertSame(,$nt->isNodeType());
+        // $this->assertSame(,$nt->getPropertyDefinitions());
+        // $this->assertSame(,$nt->getChildNodeDefinitions());
+        // $this->assertSame(,$nt->canSetProperty());
+        // $this->assertSame(,$nt->canAddChildNode());
+        // $this->assertSame(,$nt->canRemoveNode());
+        // $this->assertSame(,$nt->canRemoveProperty());
+        
+        $nt = $ntm->getNodeType('mix:created');
+        $this->assertSame(array(), $nt->getSupertypes());
+    }
+    
     public function testGetDefinedChildNodesAndNodeDefinitions() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
