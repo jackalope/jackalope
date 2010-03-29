@@ -18,6 +18,8 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(array(), $ntm->getSubtypes('nt:file'));
         $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'), $ntm->getDeclaredSubtypes('nt:hierarchyNode'));
         $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), $ntm->getSubtypes('nt:hierarchyNode'));
+        $this->assertTrue($ntm->hasNodeType('nt:folder'));
+        $this->assertFalse($ntm->hasNodeType('nonode'));
         
     }
     

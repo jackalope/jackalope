@@ -110,7 +110,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function hasNodeType($name) {
-        throw new jackalope_NotImplementedException();
+        return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
     /**
