@@ -23,7 +23,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
         $xp = new DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
-            $nodetype = jackalope_Factory::get('NodeType_NodeType', array($nodetype));
+            $nodetype = jackalope_Factory::get('NodeType_NodeType', array($nodetype, $this));
             if ($nodetype->isMixin()) {
                 $this->mixinTypes[$nodetype->getName()] = $nodetype;
             } else {

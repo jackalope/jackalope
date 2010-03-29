@@ -1,6 +1,7 @@
 <?php
 
 class jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_ItemDefinitionInterface {
+    protected $nodeTypeManager;
     
     protected $declaringNodeType;
     protected $name;
@@ -9,8 +10,9 @@ class jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_ItemDefinition
     protected $isProtected;
     protected $onParentVersion;
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeType $parent) {
-        $this->declaringNodeType = $parent;
+    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+        $this->nodeTypeManager = $nodeTypeManager;
+        $this->declaringNodeType = $node->getAttribute('declaringNodeType');
         $this->name = $node->getAttribute('name');
         $this->isAutoCreated = jackalope_Helper::getBoolAttribute($node, 'isAutoCreated');
         $this->isMandatory = jackalope_Helper::getBoolAttribute($node, 'mandatory');
@@ -29,7 +31,7 @@ class jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_ItemDefinition
      */
      
     public function getDeclaringNodeType() {
-        return $this->declaringNodeType;
+        return $this->nodeTypeManager->getNodeType($this->declaringNodeType);
     }
 
     /**

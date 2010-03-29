@@ -12,6 +12,8 @@
  * be encountered.
  */
 class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDefinitionInterface {
+    protected $nodeTypeManager;
+    
     protected $name;
     protected $isAbstract;
     protected $isMixin;
@@ -22,13 +24,15 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     protected $superTypeNames = array();
     
     protected $propertyDefinitions = array();
-    protected $nodeDefinitions;
+    protected $nodeDefinitions = array();
     
     /**
      * Initializes the NodeTypeDefinition from the given DOM
      * @param DOMElement NodeTypeElement
      */
-    public function __construct(DOMElement $node) {
+    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+        $this->nodeTypeManager = $nodeTypeManager;
+        
         $this->name = $node->getAttribute('name');
         $this->isAbstract = jackalope_Helper::getBoolAttribute($node, 'isAbstract');
         $this->isMixin = jackalope_Helper::getBoolAttribute($node, 'isMixin');
@@ -50,7 +54,15 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         foreach ($properties as $property) {
             array_push($this->propertyDefinitions, jackalope_Factory::get(
                 'NodeType_PropertyDefinition',
-                array($property, $this)
+                array($property, $nodeTypeManager)
+            ));
+        }
+        
+        $nodeDefinitions = $xp->query('childNodeDefinition', $node);
+        foreach ($nodeDefinitions as $nodeDefinition) {
+            array_push($this->nodeDefinitions, jackalope_Factory::get(
+                'NodeType_NodeDefinition',
+                array($nodeDefinition, $this->nodeTypeManager)
             ));
         }
     }
@@ -180,7 +192,6 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * @return array an array of NodeDefinitions
      */
     public function getDeclaredChildNodeDefinitions() {
-        throw new jackalope_NotImplementedException();
         return $this->nodeDefinitions;
     }
 }

@@ -16,13 +16,36 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
     }
     
+    public function testGetDefinedChildNodesAndNodeDefinitions() {
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:folder');
+        $nodes = $nt->getDeclaredChildNodeDefinitions();
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertEquals(1, count($nodes));
+        $node = $nodes[0];
+        $this->assertType('jackalope_NodeType_NodeDefinition', $node);
+        $this->assertSame('*', $node->getName());
+        // $this->assertSame('*', $node->getRequiredPrimaryTypes());
+        // $this->assertSame('*', $node->getRequiredPrimaryTypeNames());
+        // $this->assertSame('*', $node->getDefaultPrimaryType());
+        // $this->assertSame('*', $node->getDefaultPrimaryTypeName());
+        // $this->assertSame('*', $node->allowsSameNameSiblings());
+        
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:file');
+        $nodes = $nt->getDeclaredChildNodeDefinitions();
+        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertEquals(1, count($nodes));
+        $node = $nodes[0];
+        $this->assertType('jackalope_NodeType_NodeDefinition', $node);
+        $this->assertSame('jcr:content', $node->getName());    }
+    
     public function testGetDefinedPropertysAndPropertyDefinition() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
         $this->assertEquals(0, count($properties));
-        // $this->assertSame('nt:folder', $nt->getDeclaredChildNodeDefinitions());
         
         $nt = $ntm->getNodeType('mix:created');
         $this->assertType('jackalope_NodeType_NodeType', $nt);

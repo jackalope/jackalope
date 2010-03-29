@@ -8,8 +8,8 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * Initializes the NodeTypeDefinition from the given DOM
      * @param DOMElement NodeTypeElement
      */
-    public function __construct(DOMElement $node) {
-        parent::__construct($node);
+    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+        parent::__construct($node, $nodeTypeManager);
     }
     
     /**

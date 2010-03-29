@@ -9,8 +9,8 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeType $parent) {
-        parent::__construct($node, $parent);
+    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+        parent::__construct($node, $nodeTypeManager);
         $this->requiredType = PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = jackalope_Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = jackalope_Helper::getBoolAttribute($node, 'fullTextSearchable');
