@@ -590,6 +590,7 @@
         <childNodeDefinition autoCreated="false" declaringNodeType="nt:file" mandatory="true" name="jcr:content" onParentVersion="COPY" protected="false" sameNameSiblings="false">
             <requiredPrimaryTypes>
                 <requiredPrimaryType>nt:base</requiredPrimaryType>
+                <requiredPrimaryType>nt:folder</requiredPrimaryType>
             </requiredPrimaryTypes>
         </childNodeDefinition>
     </nodeType>

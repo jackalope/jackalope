@@ -16,16 +16,15 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
         $this->allowsSameNameSiblings = jackalope_Helper::getBoolAttribute($node, 'sameNameSiblings');
         
         $xp = new DOMXpath($node->ownerDocument);
-        $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType');
-        foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
-            array_push($this->requiredPrimaryTypeNames, $requiredPrimaryType->nodeValue);
-            array_push($this->requiredPrimaryTypes, $this->nodeTypeManager->getNodeType($requiredPrimaryType->nodeValue));
+        $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
+        if (0 < $requiredPrimaryTypes->length) {
+            foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
+                array_push($this->requiredPrimaryTypeNames, $requiredPrimaryType->nodeValue);
+            }
+        } else {
+            array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
         }
         
-        if (empty($this->requiredPrimaryTypeNames)) {
-            array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
-            array_push($this->requiredPrimaryTypes, $this->nodeTypeManager->getNodeType(self::DEFAULT_PRIMARY_NODE));
-        }
     }
     
     /**
@@ -47,7 +46,12 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return PHPCR_NodeType_NodeTypeInterface an array of NodeType objects.
      */
     public function getRequiredPrimaryTypes() {
-        throw new jackalope_NotImplementedException();
+        if (empty($this->requiredPrimaryTypes)) {
+            foreach ($this->requiredPrimaryTypeNames as $primaryTypeName) {
+                array_push($this->requiredPrimaryTypes, $this->nodeTypeManager->getNodeType($primaryTypeName));
+            }
+        }
+        return $this->requiredPrimaryTypes;
     }
 
     /**
@@ -63,7 +67,7 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return array a String array
      */
     public function getRequiredPrimaryTypeNames() {
-        throw new jackalope_NotImplementedException();
+        return $this->requiredPrimaryTypeNames;
     }
 
     /**
