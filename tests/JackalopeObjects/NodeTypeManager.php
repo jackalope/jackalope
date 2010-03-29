@@ -20,7 +20,18 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), $ntm->getSubtypes('nt:hierarchyNode'));
         $this->assertTrue($ntm->hasNodeType('nt:folder'));
         $this->assertFalse($ntm->hasNodeType('nonode'));
-        
+        $allNodes = $ntm->getAllNodeTypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $allNodes);
+        $this->assertEquals(52, $allNodes->getSize());
+        $this->assertType('jackalope_NodeType_NodeType', $allNodes->nextNodeType());
+        $primaryNodes = $ntm->getPrimaryNodeTypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $primaryNodes);
+        $this->assertEquals(36, $primaryNodes->getSize());
+        $this->assertType('jackalope_NodeType_NodeType', $primaryNodes->nextNodeType());
+        $mixinNodes = $ntm->getMixinNodeTypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $mixinNodes);
+        $this->assertEquals(16, $mixinNodes->getSize());
+        $this->assertType('jackalope_NodeType_NodeType', $mixinNodes->nextNodeType());
     }
     
     public function testNodeTypeMethods() {

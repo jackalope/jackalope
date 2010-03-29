@@ -120,7 +120,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getAllNodeTypes() {
-        throw new jackalope_NotImplementedException();
+        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
     }
 
     /**
@@ -130,7 +130,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
-        throw new jackalope_NotImplementedException();
+        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values($this->primaryTypes)));
     }
 
     /**
@@ -141,7 +141,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
-        throw new jackalope_NotImplementedException();
+        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values($this->mixinTypes)));
     }
 
     /**
