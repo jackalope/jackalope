@@ -14,6 +14,11 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(false, $nt->hasOrderableChildNodes());
         $this->assertSame(true, $nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
+        $this->assertSame(array(), $ntm->getDeclaredSubtypes('nt:file'));
+        $this->assertSame(array(), $ntm->getSubtypes('nt:file'));
+        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'), $ntm->getDeclaredSubtypes('nt:hierarchyNode'));
+        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), $ntm->getSubtypes('nt:hierarchyNode'));
+        
     }
     
     public function testNodeTypeMethods() {
@@ -21,12 +26,17 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $nt = $ntm->getNodeType('nt:configuration');
         $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
-        // $this->assertSame(,$nt->getSubtypes());
-        // $this->assertSame(,$nt->getDeclaredSubtypes());
+        $declaredSubTypes = $nt->getDeclaredSubtypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $declaredSubTypes);
+        $this->assertSame(0, $declaredSubTypes->getSize());
+        $subTypes = $nt->getSubtypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $subTypes);
+        $this->assertSame(0, $subTypes->getSize());
         $this->assertSame(true,$nt->isNodeType('nt:configuration'));
         $this->assertSame(true,$nt->isNodeType('nt:base'));
         $this->assertSame(true,$nt->isNodeType('mix:simpleVersionable'));
         $this->assertSame(false,$nt->isNodeType('notanodetype'));
+        
         // $this->assertSame(,$nt->getPropertyDefinitions());
         // $this->assertSame(,$nt->getChildNodeDefinitions());
         // $this->assertSame(,$nt->canSetProperty());
@@ -34,8 +44,20 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         // $this->assertSame(,$nt->canRemoveNode());
         // $this->assertSame(,$nt->canRemoveProperty());
         
-        $nt = $ntm->getNodeType('mix:created');
-        // $this->assertSame(array(), $nt->getSupertypes());
+        $nt = $ntm->getNodeType('nt:hierarchyNode');
+        $declaredSubTypes = $nt->getDeclaredSubtypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $declaredSubTypes);
+        $this->assertSame(5, $declaredSubTypes->getSize());
+        $subnode = $declaredSubTypes->nextNodeType();
+        $this->assertType('jackalope_NodeType_NodeType', $subnode);
+        $this->assertSame('nt:file', $subnode->getName());
+        $subTypes = $nt->getSubtypes();
+        $this->assertType('jackalope_NodeType_NodeTypeIterator', $subTypes);
+        $this->assertSame(7, $subTypes->getSize());
+        $subTypes->skip(4);
+        $subnode = $subTypes->nextNodeType();
+        $this->assertType('jackalope_NodeType_NodeType', $subnode);
+        $this->assertSame('rep:Group', $subnode->getName());
     }
     
     public function testGetDefinedChildNodesAndNodeDefinitions() {

@@ -7,6 +7,8 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
     protected $superTypeNames = null;
     protected $superTypes = null;
     
+    protected $propertyDefinitions = null;
+    protected $childNodeDefinitions = null;
     
     /**
      * Initializes the NodeTypeDefinition from the given DOM
@@ -77,7 +79,11 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
      */
     public function getSubtypes() {
-        throw new jackalope_NotImplementedException();
+        $ret = array();
+        foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
+            array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
+        }
+        return jackalope_Factory::get('NodeType_NodeTypeIterator', array($ret));
     }
 
     /**
@@ -90,7 +96,11 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
      */
     public function getDeclaredSubtypes() {
-        throw new jackalope_NotImplementedException();
+        $ret = array();
+        foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
+            array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
+        }
+        return jackalope_Factory::get('NodeType_NodeTypeIterator', array($ret));
     }
 
     /**

@@ -10,6 +10,8 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
     protected $primaryTypes;
     protected $mixinTypes;
     
+    protected $nodeTree = array();
+    
     public function __construct(jackalope_ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
@@ -26,8 +28,53 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
             $nodetype = jackalope_Factory::get('NodeType_NodeType', array($nodetype, $this));
             if ($nodetype->isMixin()) {
                 $this->mixinTypes[$nodetype->getName()] = $nodetype;
+                $this->addToNodeTree($nodetype);
             } else {
                 $this->primaryTypes[$nodetype->getName()] = $nodetype;
+                $this->addToNodeTree($nodetype);
+            }
+        }
+    }
+    
+    /**
+     * Returns the declared subnodes of a given nodename
+     * @param string Nodename
+     * @return array of strings with the names of the subnodes
+     */
+    public function getDeclaredSubtypes($nodeTypeName) {
+        if (empty($this->nodeTree[$nodeTypeName])) {
+            return array();
+        }
+        return $this->nodeTree[$nodeTypeName];
+    }
+    
+    /**
+     * Returns the subnode hirarchie of a given nodename
+     * @param string Nodename
+     * @return array of strings with the names of the subnodes
+     */
+    public function getSubtypes($nodeTypeName) {
+        $ret = array();
+        if (empty($this->nodeTree[$nodeTypeName])) {
+            return array();
+        }
+        
+        foreach ($this->nodeTree[$nodeTypeName] as $subnode) {
+            $ret = array_merge($ret, array($subnode), $this->getDeclaredSubtypes($subnode));
+        }
+        return $ret;
+    }
+    
+    /**
+     * Adds a node to the tree to get the subnodes later on
+     * @param jackalope_NodeType_NodeType the nodetype to add
+     */
+    protected function addToNodeTree($nodetype) {
+        foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
+            if (isset($this->nodeTree[$declaredSupertypeName])) {
+                $this->nodeTree[$declaredSupertypeName] = array_merge($this->nodeTree[$declaredSupertypeName], array($nodetype->getName()));
+            } else {
+                $this->nodeTree[$declaredSupertypeName] = array($nodetype->getName());
             }
         }
     }
