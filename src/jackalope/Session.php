@@ -23,8 +23,8 @@ class jackalope_Session implements PHPCR_SessionInterface {
     /** creates the corresponding workspace */
     public function __construct(jackalope_Repository $repository, $workspaceName, PHPCR_SimpleCredentials $credentials, jackalope_TransportInterface $transport) {
         $this->repository = $repository;
-        $this->workspace = jackalope_Factory::get('Workspace', array($this, $workspaceName));
         $this->objectManager = jackalope_Factory::get('ObjectManager', array($transport, $this));
+        $this->workspace = jackalope_Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
     }
     /**

@@ -9,10 +9,12 @@
  */
 class jackalope_Workspace implements PHPCR_WorkspaceInterface {
     protected $session;
+    protected $nodeTypeManager;
     protected $name;
 
-    public function __construct(jackalope_Session $session, $name) {
+    public function __construct(jackalope_Session $session, jackalope_ObjectManager $objectManager, $name) {
         $this->session = $session;
+        $this->nodeTypeManager = jackalope_Factory::get('NodeType_NodeTypeManager', array($objectManager));
         $this->name = $name;
     }
 
@@ -109,7 +111,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getNodeTypeManager() {
-        throw new jackalope_NotImplementedException(); //TODO
+        return $this->nodeTypeManager;
     }
 
     /**
