@@ -2,7 +2,7 @@
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
+class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
     protected $transport;
 
     protected $defaultNamespaces = array(

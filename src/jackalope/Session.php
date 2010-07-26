@@ -529,4 +529,16 @@ class jackalope_Session implements PHPCR_SessionInterface {
         throw new PHPCR_UnsupportedRepositoryOperationException();
     }
 
+    /**
+     * Implementation specific: The object manager is also used by other components, i.e. the QueryManager
+     */
+    public function getObjectManager() {
+        return $this->objectManager;
+    }
+    /**
+     * Implementation specific: The transport implementation is also used by other components, i.e. the NamespaceRegistry
+     */
+    public function getTransport() {
+        return $this->objectManager->getTransport();
+    }
 }

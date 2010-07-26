@@ -79,7 +79,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getQueryManager() {
-        return jackalope_Factory::get('Query_QueryManager');
+        return jackalope_Factory::get('Query_QueryManager', array($this->session->getObjectManager()));
     }
 
     /**
@@ -92,7 +92,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      */
     public function getNamespaceRegistry() {
         if ($this->namespaceRegistry == false) {
-            $this->namespaceRegistry = jackalope_Factory::get('NamespaceRegistry', array($this->transport));
+            $this->namespaceRegistry = jackalope_Factory::get('NamespaceRegistry', array($this->session->getTransport()));
         }
         return $this->namespaceRegistry;
     }

@@ -12,7 +12,7 @@ class jackalope_ObjectManager {
         $this->transport = $transport;
         $this->session = $session;
     }
-    
+
     /**
      * Get the node identified by an absolute path.
      * Uses the factory to instantiate Node
@@ -35,7 +35,7 @@ class jackalope_ObjectManager {
         }
         return $this->objectsByPath[$path];
     }
-    
+
     /**
      * Get the node idenfied by an uuid or path or root path and relative
      * path. If you have an absolute path use getNodeByPath.
@@ -53,7 +53,7 @@ class jackalope_ObjectManager {
             return $this->getNodeByPath($path);
         }
     }
-    
+
     /**
      * This is only a proxy to the transport it returns all node types if none
      * is given or only the ones given as array.
@@ -63,7 +63,7 @@ class jackalope_ObjectManager {
     public function getNodeTypes($nodeTypes = array()) {
         return $this->transport->getNodeTypes($nodeTypes);
     }
-    
+
     /**
      * Get a single nodetype @see getNodeTypes
      * @param string the nodetype you want
@@ -72,7 +72,7 @@ class jackalope_ObjectManager {
     public function getNodeType($nodeType) {
         return $this->getNodeTypes(array($nodeType));
     }
-    
+
     /**
      * Creates an absolute path from a root and an relative path
      * @param string Root path to append the relative
@@ -97,7 +97,7 @@ class jackalope_ObjectManager {
         }
         return $this->normalizePath(implode('/', $finalPath));
     }
-    
+
     /**
      * Replaces unwanted characters and ads leading / trailing slashes
      * @param string the path to normalize
@@ -107,7 +107,7 @@ class jackalope_ObjectManager {
         $path = '/' . $path . '/';
         return str_replace('//', '/', $path);
     }
-    
+
     /**
      * Checks if the string could be a uuid
      * @param string possible uuid
@@ -120,5 +120,10 @@ class jackalope_ObjectManager {
         } else {
             return false;
         }
+    }
+
+    /** Implementation specific: Transport is used elsewhere, provide it here for Session */
+    public function getTransport() {
+        return $this->transport;
     }
 }
