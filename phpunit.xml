@@ -1,3 +1,4 @@
+<!-- unit level tests for jackalope. please see api-tests for api conformity tests -->
 <phpunit>
     <php>
         <var name="jcr.url" value="http://localhost:8080/server" />
