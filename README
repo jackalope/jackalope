@@ -1,7 +1,9 @@
 *********
 Jackalope
 *********
-Implementation of a PHP client for the Jackrabbit server, an implementation of the Java Content Repository JCR.
+Implementation of a PHP client for the Jackrabbit server, an implementation of
+the Java Content Repository JCR.
+
 Implements the phpCR interface.
 
 http://liip.to/jackalope
@@ -15,5 +17,40 @@ chregu at liip.ch
 Setup
 *****
 
-This is only the frontend. In order to actually do something, you need the Jackrabbit server.
-Please download Jackrabbit here: http://jackrabbit.apache.org
+This is only the frontend. In order to actually do something, you need the
+Jackrabbit server. Please download Jackrabbit here: http://jackrabbit.apache.org
+You need the jackrabbit-standalone-2.x.jar
+
+Once you have the jar, start it with
+$ java -jar jackrabbit*.jar
+
+Now you are ready to use the library. Have a look at api-tests/bootstrap.php
+too see how to instantiate a repository.
+
+
+*****
+Tests
+*****
+
+There are two kind of tests. The folder *api-tests* contains the
+jackalope-api-tests suite to test against the specification.
+This is what you want to look at when using jackalope as a phpCR implementation.
+In order to run the tests, make sure you have jackrabbit running and added the
+test workspace (see below).
+
+The folder *tests* contains unit tests for the jackalope implementation.
+You should only need those if you want to debug jackalope itselves or implement
+new features. Again, make sure you have the test workspace in jackrabbit.
+
+Setting up Jackrabbit
+*********************
+- Create tests workspace which is different from your default workspace.
+See http://jackrabbit.apache.org/jackrabbit-configuration.html#JackrabbitConfiguration-Workspaceconfiguration
+Or:
+- Go to the directory you started jackrabbit-standalone (eg. /opt/svn/jackrabbit/jackrabbit-standalone/target)
+- cd jackrabbit
+- cd workspaces
+- cp -r default tests
+- cd tests
+- change <Workspace name="default"> to <Workspace name="tests">
+- start jackrabbit again
