@@ -25,7 +25,7 @@ Once you have the jar, start it with
 $ java -jar jackrabbit*.jar
 
 Download the test workspace on the Liip wiki : 
-https://fosswiki.liip.ch/download/attachments/11501816/test_workspace.tar.bz2
+http://fosswiki.liip.ch/download/attachments/11501816/test_workspace.tar.bz2
 Unpack and copy the tests directory into your jackrabbit/workspaces/ directory
 
 Clone the jackalope project 
@@ -50,6 +50,8 @@ Run phpunit from the api-tests directory. You should have a lot of failed tests,
 but no exception. If you have something like this, it works (yeah, FAILURES are ok):
 FAILURES!
 Tests: 224, Assertions: 99, Failures: 8, Errors: 183, Incomplete: 6, Skipped: 10.
+
+* Currently doesn't work with PHPUnit 3.5, use PHPUnit 3.4 (the latest stable release)
 
 
 There are two kind of tests. The folder *api-tests* contains the
