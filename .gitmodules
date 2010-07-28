@@ -1,3 +1,0 @@
-[submodule "api-test/suite"]
-	path = api-test/suite
-	url = git@github.com:jackalope/jackalope-api-tests.git
