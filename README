@@ -24,8 +24,8 @@ You need the jackrabbit-standalone-2.x.jar
 Once you have the jar, start it with
 $ java -jar jackrabbit*.jar
 
-
-Download the test workspace on the Liip wiki : https://fosswiki.liip.ch/download/attachments/11501816/test_workspace.tar.bz2
+Download the test workspace on the Liip wiki : 
+https://fosswiki.liip.ch/download/attachments/11501816/test_workspace.tar.bz2
 Unpack and copy the tests directory into your jackrabbit/workspaces/ directory
 
 Clone the jackalope project 
@@ -46,7 +46,8 @@ Tests
 *****
 
 
-Run phpunit from the api-tests directory. You should have a lot of failed tests (hey, it’s always a wip), but no exception. If you have something like this, it works (yeah, FAILURES are ok ;) ):
+Run phpunit from the api-tests directory. You should have a lot of failed tests,
+but no exception. If you have something like this, it works (yeah, FAILURES are ok):
 FAILURES!
 Tests: 224, Assertions: 99, Failures: 8, Errors: 183, Incomplete: 6, Skipped: 10.
 
