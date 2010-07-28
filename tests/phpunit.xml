@@ -11,11 +11,11 @@
     <testsuites>
       <testsuite name="Jackalope Objects">
         <directory>.</directory>
-        <file>tests/JackalopeObjects.php</file>
+        <file>JackalopeObjects.php</file>
       </testsuite>
       <testsuite name="Implementation Helpers">
         <directory>.</directory>
-        <file>tests/ImplementationHelpers.php</file>
+        <file>ImplementationHelpers.php</file>
       </testsuite>
     </testsuites>
 </phpunit>
