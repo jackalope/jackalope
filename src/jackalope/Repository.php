@@ -47,8 +47,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     * @api
     */
     public function login($credentials = NULL, $workspaceName = NULL) {
-        if ($workspaceName == null) throw new jackalope_NotImplementedException('what should the default workspace be?');
-
+        if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new PHPCR_RepositoryException('transport failed to login without telling why');
         }

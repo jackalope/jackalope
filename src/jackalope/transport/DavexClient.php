@@ -1,19 +1,34 @@
 <?php
 
 /**
- * Connection to one server.
- * Once the login method has been called, the workspace is set and can not be changed anymore.
+ * Connection to one Jackrabbit server.
+ * Once the login method has been called, the workspace is set and can not be
+ * changed anymore.
  */
 class jackalope_transport_DavexClient implements jackalope_TransportInterface {
+    /** server url including protocol.
+     * i.e http://localhost:8080/server/
+     * constructor ensures the trailing slash /
+     */
     protected $server;
+    /** workspace name the transport is bound to */
     protected $workspace;
-    /** for convenience: "$server/$workspace" */
+    /** "$server/$workspace" without trailing slash */
     protected $workspaceUri;
+    /**
+     * root node path with server domain without trailing slash
+     * "$server/$workspace/jcr%3aroot
+     * (make sure you never hardcode the jcr%3aroot, its ugly)
+     * TODO: apparently, jackrabbit handles the root node by name - it is invisible everywhere for the api, but needed when talking to the backend... could that name change?
+     */
+    protected $workspaceUriRoot;
+
     protected $credentials = false;
 
     const USER_AGENT = 'jackalope-php/1.0';
     const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
-    const REGISTERED_NAMESPACES = '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
+    const NS_DAV = 'DAV:';
+    const REGISTERED_NAMESPACES = '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>'; //TODO: unused
 
     const GET = 'GET';
     const REPORT = 'REPORT';
@@ -23,6 +38,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      *  @param serverUri location of the server
      */
     public function __construct($serverUri) {
+        if ('/' !== substr($serverUri, -1, 1)) {
+            $serverUri .= '/';
+        }
         $this->server = $serverUri;
     }
 
@@ -48,10 +66,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
         $this->credentials = $credentials;
         $this->workspace = $workspaceName;
-        if ('/' !== substr($this->server, -1, 1)) {
-            $this->server .= '/';
-        }
         $this->workspaceUri = $this->server . $workspaceName;
+        $this->workspaceUriRoot = $this->workspaceUri . "/jcr%3aroot";
         $dom = $this->getDomFromBackend(self::PROPFIND,
                                         $this->workspaceUri,
                                         self::buildPropfindRequest(array('D:workspace', 'dcr:workspaceName')));
@@ -101,7 +117,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
     /**
      * Get the item from an absolute path
+     * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
      * @param path absolute path to item
+     * @return array for the node (decoded from json)
      */
     public function getItem($path) {
         if ('/' != substr($path, 0, 1)) {
@@ -111,11 +129,39 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if (empty($this->workspaceUri)) {
             throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
-        $path = $this->workspaceUri . $path;
-        if ('/' !== substr($path, -1, 1)) {
-            $path .= '/';
+
+        return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
+    }
+    /**
+     * Get the node path from a JCR uuid
+     * @param uuid the id in JCR format
+     * @return string path to the node
+     * @throws PHPCR_ItemNotFoundException if the backend does not know the uuid
+     */
+    public function getNodePathForIdentifier($uuid) {
+        if (empty($this->workspaceUri)) {
+            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
-        return $this->getJsonFromBackend(self::GET, $path . '.0.json');
+
+        $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
+                                        self::buildLocateRequest($uuid));
+        /* answer looks like
+           <D:multistatus xmlns:D="DAV:">
+             <D:response>
+                 <D:href>http://localhost:8080/server/tests/jcr%3aroot/tests_level1_access_base/idExample/</D:href>
+             </D:response>
+         </D:multistatus>
+        */
+        $set = $dom->getElementsByTagNameNS(self::NS_DAV, 'href');
+        if ($set->length != 1) {
+            throw new PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
+        }
+        $fullPath = $set->item(0)->textContent;
+        if (strncmp($this->workspaceUriRoot, $fullPath, strlen($this->workspaceUri))) {
+            throw new PHPCR_RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
+        }
+        return substr(substr($fullPath, 0, -1), //cut trailing slash /
+                      strlen($this->workspaceUriRoot)); //remove uri, workspace and root node
     }
 
     /**
@@ -126,6 +172,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if (empty($this->workspaceUri)) {
             throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
+
         $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
                                         self::buildReportRequest('dcr:registerednamespaces'));
         if ($dom->firstChild->localName != 'registerednamespaces-report' ||
@@ -139,7 +186,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $mappings;
     }
-    
+
     /**
      * Returns node types
      * @param array nodetypes to request
@@ -158,7 +205,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $dom;
     }
-    
+
     /**
      * Returns the XML required to request nodetypes
      * @param array the nodetypes you want to request
@@ -174,10 +221,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             }
         }
         $xmlStr .='</jcr:nodetypes>';
-        
+
         return $xmlStr;
     }
-    
+
     /**
      * Build PROPFIND request XML for the specified property names
      *
@@ -202,6 +249,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                 $name .
                ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     }
+    /** build REPORT XML request for locating a node path by uuid */
+    protected static function buildLocateRequest($uuid) {
+        return '<?xml version="1.0" encoding="UTF-8"?><dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:href xmlns:D="DAV:">' .
+                $uuid .
+               '</D:href></dcr:locate-by-uuid>';
+    }
 
     /**
      * Set the standard parameters for a curl session.
@@ -210,10 +263,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * next request.
      *
      * @param handle $curl the curl handler to use
-     * @param string the http method to use¨
-     * @param string the uri to request
-     * @param string the body to send as post, default is empty
-     * @param int How far the request should go, default is 0 (setting the Depth HTTP header)
+     * @param string type the http method to use¨
+     * @param string uri the uri to request
+     * @param string body the body to send as post, default is empty
+     * @param int depth How far the request should go, default is 0 (setting the Depth HTTP header)
      * @return the curl handle passed to the method
      */
     protected function prepareRequest($curl, $type, $uri, $body = '', $depth = 0) {
@@ -247,7 +300,13 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                 case CURLE_COULDNT_CONNECT:
                     throw new PHPCR_NoSuchWorkspaceException(curl_error($curl));
                 default:
-                    throw new PHPCR_RepositoryException(curl_error($curl));
+                    if ($data == '') {
+                        $msg = 'No data returned by server.';
+                    } else {
+                        $msg = curl_error($curl);
+                        if ($msg == '') $msg = 'No reason given by curl.';
+                    }
+                    throw new PHPCR_RepositoryException($msg);
             }
         }
         return $data;
@@ -272,19 +331,22 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
         $err = $dom->getElementsByTagNameNS(self::NS_DCR, 'exception');
         if ($err->length > 0) {
+            //TODO: can we trust jackrabbit to always have an exception node if status is not OK?
+            $status = curl_getinfo($curl);
             $err = $err->item(0);
             $errClass = $err->getElementsByTagNameNS(self::NS_DCR, 'class')->item(0)->textContent;
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
-                    throw new PHPCR_NoSuchWorkspaceException($errMsg);
-                    break;
+                    throw new PHPCR_NoSuchWorkspaceException('HTTP '.$status['http_code'] . ": $errMsg");
                 case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                    throw new PHPCR_NodeType_NoSuchNodeTypeException($errMsg);
-                    break;
-                //TODO: map more errors here
+                    throw new PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status['http_code'] . ": $errMsg");
+                case 'javax.jcr.ItemNotFoundException':
+                    throw new PHPCR_ItemNotFoundException('HTTP '.$status['http_code'] . ": $errMsg");
+
+                //TODO: map more errors here?
                 default:
-                    throw new PHPCR_RepositoryException("$errMsg ($errClass)");
+                    throw new PHPCR_RepositoryException('HTTP '.$status['http_code'] . ": $errMsg ($errClass)");
             }
         }
         return $dom;
@@ -295,7 +357,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * Does error handling for both connection errors and json problems
      *
      * @param curl The curl handle you want to fetch from
-     * @return DOMDocument the loaded XML
+     * @return array decoded json
      * @throws PHPCR_ItemNotFoundException if the response is not valid
      * @throws PHPCR_RepositoryException
      */
@@ -309,8 +371,20 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             $status = curl_getinfo($curl);
             if (404 === $status['http_code']) {
                 throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
+            } elseif (500 <= $status['http_code']) {
+                throw new PHPCR_RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
             } else {
-                throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring'");
+                //FIXME: this might be an xml error response like
+                /*
+                <?xml version="1.0" encoding="UTF-8"?>
+                  <D:error xmlns:D="DAV:">
+                      <dcr:exception xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+                          <dcr:class>javax.jcr.NamespaceException</dcr:class>
+                          <dcr:message>jackalope-api-tests: is not a registered namespace prefix.</dcr:message>
+                      </dcr:exception>
+                  </D:error>
+                */
+                throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring' ('$type'  '$uri')");
             }
         }
         //TODO: are there error responses in json format? if so, handle them
