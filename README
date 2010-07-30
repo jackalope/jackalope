@@ -24,6 +24,19 @@ You need the jackrabbit-standalone-2.x.jar
 Once you have the jar, start it with
 $ java -jar jackrabbit*.jar
 
+Download the test workspace on the Liip wiki : 
+http://fosswiki.liip.ch/download/attachments/11501816/test_workspace.tar.bz2
+Unpack and copy the tests directory into your jackrabbit/workspaces/ directory
+
+Clone the jackalope project 
+
+git clone git://github.com/jackalope/jackalope.git
+
+Update submodules
+
+git submodule init
+git submodule update
+
 Now you are ready to use the library. Have a look at api-tests/bootstrap.php
 too see how to instantiate a repository.
 
@@ -31,6 +44,15 @@ too see how to instantiate a repository.
 *****
 Tests
 *****
+
+
+Run phpunit from the api-tests directory. You should have a lot of failed tests,
+but no exception. If you have something like this, it works (yeah, FAILURES are ok):
+FAILURES!
+Tests: 224, Assertions: 99, Failures: 8, Errors: 183, Incomplete: 6, Skipped: 10.
+
+* Currently doesn't work with PHPUnit 3.5, use PHPUnit 3.4 (the latest stable release)
+
 
 There are two kind of tests. The folder *api-tests* contains the
 jackalope-api-tests suite to test against the specification.
@@ -41,20 +63,8 @@ In order to run the tests, make sure you have jackrabbit running and added the
 In order to run the tests, go to api-tests and run phpunit without any arguments.
 It will read phpunit.xml and run all api test suites.
 
-
 The folder *tests* contains unit tests for the jackalope implementation.
 You should only need those if you want to debug jackalope itselves or implement
 new features. Again, make sure you have the test workspace in jackrabbit.
 
-Setting up Jackrabbit
-*********************
-- Create tests workspace which is different from your default workspace.
-See http://jackrabbit.apache.org/jackrabbit-configuration.html#JackrabbitConfiguration-Workspaceconfiguration
-Or:
-- Go to the directory you started jackrabbit-standalone (eg. /opt/svn/jackrabbit/jackrabbit-standalone/target)
-- cd jackrabbit
-- cd workspaces
-- cp -r default tests
-- cd tests
-- change <Workspace name="default"> to <Workspace name="tests">
-- start jackrabbit again
+
