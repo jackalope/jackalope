@@ -150,6 +150,11 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getItem($absPath) {
+
+        if(strpos($absPath,'/') !== 0) {
+            throw new PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+        }
+
         if ($this->nodeExists($absPath)) {
             return $this->getNode($absPath);
         } else {
