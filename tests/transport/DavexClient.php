@@ -55,7 +55,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testGetItem() {
         $t = new jackalope_transport_DavexClient($this->config['url']);
         $t->login($this->credentials, $this->config['workspace']);
-        $json = $t->getItem('/jcr:root');
+        $json = $t->getItem('/');
         $this->assertType('object', $json);
     }
     

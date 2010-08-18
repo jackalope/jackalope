@@ -48,14 +48,14 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
     
     public function testAbsolutePath() {
         $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertEquals('/jcr:root/', $om->absolutePath('/', 'jcr:root'));
-        $this->assertEquals('/jcr:root/', $om->absolutePath('/', './jcr:root'));
-        $this->assertEquals('/jcr:root/', $om->absolutePath('/jcr:root', ''));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^/', $om->absolutePath('jcr:root', 'foo_/b-a/0^/'));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^/', $om->absolutePath('/jcr:root', '/foo_/b-a/0^/'));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^/', $om->absolutePath('jcr:root/', '/foo_/b-a/0^'));
-        $this->assertEquals('/jcr:root/foo/bar/', $om->absolutePath('/jcr:root/wrong/', '../foo/bar/'));
-        $this->assertEquals('/jcr:root/foo/bar/', $om->absolutePath('/jcr:root/wrong/', '/../foo/bar/'));
-        $this->assertEquals('/jcr:root/foo/bar/', $om->absolutePath('/jcr:root/wrong/', '/foo/../../foo/bar/'));
+        $this->assertEquals('/jcr:root', $om->absolutePath('/', 'jcr:root'));
+        $this->assertEquals('/jcr:root', $om->absolutePath('/', './jcr:root'));
+        $this->assertEquals('/jcr:root', $om->absolutePath('/jcr:root', ''));
+        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('jcr:root', 'foo_/b-a/0^/'));
+        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('/jcr:root', '/foo_/b-a/0^/'));
+        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('jcr:root/', '/foo_/b-a/0^'));
+        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '../foo/bar/'));
+        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/../foo/bar/'));
+        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/foo/../../foo/bar/'));
     }
 }
