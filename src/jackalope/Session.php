@@ -95,7 +95,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getRootNode() {
-        throw new jackalope_NotImplementedException();
+        return $this->getNode('/');
     }
 
     /**
@@ -129,7 +129,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getNodeByIdentifier($id) {
-        throw new jackalope_NotImplementedException();
+        return $this->objectManager->getNode($id);
     }
 
     /**
@@ -150,7 +150,16 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getItem($absPath) {
-        throw new jackalope_NotImplementedException();
+
+        if(strpos($absPath,'/') !== 0) {
+            throw new PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+        }
+
+        if ($this->nodeExists($absPath)) {
+            return $this->getNode($absPath);
+        } else {
+            return $this->getProperty($absPath);
+        }
     }
 
     /**
@@ -176,7 +185,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getProperty($absPath) {
-        throw new jackalope_NotImplementedException();
+        return $this->objectManager->getPropertyByPath($absPath);
     }
 
     /**
@@ -189,7 +198,8 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function itemExists($absPath) {
-        throw new jackalope_NotImplementedException();
+        if ($absPath == '/') return true;
+        return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
 
     /**
@@ -202,7 +212,15 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function nodeExists($absPath) {
-        throw new jackalope_NotImplementedException();
+        if ($absPath == '/') return true;
+        try {
+            //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
+            //would need to communicate to the lower layer that we do not want exceptions
+            $this->getNode($absPath);
+        } catch(Exception $e) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -215,7 +233,15 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function propertyExists($absPath) {
-        throw new jackalope_NotImplementedException();
+        try {
+            //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
+            //would need to communicate to the lower layer that we do not want exceptions
+            $this->getProperty($absPath);
+        } catch(Exception $e) {
+            return false;
+        }
+        return true;
+
     }
 
     /**
@@ -312,7 +338,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
     /**
      * not really anything right now
      *
-     * @param string $methodName the nakme of the method.
+     * @param string $methodName the name of the method.
      * @param object $target the target object of the operation.
      * @param array $arguments the arguments of the operation.
      * @return boolean FALSE if the operation cannot be performed, TRUE if the operation can be performed or if the repository cannot determine whether the operation can be performed.
@@ -320,7 +346,9 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function hasCapability($methodName, $target, array $arguments) {
-        return true; //we never can determine wether operation can be performed ;-)
+        //we never determine wether operation can be performed as it is optional ;-)
+        //TODO: could implement some
+        return true;
     }
 
     /**
@@ -488,6 +516,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function logout() {
+        //TODO anything to do on logout?
         //OPTIMIZATION: flush object manager
         $this->logout = true;
     }
@@ -502,7 +531,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function isLive() {
-        return ! $logout;
+        return ! $this->logout;
     }
 
     /**
@@ -529,4 +558,16 @@ class jackalope_Session implements PHPCR_SessionInterface {
         throw new PHPCR_UnsupportedRepositoryOperationException();
     }
 
+    /**
+     * Implementation specific: The object manager is also used by other components, i.e. the QueryManager
+     */
+    public function getObjectManager() {
+        return $this->objectManager;
+    }
+    /**
+     * Implementation specific: The transport implementation is also used by other components, i.e. the NamespaceRegistry
+     */
+    public function getTransport() {
+        return $this->objectManager->getTransport();
+    }
 }

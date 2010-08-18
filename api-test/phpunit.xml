@@ -1,0 +1,57 @@
+<phpunit bootstrap="bootstrap.php">
+    <php>
+        <var name="jcr.url" value="http://localhost:8080/server" />
+        <var name="jcr.user" value="admin" />
+        <var name="jcr.pass" value="admin" />
+        <var name="jcr.workspace" value="tests" />
+        <var name="jcr.transport" value="davex" />
+    </php>
+
+    <testsuites>
+      <testsuite name="phpCR Access Control">
+        <directory>.</directory>
+        <file>suite/tests/level1/AccessControlTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Access">
+          <directory>.</directory>
+          <file>suite/tests/level1/AccessTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Export">
+          <directory>.</directory>
+          <file>suite/tests/level1/ExportTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Lock">
+          <directory>.</directory>
+          <file>suite/tests/level1/LockTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Namespaces">
+          <directory>.</directory>
+          <file>suite/tests/level1/NamespacesTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Node Types">
+          <directory>.</directory>
+          <file>suite/tests/level1/NodeTypesTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Query Object Model">
+          <directory>.</directory>
+          <file>suite/tests/level1/QueryObjectModelTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Read">
+          <directory>.</directory>
+          <file>suite/tests/level1/ReadTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR Search">
+          <directory>.</directory>
+          <file>suite/tests/level1/SearchTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR System Node">
+          <directory>.</directory>
+          <file>suite/tests/level1/SystemNodeTest.php</file>
+      </testsuite>
+      <testsuite name="phpCR XMLMappings">
+          <directory>.</directory>
+          <file>suite/tests/level1/XMLMappingsTest.php</file>
+      </testsuite>
+    </testsuites>
+
+</phpunit>

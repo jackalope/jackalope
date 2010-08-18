@@ -3,7 +3,7 @@
  * This interface encapsulates methods for the management of search queries.
  * Provides methods for the creation and retrieval of search queries.
  */
-class jackalope_Query_QueryManager implements PHPCR_Query_QueryManager {
+class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface {
     protected $objectmanager;
 
     public function __construct(jackalope_ObjectManager $objectmanager) {
@@ -23,9 +23,9 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManager {
      */
     public function createQuery($statement, $language) {
         switch($language) {
-            case PHPCR_Query_Query::JCR_SQL2:
+            case PHPCR_Query_QueryInterface::JCR_SQL2:
                 return new jackalope_Query_SqlQuery($statement, $this->objectmanager);
-            case PHPCR_Query_Query::JCR_JQOM:
+            case PHPCR_Query_QueryInterface::JCR_JQOM:
                 throw new jackalope_NotImplementedException();
             default:
                 throw new PHPCR_Query_InvalidQueryException("No such query language: $language");
@@ -64,6 +64,6 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManager {
      * @api
      */
     public function getSupportedQueryLanguages() {
-        return new array(PHPCR_Query_Query::JCR_SQL2, PHPCR_Query_Query::JCR_JQOM);
+        return array(PHPCR_Query_QueryInterface::JCR_SQL2, PHPCR_Query_QueryInterface::JCR_JQOM);
     }
 }

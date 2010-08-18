@@ -4,7 +4,10 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     protected $transport;
     protected $descriptors;
 
-    /** create repository, either with uri or transport
+    /**
+     * Create repository, either with uri or transport
+     * Typical uri for a local jackrabbit server is http://localhost:8080/server
+     *
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
@@ -13,7 +16,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = jackalope_Factory::get('transport_DavexClient', array($uri . 'server/'));
+            $transport = jackalope_Factory::get('transport_DavexClient', array($uri));
         }
         $this->transport = $transport;
         $this->descriptors = $transport->getRepositoryDescriptors();
@@ -44,8 +47,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     * @api
     */
     public function login($credentials = NULL, $workspaceName = NULL) {
-        if ($workspaceName == null) throw new jackalope_NotImplementedException('what should the default workspace be?');
-
+        if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new PHPCR_RepositoryException('transport failed to login without telling why');
         }

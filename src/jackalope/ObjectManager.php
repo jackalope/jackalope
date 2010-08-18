@@ -1,10 +1,18 @@
 <?php
-
+/**
+ * Implementation specific class that talks to the Transport layer to get nodes
+ * and caches every node retrieved to improve performance.
+ */
 class jackalope_ObjectManager {
     protected $session;
     protected $transport;
 
+    /** mapping of absolutePath => node object */
     protected $objectsByPath = array();
+    /**
+     * mapping of uuid => absolutePath
+     * take care never to put a path in here unless there is a node for that path in objectsByPath
+     */
     protected $objectsByUuid = array();
 
     public function __construct(jackalope_TransportInterface $transport,
@@ -12,13 +20,13 @@ class jackalope_ObjectManager {
         $this->transport = $transport;
         $this->session = $session;
     }
-    
+
     /**
      * Get the node identified by an absolute path.
      * Uses the factory to instantiate Node
      *
      * @param string $path The absolute path of the node to create
-     * @return jackalope_Node
+     * @return PHPCR_Node
      */
     public function getNodeByPath($path) {
         $path = $this->normalizePath($path);
@@ -33,9 +41,29 @@ class jackalope_ObjectManager {
                 )
             );
         }
+        //OPTIMIZE: also save in the uuid array
         return $this->objectsByPath[$path];
     }
-    
+
+    /**
+     * Get the property identified by an absolute path.
+     * Uses the factory to instantiate Property
+     *
+     * @param string $path The absolute path of the property to create
+     * @return PHPCR_Property
+     */
+    public function getPropertyByPath($path) {
+        $path = $this->normalizePath($path);
+        $name = substr($path,strrpos($path,'/')+1); //the property name
+        $nodep = substr($path,0,strrpos($path,'/')); //the node this property should be in
+        /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
+         * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
+         * (davex getItem uses json, which is not applicable to properties)
+         */
+        $n = $this->getNodeByPath($nodep);
+        return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+    }
+
     /**
      * Get the node idenfied by an uuid or path or root path and relative
      * path. If you have an absolute path use getNodeByPath.
@@ -47,13 +75,20 @@ class jackalope_ObjectManager {
      */
     public function getNode($identifier, $root = '/'){
         if ($this->isUUID($identifier)) {
-            throw new jackalope_NotImplementedException();
+            if (empty($this->objectsByUuid[$identifier])) {
+                $path = $this->transport->getNodePathForIdentifier($identifier);
+                $node = $this->getNodeByPath($path);
+                $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
+                return $node;
+            } else {
+                return $this->getNodeByPath($this->objectsByUuid[$identifier]);
+            }
         } else {
             $path = $this->absolutePath($root, $identifier);
             return $this->getNodeByPath($path);
         }
     }
-    
+
     /**
      * This is only a proxy to the transport it returns all node types if none
      * is given or only the ones given as array.
@@ -63,7 +98,7 @@ class jackalope_ObjectManager {
     public function getNodeTypes($nodeTypes = array()) {
         return $this->transport->getNodeTypes($nodeTypes);
     }
-    
+
     /**
      * Get a single nodetype @see getNodeTypes
      * @param string the nodetype you want
@@ -72,11 +107,11 @@ class jackalope_ObjectManager {
     public function getNodeType($nodeType) {
         return $this->getNodeTypes(array($nodeType));
     }
-    
+
     /**
      * Creates an absolute path from a root and an relative path
      * @param string Root path to append the relative
-     * @param string Relative path…
+     * @param string Relative path
      * @return string Absolute path with . and .. resolved
      */
     protected function absolutePath($root, $relPath) {
@@ -97,17 +132,17 @@ class jackalope_ObjectManager {
         }
         return $this->normalizePath(implode('/', $finalPath));
     }
-    
+
     /**
-     * Replaces unwanted characters and ads leading / trailing slashes
-     * @param string the path to normalize
+     * Replaces unwanted characters and adds leading slash
+     * @param string $path the path to normalize
      * @return string normalized path
      */
     protected function normalizePath($path) {
-        $path = '/' . $path . '/';
+        $path = '/' . $path;
         return str_replace('//', '/', $path);
     }
-    
+
     /**
      * Checks if the string could be a uuid
      * @param string possible uuid
@@ -120,5 +155,10 @@ class jackalope_ObjectManager {
         } else {
             return false;
         }
+    }
+
+    /** Implementation specific: Transport is used elsewhere, provide it here for Session */
+    public function getTransport() {
+        return $this->transport;
     }
 }

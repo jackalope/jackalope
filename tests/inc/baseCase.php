@@ -12,20 +12,5 @@ abstract class jackalope_baseCase extends PHPUnit_Framework_TestCase {
         }
         $this->credentials = new PHPCR_SimpleCredentials($this->config['user'], $this->config['pass']);
     }
-
-    /** try to create credentials from this user/password */
-    protected function assertSimpleCredentials($user, $password) {
-        $cr = getSimpleCredentials($user, $password);
-        $this->assertTrue(is_object($cr));
-        $this->assertTrue($cr instanceOf phpCR_CredentialsInterface);
-        return $cr;
-    }
-
-    /** try to create a session with the config and credentials */
-    protected function assertSession($cfg, $credentials = null) {
-        $ses = getJCRSession($cfg, $credentials);
-        $this->assertTrue(is_object($ses));
-        $this->assertTrue($ses instanceOf phpCR_SessionInterface);
-        return $ses;
-    }
 }
+

@@ -2,6 +2,7 @@
 /**
  * Transport is responsible of talking to the backend.
  * The Transport is told how to access that backend in its constructor.
+ * Look in the transport/ subfolder for actual implementations.
  */
 interface jackalope_TransportInterface {
     //TODO: extract methods from DavexClient

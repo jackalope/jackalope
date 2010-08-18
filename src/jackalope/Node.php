@@ -5,7 +5,9 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
     protected $index = 1;
     protected $primaryType;
 
-    /** TODO: what is this? property names or also property values? */
+    /**
+     * mapping of property name to property objects. all properties are loaded in constructor
+     */
     protected $properties = array();
     /**
      * list of children names
@@ -98,7 +100,6 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getNode($relPath) {
-        //TODO: should we resolve ../ in path? is that even allowed?
         return $this->objectManager->getNodeByPath($this->path . "/$relPath");
     }
 
@@ -177,7 +178,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                 throw new PHPCR_PathNotFoundException($relPath);
             }
         } else {
-            throw new jackalope_NotImplementedException();
+            $this->session->getProperty($this->path . '/.' . $relPath);
         }
     }
 
@@ -229,10 +230,9 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getProperties($filter = NULL) {
-        $names = self::filterNames($filter, $this->properties); //TODO: is this also just properties names?
+        $names = self::filterNames($filter, array_keys($this->properties));
         foreach($names as $name) {
-            //OPTIMIZE: batch get properties? or do we already have them?
-            $result[] = $this->getProperty($name);
+            $result[] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
         return new jackalope_PropertyIterator($result);
     }
@@ -353,10 +353,9 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      */
     public function hasNode($relPath) {
         if (false === strpos($relPath, '/')) {
-            //TODO: Fetch real things
-            throw new jackalope_NotImplementedException('Only direct children at the moment');
-        } else {
             return isset($this->nodes[$relPath]);
+        } else {
+            $this->session->nodeExists($this->path . '/'. $relPath);
         }
     }
 
@@ -370,7 +369,11 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function hasProperty($relPath) {
-        throw new jackalope_NotImplementedException();
+        if (false === strpos($relPath, '/')) {
+            return isset($this->properties[$relPath]);
+         } else {
+            $this->session->propertyExists($this->path . '/'. $relPath);
+         }
     }
 
     /**
