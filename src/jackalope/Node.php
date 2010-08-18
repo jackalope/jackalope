@@ -457,16 +457,45 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
         throw new jackalope_NotImplementedException('Write');
     }
 
-    /**
-     * not implemented
-     */
+	/**
+	 * Removes the specified mixin node type from this node and removes mixinName
+	 * from this node's jcr:mixinTypes property. Both the semantic change in
+	 * effective node type and the persistence of the change to the jcr:mixinTypes
+	 * property occur on persist.
+	 *
+	 * @param string $mixinName the name of the mixin node type to be removed.
+	 * @return void
+	 * @throws PHPCR_NodeType_NoSuchNodeTypeException if the specified mixinName is not currently assigned to this node and this implementation performs this validation immediately.
+	 * @throws PHPCR_ConstraintViolationException if the specified mixin node type is prevented from being removed and this implementation performs this validation immediately.
+	 * @throws PHPCR_Version_VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
+	 * @throws PHPCR_Lock_LockException if a lock prevents the removal of the mixin and this implementation performs this validation immediately.
+	 * @throws PHPCR_RepositoryException if another error occurs.
+	 * @api
+	 */
     public function removeMixin($mixinName) {
         throw new jackalope_NotImplementedException('Write');
     }
 
-    /**
-     * not implemented
-     */
+	/**
+	 * Returns true if the specified mixin node type called $mixinName can be
+	 * added to this node. Returns false otherwise. A result of false must be
+	 * returned in each of the following cases:
+	 * * The mixin's definition conflicts with an existing primary or mixin node
+	 *   type of this node.
+	 * * This node is versionable and checked-in or is non-versionable and its
+	 *   nearest versionable ancestor is checked-in.
+	 * * This node is protected (as defined in this node's NodeDefinition, found
+	 *   in the node type of this node's parent).
+	 * * An access control restriction would prevent the addition of the mixin.
+	 * * A lock would prevent the addition of the mixin.
+	 * * An implementation-specific restriction would prevent the addition of the mixin.
+	 *
+	 * @param string $mixinName The name of the mixin to be tested.
+	 * @return boolean true if the specified mixin node type, mixinName, can be added to this node; false otherwise.
+	 * @throws PHPCR_NodeType_NoSuchNodeTypeException if the specified mixin node type name is not recognized.
+	 * @throws PHPCR_RepositoryException if another error occurs.
+	 * @api
+	 */
     public function canAddMixin($mixinName) {
         throw new jackalope_NotImplementedException('Write');
     }
@@ -491,7 +520,27 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
     }
 
     /**
-     * not implemented
+     * If this node does have a corresponding node in the workspace srcWorkspace,
+     * then this replaces this node and its subgraph with a clone of the
+     * corresponding node and its subgraph.
+     * If this node does not have a corresponding node in the workspace srcWorkspace,
+     * then the update method has no effect.
+     *
+     * If the update succeeds the changes made are persisted immediately, there
+     * is no need to call save.
+     *
+     * Note that update does not respect the checked-in status of nodes. An update
+     * may change a node even if it is currently checked-in (This fact is only
+     * relevant in an implementation that supports versioning).
+     *
+     * @param string $srcWorkspace the name of the source workspace.
+     * @return void
+     * @throws PHPCR_NoSuchWorkspaceException if srcWorkspace does not exist.
+     * @throws PHPCR_InvalidItemStateException if this Session (not necessarily this Node) has pending unsaved changes.
+     * @throws PHPCR_AccessDeniedException if the current session does not have sufficient access to perform the operation.
+     * @throws PHPCR_Lock_LockException if a lock prevents the update.
+     * @throws PHPCR_RepositoryException if another error occurs.
+     * @api
      */
     public function update($srcWorkspace) {
         throw new jackalope_NotImplementedException('Write');

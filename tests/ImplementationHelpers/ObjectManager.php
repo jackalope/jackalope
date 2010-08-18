@@ -9,9 +9,18 @@ class OMT extends jackalope_ObjectManager {
     public function isUUID($i) {
         return parent::isUUID($i);
     }
+
+    public function isWellFormedPath($path) {
+        return parent::isWellFormedPath($path);
+    }
+
+    public function normalizePath($path) {
+        return parent::normalizePath($path);
+    }
 }
 
 class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
+
     public function testGetNodeByPath() {
         $path = '/jcr:root';
         $om = new jackalope_ObjectManager($this->getTransportStub($path), $this->getSessionMock());
@@ -57,5 +66,33 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
         $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '../foo/bar/'));
         $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/../foo/bar/'));
         $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/foo/../../foo/bar/'));
+    }
+
+
+    /**
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testNormalizePath() {
+        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+
+        $this->assertEquals('/jcr:root', $om->normalizePath('/jcr:root'));
+        $this->assertEquals('/jcr:root', $om->normalizePath('jcr:root'));
+        $this->assertEquals('/jcr:root/foo', $om->normalizePath('/jcr:root//foo'));
+
+        $this->setExpectedException('PHPCR_RepositoryException');
+        $this->assertEquals('/jcr:root/foo?', $om->normalizePath('/jcr:root/foo?'), 'No exception thrown on invalid path');
+
+    }
+
+    public function testIsWellFormedPath() {
+        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $this->assertTrue($om->isWellFormedPath('/jcr:root'));
+
+        $this->assertFalse($om->isWellFormedPath('/jcr:root/foo?'), 'Invalid char was accepted: ?');
+//        $this->assertFalse($om->isWellFormedPath('/jcr:root/foo*'), 'Invalid char was accepted: *');
+        $this->assertTrue($om->isWellFormedPath('/jcr:foo_/b-a/0^'), 'Fancy well-formed path was rejected');
+//        $this->assertFalse($om->isWellFormedPath('/jcr:root/foo/..bar'), 'Invalid char was accepted: ..');
+//        $this->assertFalse($om->isWellFormedPath('/jcr:root/foo/.bar'), 'Invalid char was accepted: .');
+
     }
 }

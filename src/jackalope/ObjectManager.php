@@ -134,12 +134,27 @@ class jackalope_ObjectManager {
     }
 
     /**
+     *
+     * @param   string  $path   The path to validate
+     * @return  bool    TRUE if path is well-formed otherwise FALSE
+     */
+    protected function isWellFormedPath($path) {
+        // TODO: incomplete pattern, see JCR Specs 3.2
+        return 1 == preg_match('/^[a-z0-9{}\/#:_^+~*\[\]-]*$/', $path);
+        
+    }
+
+    /**
      * Replaces unwanted characters and adds leading slash
      * @param string $path the path to normalize
      * @return string normalized path
+     * @throws PHPCR_RepositoryException    If the path is not well-formed
      */
     protected function normalizePath($path) {
         $path = '/' . $path;
+        if (!$this->isWellFormedPath($path)) {
+            throw new PHPCR_RepositoryException('Path is not well-formed (we do not yet match against spec): ' . $path);
+        }
         return str_replace('//', '/', $path);
     }
 
