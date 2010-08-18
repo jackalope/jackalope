@@ -129,7 +129,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function isNode() {
-        return $this->isNode();
+        return $this->isNode;
     }
 
     /**
