@@ -213,6 +213,11 @@ class jackalope_Session implements PHPCR_SessionInterface {
      */
     public function nodeExists($absPath) {
         if ($absPath == '/') return true;
+
+        if (!jackalope_Helper::isAbsolutePath($absPath) || !jackalope_Helper::isValidPath($absPath)) {
+            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+        }
+
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
@@ -233,6 +238,12 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function propertyExists($absPath) {
+        // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
+
+        if (!jackalope_Helper::isAbsolutePath($absPath) || !jackalope_Helper::isValidPath($absPath)) {
+            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+        }
+
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions

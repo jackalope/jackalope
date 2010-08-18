@@ -204,7 +204,13 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getNode($relPath) {
-        return $this->objectManager->getNodeByPath($this->path . "/$relPath");
+        $node = null;
+        try {
+            $node = $this->objectManager->getNodeByPath(jackalope_Helper::absolutePath($this->path, $relPath));
+        } catch (PHPCR_ItemNotFoundException $e) {
+            throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
+        return $node;
     }
 
     /**

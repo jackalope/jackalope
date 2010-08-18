@@ -340,10 +340,11 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     
     /**
      * Throws an exception if the property is multivalued
+     * @throws PHPCR_ValueFormatException
      */
     protected function checkMultiple($isMultiple = true) {
         if ($isMultiple === $this->isMultiple) {
-            throw new PHPCR_ValueFormatException($this);
+            throw new PHPCR_ValueFormatException();
         }
     }
 }

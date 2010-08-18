@@ -2,16 +2,13 @@
 require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
 
 class OMT extends jackalope_ObjectManager {
-    public function absolutePath($root, $relativePath) {
-        return parent::absolutePath($root, $relativePath);
-    }
     
     public function isUUID($i) {
         return parent::isUUID($i);
     }
 
-    public function verifyAbsPath($path) {
-        parent::verifyAbsPath($path);
+    public function verifyAbsolutePath($path) {
+        parent::verifyAbsolutePath($path);
     }
 }
 
@@ -51,33 +48,21 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
         $this->assertTrue($om->isUUID('842E61C0-09AB-A42a-87c0-308ccc90e6f4'));
     }
     
-    public function testAbsolutePath() {
-        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertEquals('/jcr:root', $om->absolutePath('/', 'jcr:root'));
-        $this->assertEquals('/jcr:root', $om->absolutePath('/', './jcr:root'));
-        $this->assertEquals('/jcr:root', $om->absolutePath('/jcr:root', ''));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('jcr:root', 'foo_/b-a/0^/'));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('/jcr:root', '/foo_/b-a/0^/'));
-        $this->assertEquals('/jcr:root/foo_/b-a/0^', $om->absolutePath('jcr:root/', '/foo_/b-a/0^'));
-        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '../foo/bar/'));
-        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/../foo/bar/'));
-        $this->assertEquals('/jcr:root/foo/bar', $om->absolutePath('/jcr:root/wrong/', '/foo/../../foo/bar/'));
-    }
 
-    public function testVerifyAbsPath() {
+    public function testVerifyAbsolutePath() {
         $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
 
-        $om->verifyAbsPath('/jcr:root');
-        $om->verifyAbsPath('/jcr:foo_/b-a/0^');
+        $om->verifyAbsolutePath('/jcr:root');
+        $om->verifyAbsolutePath('/jcr:foo_/b-a/0^.txt');
 
         $this->setExpectedException('PHPCR_RepositoryException');
-        $om->verifyAbsPath('jcr:root');
+        $om->verifyAbsolutePath('jcr:root');
 
         $this->setExpectedException('PHPCR_RepositoryException');
-        $om->verifyAbsPath('/jcr:root//foo');
+        $om->verifyAbsolutePath('/jcr:root//foo');
 
         $this->setExpectedException('PHPCR_RepositoryException');
-        $om->verifyAbsPath('/jcr:root/foo?');
+        $om->verifyAbsolutePath('/jcr:root/foo?');
     }
 
 }

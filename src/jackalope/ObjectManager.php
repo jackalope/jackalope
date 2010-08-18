@@ -27,23 +27,26 @@ class jackalope_ObjectManager {
      *
      * @param string $path The absolute path of the node to create
      * @return PHPCR_Node
-     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
+     * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
-    public function getNodeByPath($path) {
-        $this->verifyAbsPath($path);
-        if (empty($this->objectsByPath[$path])) {
-            $this->objectsByPath[$path] = jackalope_Factory::get(
+    public function getNodeByPath($absPath) {
+        $absPath = jackalope_Helper::normalizePath($absPath);
+
+        $this->verifyAbsolutePath($absPath);
+
+        if (empty($this->objectsByPath[$absPath])) {
+            $this->objectsByPath[$absPath] = jackalope_Factory::get(
                 'Node',
                 array(
-                    $this->transport->getItem($path),
-                    $path,
+                    $this->transport->getItem($absPath),
+                    $absPath,
                     $this->session,
                     $this
                 )
             );
         }
         //OPTIMIZE: also save in the uuid array
-        return $this->objectsByPath[$path];
+        return $this->objectsByPath[$absPath];
     }
 
     /**
@@ -52,12 +55,15 @@ class jackalope_ObjectManager {
      *
      * @param string $path The absolute path of the property to create
      * @return PHPCR_Property
-     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
+     * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
-    public function getPropertyByPath($path) {
-        $this->verifyAbsPath($path);
-        $name = substr($path,strrpos($path,'/')+1); //the property name
-        $nodep = substr($path,0,strrpos($path,'/')); //the node this property should be in
+    public function getPropertyByPath($absPath) {
+        $absPath = jackalope_Helper::normalizePath($absPath);
+
+        $this->verifyAbsolutePath($absPath);
+
+        $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
+        $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
         /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
          * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
          * (davex getItem uses json, which is not applicable to properties)
@@ -86,7 +92,7 @@ class jackalope_ObjectManager {
                 return $this->getNodeByPath($this->objectsByUuid[$identifier]);
             }
         } else {
-            $path = $this->absolutePath($root, $identifier);
+            $path = jackalope_Helper::absolutePath($root, $identifier);
             return $this->getNodeByPath($path);
         }
     }
@@ -111,48 +117,20 @@ class jackalope_ObjectManager {
     }
 
     /**
-     * Creates an absolute path from a root and an relative path
-     * @param string Root path to append the relative
-     * @param string Relative path
-     * @return string Absolute path with . and .. resolved
-     */
-    protected function absolutePath($root, $relPath) {
-        $finalPath = array();
-        $path = array_merge(explode('/', '/' . $root), explode('/', '/' . $relPath));
-        foreach ($path as $pathPart) {
-            switch ($pathPart) {
-                case '.':
-                case '':
-                    break;
-                case '..':
-                    array_pop($finalPath);
-                    break;
-                default:
-                    array_push($finalPath, $pathPart);
-                    break;
-            }
-        }
-
-        return '/'.implode('/', $finalPath);
-    }
-
-    /**
      * Verifies the path to be absolute and well-formed
      *
      * @param string $path the path to verify 
+     * @return  bool    Always true :)
      * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
-    protected function verifyAbsPath($path) {
-        if ($path[0] != '/') {
+    public function verifyAbsolutePath($path) {
+        if (!jackalope_Helper::isAbsolutePath($path)) {
             throw new PHPCR_RepositoryException('Path is not absolute: ' . $path);
         }
-        // TODO: incomplete pattern, see JCR Specs 3.2
-        if (strpos($path, '//') !== false ||
-            1 != preg_match('/^[\w{}\/#:^+~*\[\]-]*$/i', $path)) {
-
+        if (!jackalope_Helper::isValidPath($path)) {
             throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
-        return true;
+        return true; 
     }
 
     /**
