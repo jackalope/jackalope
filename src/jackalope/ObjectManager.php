@@ -27,9 +27,10 @@ class jackalope_ObjectManager {
      *
      * @param string $path The absolute path of the node to create
      * @return PHPCR_Node
+     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
     public function getNodeByPath($path) {
-        $path = $this->normalizePath($path);
+        $this->verifyAbsPath($path);
         if (empty($this->objectsByPath[$path])) {
             $this->objectsByPath[$path] = jackalope_Factory::get(
                 'Node',
@@ -51,9 +52,10 @@ class jackalope_ObjectManager {
      *
      * @param string $path The absolute path of the property to create
      * @return PHPCR_Property
+     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
     public function getPropertyByPath($path) {
-        $path = $this->normalizePath($path);
+        $this->verifyAbsPath($path);
         $name = substr($path,strrpos($path,'/')+1); //the property name
         $nodep = substr($path,0,strrpos($path,'/')); //the node this property should be in
         /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
@@ -130,32 +132,27 @@ class jackalope_ObjectManager {
                     break;
             }
         }
-        return $this->normalizePath(implode('/', $finalPath));
+
+        return '/'.implode('/', $finalPath);
     }
 
     /**
+     * Verifies the path to be absolute and well-formed
      *
-     * @param   string  $path   The path to validate
-     * @return  bool    TRUE if path is well-formed otherwise FALSE
+     * @param string $path the path to verify 
+     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
-    protected function isWellFormedPath($path) {
-        // TODO: incomplete pattern, see JCR Specs 3.2
-        return 1 == preg_match('/^[a-z0-9{}\/#:_^+~*\[\]-]*$/', $path);
-        
-    }
-
-    /**
-     * Replaces unwanted characters and adds leading slash
-     * @param string $path the path to normalize
-     * @return string normalized path
-     * @throws PHPCR_RepositoryException    If the path is not well-formed
-     */
-    protected function normalizePath($path) {
-        $path = '/' . $path;
-        if (!$this->isWellFormedPath($path)) {
-            throw new PHPCR_RepositoryException('Path is not well-formed (we do not yet match against spec): ' . $path);
+    protected function verifyAbsPath($path) {
+        if ($path[0] != '/') {
+            throw new PHPCR_RepositoryException('Path is not absolute: ' . $path);
         }
-        return str_replace('//', '/', $path);
+        // TODO: incomplete pattern, see JCR Specs 3.2
+        if (strpos($path, '//') !== false ||
+            1 != preg_match('/^[\w{}\/#:^+~*\[\]-]*$/i', $path)) {
+
+            throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
+        }
+        return true;
     }
 
     /**
