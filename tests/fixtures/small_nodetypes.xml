@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodeTypes>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:folder">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:folder" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:hierarchyNode</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="false" isQueryable="true" name="nt:file" primaryItemName="jcr:content">
+        <supertypes>
+            <supertype>nt:hierarchyNode</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:file" mandatory="true" name="jcr:content" onParentVersion="COPY" protected="false" sameNameSiblings="false">
+            <requiredPrimaryTypes>
+                <requiredPrimaryType>nt:base</requiredPrimaryType>
+            </requiredPrimaryTypes>
+        </childNodeDefinition>
+    </nodeType>
+</nodeTypes>

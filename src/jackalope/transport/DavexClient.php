@@ -120,16 +120,14 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
      * @param path absolute path to item
      * @return array for the node (decoded from json)
+     * @throws PHPCR_RepositoryException if now logged in
      */
     public function getItem($path) {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
             throw new PHPCR_RepositoryException("Implementation error: '$path' is not an absolute path");
         }
-        if (empty($this->workspaceUri)) {
-            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
-        }
-
+        $this->checkLogin();
         return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
     }
     /**
@@ -137,12 +135,11 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @param uuid the id in JCR format
      * @return string path to the node
      * @throws PHPCR_ItemNotFoundException if the backend does not know the uuid
+     * @throws PHPCR_RepositoryException if now logged in
      */
     public function getNodePathForIdentifier($uuid) {
-        if (empty($this->workspaceUri)) {
-            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
-        }
-
+        $this->checkLogin();
+        
         $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
                                         self::buildLocateRequest($uuid));
         /* answer looks like
@@ -167,11 +164,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     /**
      * get the registered namespaces mappings from the backend
      * @return associative array of prefix => uri
+     * @throws PHPCR_RepositoryException if now logged in
      */
     public function getNamespaces() {
-        if (empty($this->workspaceUri)) {
-            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
-        }
+        $this->checkLogin();
 
         $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
                                         self::buildReportRequest('dcr:registerednamespaces'));
@@ -191,13 +187,13 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * Returns node types
      * @param array nodetypes to request
      * @return dom with the definitions
+     * @throws PHPCR_RepositoryException if now logged in
      */
     public function getNodeTypes($nodeTypes = array()) {
-        if (empty($this->workspaceUri)) {
-            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
-        }
+        $this->checkLogin();
+        
         $dom = $this->getDomFromBackend(
-            self::REPORT, $this->workspaceUri . '/jcr:root/tests_level1_access_base',
+            self::REPORT, $this->workspaceUri . '/jcr:root',
             self::buildNodeTypesRequest($nodeTypes)
         );
         if ($dom->firstChild->localName != 'nodeTypes') {
@@ -205,7 +201,17 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $dom;
     }
-
+    
+    /**
+     * Throws an error if the there is no login
+     * @throws PHPCR_RepositoryException if now logged in
+     */
+    protected function checkLogin() {
+        if (empty($this->workspaceUri)) {
+            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
+        }
+    }
+    
     /**
      * Returns the XML required to request nodetypes
      * @param array the nodetypes you want to request

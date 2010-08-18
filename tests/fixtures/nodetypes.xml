@@ -1,7 +1,5 @@
-<?xml version="1.0"?>
-<nodeTypes>
-    <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:created">
-        <supertypes/>
+<?xml version="1.0" encoding="UTF-8"?>
+<nodeTypes><nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:created">
         <propertyDefinition autoCreated="true" declaringNodeType="mix:created" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:createdBy" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
             <valueConstraints/>
             <availableQueryOperators>
@@ -1575,3 +1573,6 @@
         </childNodeDefinition>
     </nodeType>
 </nodeTypes>
+
+
+
