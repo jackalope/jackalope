@@ -204,7 +204,25 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function isSame(PHPCR_ItemInterface $otherItem) {
-        throw new jackalope_NotImplementedException();
+        if ($this === $otherItem) { // trivial case
+            return true;
+        }
+        if ($this->getSession()->getRepository() === $otherItem->getSession()->getRepository() &&
+            $this->getSession()->getWorkspace() === $otherItem->getSession()->getWorkspace() && 
+            get_class($this) == get_class($otherItem)) {
+
+            if ($this instanceof jackalope_Node) {
+                if ($this->getIdentifier() == $otherItem->getIdentifier()) {
+                    return true;
+                }
+            } else { // assert($this instanceof jackalope_Property)
+                if ($this->getName() == $otherItem->getName() &&
+                    $this->getParent()->isSame($otherItem->getParent())) {
+                        return true;
+                }
+            }
+        } 
+        return false;
     }
 
     /**
