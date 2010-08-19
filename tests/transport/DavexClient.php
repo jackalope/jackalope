@@ -5,11 +5,35 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     static public function buildNodeTypesRequestMock(Array $params) {
         return self::buildNodeTypesRequest($params);
     }
+    
+    static public function buildReportRequestMock($name = '') {
+        return self::buildReportRequest($name);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
+    
+    public function getTransportMock($args = null) {
+        return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'checkLogin'), array($args));
+    }
+    
+    public function testBuildReportRequest() {
+        $this->assertEquals(
+            '<?xml version="1.0" encoding="UTF-8"?><foo xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>',
+            jackalope_transport_DavexClient_Mock::buildReportRequestMock('foo')
+        );
+    }
+    
     public function testGetRepositoryDescriptors() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:repositorydescriptors');
+        $dom = new DOMDocument();
+        $dom->load('fixtures/repositoryDescriptors.xml');
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient_Mock::REPORT, 'http://localhost:8080/server/', $reportRequest)
+            ->will($this->returnValue($dom));
+        
         $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
         foreach($desc as $key => $value) {
@@ -93,7 +117,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         
         $requestStr = jackalope_transport_DavexClient_Mock::buildNodeTypesRequestMock($params);
         
-        $t = $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'checkLogin', '__construct'), array(null));
+        $t = $this->getTransportMock();
         $t->expects($this->once())
             ->method('getDomFromBackend')
             ->with(jackalope_transport_DavexClient::REPORT, '/jcr:root', $requestStr)

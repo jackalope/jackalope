@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dcr:repositorydescriptors-report xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+    <dcr:descriptor>
+        <dcr:descriptorkey>identifier.stability</dcr:descriptorkey>
+        <dcr:descriptorvalue>identifier.stability.indefinite.duration</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.repository.name</dcr:descriptorkey>
+        <dcr:descriptorvalue>Jackrabbit</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.repository.vendor</dcr:descriptorkey>
+        <dcr:descriptorvalue>Apache Software Foundation</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.repository.vendor.url</dcr:descriptorkey>
+        <dcr:descriptorvalue>http://jackrabbit.apache.org/</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.repository.version</dcr:descriptorkey>
+        <dcr:descriptorvalue>2.1.1</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.specification.name</dcr:descriptorkey>
+        <dcr:descriptorvalue>Content Repository API for Java(TM) Technology Specification</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>jcr.specification.version</dcr:descriptorkey>
+        <dcr:descriptorvalue>2.0</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>level.1.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>level.2.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.autocreated.definitions.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.inheritance</dcr:descriptorkey>
+        <dcr:descriptorvalue>node.type.management.inheritance.multiple</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.multiple.binary.properties.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.multivalued.properties.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.orderable.child.nodes.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.overrides.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">false</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.primary.item.name.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.property.types</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Long">2</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">6</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">5</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">12</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">4</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">3</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">7</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">8</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">9</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">1</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">11</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">10</dcr:descriptorvalue>
+        <dcr:descriptorvalue type="Long">0</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.residual.definitions.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.same.name.siblings.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.update.in.use.suported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">false</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>node.type.management.value.constraints.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.access.control.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.activities.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.baselines.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.journaled.observation.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.lifecycle.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.locking.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.node.and.property.with.same.name.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.node.type.management.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.observation.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.query.sql.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.retention.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.shareable.nodes.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.simple.versioning.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.transactions.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.unfiled.content.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">false</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.update.mixin.node.types.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.update.primary.node.type.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.versioning.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.workspace.management.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.xml.export.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>option.xml.import.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.full.text.search.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.joins</dcr:descriptorkey>
+        <dcr:descriptorvalue>query.joins.inner.outer</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.languages</dcr:descriptorkey>
+        <dcr:descriptorvalue>javax.jcr.query.JCR-JQOM</dcr:descriptorvalue>
+        <dcr:descriptorvalue>javax.jcr.query.JCR-SQL2</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.stored.queries.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.xpath.doc.order</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">false</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>query.xpath.pos.index</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+    <dcr:descriptor>
+        <dcr:descriptorkey>write.supported</dcr:descriptorkey>
+        <dcr:descriptorvalue type="Boolean">true</dcr:descriptorvalue>
+    </dcr:descriptor>
+</dcr:repositorydescriptors-report>
