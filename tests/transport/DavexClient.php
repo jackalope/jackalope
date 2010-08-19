@@ -152,9 +152,16 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     public function testGetNamespaces() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
-        $x = $t->login($this->credentials, $this->config['workspace']);
-        $this->assertTrue($x);
+        $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:registerednamespaces');
+        $dom = new DOMDocument();
+        $dom->load('fixtures/registeredNamespaces.xml');
+        
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient::REPORT, '', $reportRequest)
+            ->will($this->returnValue($dom));
+        
         $ns = $t->getNamespaces();
         $this->assertType('array', $ns);
         foreach($ns as $prefix => $uri) {
