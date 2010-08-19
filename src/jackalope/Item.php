@@ -9,13 +9,21 @@ class jackalope_Item implements PHPCR_ItemInterface {
     protected $new = true;
     protected $modified = false;
 
+    /** Normalized and absolute path to this item. */
     protected $path;
     protected $name;
-    protected $parent;
+    /** Normalized and absolute path to the parent item. */
+    protected $parentPath;
     protected $depth;
     protected $isNode = false;
     protected $uuid = null;
 
+    /**
+     * @param stdClass  $rawData
+     * @param string    $path   The normalized and absolute path to this item
+     * @param jackalope_Session $session
+     * @param jackalope_ObjectManager $objectManager
+     */
     public function __construct($rawData, $path,  jackalope_Session $session,
                                 jackalope_ObjectManager $objectManager) {
         $this->path = $path;
@@ -25,7 +33,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
         $path = explode('/', $path);
         $this->depth = count($path) - 1;
         $this->name = array_pop($path);
-        $this->parent = implode('/', $path);
+        $this->parentPath = implode('/', $path);
 
         if (isset($rawData->{'jcr:uuid'})) {
             $this->uuid = $rawData->{'jcr:uuid'};
@@ -91,7 +99,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function getParent() {
-        return $this->parent;
+        return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
     /**
