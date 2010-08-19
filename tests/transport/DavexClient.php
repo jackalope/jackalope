@@ -21,6 +21,23 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($args));
     }
     
+    public function testPrepareRequest() {
+        
+    }
+    
+    public function testGetRawFromBackend() {
+        
+    }
+    
+    public function testGetJsonFromBackend() {
+        
+    }
+    
+    public function testGetDomFromBackend() {
+        
+    }
+    
+    
     public function testBuildReportRequest() {
         $this->assertEquals(
             '<?xml version="1.0" encoding="UTF-8"?><foo xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>',
