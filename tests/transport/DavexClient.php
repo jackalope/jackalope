@@ -9,6 +9,10 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     static public function buildReportRequestMock($name = '') {
         return self::buildReportRequest($name);
     }
+    
+    static public function buildPropfindRequestMock($args = array()) {
+        return self::buildPropfindRequest($args);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
@@ -64,8 +68,30 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $d = $t->getRepositoryDescriptors();
     }
     
+    public function testBuildPropfindRequestSingle() {
+        $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
+        $xmlStr .= '<foo/>';
+        $xmlStr .= '</D:prop></D:propfind>';
+        $this->assertEquals($xmlStr, jackalope_transport_DavexClient_Mock::buildPropfindRequestMock('foo'));
+    }
+    
+    public function testBuildPropfindRequestArray() {
+        $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
+        $xmlStr .= '<foo/><bar/>';
+        $xmlStr .= '</D:prop></D:propfind>';
+        $this->assertEquals($xmlStr, jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('foo', 'bar')));
+    }
+    
     public function testLogin() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $propfindRequest = jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
+        $dom = new DOMDocument();
+        $dom->load('fixtures/loginResponse.xml');
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient::PROPFIND, 'http://localhost:8080/server/tests', $propfindRequest)
+            ->will($this->returnValue($dom));
+        
         $x = $t->login($this->credentials, $this->config['workspace']);
         $this->assertTrue($x);
     }
