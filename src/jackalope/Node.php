@@ -14,6 +14,8 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      */
     protected $nodes = array();
 
+    protected $uuid = null;
+
     public function __construct($rawData, $path,  $session, $objectManager) {
         parent::__construct($rawData, $path,  $session, $objectManager);
         $this->isNode = true;
@@ -41,6 +43,10 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                             )
                         );
                         break;
+                    case 'jcr:uuid':
+                        $this->uuid = $value;
+                        break;
+
                     //TODO: more special information?
                     default:
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
@@ -206,7 +212,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
     public function getNode($relPath) {
         $node = null;
         try {
-            $node = $this->objectManager->getNodeByPath(jackalope_Helper::absolutePath($this->path, $relPath));
+            $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
         } catch (PHPCR_ItemNotFoundException $e) {
             throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -376,7 +382,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getIdentifier() {
-        throw new jackalope_NotImplementedException();
+        return $this->uuid;
     }
 
     /**

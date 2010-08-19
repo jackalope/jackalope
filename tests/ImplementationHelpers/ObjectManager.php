@@ -10,6 +10,10 @@ class OMT extends jackalope_ObjectManager {
     public function verifyAbsolutePath($path) {
         parent::verifyAbsolutePath($path);
     }
+
+    public function getObjectsByUuid() {
+        return $this->objectsByUuid;
+    }
 }
 
 class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
@@ -47,7 +51,51 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
         $this->assertTrue($om->isUUID('842e61c0-09ab-42a9-87c0-308ccc90e6f4'));
         $this->assertTrue($om->isUUID('842E61C0-09AB-A42a-87c0-308ccc90e6f4'));
     }
+
+    public function testNormalizePathUUID() {
+        $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
+        $path = '/jcr:root/uuid/to/path';
+
+        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $this->assertEquals($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
+        // also verify it was cached
+        $objectsByUuid = $om->getObjectsByUuid();
+        $this->assertArrayHasKey($uuid, $objectsByUuid, 'Node UUID was not cached');
+        $this->assertEquals($path, $objectsByUuid[$uuid], 'Cached Node UUID path is wrong');
+
+        $this->assertNotEquals($path, $om->normalizePath($uuid), 'Path normalization accepted improperly formatted UUID path');
+    }
     
+    /**
+     * @dataProvider dataproviderAbsolutePath
+     * @covers jackalope_ObjectManager::absolutePath
+     * @covers jackalope_ObjectManager::normalizePath
+     */
+    public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
+        $om = new jackalope_ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $this->assertEquals($output, $om->absolutePath($inputRoot, $inputRelPath));
+    }
+
+    public static function dataproviderAbsolutePath() {
+        return array(
+            array('/',      'foo',  '/foo'),
+            array('/',      '/foo', '/foo'),
+            array('',       'foo',  '/foo'),
+            array('',       '/foo', '/foo'),
+            array('/foo',   'bar',  '/foo/bar'),
+            array('/foo',   '',     '/foo'),
+            array('/foo/',  'bar',  '/foo/bar'),
+            array('/foo/',  '/bar', '/foo/bar'),
+            array('foo',    'bar',  '/foo/bar'),
+
+            // normalization is also part of ::absolutePath
+            array('/',          '../foo',       '/foo'),
+            array('/',          'foo/../bar',   '/bar'),
+            array('/',          'foo/./bar',    '/foo/bar'),
+            array('/foo/nope',  '../bar',       '/foo/bar'),
+            array('/foo/nope',  '/../bar',      '/foo/bar'),
+        );
+    }
 
     public function testVerifyAbsolutePath() {
         $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());

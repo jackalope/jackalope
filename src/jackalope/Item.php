@@ -16,7 +16,6 @@ class jackalope_Item implements PHPCR_ItemInterface {
     protected $parentPath;
     protected $depth;
     protected $isNode = false;
-    protected $uuid = null;
 
     /**
      * @param stdClass  $rawData
@@ -34,11 +33,6 @@ class jackalope_Item implements PHPCR_ItemInterface {
         $this->depth = count($path) - 1;
         $this->name = array_pop($path);
         $this->parentPath = implode('/', $path);
-
-        if (isset($rawData->{'jcr:uuid'})) {
-            $this->uuid = $rawData->{'jcr:uuid'};
-            unset($rawData->{'jcr:uuid'});
-        }
     }
 
     /**

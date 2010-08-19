@@ -30,12 +30,12 @@ class jackalope_ObjectManager {
      * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
     public function getNodeByPath($absPath) {
-        $absPath = jackalope_Helper::normalizePath($absPath);
+        $absPath = $this->normalizePath($absPath);
 
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            $this->objectsByPath[$absPath] = jackalope_Factory::get(
+            $node = jackalope_Factory::get(
                 'Node',
                 array(
                     $this->transport->getItem($absPath),
@@ -44,8 +44,10 @@ class jackalope_ObjectManager {
                     $this
                 )
             );
+            $this->objectsByUuid[$node->getIdentifier()] = $absPath;
+            $this->objectsByPath[$absPath] = $node;
         }
-        //OPTIMIZE: also save in the uuid array
+
         return $this->objectsByPath[$absPath];
     }
 
@@ -58,7 +60,7 @@ class jackalope_ObjectManager {
      * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
     public function getPropertyByPath($absPath) {
-        $absPath = jackalope_Helper::normalizePath($absPath);
+        $absPath = $this->normalizePath($absPath);
 
         $this->verifyAbsolutePath($absPath);
 
@@ -70,6 +72,81 @@ class jackalope_ObjectManager {
          */
         $n = $this->getNodeByPath($nodep);
         return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+    }
+
+    /**
+     * Normalizes a path according to JCR's spec (3.4.5)
+     * 
+     * <ul>
+     *   <li>All self segments(.) are removed.</li>
+     *   <li>All redundant parent segments(..) are collapsed.</li>
+     *   <li>If the path is an identifier-based absolute path, it is replaced by a root-based 
+     *       absolute path that picks out the same node in the workspace as the identifier it replaces.</li>
+     * </ul>
+     *
+     * Note: A well-formed input path implies a well-formed and normalized path returned.
+     *
+     * @param   string  $path   The path to normalize
+     * @return  string  The normalized path
+     */
+    public function normalizePath($path) {
+        // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
+        if (preg_match('/^\[([[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12})\]$/', $path, $matches)) {
+            $uuid = $matches[1];
+            if (empty($this->objectsByUuid[$uuid])) {
+                $finalPath = $this->transport->getNodePathForIdentifier($uuid);
+                $this->objectsByUuid[$uuid] = $finalPath;
+            } else {
+                $finalPath = $this->objectsByUuid[$uuid];
+            }
+        } else {
+            $finalParts= array();
+            $abs = ($path && $path[0] == '/');
+            $parts = explode('/', $path);
+            foreach ($parts as $pathPart) {
+                switch ($pathPart) {
+                    case '.':
+                    case '':
+                        break;
+                    case '..':
+                        array_pop($finalParts);
+                        break;
+                    default:
+                        array_push($finalParts, $pathPart);
+                        break;
+                }
+            }
+            $finalPath = implode('/', $finalParts);
+            if ($abs) {
+              $finalPath = '/'.$finalPath;
+            }
+        }
+        return $finalPath;
+    }
+
+    /**
+     * Creates an absolute path from a root and a relative path
+     * and then normalizes it
+     *
+     * If root is missing or does not start with a slash, a slash will be prepended
+     *
+     * @param string Root path to append the relative
+     * @param string Relative path
+     * @return string Absolute and normalized path
+     */
+    public function absolutePath($root, $relPath) {
+
+        $root = trim($root, '/');
+        $concat = $root;
+        if (strlen($root)) {
+            $concat = "/$root/";
+        } else {
+            $concat = '/';
+        }
+        $concat .= ltrim($relPath, '/');
+
+        // TODO: maybe this should be required explicitly and not called from within this method...
+        return $this->normalizePath($concat);
     }
 
     /**
@@ -92,7 +169,7 @@ class jackalope_ObjectManager {
                 return $this->getNodeByPath($this->objectsByUuid[$identifier]);
             }
         } else {
-            $path = jackalope_Helper::absolutePath($root, $identifier);
+            $path = $this->absolutePath($root, $identifier);
             return $this->getNodeByPath($path);
         }
     }
