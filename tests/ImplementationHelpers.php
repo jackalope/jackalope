@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . '/inc/baseSuite.php');
 require_once(dirname(__FILE__) . '/transport/DavexClient.php');
 require_once(dirname(__FILE__) . '/ImplementationHelpers/ObjectManager.php');
-require_once(dirname(__FILE__) . '/JackalopeObjects/Helper.php');
+require_once(dirname(__FILE__) . '/ImplementationHelpers/Helper.php');
 
 /** test suite for implementation specific helper classes that do not implement
  *  PHPCR interfaces
