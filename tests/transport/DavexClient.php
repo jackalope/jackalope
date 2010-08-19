@@ -5,11 +5,66 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     static public function buildNodeTypesRequestMock(Array $params) {
         return self::buildNodeTypesRequest($params);
     }
+    
+    static public function buildReportRequestMock($name = '') {
+        return self::buildReportRequest($name);
+    }
+    
+    static public function buildPropfindRequestMock($args = array()) {
+        return self::buildPropfindRequest($args);
+    }
+    
+    public function prepareRequest($curl, $type, $uri, $body = '', $depth = 0) {
+        return parent::prepareRequest($curl, $type, $uri, $body = '', $depth = 0);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
+    
+    public function getTransportMock($args = null) {
+        return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($args));
+    }
+    
+    public function testPrepareRequest() {
+        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($this->config['url']));
+        
+        $curl = curl_init();
+        $t->prepareRequest($curl, 'testmethod', 'testuri', 'testbody', 3);
+        $info = curl_getinfo($curl);
+        $this->assertEquals('testuri', $info['url']);
+        //TODO: Figure out how to test if all options are set correctly
+    }
+    
+    public function testGetRawFromBackend() {
+        
+    }
+    
+    public function testGetJsonFromBackend() {
+        
+    }
+    
+    public function testGetDomFromBackend() {
+        
+    }
+    
+    
+    public function testBuildReportRequest() {
+        $this->assertEquals(
+            '<?xml version="1.0" encoding="UTF-8"?><foo xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>',
+            jackalope_transport_DavexClient_Mock::buildReportRequestMock('foo')
+        );
+    }
+    
     public function testGetRepositoryDescriptors() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:repositorydescriptors');
+        $dom = new DOMDocument();
+        $dom->load('fixtures/repositoryDescriptors.xml');
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient_Mock::REPORT, 'http://localhost:8080/server/', $reportRequest)
+            ->will($this->returnValue($dom));
+        
         $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
         foreach($desc as $key => $value) {
@@ -40,8 +95,30 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $d = $t->getRepositoryDescriptors();
     }
     
+    public function testBuildPropfindRequestSingle() {
+        $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
+        $xmlStr .= '<foo/>';
+        $xmlStr .= '</D:prop></D:propfind>';
+        $this->assertEquals($xmlStr, jackalope_transport_DavexClient_Mock::buildPropfindRequestMock('foo'));
+    }
+    
+    public function testBuildPropfindRequestArray() {
+        $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
+        $xmlStr .= '<foo/><bar/>';
+        $xmlStr .= '</D:prop></D:propfind>';
+        $this->assertEquals($xmlStr, jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('foo', 'bar')));
+    }
+    
     public function testLogin() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
+        $propfindRequest = jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
+        $dom = new DOMDocument();
+        $dom->load('fixtures/loginResponse.xml');
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient::PROPFIND, 'http://localhost:8080/server/tests', $propfindRequest)
+            ->will($this->returnValue($dom));
+        
         $x = $t->login($this->credentials, $this->config['workspace']);
         $this->assertTrue($x);
     }
@@ -67,17 +144,34 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
     
+    /**
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetItemWithoutAbsPath() {
+        $t = $this->getTransportMock();
+        $t->getItem('foo');
+    }
+    
     public function testGetItem() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
-        $t->login($this->credentials, $this->config['workspace']);
-        $json = $t->getItem('/');
-        $this->assertType('object', $json);
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getJsonFromBackend')
+            ->with(jackalope_transport_DavexClient::GET, '/foobar.0.json');
+        
+        $json = $t->getItem('/foobar');
     }
     
     public function testGetNamespaces() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
-        $x = $t->login($this->credentials, $this->config['workspace']);
-        $this->assertTrue($x);
+        $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:registerednamespaces');
+        $dom = new DOMDocument();
+        $dom->load('fixtures/registeredNamespaces.xml');
+        
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with(jackalope_transport_DavexClient::REPORT, '', $reportRequest)
+            ->will($this->returnValue($dom));
+        
         $ns = $t->getNamespaces();
         $this->assertType('array', $ns);
         foreach($ns as $prefix => $uri) {
@@ -93,7 +187,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         
         $requestStr = jackalope_transport_DavexClient_Mock::buildNodeTypesRequestMock($params);
         
-        $t = $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'checkLogin', '__construct'), array(null));
+        $t = $this->getTransportMock();
         $t->expects($this->once())
             ->method('getDomFromBackend')
             ->with(jackalope_transport_DavexClient::REPORT, '/jcr:root', $requestStr)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<D:multistatus xmlns:D="DAV:">
+    <D:response>
+        <D:href>http://localhost:8080/server/tests/</D:href>
+        <D:propstat>
+            <D:prop>
+                <dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0">tests</dcr:workspaceName>
+                <D:workspace>
+                    <D:href>http://localhost:8080/server/tests/</D:href>
+                </D:workspace>
+            </D:prop>
+            <D:status>HTTP/1.1 200 OK</D:status>
+        </D:propstat>
+    </D:response>
+</D:multistatus>
