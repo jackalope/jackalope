@@ -80,7 +80,14 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function getAncestor($depth) {
-        throw new jackalope_NotImplementedException();
+        if ($depth < 0 || $depth > $this->depth) {
+            throw new PHPCR_ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
+        }
+        if ($depth == $this->depth) {
+            return $this;
+        }
+        $ancestorPath = '/'.implode('/', array_slice(explode('/', $this->path), 1, $depth));
+        return $this->objectManager->getNodeByPath($ancestorPath);
     }
 
     /**
@@ -207,16 +214,16 @@ class jackalope_Item implements PHPCR_ItemInterface {
         if ($this === $otherItem) { // trivial case
             return true;
         }
-        if ($this->getSession()->getRepository() === $otherItem->getSession()->getRepository() &&
-            $this->getSession()->getWorkspace() === $otherItem->getSession()->getWorkspace() && 
+        if ($this->session->getRepository() === $otherItem->getSession()->getRepository() &&
+            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() && 
             get_class($this) == get_class($otherItem)) {
 
             if ($this instanceof jackalope_Node) {
-                if ($this->getIdentifier() == $otherItem->getIdentifier()) {
+                if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
             } else { // assert($this instanceof jackalope_Property)
-                if ($this->getName() == $otherItem->getName() &&
+                if ($this->name == $otherItem->getName() &&
                     $this->getParent()->isSame($otherItem->getParent())) {
                         return true;
                 }
