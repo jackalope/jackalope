@@ -13,6 +13,10 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     static public function buildPropfindRequestMock($args = array()) {
         return self::buildPropfindRequest($args);
     }
+    
+    public function prepareRequest($curl, $type, $uri, $body = '', $depth = 0) {
+        return parent::prepareRequest($curl, $type, $uri, $body = '', $depth = 0);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
@@ -22,7 +26,13 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     public function testPrepareRequest() {
+        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($this->config['url']));
         
+        $curl = curl_init();
+        $t->prepareRequest($curl, 'testmethod', 'testuri', 'testbody', 3);
+        $info = curl_getinfo($curl);
+        $this->assertEquals('testuri', $info['url']);
+        //TODO: Figure out how to test if all options are set correctly
     }
     
     public function testGetRawFromBackend() {
