@@ -18,7 +18,7 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
     public function getTransportMock($args = null) {
-        return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'checkLogin'), array($args));
+        return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($args));
     }
     
     public function testBuildReportRequest() {
@@ -117,11 +117,21 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
     
+    /**
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetItemWithoutAbsPath() {
+        $t = $this->getTransportMock();
+        $t->getItem('foo');
+    }
+    
     public function testGetItem() {
-        $t = new jackalope_transport_DavexClient($this->config['url']);
-        $t->login($this->credentials, $this->config['workspace']);
-        $json = $t->getItem('/');
-        $this->assertType('object', $json);
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getJsonFromBackend')
+            ->with(jackalope_transport_DavexClient::GET, '/foobar.0.json');
+        
+        $json = $t->getItem('/foobar');
     }
     
     public function testGetNamespaces() {
