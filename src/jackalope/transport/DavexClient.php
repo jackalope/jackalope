@@ -54,7 +54,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     /** Opens a cURL session if not yet one open. */
     protected function initConnection() {
         if (!is_null($this->curl)) {
-            return;
+            return false;
         }
         $this->curl = new jackalope_transport_curl();
         // options in common for all requests
@@ -64,7 +64,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     /** Closes the cURL session. */
     protected function closeConnection() {
         if (is_null($this->curl)) {
-            return;
+            return false;
         }
         $this->curl->close();
         $this->curl = null;

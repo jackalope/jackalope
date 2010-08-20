@@ -17,6 +17,14 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
         return self::buildPropfindRequest($args);
     }
     
+    public function initConnection() {
+        return parent::initConnection();
+    }
+    
+    public function closeConnection() {
+        return parent::closeConnection();
+    }
+    
     public function prepareRequest($type, $uri, $body = '', $depth = 0) {
         return parent::prepareRequest($type, $uri, $body, $depth);
     }
@@ -24,8 +32,16 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
-    public function getTransportMock($args = null) {
-        return $this->getMock('jackalope_transport_DavexClient', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($args));
+    public function getTransportMock($args = 'testuri') {
+        return $this->getMock(
+            'jackalope_transport_DavexClient_Mock',
+            array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct'),
+            array($args)
+        );
+    }
+    
+    public function getCurlFixture() {
+        return $this->getMock('jackalope_transport_curl');
     }
     
     /**
@@ -40,16 +56,64 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @covers jackalope_transport_DavexClient::__destruct
      */
     public function testDestructor() {
-        $transport = new jackalope_transport_DavexClient_Mock('testuri');
+        $transport = $this->getTransportMock();
         $transport->__destruct();
         $this->assertEquals(null, $transport->curl);
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::initConnection
+     */
+    public function testInitConnectionAlreadInitialized() {
+        $t = $this->getMock(
+            'jackalope_transport_DavexClient_Mock',
+            array('__destruct', '__construct'),
+            array('testuri')
+        );
+        $t->curl = 'test';
+        $this->assertFalse($t->initConnection());
+        $this->assertEquals('test', $t->curl);
+    }
+
+    /**
+     * @covers jackalope_transport_DavexClient::initConnection
+     */
+    public function testInitConnection() {
+        $t = $this->getMock(
+            'jackalope_transport_DavexClient_Mock',
+            array('__destruct', '__construct'),
+            array('testuri')
+        );
+        $t->initConnection();
+        $this->assertType('jackalope_transport_curl', $t->curl);
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::closeConnection
+     */
+    public function testCloseConnectionAlreadyClosed() {
+        $t = $this->getTransportMock();
+        $t->curl = null;
+        $this->assertFalse($t->closeConnection());
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::closeConnection
+     */
+    public function testCloseConnection() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture();
+        $t->curl->expects($this->once())
+            ->method('close');
+        $t->closeConnection();
+        $this->assertEquals(null, $t->curl);
     }
     
     /**
      * @covers jackalope_transport_DavexClient::prepareRequest
      */
     public function testPrepareRequest() {
-        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('checkLogin'), array($this->config['url']));
+        $t = $this->getTransportMock();
         $t->curl = $this->getMock('jackalope_transport_curl', array());
         $t->curl->expects($this->at(0))
             ->method('setopt')
@@ -77,8 +141,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @covers jackalope_transport_DavexClient::getRawFromBackend
      */
     public function testGetRawFromBackend() {
-        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('checkLogin'), array($this->config['url']));
-        
+        $t = $this->getTransportMock();
     }
     
     /**
@@ -112,10 +175,10 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:repositorydescriptors');
         $dom = new DOMDocument();
         $dom->load('fixtures/repositoryDescriptors.xml');
-        $t = $this->getTransportMock($this->config['url']);
+        $t = $this->getTransportMock();
         $t->expects($this->once())
             ->method('getDomFromBackend')
-            ->with(jackalope_transport_DavexClient_Mock::REPORT, 'http://localhost:8080/server/', $reportRequest)
+            ->with(jackalope_transport_DavexClient_Mock::REPORT, 'testuri/', $reportRequest)
             ->will($this->returnValue($dom));
         
         $desc = $t->getRepositoryDescriptors();
@@ -177,10 +240,10 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $propfindRequest = jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
         $dom = new DOMDocument();
         $dom->load('fixtures/loginResponse.xml');
-        $t = $this->getTransportMock($this->config['url']);
+        $t = $this->getTransportMock();
         $t->expects($this->once())
             ->method('getDomFromBackend')
-            ->with(jackalope_transport_DavexClient::PROPFIND, 'http://localhost:8080/server/tests', $propfindRequest)
+            ->with(jackalope_transport_DavexClient::PROPFIND, 'testuri/tests', $propfindRequest)
             ->will($this->returnValue($dom));
         
         $x = $t->login($this->credentials, $this->config['workspace']);
