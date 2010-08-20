@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<D:multistatus xmlns:D="DAV:">
+    <D:response>
+        <D:propstat>
+            <D:prop>
+                <dcr:workspaceName xmlns:dcr="http://www.day.com/jcr/webdav/1.0">default</dcr:workspaceName>
+            </D:prop>
+        </D:propstat>
+    </D:response>
+</D:multistatus>
