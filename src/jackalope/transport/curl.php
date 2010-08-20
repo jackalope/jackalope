@@ -1,4 +1,5 @@
 <?php
+PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 
 class jackalope_transport_curl {
     protected $curL;
