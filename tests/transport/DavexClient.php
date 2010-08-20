@@ -37,6 +37,15 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /**
+     * @covers jackalope_transport_DavexClient::__destruct
+     */
+    public function testDestructor() {
+        $transport = new jackalope_transport_DavexClient_Mock('testuri');
+        $transport->__destruct();
+        $this->assertEquals(null, $transport->curl);
+    }
+    
+    /**
      * @covers jackalope_transport_DavexClient::prepareRequest
      */
     public function testPrepareRequest() {
