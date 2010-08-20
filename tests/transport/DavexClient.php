@@ -28,6 +28,10 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     public function prepareRequest($type, $uri, $body = '', $depth = 0) {
         return parent::prepareRequest($type, $uri, $body, $depth);
     }
+    
+    public function setCredentials($credentials) {
+        $this->credentials = $credentials;
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
@@ -235,6 +239,53 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
     /**
      * @covers jackalope_transport_DavexClient::login
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testLoginAlreadyLoggedin() {
+        $t = $this->getTransportMock();
+        $t->setCredentials('test');
+        $t->login($this->credentials, $this->config['workspace']);
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::login
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testLoginUnsportedCredentials() {
+        $t = $this->getTransportMock();
+        $t->login(new falseCredentialsMock(), $this->config['workspace']);
+    }
+
+    /**
+     * @covers jackalope_transport_DavexClient::login
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testLoginEmptyBackendResponse() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/empty.xml');
+        $t = $this->getTransportMock();
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->will($this->returnValue($dom));
+        $t->login($this->credentials, $this->config['workspace']);
+    }
+
+    /**
+     * @covers jackalope_transport_DavexClient::login
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testLoginWrongWorkspace() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/wrongWorkspace.xml');
+        $t = $this->getTransportMock();
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->will($this->returnValue($dom));
+        $t->login($this->credentials, $this->config['workspace']);
+    }
+    
+     /**
+     * @covers jackalope_transport_DavexClient::login
      */
     public function testLogin() {
         $propfindRequest = jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
@@ -388,4 +439,8 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /** END TESTING NODE TYPES **/
+}
+
+class falseCredentialsMock implements PHPCR_CredentialsInterface {
+    
 }
