@@ -249,7 +249,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
     /**
      * @covers jackalope_transport_DavexClient::login
-     * @expectedException PHPCR_RepositoryException
+     * @expectedException PHPCR_LoginException
      */
     public function testLoginUnsportedCredentials() {
         $t = $this->getTransportMock();
