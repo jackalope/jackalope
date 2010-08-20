@@ -45,6 +45,8 @@ too see how to instantiate a repository.
 Tests
 *****
 
+There is our continuos integration server at:
+http://bamboo.liip.ch/browse/JACK
 
 Run phpunit from the api-tests directory. You should have a lot of failed tests,
 but no exception. If you have something like this, it works (yeah, FAILURES are ok):
