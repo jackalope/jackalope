@@ -1,8 +1,9 @@
 <?php
 PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+//TODO: Write phpt tests
 
 class jackalope_transport_curl {
-    protected $curL;
+    protected $curl;
     
     public function __construct($str = null) {
         $this->curl = curl_init($str);
