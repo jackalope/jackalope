@@ -2,6 +2,8 @@
 require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClient {
+    public $curl;
+    
     static public function buildNodeTypesRequestMock(Array $params) {
         return self::buildNodeTypesRequest($params);
     }
@@ -14,8 +16,8 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
         return self::buildPropfindRequest($args);
     }
     
-    public function prepareRequest($curl, $type, $uri, $body = '', $depth = 0) {
-        return parent::prepareRequest($curl, $type, $uri, $body = '', $depth = 0);
+    public function prepareRequest($type, $uri, $body = '', $depth = 0) {
+        return parent::prepareRequest($type, $uri, $body, $depth);
     }
 }
 
@@ -26,16 +28,32 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     public function testPrepareRequest() {
-        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin'), array($this->config['url']));
-        
-        $curl = curl_init();
-        $t->prepareRequest($curl, 'testmethod', 'testuri', 'testbody', 3);
-        $info = curl_getinfo($curl);
-        $this->assertEquals('testuri', $info['url']);
-        //TODO: Figure out how to test if all options are set correctly
+        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('checkLogin'), array($this->config['url']));
+        $t->curl = $this->getMock('jackalope_transport_curl', array());
+        $t->curl->expects($this->at(0))
+            ->method('setopt')
+            ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
+        $t->curl->expects($this->at(1))
+            ->method('setopt')
+            ->with(CURLOPT_URL, 'testuri');
+        $t->curl->expects($this->at(2))
+            ->method('setopt')
+            ->with(CURLOPT_RETURNTRANSFER, 1);
+        $t->curl->expects($this->at(3))
+            ->method('setopt')
+            ->with(CURLOPT_HTTPHEADER, array(
+                'Depth: 3',
+                'Content-Type: text/xml; charset=UTF-8',
+                'User-Agent: '. jackalope_transport_DavexClient::USER_AGENT
+            ));
+        $t->curl->expects($this->at(4))
+            ->method('setopt')
+            ->with(CURLOPT_POSTFIELDS, 'testbody');
+        $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
     }
     
     public function testGetRawFromBackend() {
+        $t = $this->getMock('jackalope_transport_DavexClient_Mock', array('checkLogin'), array($this->config['url']));
         
     }
     

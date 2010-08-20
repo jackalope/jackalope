@@ -52,21 +52,21 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     }
 
     /** Opens a cURL session if not yet one open. */
-    private function initConnection() {
+    protected function initConnection() {
         if (!is_null($this->curl)) {
             return;
         }
-        $this->curl = curl_init();
+        $this->curl = new jackalope_transport_curl();
         // options in common for all requests
-        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
+        $this->curl->setopt(CURLOPT_RETURNTRANSFER, 1);
     }
 
     /** Closes the cURL session. */
-    private function closeConnection() {
+    protected function closeConnection() {
         if (is_null($this->curl)) {
             return;
         }
-        curl_close($this->curl);
+        $this->curl->close();
         $this->curl = null;
     }
 
@@ -305,18 +305,20 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $this->initConnection();
 
         if ($this->credentials instanceof PHPCR_SimpleCredentials) {
-            curl_setopt($this->curl, CURLOPT_USERPWD,
-                        $this->credentials->getUserID().':'.$this->credentials->getPassword());
+            $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
         }
+        
         $headers = array(
             'Depth: ' . $depth,
             'Content-Type: text/xml; charset=UTF-8',
             'User-Agent: '.self::USER_AGENT
         );
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $type);
-        curl_setopt($this->curl, CURLOPT_URL, $uri);
-        curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
+
+        $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $type);
+        $this->curl->setopt(CURLOPT_URL, $uri);
+        $this->curl->setopt(CURLOPT_RETURNTRANSFER, 1);
+        $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
+        $this->curl->setopt(CURLOPT_POSTFIELDS, $body);
     }
     /**
      * Takes a curl handle prepared by prepareRequest, executes it and checks
@@ -325,17 +327,17 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_RepositoryExceptions and descendants on connection errors
      */
     protected function getRawFromBackend() {
-        $data = curl_exec($this->curl);
+        $data = $this->curl->exec();
         if (NULL === $data || empty($data)) {
-            switch(curl_errno($this->curl)) {
+            switch($this->curl->errno()) {
                 case CURLE_COULDNT_RESOLVE_HOST:
                 case CURLE_COULDNT_CONNECT:
-                    throw new PHPCR_NoSuchWorkspaceException(curl_error($this->curl));
+                    throw new PHPCR_NoSuchWorkspaceException($this->curl->error());
                 default:
                     if ($data == '') {
                         $msg = 'No data returned by server.';
                     } else {
-                        $msg = curl_error($this->curl);
+                        $msg = $this->curl->error();
                         if ($msg == '') $msg = 'No reason given by curl.';
                     }
                     throw new PHPCR_RepositoryException($msg);
@@ -363,7 +365,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $err = $dom->getElementsByTagNameNS(self::NS_DCR, 'exception');
         if ($err->length > 0) {
             //TODO: can we trust jackrabbit to always have an exception node if status is not OK?
-            $status = curl_getinfo($this->curl);
+            $status = $this->curl->getinfo();
             $err = $err->item(0);
             $errClass = $err->getElementsByTagNameNS(self::NS_DCR, 'class')->item(0)->textContent;
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
@@ -398,7 +400,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $jsonstring = $this->getRawFromBackend();
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
-            $status = curl_getinfo($this->curl);
+            $status = $this->curl->getinfo();
             if (404 === $status['http_code']) {
                 throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
             } elseif (500 <= $status['http_code']) {
