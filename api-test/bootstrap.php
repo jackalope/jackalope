@@ -1,4 +1,5 @@
 <?php
+PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__);
 
 /**
  * Bootstrap file for jackalope
