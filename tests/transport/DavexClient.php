@@ -174,6 +174,20 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
     /**
      * @covers jackalope_transport_DavexClient::getRepositoryDescriptors
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetRepositoryDescriptorsEmptyBackendResponse() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/empty.xml');
+        $t = $this->getTransportMock();
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->will($this->returnValue($dom));
+        $desc = $t->getRepositoryDescriptors();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRepositoryDescriptors
      */
     public function testGetRepositoryDescriptors() {
         $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:repositorydescriptors');
@@ -187,16 +201,11 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         
         $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
-        foreach($desc as $key => $value) {
-            $this->assertType('string', $key);
-            if (is_array($value)) {
-                foreach($value as $val) {
-                    $this->assertType('PHPCR_ValueInterface', $val);
-                }
-            } else {
-                $this->assertType('PHPCR_ValueInterface', $value);
-            }
-        }
+        $this->assertType('PHPCR_ValueInterface', $desc['identifier.stability']);
+        $this->assertEquals('identifier.stability.indefinite.duration', $desc['identifier.stability']->getString());
+        $this->assertType('array', $desc['node.type.management.property.types']);
+        $this->assertType('PHPCR_ValueInterface', $desc['node.type.management.property.types'][0]);
+        $this->assertEquals(2, $desc['node.type.management.property.types'][0]->getString());
     }
     
     /**
@@ -317,15 +326,6 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testLoginNoSuchWorkspace() {
         $t = new jackalope_transport_DavexClient($this->config['url']);
         $t->login($this->credentials, 'not-an-existing-workspace');
-    }
-    
-    /**
-     * Should be expectedException PHPCR_LoginException
-     * @covers jackalope_transport_DavexClient::login
-     */
-    public function testLoginInvalidPw() {
-        $this->markTestSkipped('make jackrabbit restrict user rights to test this');
-        //$d = new jackalope_transport_DavexClient(new PHPCR_SimpleCredentials('nosuch', 'user'), $this->config['url'], $this->config['workspace']);
     }
     
     /**
