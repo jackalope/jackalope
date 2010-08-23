@@ -1,0 +1,5 @@
+<D:multistatus xmlns:D="DAV:">
+ <D:response>
+     <D:href>http://localhost:8080/server/tests/jcr%3aroot/tests_level1_access_base/idExample/</D:href>
+ </D:response>
+</D:multistatus>
