@@ -417,6 +417,22 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
     /**
      * @covers jackalope_transport_DavexClient::getNamespaces
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetNamespacesEmptyResponse() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/empty.xml');
+        
+        $t = $this->getTransportMock($this->config['url']);
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->will($this->returnValue($dom));
+        
+        $ns = $t->getNamespaces();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getNamespaces
      */
     public function testGetNamespaces() {
         $reportRequest = jackalope_transport_DavexClient_Mock::buildReportRequestMock('dcr:registerednamespaces');
