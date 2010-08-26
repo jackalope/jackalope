@@ -39,6 +39,10 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     public function setCredentials($credentials) {
         $this->credentials = $credentials;
     }
+    
+    public function checkLogin() {
+        parent::checkLogin();
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
@@ -222,6 +226,15 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testCheckLoginFail() {
         $t = new jackalope_transport_DavexClient('http://localhost:1/server');
         $t->getNodeTypes();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::checkLogin
+     */
+    public function testCheckLogin() {
+        $t = new jackalope_transport_DavexClient_Mock('http://localhost:1/server');
+        $t->workspaceUri = 'testuri';
+        $t->checkLogin();
     }
     
     /**

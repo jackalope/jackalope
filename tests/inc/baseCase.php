@@ -1,5 +1,6 @@
 <?php
 require_once 'PHPUnit/Framework.php';
+require_once(dirname(__FILE__) . '/../../src/jackalope/autoloader.php');
 
 abstract class jackalope_baseCase extends PHPUnit_Framework_TestCase {
     protected $config;
