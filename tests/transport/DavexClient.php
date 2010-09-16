@@ -153,6 +153,22 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /**
+     * @covers jackalope_transport_DavexClient::prepareRequest
+     */
+    public function testPrepareRequestWithCredentials() {
+        $t = $this->getTransportMock();
+        $t->setCredentials(new PHPCR_SimpleCredentials('foo', 'bar'));
+        $t->curl = $this->getMock('jackalope_transport_curl', array());
+        $t->curl->expects($this->at(0))
+            ->method('setopt')
+            ->with(CURLOPT_USERPWD, 'foo:bar');
+        $t->curl->expects($this->at(1))
+            ->method('setopt')
+            ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
+        $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
+    }
+    
+    /**
      * @covers jackalope_transport_DavexClient::getRawFromBackend
      */
     public function testGetRawFromBackend() {
