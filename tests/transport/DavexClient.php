@@ -43,6 +43,18 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     public function checkLogin() {
         parent::checkLogin();
     }
+    
+    public function getRawFromBackend() {
+        return parent::getRawFromBackend();
+    }
+    
+    public function getDomFromBackend($type, $uri, $body='', $depth=0) {
+        return parent::getDomFromBackend($type, $uri, $body, $depth);
+    }
+    
+    public function getJsonFromBackend($type, $uri, $body='', $depth=0) {
+        return parent::getJsonFromBackend($type, $uri, $body, $depth);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
@@ -55,8 +67,23 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         );
     }
     
-    public function getCurlFixture() {
-        return $this->getMock('jackalope_transport_curl');
+    public function getCurlFixture($fixture = null, $errno = null) {
+        $curl =  $this->getMock('jackalope_transport_curl');
+        if (isset($fixture)) {
+            if (is_file($fixture)) {
+                $fixture = readfile($fixture);
+            }
+            $curl->expects($this->any())
+                ->method('exec')
+                ->will($this->returnValue($fixture));
+        }
+        
+        if (isset($errno)) {
+            $curl->expects($this->any())
+                ->method('errno')
+                ->will($this->returnValue($errno));
+        }
+        return $curl;
     }
     
     /**
@@ -173,6 +200,38 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      */
     public function testGetRawFromBackend() {
         $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture('hulla hulla');
+        $this->assertEquals('hulla hulla', $t->getRawFromBackend());
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetRawFromBackendNoHost() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_RESOLVE_HOST);
+        $t->getRawFromBackend();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetRawFromBackendNoConnect() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_CONNECT);
+        $t->getRawFromBackend();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetRawFromBackendNoData() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null);
+        $t->getRawFromBackend();
     }
     
     /**

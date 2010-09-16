@@ -334,12 +334,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                 case CURLE_COULDNT_CONNECT:
                     throw new PHPCR_NoSuchWorkspaceException($this->curl->error());
                 default:
-                    if ($data == '') {
-                        $msg = 'No data returned by server.';
-                    } else {
-                        $msg = $this->curl->error();
-                        if ($msg == '') $msg = 'No reason given by curl.';
-                    }
+                    $curlError = $this->curl->error();
+                    $msg = 'No data returned by server: ';
+                    $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
                     throw new PHPCR_RepositoryException($msg);
             }
         }
