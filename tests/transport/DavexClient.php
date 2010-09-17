@@ -59,10 +59,13 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
-    public function getTransportMock($args = 'testuri') {
+    public function getTransportMock($args = 'testuri', $changeMethods = array()) {
+        //Array XOR
+        $defaultMockMethods = array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct');
+        $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
         return $this->getMock(
             'jackalope_transport_DavexClient_Mock',
-            array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct'),
+            $mockMethods,
             array($args)
         );
     }
@@ -71,7 +74,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $curl =  $this->getMock('jackalope_transport_curl');
         if (isset($fixture)) {
             if (is_file($fixture)) {
-                $fixture = readfile($fixture);
+                $fixture = file_get_contents($fixture);
             }
             $curl->expects($this->any())
                 ->method('exec')
@@ -245,7 +248,66 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @covers jackalope_transport_DavexClient::getDomFromBackend
      */
     public function testGetDomFromBackend() {
-        
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('GET', 'foo', 'bar', 1);
+        $dom = $t->getDomFromBackend('GET', 'foo', 'bar', 1);
+        $this->assertXmlStringEqualsXmlFile('fixtures/empty.xml', $dom->saveXML());
+    }
+    
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetDomFromBackendNoWorkspace() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionNoWorkspace.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_NodeType_NoSuchNodeTypeException
+     */
+    public function testGetDomFromBackendNoSuchNodeType() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionNoSuchNodeType.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_ItemNotFoundException
+     */
+    public function testGetDomFromBackendItemNotFoundException() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionItemNotFound.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetDomFromBackendRepositoryException() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionRepository.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getDomFromBackend('POST', 'hulla');
     }
     
     /**

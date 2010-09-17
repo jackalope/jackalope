@@ -353,7 +353,6 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspaceException
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
-        //OPTIMIZE: re-use connection. JACK-7
         $this->prepareRequest($type, $uri, $body, $depth);
         $xml = $this->getRawFromBackend();
         $dom = new DOMDocument();
