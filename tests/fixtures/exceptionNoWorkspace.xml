@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<D:error xmlns:D="DAV:">
+    <dcr:exception xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+        <dcr:class>javax.jcr.NoSuchWorkspaceException</dcr:class>
+        <dcr:message>This is an example</dcr:message>
+    </dcr:exception>
+</D:error>

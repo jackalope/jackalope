@@ -241,7 +241,54 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @covers jackalope_transport_DavexClient::getJsonFromBackend
      */
     public function testGetJsonFromBackend() {
+        $fixture = json_decode(file_get_contents('fixtures/empty.json'));
         
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.json');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('GET', 'foo', 'bar', 1);
+        $json = $t->getJsonFromBackend('GET', 'foo', 'bar', 1);
+        $this->assertEquals($fixture, $json);
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_ItemNotFoundException
+     */
+    public function testGetJsonFromBackendItemNotFound() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->curl->expects($this->any())
+            ->method('getinfo')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getJsonFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetJsonFromBackendRepositoryException() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->curl->expects($this->any())
+            ->method('getinfo')
+            ->will($this->returnValue(array('http_code' => 500)));
+        $t->getJsonFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetJsonFromBackendInvalidJson() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('invalid json');
+        $t->getJsonFromBackend('POST', 'hulla');
     }
     
     /**
@@ -278,9 +325,6 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testGetDomFromBackendNoSuchNodeType() {
         $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
         $t->curl = $this->getCurlFixture('fixtures/exceptionNoSuchNodeType.xml');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('POST', 'hulla', '', 0);
         $t->getDomFromBackend('POST', 'hulla');
     }
     
@@ -291,9 +335,6 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testGetDomFromBackendItemNotFoundException() {
         $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
         $t->curl = $this->getCurlFixture('fixtures/exceptionItemNotFound.xml');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('POST', 'hulla', '', 0);
         $t->getDomFromBackend('POST', 'hulla');
     }
     
@@ -304,9 +345,6 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     public function testGetDomFromBackendRepositoryException() {
         $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
         $t->curl = $this->getCurlFixture('fixtures/exceptionRepository.xml');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('POST', 'hulla', '', 0);
         $t->getDomFromBackend('POST', 'hulla');
     }
     
