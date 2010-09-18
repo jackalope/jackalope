@@ -11,6 +11,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
     protected $session;
     protected $nodeTypeManager;
     protected $name;
+    protected $namespaceRegistry;
 
     public function __construct(jackalope_Session $session, jackalope_ObjectManager $objectManager, $name) {
         $this->session = $session;
@@ -151,7 +152,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getAccessibleWorkspaceNames() {
-        throw new jackalope_NotImplementedException();
+        return $this->session->getTransport()->getAccessibleWorkspaceNames();
     }
 
     /**

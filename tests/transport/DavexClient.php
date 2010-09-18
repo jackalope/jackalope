@@ -3,7 +3,7 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClient {
     public $curl;
-    public $server;
+    public $server = 'testserver';
     public $workspace = 'testWorkspace';
     public $workspaceUri = 'testWorkspaceUri';
     public $workspaceUriRoot = 'testWorkspaceUriRoot';
@@ -43,20 +43,50 @@ class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClie
     public function checkLogin() {
         parent::checkLogin();
     }
+    
+    public function getRawFromBackend() {
+        return parent::getRawFromBackend();
+    }
+    
+    public function getDomFromBackend($type, $uri, $body='', $depth=0) {
+        return parent::getDomFromBackend($type, $uri, $body, $depth);
+    }
+    
+    public function getJsonFromBackend($type, $uri, $body='', $depth=0) {
+        return parent::getJsonFromBackend($type, $uri, $body, $depth);
+    }
 }
 
 class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     
-    public function getTransportMock($args = 'testuri') {
+    public function getTransportMock($args = 'testuri', $changeMethods = array()) {
+        //Array XOR
+        $defaultMockMethods = array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct');
+        $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
         return $this->getMock(
             'jackalope_transport_DavexClient_Mock',
-            array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct'),
+            $mockMethods,
             array($args)
         );
     }
     
-    public function getCurlFixture() {
-        return $this->getMock('jackalope_transport_curl');
+    public function getCurlFixture($fixture = null, $errno = null) {
+        $curl =  $this->getMock('jackalope_transport_curl');
+        if (isset($fixture)) {
+            if (is_file($fixture)) {
+                $fixture = file_get_contents($fixture);
+            }
+            $curl->expects($this->any())
+                ->method('exec')
+                ->will($this->returnValue($fixture));
+        }
+        
+        if (isset($errno)) {
+            $curl->expects($this->any())
+                ->method('errno')
+                ->will($this->returnValue($errno));
+        }
+        return $curl;
     }
     
     /**
@@ -71,7 +101,7 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
      * @covers jackalope_transport_DavexClient::__destruct
      */
     public function testDestructor() {
-        $transport = $this->getTransportMock();
+        $transport = new jackalope_transport_DavexClient_Mock('testuri');
         $transport->__destruct();
         $this->assertEquals(null, $transport->curl);
     }
@@ -153,24 +183,169 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /**
+     * @covers jackalope_transport_DavexClient::prepareRequest
+     */
+    public function testPrepareRequestWithCredentials() {
+        $t = $this->getTransportMock();
+        $t->setCredentials(new PHPCR_SimpleCredentials('foo', 'bar'));
+        $t->curl = $this->getMock('jackalope_transport_curl', array());
+        $t->curl->expects($this->at(0))
+            ->method('setopt')
+            ->with(CURLOPT_USERPWD, 'foo:bar');
+        $t->curl->expects($this->at(1))
+            ->method('setopt')
+            ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
+        $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
+    }
+    
+    /**
      * @covers jackalope_transport_DavexClient::getRawFromBackend
      */
     public function testGetRawFromBackend() {
         $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture('hulla hulla');
+        $this->assertEquals('hulla hulla', $t->getRawFromBackend());
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetRawFromBackendNoHost() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_RESOLVE_HOST);
+        $t->getRawFromBackend();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetRawFromBackendNoConnect() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_CONNECT);
+        $t->getRawFromBackend();
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getRawFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetRawFromBackendNoData() {
+        $t = $this->getTransportMock();
+        $t->curl = $this->getCurlFixture(null);
+        $t->getRawFromBackend();
     }
     
     /**
      * @covers jackalope_transport_DavexClient::getJsonFromBackend
      */
     public function testGetJsonFromBackend() {
+        $fixture = json_decode(file_get_contents('fixtures/empty.json'));
         
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.json');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('GET', 'foo', 'bar', 1);
+        $json = $t->getJsonFromBackend('GET', 'foo', 'bar', 1);
+        $this->assertEquals($fixture, $json);
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_ItemNotFoundException
+     */
+    public function testGetJsonFromBackendItemNotFound() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->curl->expects($this->any())
+            ->method('getinfo')
+            ->will($this->returnValue(array('http_code' => 404)));
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getJsonFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetJsonFromBackendRepositoryException() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->curl->expects($this->any())
+            ->method('getinfo')
+            ->will($this->returnValue(array('http_code' => 500)));
+        $t->getJsonFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getJsonFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetJsonFromBackendInvalidJson() {
+        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('invalid json');
+        $t->getJsonFromBackend('POST', 'hulla');
     }
     
     /**
      * @covers jackalope_transport_DavexClient::getDomFromBackend
      */
     public function testGetDomFromBackend() {
-        
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('GET', 'foo', 'bar', 1);
+        $dom = $t->getDomFromBackend('GET', 'foo', 'bar', 1);
+        $this->assertXmlStringEqualsXmlFile('fixtures/empty.xml', $dom->saveXML());
+    }
+    
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_NoSuchWorkspaceException
+     */
+    public function testGetDomFromBackendNoWorkspace() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionNoWorkspace.xml');
+        $t->expects($this->once())
+            ->method('prepareRequest')
+            ->with('POST', 'hulla', '', 0);
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_NodeType_NoSuchNodeTypeException
+     */
+    public function testGetDomFromBackendNoSuchNodeType() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionNoSuchNodeType.xml');
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_ItemNotFoundException
+     */
+    public function testGetDomFromBackendItemNotFoundException() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionItemNotFound.xml');
+        $t->getDomFromBackend('POST', 'hulla');
+    }
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getDomFromBackend
+     * @expectedException PHPCR_RepositoryException
+     */
+    public function testGetDomFromBackendRepositoryException() {
+        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
+        $t->curl = $this->getCurlFixture('fixtures/exceptionRepository.xml');
+        $t->getDomFromBackend('POST', 'hulla');
     }
     
     /**
@@ -534,6 +709,23 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /** END TESTING NODE TYPES **/
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getAccessibleWorkspaceNames
+     */
+    public function testGetAccessibleWorkspaceNames() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/accessibleWorkspaces.xml');
+        
+        $t = $this->getTransportMock('testuri');
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with('PROPFIND', 'testuri/', jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace')), 1)
+            ->will($this->returnValue($dom));
+        
+        $names = $t->getAccessibleWorkspaceNames();
+        $this->assertEquals(array('default', 'tests', 'security'), $names);
+    }
 }
 
 class falseCredentialsMock implements PHPCR_CredentialsInterface {

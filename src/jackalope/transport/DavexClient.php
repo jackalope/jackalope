@@ -103,6 +103,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ($set->length != 1) {
             throw new PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
+
         if ($set->item(0)->textContent != $this->workspace) {
             throw new PHPCR_RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
         }
@@ -141,7 +142,24 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $descriptors;
     }
-
+    
+    /**
+     * Returns the accessible workspace names
+     */
+    public function getAccessibleWorkspaceNames() {
+        $dom = $this->getDomFromBackend(self::PROPFIND,
+                                        $this->server,
+                                        self::buildPropfindRequest(array('D:workspace')),
+                                        1);
+        $workspaces = array();
+        foreach ($dom->getElementsByTagNameNS(self::NS_DAV, 'workspace') as $value) {
+            if (! empty($value->nodeValue)) {
+                $workspaces[] = substr(trim($value->nodeValue), strlen($this->server), -1);
+            }
+        }
+        return array_unique($workspaces);
+    }
+    
     /**
      * Get the item from an absolute path
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
@@ -335,12 +353,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                 case CURLE_COULDNT_CONNECT:
                     throw new PHPCR_NoSuchWorkspaceException($this->curl->error());
                 default:
-                    if ($data == '') {
-                        $msg = 'No data returned by server.';
-                    } else {
-                        $msg = $this->curl->error();
-                        if ($msg == '') $msg = 'No reason given by curl.';
-                    }
+                    $curlError = $this->curl->error();
+                    $msg = 'No data returned by server: ';
+                    $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
                     throw new PHPCR_RepositoryException($msg);
             }
         }
@@ -357,7 +372,6 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspaceException
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
-        //OPTIMIZE: re-use connection. JACK-7
         $this->prepareRequest($type, $uri, $body, $depth);
         $xml = $this->getRawFromBackend();
         $dom = new DOMDocument();
