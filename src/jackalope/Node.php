@@ -16,8 +16,8 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
 
     protected $uuid = null;
 
-    public function __construct($rawData, $path,  $session, $objectManager) {
-        parent::__construct($rawData, $path,  $session, $objectManager);
+    public function __construct($rawData, $path,  $session, $objectManager, $new = false) {
+        parent::__construct($rawData, $path,  $session, $objectManager, $new);
         $this->isNode = true;
 
         //TODO: determine the index if != 1
@@ -101,7 +101,24 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
-        throw new jackalope_NotImplementedException('Write');
+
+        if(strstr($relPath, '/')!==false) {
+            throw new jackalope_NotImplementedException('TODO: Resolve relative path to get the parent node and the node name');
+            //return $node->addNode($name, $primaryNodeTypeName, $identifier);
+        }
+        if (is_null($primaryNodeTypeName)) {
+            throw new jackalope_NotImplementedException('TODO: How to determine the node type?');
+        }
+        $data = array('jcr:primaryType' => $primaryNodeTypeName);
+        if (! is_null($identifier)) {
+            $data['jcr:uuid'] = $identifier;
+        }
+        $path = $this->path.'/'.$relPath;
+        $node = jackalope_Factory::get('Node', array($data, $path,
+                $this->session, $this->objectManager, true));
+        $this->objectManager->addItem($path, $node);
+        $this->nodes[] = $relPath;
+        $this->setModified();
     }
 
     /**
@@ -134,7 +151,26 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath) {
-        throw new jackalope_NotImplementedException('Write');
+        if ($srcChildRelPath == $destChildRelPath) return; //nothing to move
+        $oldpos = array_search($srcChildRelPath, $this->nodes);
+        if ($oldpos === false)
+            throw new PHPCR_ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+
+        if ($destChildRelPath == null) {
+            //null means move to end
+            unset($this->nodes[$oldpos]);
+            $this->nodes[] = $srcChildRelPath;
+        } else {
+            //insert somewhere specified by dest path
+            $newpos = array_search($destChildRelPath, $this->nodes);
+            if ($newpos === false)
+                throw new PHPCR_ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
+            if ($oldpos < $newpos) $newpos--; //we first unset, so
+            unset($this->nodes[$oldpos]);
+            array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
+        }
+        $this->modified = true;
+        //TODO: do we have to record reorderings specifically for telling the backend?
     }
 
     /**
@@ -188,7 +224,57 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function setProperty($name, $value, $type = NULL) {
-        throw new jackalope_NotImplementedException('Write');
+        if ($value instanceof PHPCR_ValueInterface) {
+            if (! is_null($type) && $type != $value->getType()) {
+                throw new jackalope_NotImplementedException('converting value seems like pain. do we have to?');
+            } else {
+                $type = $value->getType();
+            }
+            $data = $value;
+        } else {
+            if (! is_null($type)) {
+                switch($type) {
+                    case PHPCR_PropertyType::DATE:
+                        if (is_int($value)) $value = date('c', $value); //convert to ISO 8601
+                        break;
+                    //TODO: more type checks or casts?
+                }
+            }
+        }
+        if (! isset($this->properties[$name])) {
+            if (is_null($type)) {
+                //determine type from variable type of value.
+                //this is mainly needed to create a new property
+                if (is_string($value)) {
+                    $type = PHPCR_PropertyType::STRING;
+                //TODO: binary!
+                } elseif (is_int($value)) {
+                    $type = PHPCR_PropertyType::LONG;
+                } elseif (is_float($value)) {
+                    $type = PHPCR_PropertyType::DOUBLE;
+                //there is no date class in php, its usually strings (or timestamp numbers)
+                //explicitly specify the type param for a date string
+                } elseif (is_bool($value)) {
+                    $type = PHPCR_PropertyType::BOOLEAN;
+                //name, path, reference, weakreference, uri are string, explicitly specify type if you need
+                //decimal is not really meaningful (its double only), explicitly specify type if you need
+                } else {
+                    $type = PHPCR_PropertyType::UNDEFINED;
+                }
+            }
+            $data = array('type'=>$type, 'value'=>$value);
+
+            $path = $this->path . "/$name";
+            $property = jackalope_Factory::get(
+                            'Property',
+                            array($data, $path, $this->session, $this->objectManager, true));
+            $this->objectManager->addItem($path, $property);
+            $this->properties[$name] = $property;
+        } else {
+            if (! is_null($type) && $this->properties[$name]->getType() != $type)
+                throw new jackalope_NotImplementedException('converting value seems like pain. do we have to?');
+            $this->properties[$name]->setValue($value);
+        }
     }
 
     /**

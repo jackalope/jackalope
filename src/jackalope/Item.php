@@ -7,7 +7,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
     protected $objectManager;
 
     /** false if node is read from backend, true if node is created locally in this session */
-    protected $new = false;
+    protected $new;
     protected $modified = false;
 
     protected $name;
@@ -23,12 +23,14 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @param string    $path   The normalized and absolute path to this item
      * @param jackalope_Session $session
      * @param jackalope_ObjectManager $objectManager
+     * @param boolean $new can be set to true to tell the object that it has been created locally
      */
     public function __construct($rawData, $path,  jackalope_Session $session,
-                                jackalope_ObjectManager $objectManager) {
+                                jackalope_ObjectManager $objectManager, $new = false) {
         $this->path = $path;
         $this->session = $session;
         $this->objectManager = $objectManager;
+        $this->new = $new;
 
         $path = explode('/', $path);
         $this->depth = count($path) - 1;

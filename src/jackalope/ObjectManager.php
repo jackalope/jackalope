@@ -10,7 +10,10 @@ class jackalope_ObjectManager {
     protected $session;
     protected $transport;
 
-    /** mapping of absolutePath => node object */
+    /**
+     * mapping of absolutePath => node object
+     * there is no notion of order here. the order is defined by order in Node::nodes array
+     */
     protected $objectsByPath = array();
     /**
      * mapping of uuid => absolutePath
@@ -50,6 +53,8 @@ class jackalope_ObjectManager {
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
+            if (isset($this->nodesRemove[$absPath]))
+                throw new  PHPCR_ItemNotFoundException('Path not found (deleted in current session): ' . $uri);
             $node = jackalope_Factory::get(
                 'Node',
                 array(
@@ -240,20 +245,44 @@ class jackalope_ObjectManager {
         }
     }
 
-    /** push all recorded changes to the backend */
+    /**
+     * push all recorded changes to the backend
+     * the order is important to avoid conflicts
+     * 1. remove nodes
+     * 2. move nodes
+     * 3. add new nodes
+     * 4. commit any other changes
+     */
     public function save() {
         throw jackalope_NotImplementedException(); //TODO
-        //remove
-        //move
-        //add
+
+        foreach($this->nodesRemove as $path => $dummy) {
+            //TODO: have a davex client method to push a remove of a path
+        }
+        foreach($this->nodesMove as $src => $dst) {
+            //TODO: have a davex client method to push a remove of a path
+        }
+        foreach($this->nodesAdd as $path => $dummy) {
+            //TODO: have a davex client method to save a new node
+        }
         //loop through cached nodes and commit all dirty and set them to clean.
+        foreach($this->objectsByPath as $item) {
+            if ($item->isModified()) {
+                //TODO: determine changes and have a davex client method to save them (same as for new nodes or different?)
+            }
+        }
+
+        //TODO: have a davex client method to commit transaction
+
         $this->unsaved = false;
     }
 
     /** Determine if any object is modified */
     public function hasPendingChanges() {
         if ($this->unsaved || count($this->nodesAdd) || count($this->nodesRemove)) return true;
-        //TODO: loop through all cached items to see if any of them is dirty
+        foreach($this->objectsByPath as $item) {
+            if ($item->isModified()) return true;
+        }
 
         return false;
     }
@@ -277,7 +306,7 @@ class jackalope_ObjectManager {
             //this is a new unsaved node
             unset($this->nodeAdd[$absPath]);
         } else {
-            $this->nodeRemove[] = $absPath;
+            $this->nodeRemove[$absPath] = 1;
         }
     }
 
@@ -287,6 +316,7 @@ class jackalope_ObjectManager {
     public function moveItem($srcAbsPath, $destAbsPath) {
         $this->nodeMove[$srcAbsPath] = $destAbsPath;
         $this->unsaved = true;
+        throw new jackalope_NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
         /*
         FIXME: dispatch everything to backend immediatly (without saving) on move so the backend cares about translating all requests to the new path? how do we know if things are modified after that operation?
         otherwise we have to update all cached objects, tell this item its new path and make it dirty.
@@ -294,17 +324,20 @@ class jackalope_ObjectManager {
     }
 
     /**
-     * WRITE: add a node at the specified path
+     * WRITE: add an item at the specified path.
      *
      * @param string $absPath the path to the node, including the node identifier
-     * @param PHPCR_Node $node the node to add
+     * @param PHPCR_Node $item the item to add
      * @throws PHPCR_ItemExistsException if a node already exists at that path
      */
-    public function addItem($absPath, $node) {
+    public function addItem($absPath, PHPCR_ItemInterface $item) {
         if (isset($this->objectsByPath[$absPath]))
             throw new PHPCR_ItemExistsException($absPath); //FIXME: same-name-siblings...
-        $this->objectsByPath[$absPath];
-        $this->objectsByUuid[$node->getIdentifier()] = $absPath;
+        $this->objectsByPath[$absPath] = $item;
+        if($item instanceof PHPCR_NodeInterface) {
+            //TODO: determine if we have an identifier.
+            $this->objectsByUuid[$item->getIdentifier()] = $absPath;
+        }
         $this->nodesAdd[$absPath] = 1;
     }
 

@@ -7,22 +7,44 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     protected $type;
     protected $definition;
 
-    public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager) {
-        parent::__construct(null, $path, $session, $objectManager);
+    /**
+     * create a property, either from server data or locally
+     * to indicate this has been created locally, make sure to pass true for the $new parameter
+     *
+     * @param mixed $data either array with fields
+                        type (integer or string from PropertyType)
+                        and value (data for creating value object)
+                      or value object.
+     * @param string $path the absolute path of this item
+     * @param jackalope_Session the session instance
+     * @param jackalope_ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
+     * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
+     */
+    public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager, $new = false) {
+        parent::__construct(null, $path, $session, $objectManager, $new);
 
-        $this->type = PHPCR_PropertyType::valueFromName($data['type']);
-
-        if (is_array($data['value'])) {
-            $this->isMultiple = true;
-            $this->value = array();
-            foreach ($data['value'] as $value) {
-                array_push($this->value, jackalope_Factory::get('Value', array(
-                    $data['type'],
-                    $value
-                )));
-            }
+        if ($data instanceof PHPCR_Value ||
+            is_array($data) && $data[0] instanceof PHPCR_Value) {
+            $this->value = $data;
         } else {
-            $this->value = jackalope_Factory::get('Value', array($data['type'], $data['value']));
+            $type = $data['type'];
+            if (is_string($type)) {
+                $type = PHPCR_PropertyType::valueFromName($type);
+            }
+            $this->type = $type;
+
+            if (is_array($data['value'])) {
+                $this->isMultiple = true;
+                $this->value = array();
+                foreach ($data['value'] as $value) {
+                    array_push($this->value, jackalope_Factory::get('Value', array(
+                        $type,
+                        $value
+                    )));
+                }
+            } else {
+                $this->value = jackalope_Factory::get('Value', array($type, $data['value']));
+            }
         }
     }
 
