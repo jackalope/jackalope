@@ -415,7 +415,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $jsonstring = $this->getRawFromBackend();
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
-            $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
+            $status = $this->curl->getinfo();
+            $status = $status['http_code'];
             if (404 === $status) {
                 throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
             } elseif (500 <= $status) {
