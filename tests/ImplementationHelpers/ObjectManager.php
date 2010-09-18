@@ -1,7 +1,7 @@
 <?php
 require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
 
-class OMT extends jackalope_ObjectManager {
+class OMT extends jackalope\ObjectManager {
     
     public function isUUID($i) {
         return parent::isUUID($i);
@@ -20,17 +20,17 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
 
     public function testGetNodeByPath() {
         $path = '/jcr:root';
-        $om = new jackalope_ObjectManager($this->getTransportStub($path), $this->getSessionMock());
+        $om = new jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
-        $this->assertType('jackalope_Node', $node);
+        $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
-        $this->assertType('jackalope_NodeIterator', $children);
+        $this->assertType('jackalope\NodeIterator', $children);
         $this->assertEquals(2, $children->getSize());
         $this->assertEquals($node, $om->getNode($path));
     }
     
     public function testGetNodeTypes() {
-        $om = new jackalope_ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
         $this->assertType('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
@@ -68,11 +68,11 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
     
     /**
      * @dataProvider dataproviderAbsolutePath
-     * @covers jackalope_ObjectManager::absolutePath
-     * @covers jackalope_ObjectManager::normalizePath
+     * @covers jackalope\ObjectManager::absolutePath
+     * @covers jackalope\ObjectManager::normalizePath
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
-        $om = new jackalope_ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertEquals($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 

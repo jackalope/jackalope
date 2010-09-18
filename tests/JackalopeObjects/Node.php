@@ -78,7 +78,7 @@ class jackalope_tests_Node extends jackalope_baseCase {
         $this->assertEquals('toast', $filtered[1]);
     }
 }
-class jackalope_tests_Node_PublicFilter extends jackalope_Node {
+class jackalope_tests_Node_PublicFilter extends jackalope\Node {
     public static function filterNames($filter,$names) {
         return parent::filterNames($filter,$names);
     }
