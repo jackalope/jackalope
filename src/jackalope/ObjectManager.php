@@ -2,6 +2,9 @@
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
  * and caches every node retrieved to improve performance.
+ *
+ * For update method, the object manager keeps track which nodes are dirty so it
+ * knows what to give to transport to write to the backend.
  */
 class jackalope_ObjectManager {
     protected $session;
@@ -14,6 +17,18 @@ class jackalope_ObjectManager {
      * take care never to put a path in here unless there is a node for that path in objectsByPath
      */
     protected $objectsByUuid = array();
+
+    /* properties separate? or in same array?
+     * commit: make sure to delete before add, in case a node was removed and replaced with a new one
+     */
+    /** keys: nodes to add */
+    protected $nodesAdd = array();
+    /** keys: nodes to remove */
+    protected $nodesRemove = array();
+    /** keys: nodes to update */
+    protected $nodesUpdate = array();
+
+    protected $unsaved = false;
 
     public function __construct(jackalope_TransportInterface $transport,
                                 PHPCR_SessionInterface $session) {
@@ -76,11 +91,11 @@ class jackalope_ObjectManager {
 
     /**
      * Normalizes a path according to JCR's spec (3.4.5)
-     * 
+     *
      * <ul>
      *   <li>All self segments(.) are removed.</li>
      *   <li>All redundant parent segments(..) are collapsed.</li>
-     *   <li>If the path is an identifier-based absolute path, it is replaced by a root-based 
+     *   <li>If the path is an identifier-based absolute path, it is replaced by a root-based
      *       absolute path that picks out the same node in the workspace as the identifier it replaces.</li>
      * </ul>
      *
@@ -152,8 +167,9 @@ class jackalope_ObjectManager {
     /**
      * Get the node idenfied by an uuid or path or root path and relative
      * path. If you have an absolute path use getNodeByPath.
+     *
      * @param string uuid or relative path
-     * @param string optional root if you are in a node context
+     * @param string optional root if you are in a node context - not used if $identifier is an uuid
      * @return return jackalope_Node
      * @throws PHPCR_ItemNotFoundException If the path was not found
      * @throws PHPCR_RepositoryException if another error occurs.
@@ -196,7 +212,7 @@ class jackalope_ObjectManager {
     /**
      * Verifies the path to be absolute and well-formed
      *
-     * @param string $path the path to verify 
+     * @param string $path the path to verify
      * @return  bool    Always true :)
      * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
@@ -207,7 +223,7 @@ class jackalope_ObjectManager {
         if (!jackalope_Helper::isValidPath($path)) {
             throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
-        return true; 
+        return true;
     }
 
     /**
@@ -223,6 +239,76 @@ class jackalope_ObjectManager {
             return false;
         }
     }
+
+    /** push all recorded changes to the backend */
+    public function save() {
+        throw jackalope_NotImplementedException(); //TODO
+        //remove
+        //move
+        //add
+        //loop through cached nodes and commit all dirty and set them to clean.
+        $this->unsaved = false;
+    }
+
+    /** Determine if any object is modified */
+    public function hasPendingChanges() {
+        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesRemove)) return true;
+        //TODO: loop through all cached items to see if any of them is dirty
+
+        return false;
+    }
+
+    /**
+     * WRITE: add a node at the specified path
+     *
+     * @param string $absPath the path to the node, including the node identifier
+     * @param PHPCR_Node $node the node to add
+     * @throws PHPCR_ItemExistsException if a node already exists at that path
+     */
+    public function removeItem($absPath) {
+        if (! isset($this->objectsByPath[$absPath]))
+            throw new PHPCR_RepositoryException("Internal error: nothing at $absPath");
+
+        //FIXME: same-name-siblings...
+        $id = $this->objectsByPath[$absPath]->getIdentifier();
+        unset($this->objectsByPath[$absPath]);
+        unset($this->objectsByUuid[$id]);
+        if (isset($this->nodeAdd[$absPath])) {
+            //this is a new unsaved node
+            unset($this->nodeAdd[$absPath]);
+        } else {
+            $this->nodeRemove[] = $absPath;
+        }
+    }
+
+    /**
+     * WRITE: move node from source path to destination path
+     */
+    public function moveItem($srcAbsPath, $destAbsPath) {
+        $this->nodeMove[$srcAbsPath] = $destAbsPath;
+        $this->unsaved = true;
+        /*
+        FIXME: dispatch everything to backend immediatly (without saving) on move so the backend cares about translating all requests to the new path? how do we know if things are modified after that operation?
+        otherwise we have to update all cached objects, tell this item its new path and make it dirty.
+        */
+    }
+
+    /**
+     * WRITE: add a node at the specified path
+     *
+     * @param string $absPath the path to the node, including the node identifier
+     * @param PHPCR_Node $node the node to add
+     * @throws PHPCR_ItemExistsException if a node already exists at that path
+     */
+    public function addItem($absPath, $node) {
+        if (isset($this->objectsByPath[$absPath]))
+            throw new PHPCR_ItemExistsException($absPath); //FIXME: same-name-siblings...
+        $this->objectsByPath[$absPath];
+        $this->objectsByUuid[$node->getIdentifier()] = $absPath;
+        $this->nodesAdd[$absPath] = 1;
+    }
+
+
 
     /** Implementation specific: Transport is used elsewhere, provide it here for Session */
     public function getTransport() {

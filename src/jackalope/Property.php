@@ -1,17 +1,17 @@
 <?php
 
 class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterface {
-    
+
     protected $value;
     protected $isMultiple = false;
     protected $type;
     protected $definition;
-    
+
     public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager) {
         parent::__construct(null, $path, $session, $objectManager);
-        
+
         $this->type = PHPCR_PropertyType::valueFromName($data['type']);
-        
+
         if (is_array($data['value'])) {
             $this->isMultiple = true;
             $this->value = array();
@@ -25,7 +25,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
             $this->value = jackalope_Factory::get('Value', array($data['type'], $data['value']));
         }
     }
-    
+
     /**
      * Sets the value of this property to value. If this property's property
      * type is not constrained by the node type of its parent node, then the
@@ -56,7 +56,30 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      * @api
      */
     public function setValue($value) {
-        throw new jackalope_NotImplementedException();
+        if (is_array($value) && ! $this->isMultiple)
+            throw new PHPCR_ValueFormatException('Can not set a single value property with an array of values');
+        if ($value instanceof PHPCR_Node) {
+            if ($this->type == PHPCR_PropertyType::REFERENCE ||
+                $this->type == PHPCR_PropertyType::WEAKREFERENCE) {
+                //FIXME how to test if node is referenceable?
+                //throw new PHPCR_ValueFormatException('reference property may only be set to a referenceable node');
+                $this->value = jackalope_Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
+            } else {
+               throw new PHPCR_ValueFormatException('A non-reference property can not have a node as value');
+            }
+        } elseif ($value instanceof PHPCR_Value) {
+            if ($this->type == $value->getType()) {
+                $this->value = $value;
+            } else {
+                throw new jackalope_NotImplementedException('converting value seems like pain. do we have to?');
+            }
+        } elseif (is_null($value)) {
+            $this->remove();
+        } else {
+            //TODO: some sanity check on types? do we care?
+            $this->value = jackalope_Factory::get('Value', array($this->type, $value));
+        }
+        $this->setModified(); //OPTIMIZE: should we detect setting to the same value and in that case not do anything?
     }
 
     /**
@@ -205,7 +228,20 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getNode() {
         $this->checkMultiple();
-        return $this->objectManager->getNode($this->value->getString(), $this->getPath());
+        switch($this->type) {
+            case PHPCR_PropertyType::PATH:
+                return $this->objectManager->getNode($this->value->getString(), $this->parentPath);
+            case PHPCR_PropertyType::REFERENCE:
+                try {
+                    return $this->objectManager->getNode($this->value->getString);
+                } catch(PHPCR_ItemNotFoundException $e) {
+                    throw new PHPCR_RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
+                }
+            case PHPCR_PropertyType::WEAKREFERENCE:
+                return $this->objectManager->getNode($this->value->getString);
+            default:
+                throw new PHPCR_ValueFormatException('Property is not a reference, weakreference or path');
+        }
     }
 
     /**
@@ -293,7 +329,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getDefinition() {
         if (empty($this->definition)) {
-            
+
         }
         return $this->definition;
     }
@@ -337,7 +373,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     public function isMultiple() {
         return $this->isMultiple;
     }
-    
+
     /**
      * Throws an exception if the property is multivalued
      * @throws PHPCR_ValueFormatException
