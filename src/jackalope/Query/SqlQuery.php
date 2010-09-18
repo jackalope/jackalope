@@ -28,7 +28,9 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @throws RepositoryException if an error occurs.
      * @api
      */
-    public function bindValue($varName, PHPCR_ValueInterface $value);
+    public function bindValue($varName, PHPCR_ValueInterface $value) {
+        throw PHPCR_RepositoryException('Not Implemented...');
+    }
 
     /**
      * Executes this query and returns a QueryResult object.
@@ -38,7 +40,9 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @throws PHPCR_RepositoryException if an error occurs
      * @api
      */
-    public function execute();
+    public function execute() {
+        throw PHPCR_RepositoryException('Not Implemented...');
+    }
 
     /**
      * Returns the names of the bind variables in this query. If this query
@@ -48,7 +52,9 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      * @api
      */
-    public function getBindVariableNames();
+    public function getBindVariableNames() {
+        throw PHPCR_RepositoryException('Not Implemented...');
+    }
 
     /**
      * Sets the maximum size of the result set to limit.
@@ -57,7 +63,9 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @return void
      * @api
      */
-    public function setLimit($limit);
+    public function setLimit($limit) {
+        throw PHPCR_RepositoryException('Not Implemented...');
+    }
 
     /**
      * Sets the start offset of the result set to offset.
@@ -66,7 +74,9 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @return void
      * @api
      */
-    public function setOffset($offset);
+    public function setOffset($offset) {
+        throw PHPCR_RepositoryException('Not Implemented...');
+    }
 
     /**
      * Returns the statement defined for this query.
