@@ -53,6 +53,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
     /** Opens a cURL session if not yet one open. */
     protected function initConnection() {
+
         if (!is_null($this->curl)) {
             return false;
         }
@@ -365,21 +366,21 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $err = $dom->getElementsByTagNameNS(self::NS_DCR, 'exception');
         if ($err->length > 0) {
             //TODO: can we trust jackrabbit to always have an exception node if status is not OK?
-            $status = $this->curl->getinfo();
+            $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
             $err = $err->item(0);
             $errClass = $err->getElementsByTagNameNS(self::NS_DCR, 'class')->item(0)->textContent;
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
-                    throw new PHPCR_NoSuchWorkspaceException('HTTP '.$status['http_code'] . ": $errMsg");
+                    throw new PHPCR_NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                    throw new PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status['http_code'] . ": $errMsg");
+                    throw new PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.ItemNotFoundException':
-                    throw new PHPCR_ItemNotFoundException('HTTP '.$status['http_code'] . ": $errMsg");
+                    throw new PHPCR_ItemNotFoundException('HTTP '.$status . ": $errMsg");
 
                 //TODO: map more errors here?
                 default:
-                    throw new PHPCR_RepositoryException('HTTP '.$status['http_code'] . ": $errMsg ($errClass)");
+                    throw new PHPCR_RepositoryException('HTTP '.$status . ": $errMsg ($errClass)");
             }
         }
         return $dom;
@@ -400,10 +401,10 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         $jsonstring = $this->getRawFromBackend();
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
-            $status = $this->curl->getinfo();
-            if (404 === $status['http_code']) {
+            $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
+            if (404 === $status) {
                 throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
-            } elseif (500 <= $status['http_code']) {
+            } elseif (500 <= $status) {
                 throw new PHPCR_RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
             } else {
                 //FIXME: this might be an xml error response like
@@ -416,6 +417,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                       </dcr:exception>
                   </D:error>
                 */
+
                 throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring' ('$type'  '$uri')");
             }
         }
