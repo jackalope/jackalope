@@ -1,5 +1,8 @@
 <?php
 
+namespace jackalope;
+
+
 /**
  * A generic holder for the value of a property. A Value object can be used
  * without knowing the actual property type (STRING, DOUBLE, BINARY etc.).
@@ -29,17 +32,17 @@
  * @license http://opensource.org/licenses/bsd-license.php Simplified BSD License
  * @api
  */
-class jackalope_Value implements PHPCR_ValueInterface {
+class Value implements \PHPCR_ValueInterface {
     protected $type;
     protected $data;
-    
+
     /**
      * @param string Type of the Value given
      * @param mixed Data that the value should contain
      */
     public function __construct($type, $data) {
         if ('Binary' === $type) {
-            throw new jackalope_NotImplementedException('Binaries not implemented');
+            throw new NotImplementedException('Binaries not implemented');
         }
         $this->type = PHPCR_PropertyType::valueFromName($type);
         $this->data = $data;
@@ -47,6 +50,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
 
     /**
      * Returns a string representation of this value.
+     * This is also used for node references because the uuid is used for that.
      *
      * @return string A string representation of the value of this property.
      * @throws PHPCR_ValueFormatException if conversion to a String is not possible.
@@ -67,7 +71,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @api
      */
     public function getBinary() {
-        throw new jackalope_NotImplementedException('Binaries not implemented');
+        throw new NotImplementedException('Binaries not implemented');
     }
 
     /**
@@ -118,7 +122,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @api
      */
     public function getDate() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -156,7 +160,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
     public function getType() {
         return $this->type;
     }
-    
+
     /**
      * @param string $type The target type you want to retrieve
      * @return mixed The converted value

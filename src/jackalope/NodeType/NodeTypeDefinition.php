@@ -1,4 +1,8 @@
 <?php
+
+namespace jackalope\NodeType;
+use jackalope;
+
 /**
  * The NodeTypeDefinition interface provides methods for discovering the
  * static definition of a node type. These are accessible both before and
@@ -11,7 +15,7 @@
  * registration, only objects implementing the subinterface NodeType will
  * be encountered.
  */
-class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDefinitionInterface {
+class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface {
     protected $nodeTypeManager;
     
     protected $name;
@@ -30,14 +34,14 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * Initializes the NodeTypeDefinition from the given DOM
      * @param DOMElement NodeTypeElement
      */
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
         
         $this->name = $node->getAttribute('name');
-        $this->isAbstract = jackalope_Helper::getBoolAttribute($node, 'isAbstract');
-        $this->isMixin = jackalope_Helper::getBoolAttribute($node, 'isMixin');
-        $this->isQueryable = jackalope_Helper::getBoolAttribute($node, 'isQueryable');
-        $this->hasOrderableChildNodes = jackalope_Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
+        $this->isAbstract = Helper::getBoolAttribute($node, 'isAbstract');
+        $this->isMixin = Helper::getBoolAttribute($node, 'isMixin');
+        $this->isQueryable = Helper::getBoolAttribute($node, 'isQueryable');
+        $this->hasOrderableChildNodes = Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
         
         $this->primaryItemName = $node->getAttribute('primaryItemName');
         if (empty($this->primaryItemName)) {
@@ -52,7 +56,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
-            array_push($this->declaredPropertyDefinitions, jackalope_Factory::get(
+            array_push($this->declaredPropertyDefinitions, Factory::get(
                 'NodeType_PropertyDefinition',
                 array($property, $nodeTypeManager)
             ));
@@ -60,7 +64,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
         
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
-            array_push($this->declaredNodeDefinitions, jackalope_Factory::get(
+            array_push($this->declaredNodeDefinitions, Factory::get(
                 'NodeType_NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
             ));

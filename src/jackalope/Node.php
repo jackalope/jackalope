@@ -1,6 +1,8 @@
 <?php
 
-class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
+namespace jackalope;
+
+class Node extends Item implements \PHPCR_NodeInterface {
 
     protected $index = 1;
     protected $primaryType;
@@ -33,7 +35,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
-                        $this->properties[$key] = jackalope_Factory::get(
+                        $this->properties[$key] = Factory::get(
                             'Property',
                             array(
                                 array('type' => $rawData->{':jcr:primaryType'},  'value' => $value),
@@ -48,9 +50,10 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                         break;
 
                     //TODO: more special information?
+                    //TODO: optimization? not instantiate objects but just have value for the simple cases, then shortcut funktion to avoid getProperty()->getValue()
                     default:
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
-                        $this->properties[$key] = jackalope_Factory::get(
+                        $this->properties[$key] = Factory::get(
                             'Property',
                             array(
                                 array('type' => $type, 'value' => $value),
@@ -100,7 +103,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -133,7 +136,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -187,7 +190,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function setProperty($name, $value, $type = NULL) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -273,7 +276,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
             //OPTIMIZE: batch get nodes
             $result[] = $this->getNode($name);
         }
-        return new jackalope_NodeIterator($result);
+        return new NodeIterator($result);
     }
 
     /**
@@ -350,7 +353,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
         foreach($names as $name) {
             $result[] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
-        return new jackalope_PropertyIterator($result);
+        return new PropertyIterator($result);
     }
 
     /**
@@ -370,7 +373,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getPrimaryItem() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -426,7 +429,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getReferences($name = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -454,7 +457,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getWeakReferences($name = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -526,7 +529,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getPrimaryNodeType() {
-        throw new jackalope_NotImplementedException(); //create nodetype instance for $this->primaryType
+        throw new NotImplementedException(); //create nodetype instance for $this->primaryType
     }
 
     /**
@@ -542,7 +545,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getMixinNodeTypes() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -556,7 +559,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function isNodeType($nodeTypeName) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -578,7 +581,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function setPrimaryType($nodeTypeName) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -612,7 +615,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function addMixin($mixinName) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -631,7 +634,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeMixin($mixinName) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -655,7 +658,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function canAddMixin($mixinName) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -674,7 +677,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getDefinition() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -701,7 +704,8 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function update($srcWorkspace) {
-        throw new jackalope_NotImplementedException('Write');
+        if ($this->isNew()) return; //no node in workspace
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -717,7 +721,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getCorrespondingNodePath($workspaceName) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -729,7 +733,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getSharedSet() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -752,7 +756,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeSharedSet() {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -770,7 +774,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function removeShare() {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -786,7 +790,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function isCheckedOut() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -800,7 +804,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function isLocked() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -820,7 +824,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function followLifecycleTransition($transition) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -832,7 +836,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getAllowedLifecycleTransitions() {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /** filter the list of names according to the filter expression / array

@@ -1,6 +1,8 @@
 <?php
 
-class jackalope_Helper {
+namespace jackalope;
+
+class Helper {
     /**
      * Returns an attribute casted to boolean
      * @param DOMElement node to fetch from

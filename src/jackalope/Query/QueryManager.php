@@ -1,12 +1,16 @@
 <?php
+
+namespace jackalope\Query;
+use jackalope;
+
 /**
  * This interface encapsulates methods for the management of search queries.
  * Provides methods for the creation and retrieval of search queries.
  */
-class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface {
+class QueryManager implements \PHPCR_Query_QueryManagerInterface {
     protected $objectmanager;
 
-    public function __construct(jackalope_ObjectManager $objectmanager) {
+    public function __construct(ObjectManager $objectmanager) {
         $this->objectmanager = $objectmanager;
     }
     /**
@@ -23,12 +27,12 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface 
      */
     public function createQuery($statement, $language) {
         switch($language) {
-            case PHPCR_Query_QueryInterface::JCR_SQL2:
-                return new jackalope_Query_SqlQuery($statement, $this->objectmanager);
-            case PHPCR_Query_QueryInterface::JCR_JQOM:
-                throw new jackalope_NotImplementedException();
+            case \PHPCR_Query_QueryInterface::JCR_SQL2:
+                return new SqlQuery($statement, $this->objectmanager);
+            case \PHPCR_Query_QueryInterface::JCR_JQOM:
+                throw new NotImplementedException();
             default:
-                throw new PHPCR_Query_InvalidQueryException("No such query language: $language");
+                throw new \PHPCR_Query_InvalidQueryException("No such query language: $language");
         }
     }
 
@@ -40,7 +44,7 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface 
      * @api
      */
     public function getQOMFactory() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /*
@@ -53,7 +57,7 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface 
      * @api
      */
     public function getQuery($node) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -64,6 +68,6 @@ class jackalope_Query_QueryManager implements PHPCR_Query_QueryManagerInterface 
      * @api
      */
     public function getSupportedQueryLanguages() {
-        return array(PHPCR_Query_QueryInterface::JCR_SQL2, PHPCR_Query_QueryInterface::JCR_JQOM);
+        return array(\PHPCR_Query_QueryInterface::JCR_SQL2, \PHPCR_Query_QueryInterface::JCR_JQOM);
     }
 }

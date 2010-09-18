@@ -7,7 +7,16 @@
 
 /** load a class named $class */
 function jackalope_autoloader($class) {
-    if (0 === strpos($class, 'PHPCR_')) {
+    if (false !== ($pos = strripos($class, '\\')) && 0 === strpos($class, 'jackalope')) {
+        // namespaced class name
+        $namespace = substr($class, 0, $pos);
+        $class = substr($class, $pos + 1);
+        $file = __DIR__.'/../'.str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR.str_replace('_', DIRECTORY_SEPARATOR, $class).'.php';
+        if (file_exists($file)) {
+            require $file;
+        }
+        return;
+    } else if (0 === strpos($class, 'PHPCR_')) {
         $incFile = dirname(__FILE__) . '/../../lib/' . str_replace("_", DIRECTORY_SEPARATOR, $class).".php";
         if (@fopen($incFile, "r", TRUE)) {
             include($incFile);

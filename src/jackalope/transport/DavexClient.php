@@ -1,11 +1,14 @@
 <?php
 
+namespace jackalope\transport;
+use jackalope;
+
 /**
  * Connection to one Jackrabbit server.
  * Once the login method has been called, the workspace is set and can not be
  * changed anymore.
  */
-class jackalope_transport_DavexClient implements jackalope_TransportInterface {
+class DavexClient implements jackalope\TransportInterface {
     /** server url including protocol.
      * i.e http://localhost:8080/server/
      * constructor ensures the trailing slash /
@@ -57,7 +60,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if (!is_null($this->curl)) {
             return false;
         }
-        $this->curl = new jackalope_transport_curl();
+        $this->curl = new curl();
         // options in common for all requests
         $this->curl->setopt(CURLOPT_RETURNTRANSFER, 1);
     }
@@ -83,12 +86,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws PHPCR_RepositoryException if another error occurs
      */
-    public function login(PHPCR_CredentialsInterface $credentials, $workspaceName) {
+    public function login(\PHPCR_CredentialsInterface $credentials, $workspaceName) {
         if ($this->credentials !== false) {
-            throw new PHPCR_RepositoryException('Do not call login twice. Rather instantiate a new Transport object to log in as different user or for a different workspace.');
+            throw new \PHPCR_RepositoryException('Do not call login twice. Rather instantiate a new Transport object to log in as different user or for a different workspace.');
         }
-        if (! $credentials instanceof PHPCR_SimpleCredentials) {
-            throw new PHPCR_LoginException('Unkown Credentials Type: '.get_class($credentials));
+        if (! $credentials instanceof \PHPCR_SimpleCredentials) {
+            throw new \PHPCR_LoginException('Unkown Credentials Type: '.get_class($credentials));
         }
 
         $this->credentials = $credentials;
@@ -101,11 +104,11 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
 
         $set = $dom->getElementsByTagNameNS(self::NS_DCR, 'workspaceName');
         if ($set->length != 1) {
-            throw new PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
 
         if ($set->item(0)->textContent != $this->workspace) {
-            throw new PHPCR_RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
         }
         return true;
     }
@@ -122,7 +125,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                                         self::buildReportRequest('dcr:repositorydescriptors'));
         if ($dom->firstChild->localName != 'repositorydescriptors-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
-            throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
@@ -131,8 +134,8 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             $values = array();
             foreach($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
                 $type = $value->getAttribute('type');
-                if ($type == '') $type = PHPCR_PropertyType::TYPENAME_UNDEFINED;
-                $values[] = jackalope_Factory::get('Value', array($type, $value->textContent));
+                if ($type == '') $type = \PHPCR_PropertyType::TYPENAME_UNDEFINED;
+                $values[] = Factory::get('Value', array($type, $value->textContent));
             }
             if ($desc->childNodes->length == 2) {
                 $descriptors[$desc->firstChild->textContent] = $values[0];
@@ -170,7 +173,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     public function getItem($path) {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
-            throw new PHPCR_RepositoryException("Implementation error: '$path' is not an absolute path");
+            throw new \PHPCR_RepositoryException("Implementation error: '$path' is not an absolute path");
         }
         $this->checkLogin();
         return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
@@ -196,11 +199,11 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         */
         $set = $dom->getElementsByTagNameNS(self::NS_DAV, 'href');
         if ($set->length != 1) {
-            throw new PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
         $fullPath = $set->item(0)->textContent;
         if (strncmp($this->workspaceUriRoot, $fullPath, strlen($this->workspaceUri))) {
-            throw new PHPCR_RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
+            throw new \PHPCR_RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
         }
         return substr(substr($fullPath, 0, -1), //cut trailing slash /
                       strlen($this->workspaceUriRoot)); //remove uri, workspace and root node
@@ -218,7 +221,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                                         self::buildReportRequest('dcr:registerednamespaces'));
         if ($dom->firstChild->localName != 'registerednamespaces-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
-            throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
         $mappings = array();
         $namespaces = $dom->getElementsByTagNameNS(self::NS_DCR, 'namespace');
@@ -242,7 +245,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             self::buildNodeTypesRequest($nodeTypes)
         );
         if ($dom->firstChild->localName != 'nodeTypes') {
-            throw new PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
         return $dom;
     }
@@ -253,7 +256,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
      */
     protected function checkLogin() {
         if (empty($this->workspaceUri)) {
-            throw new PHPCR_RepositoryException("Implementation error: Please login before accessing content");
+            throw new \PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
     }
     
@@ -323,7 +326,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         // make sure we have a curl handle
         $this->initConnection();
 
-        if ($this->credentials instanceof PHPCR_SimpleCredentials) {
+        if ($this->credentials instanceof \PHPCR_SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
         }
         
@@ -351,12 +354,12 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             switch($this->curl->errno()) {
                 case CURLE_COULDNT_RESOLVE_HOST:
                 case CURLE_COULDNT_CONNECT:
-                    throw new PHPCR_NoSuchWorkspaceException($this->curl->error());
+                    throw new \PHPCR_NoSuchWorkspaceException($this->curl->error());
                 default:
                     $curlError = $this->curl->error();
                     $msg = 'No data returned by server: ';
                     $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
-                    throw new PHPCR_RepositoryException($msg);
+                    throw new \PHPCR_RepositoryException($msg);
             }
         }
         return $data;
@@ -386,15 +389,15 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
-                    throw new PHPCR_NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR_NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                    throw new PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.ItemNotFoundException':
-                    throw new PHPCR_ItemNotFoundException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR_ItemNotFoundException('HTTP '.$status . ": $errMsg");
 
                 //TODO: map more errors here?
                 default:
-                    throw new PHPCR_RepositoryException('HTTP '.$status . ": $errMsg ($errClass)");
+                    throw new \PHPCR_RepositoryException('HTTP '.$status . ": $errMsg ($errClass)");
             }
         }
         return $dom;
@@ -418,9 +421,9 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if (! is_object($json)) {
             $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
             if (404 === $status) {
-                throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
+                throw new \PHPCR_ItemNotFoundException('Path not found: ' . $uri);
             } elseif (500 <= $status) {
-                throw new PHPCR_RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
+                throw new \PHPCR_RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
             } else {
                 //FIXME: this might be an xml error response like
                 /*
@@ -433,7 +436,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                   </D:error>
                 */
 
-                throw new PHPCR_RepositoryException("Not a valid json object. '$status' '$jsonstring' ('$type'  '$uri')");
+                throw new \PHPCR_RepositoryException("Not a valid json object. '$status' '$jsonstring' ('$type'  '$uri')");
             }
         }
         //TODO: are there error responses in json format? if so, handle them

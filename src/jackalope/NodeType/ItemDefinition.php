@@ -1,6 +1,9 @@
 <?php
 
-class jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_ItemDefinitionInterface {
+namespace jackalope\NodeType;
+use jackalope;
+
+class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
     protected $nodeTypeManager;
     
     protected $declaringNodeType;
@@ -10,14 +13,14 @@ class jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_ItemDefinition
     protected $isProtected;
     protected $onParentVersion;
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
         $this->declaringNodeType = $node->getAttribute('declaringNodeType');
         $this->name = $node->getAttribute('name');
-        $this->isAutoCreated = jackalope_Helper::getBoolAttribute($node, 'isAutoCreated');
-        $this->isMandatory = jackalope_Helper::getBoolAttribute($node, 'mandatory');
-        $this->isProtected = jackalope_Helper::getBoolAttribute($node, 'isProtected');
-        $this->onParentVersion = PHPCR_Version_OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
+        $this->isAutoCreated = Helper::getBoolAttribute($node, 'isAutoCreated');
+        $this->isMandatory = Helper::getBoolAttribute($node, 'mandatory');
+        $this->isProtected = Helper::getBoolAttribute($node, 'isProtected');
+        $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
     }
     
     /**

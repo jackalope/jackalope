@@ -1,17 +1,21 @@
 <?php
-class jackalope_Item implements PHPCR_ItemInterface {
+
+namespace jackalope;
+
+class Item implements \PHPCR_ItemInterface {
 
     /** session this node belongs to */
     protected $session;
     /** object manager to get nodes from */
     protected $objectManager;
 
-    protected $new = true;
+    /** false if node is read from backend, true if node is created locally in this session */
+    protected $new = false;
     protected $modified = false;
 
+    protected $name;
     /** Normalized and absolute path to this item. */
     protected $path;
-    protected $name;
     /** Normalized and absolute path to the parent item. */
     protected $parentPath;
     protected $depth;
@@ -20,11 +24,11 @@ class jackalope_Item implements PHPCR_ItemInterface {
     /**
      * @param stdClass  $rawData
      * @param string    $path   The normalized and absolute path to this item
-     * @param jackalope_Session $session
-     * @param jackalope_ObjectManager $objectManager
+     * @param Session $session
+     * @param ObjectManager $objectManager
      */
-    public function __construct($rawData, $path,  jackalope_Session $session,
-                                jackalope_ObjectManager $objectManager) {
+    public function __construct($rawData, $path,  Session $session,
+                                ObjectManager $objectManager) {
         $this->path = $path;
         $this->session = $session;
         $this->objectManager = $objectManager;
@@ -215,20 +219,20 @@ class jackalope_Item implements PHPCR_ItemInterface {
             return true;
         }
         if ($this->session->getRepository() === $otherItem->getSession()->getRepository() &&
-            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() && 
+            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() &&
             get_class($this) == get_class($otherItem)) {
 
-            if ($this instanceof jackalope_Node) {
+            if ($this instanceof Node) {
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
-            } else { // assert($this instanceof jackalope_Property)
+            } else { // assert($this instanceof Property)
                 if ($this->name == $otherItem->getName() &&
                     $this->getParent()->isSame($otherItem->getParent())) {
                         return true;
                 }
             }
-        } 
+        }
         return false;
     }
 
@@ -241,7 +245,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function accept(PHPCR_ItemVisitorInterface $visitor) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -265,7 +269,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function refresh($keepChanges) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -290,6 +294,26 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function remove() {
-        throw new jackalope_NotImplementedException('Write');
+        //TODO: add sanity checks to all other write methods to avoid modification after deleting?
+        //FIXME: property remove different or same call on objectmanager?
+        $this->objectManager->removeNode($path);
+        $this->getParent()->setModified();
+    }
+
+    /**
+     * Tell this item that it has been modified.
+     * Used when deleting a node to tell the parent node about modification.
+     */
+    public function setModified() {
+        $this->modified = true;
+    }
+
+    /**
+     * notify this item that it has been saved into the backend.
+     * allowing it to clear the modified / new flags
+     */
+    public function confirmSaved() {
+        $this->new = false;
+        $this->modified = false;
     }
 }

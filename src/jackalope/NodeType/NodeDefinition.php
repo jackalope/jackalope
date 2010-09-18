@@ -1,6 +1,9 @@
 <?php
 
-class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_NodeDefinitionInterface {
+namespace jackalope\NodeType;
+use jackalope;
+
+class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefinitionInterface {
     const DEFAULT_PRIMARY_NODE = 'nt:base';
     
     protected $requiredPrimaryTypes = array();
@@ -9,10 +12,10 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
     protected $allowsSameNameSiblings;
     
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
         
-        $this->allowsSameNameSiblings = jackalope_Helper::getBoolAttribute($node, 'sameNameSiblings');
+        $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
         if (empty($this->defaultPrimaryTypeName)) {
             $this->defaultPrimaryTypeName = null;

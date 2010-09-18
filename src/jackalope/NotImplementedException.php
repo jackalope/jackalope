@@ -1,4 +1,6 @@
 <?php
-class jackalope_NotImplementedException extends RuntimeException {
-}
 
+namespace jackalope;
+
+class NotImplementedException extends \RuntimeException {
+}

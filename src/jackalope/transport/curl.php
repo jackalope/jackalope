@@ -1,8 +1,11 @@
 <?php
-PHPUnit_Util_Filter::addFileToFilter(__FILE__);
+
+namespace jackalope\transport;
+
+\PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 //TODO: Write phpt tests
 
-class jackalope_transport_curl {
+class curl {
     protected $curl;
     
     public function __construct($str = null) {

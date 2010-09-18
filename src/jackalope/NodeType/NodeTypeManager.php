@@ -1,10 +1,13 @@
 <?php
 
+namespace jackalope\NodeType;
+use jackalope;
+
 /**
  * Allows for the retrieval and (in implementations that support it) the
  * registration of node types. Accessed via Workspace.getNodeTypeManager().
  */
-class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManagerInterface {
+class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     protected $objectManager;
     
     protected $primaryTypes;
@@ -12,7 +15,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
     
     protected $nodeTree = array();
     
-    public function __construct(jackalope_ObjectManager $objectManager) {
+    public function __construct(ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
     
@@ -25,7 +28,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
         $xp = new DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
-            $nodetype = jackalope_Factory::get('NodeType_NodeType', array($nodetype, $this));
+            $nodetype = Factory::get('NodeType_NodeType', array($nodetype, $this));
             if ($nodetype->isMixin()) {
                 $this->mixinTypes[$nodetype->getName()] = $nodetype;
                 $this->addToNodeTree($nodetype);
@@ -67,7 +70,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
     
     /**
      * Adds a node to the tree to get the subnodes later on
-     * @param jackalope_NodeType_NodeType the nodetype to add
+     * @param NodeType the nodetype to add
      */
     protected function addToNodeTree($nodetype) {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
@@ -97,7 +100,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
         } elseif (isset($this->mixinTypes[$nodeTypeName])) {
             return $this->mixinTypes[$nodeTypeName];
         } else {
-            throw new PHPCR_NodeType_NoSuchNodeTypeException($nodeTypeName);
+            throw new \PHPCR_NodeType_NoSuchNodeTypeException($nodeTypeName);
         }
     }
 
@@ -120,7 +123,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getAllNodeTypes() {
-        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
+        return Factory::get('NodeType_NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
     }
 
     /**
@@ -130,7 +133,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
-        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values($this->primaryTypes)));
+        return Factory::get('NodeType_NodeTypeIterator', array(array_values($this->primaryTypes)));
     }
 
     /**
@@ -141,7 +144,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
-        return jackalope_Factory::get('NodeType_NodeTypeIterator', array(array_values($this->mixinTypes)));
+        return Factory::get('NodeType_NodeTypeIterator', array(array_values($this->mixinTypes)));
     }
 
     /**
@@ -158,7 +161,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function createNodeTypeTemplate($ntd = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -170,7 +173,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function createNodeDefinitionTemplate() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -182,7 +185,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function createPropertyDefinitionTemplate() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -200,8 +203,8 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws PHPCR_RepositoryException if another error occurs.
      */
-    public function registerNodeType(PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
-        throw new jackalope_NotImplementedException();
+    public function registerNodeType(\PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+        throw new NotImplementedException();
     }
 
     /**
@@ -220,7 +223,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function registerNodeTypes(array $definitions, $allowUpdate) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -233,7 +236,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function unregisterNodeType($name) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -247,6 +250,6 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function unregisterNodeTypes(array $names) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 }

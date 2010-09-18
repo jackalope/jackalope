@@ -1,6 +1,9 @@
 <?php
 
-class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_PropertyDefinitionInterface {
+namespace jackalope\NodeType;
+use jackalope;
+
+class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_PropertyDefinitionInterface {
     protected $requiredType;
     protected $valueConstraints = array();
     protected $defaultValues = array();
@@ -9,12 +12,12 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
     
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
-        $this->requiredType = PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
-        $this->isMultiple = jackalope_Helper::getBoolAttribute($node, 'multiple');
-        $this->isFullTextSearchable = jackalope_Helper::getBoolAttribute($node, 'fullTextSearchable');
-        $this->isQueryOrderable = jackalope_Helper::getBoolAttribute($node, 'queryOrderable');
+        $this->requiredType = \PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
+        $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
+        $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
+        $this->isQueryOrderable = Helper::getBoolAttribute($node, 'queryOrderable');
         
         $xp = new DOMXpath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
@@ -31,7 +34,7 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
         foreach ($defaultValues as $defaultValue) {
             array_push(
                 $this->defaultValues,
-                jackalope_Factory::get('Value', array(PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
+                Factory::get('Value', array(\PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
             );
         }
     }

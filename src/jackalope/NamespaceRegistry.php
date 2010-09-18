@@ -1,8 +1,11 @@
 <?php
+
+namespace jackalope;
+
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
+class NamespaceRegistry implements \PHPCR_NamespaceRegistryInterface {
     protected $transport;
 
     protected $defaultNamespaces = array(
@@ -14,7 +17,7 @@ class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
     );
     protected $userNamespaces = array();
 
-    public function __construct(jackalope_TransportInterface $transport) {
+    public function __construct(TransportInterface $transport) {
         $this->transport = $transport;
         $namespaces = $transport->getNamespaces();
         foreach($namespaces as $prefix => $uri) {
@@ -56,7 +59,7 @@ class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
      */
     public function registerNamespace($prefix, $uri) {
         $this->checkPrefix($prefix);
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
         //first try putting the stuff in backend, and only afterwards update lokal info
         //validation happens on the server, see second request trace below
         /*
@@ -123,7 +126,7 @@ Server: Jetty(6.1.x)
             //defaultNamespaces would throw an exception in checkPrefix already
             throw new PHPCR_NamespaceException("Prefix $prefix is not currently registered");
         }
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**

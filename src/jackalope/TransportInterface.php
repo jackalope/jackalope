@@ -1,10 +1,13 @@
 <?php
+
+namespace jackalope;
+
 /**
  * Transport is responsible of talking to the backend.
  * The Transport is told how to access that backend in its constructor.
  * Look in the transport/ subfolder for actual implementations.
  */
-interface jackalope_TransportInterface {
+interface TransportInterface {
     //TODO: extract methods from DavexClient
     /**
      * Set this transport to a specific credential and a workspace.
@@ -18,7 +21,7 @@ interface jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws PHPCR_RepositoryException if another error occurs
      */
-    public function login(PHPCR_CredentialsInterface $credentials, $workspaceName);
+    public function login(\PHPCR_CredentialsInterface $credentials, $workspaceName);
 
     /**
      * Get the repository descriptors from the jackrabbit server
