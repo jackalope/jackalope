@@ -8,6 +8,8 @@ Implements the phpCR interface.
 
 http://liip.to/jackalope
 
+Visit us at #jackalope on irc.freenode.net
+
 ebi at liip.ch
 david at liip.ch
 chregu at liip.ch
@@ -45,7 +47,7 @@ too see how to instantiate a repository.
 Tests
 *****
 
-There is our continuos integration server at:
+There is our continuos integration server with coverage reports at:
 http://bamboo.liip.ch/browse/JACK
 
 Run phpunit from the api-tests directory. You should have a lot of failed tests,
@@ -68,5 +70,4 @@ It will read phpunit.xml and run all api test suites.
 The folder *tests* contains unit tests for the jackalope implementation.
 You should only need those if you want to debug jackalope itselves or implement
 new features. Again, make sure you have the test workspace in jackrabbit.
-
 

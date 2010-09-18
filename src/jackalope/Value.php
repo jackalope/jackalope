@@ -32,7 +32,7 @@
 class jackalope_Value implements PHPCR_ValueInterface {
     protected $type;
     protected $data;
-    
+
     /**
      * @param string Type of the Value given
      * @param mixed Data that the value should contain
@@ -47,6 +47,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
 
     /**
      * Returns a string representation of this value.
+     * This is also used for node references because the uuid is used for that.
      *
      * @return string A string representation of the value of this property.
      * @throws PHPCR_ValueFormatException if conversion to a String is not possible.
@@ -156,7 +157,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
     public function getType() {
         return $this->type;
     }
-    
+
     /**
      * @param string $type The target type you want to retrieve
      * @return mixed The converted value

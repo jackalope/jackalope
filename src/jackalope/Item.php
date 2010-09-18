@@ -6,12 +6,13 @@ class jackalope_Item implements PHPCR_ItemInterface {
     /** object manager to get nodes from */
     protected $objectManager;
 
-    protected $new = true;
+    /** false if node is read from backend, true if node is created locally in this session */
+    protected $new = false;
     protected $modified = false;
 
+    protected $name;
     /** Normalized and absolute path to this item. */
     protected $path;
-    protected $name;
     /** Normalized and absolute path to the parent item. */
     protected $parentPath;
     protected $depth;
@@ -215,7 +216,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
             return true;
         }
         if ($this->session->getRepository() === $otherItem->getSession()->getRepository() &&
-            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() && 
+            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() &&
             get_class($this) == get_class($otherItem)) {
 
             if ($this instanceof jackalope_Node) {
@@ -228,7 +229,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
                         return true;
                 }
             }
-        } 
+        }
         return false;
     }
 
@@ -290,6 +291,26 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function remove() {
-        throw new jackalope_NotImplementedException('Write');
+        //TODO: add sanity checks to all other write methods to avoid modification after deleting?
+        //FIXME: property remove different or same call on objectmanager?
+        $this->objectManager->removeNode($path);
+        $this->getParent()->setModified();
+    }
+
+    /**
+     * Tell this item that it has been modified.
+     * Used when deleting a node to tell the parent node about modification.
+     */
+    public function setModified() {
+        $this->modified = true;
+    }
+
+    /**
+     * notify this item that it has been saved into the backend.
+     * allowing it to clear the modified / new flags
+     */
+    public function confirmSaved() {
+        $this->new = false;
+        $this->modified = false;
     }
 }

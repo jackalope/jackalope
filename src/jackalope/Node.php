@@ -48,6 +48,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
                         break;
 
                     //TODO: more special information?
+                    //TODO: optimization? not instantiate objects but just have value for the simple cases, then shortcut funktion to avoid getProperty()->getValue()
                     default:
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
                         $this->properties[$key] = jackalope_Factory::get(
@@ -701,6 +702,7 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function update($srcWorkspace) {
+        if ($this->isNew()) return; //no node in workspace
         throw new jackalope_NotImplementedException('Write');
     }
 
