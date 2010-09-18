@@ -412,11 +412,11 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
         //OPTIMIZE: re-use connection. JACK-7
         $this->prepareRequest($type, $uri, $body, $depth);
+
         $jsonstring = $this->getRawFromBackend();
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
-            $status = $this->curl->getinfo();
-            $status = $status['http_code'];
+            $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
             if (404 === $status) {
                 throw new PHPCR_ItemNotFoundException('Path not found: ' . $uri);
             } elseif (500 <= $status) {
@@ -433,7 +433,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
                   </D:error>
                 */
 
-                throw new PHPCR_RepositoryException("Not a valid json object. '$jsonstring' ('$type'  '$uri')");
+                throw new PHPCR_RepositoryException("Not a valid json object. '$status' '$jsonstring' ('$type'  '$uri')");
             }
         }
         //TODO: are there error responses in json format? if so, handle them

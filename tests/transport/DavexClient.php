@@ -261,7 +261,8 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
         $t->curl = $this->getCurlFixture('fixtures/empty.xml');
         $t->curl->expects($this->any())
             ->method('getinfo')
-            ->will($this->returnValue(array('http_code' => 404)));
+            ->with(CURLINFO_HTTP_CODE)
+            ->will($this->returnValue(404));
         $t->expects($this->once())
             ->method('prepareRequest')
             ->with('POST', 'hulla', '', 0);
