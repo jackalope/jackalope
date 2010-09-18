@@ -102,6 +102,7 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         if ($set->length != 1) {
             throw new PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
+
         if ($set->item(0)->textContent != $this->workspace) {
             throw new PHPCR_RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
         }
@@ -140,7 +141,24 @@ class jackalope_transport_DavexClient implements jackalope_TransportInterface {
         }
         return $descriptors;
     }
-
+    
+    /**
+     * Returns the accessible workspace names
+     */
+    public function getAccessibleWorkspaceNames() {
+        $dom = $this->getDomFromBackend(self::PROPFIND,
+                                        $this->server,
+                                        self::buildPropfindRequest(array('D:workspace')),
+                                        1);
+        $workspaces = array();
+        foreach ($dom->getElementsByTagNameNS(self::NS_DAV, 'workspace') as $value) {
+            if (! empty($value->nodeValue)) {
+                $workspaces[] = substr(trim($value->nodeValue), strlen($this->server), -1);
+            }
+        }
+        return array_unique($workspaces);
+    }
+    
     /**
      * Get the item from an absolute path
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)

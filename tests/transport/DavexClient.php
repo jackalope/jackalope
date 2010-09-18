@@ -3,7 +3,7 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class jackalope_transport_DavexClient_Mock extends jackalope_transport_DavexClient {
     public $curl;
-    public $server;
+    public $server = 'testserver';
     public $workspace = 'testWorkspace';
     public $workspaceUri = 'testWorkspaceUri';
     public $workspaceUriRoot = 'testWorkspaceUriRoot';
@@ -709,6 +709,23 @@ class jackalope_tests_transport_DavexClient extends jackalope_baseCase {
     }
     
     /** END TESTING NODE TYPES **/
+    
+    /**
+     * @covers jackalope_transport_DavexClient::getAccessibleWorkspaceNames
+     */
+    public function testGetAccessibleWorkspaceNames() {
+        $dom = new DOMDocument();
+        $dom->load('fixtures/accessibleWorkspaces.xml');
+        
+        $t = $this->getTransportMock('testuri');
+        $t->expects($this->once())
+            ->method('getDomFromBackend')
+            ->with('PROPFIND', 'testuri/', jackalope_transport_DavexClient_Mock::buildPropfindRequestMock(array('D:workspace')), 1)
+            ->will($this->returnValue($dom));
+        
+        $names = $t->getAccessibleWorkspaceNames();
+        $this->assertEquals(array('default', 'tests', 'security'), $names);
+    }
 }
 
 class falseCredentialsMock implements PHPCR_CredentialsInterface {
