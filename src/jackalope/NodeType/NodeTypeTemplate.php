@@ -21,11 +21,21 @@ class jackalope_NodeType_NodeTypeTemplate extends jackalope_NodeType_NodeTypeDef
     public function __construct(jackalope_NodeType_NodeTypeManager $nodeTypeManager, PHPCR_NodeType_NodeTypeDefinitionInterface $ntd = null) {
         $this->nodeTypeManager = $nodeTypeManager;
 
-        if (!is_null($ntd)) {
+        if (is_null($ntd)) {
+            $this->name = null;
+            $this->isAbstract = false;
+            $this->isMixin = false;
+            $this->isQueryable = false;
+            $this->hasOrderableChildNodes = false;
+            $this->primaryItemName = null;
+            $this->declaredSuperTypeNames = 'nt:base';
+            $this->declaredPropertyDefinitions = null;
+            $this->declaredNodeDefinitions = null;
+        } else {
             $this->name = $ntd->getName();
             $this->isAbstract = $ntd->isAbstract();
             $this->isMixin = $ntd->isMixin();
-            $this->sQueryable = $ntd->isQueryable();
+            $this->isQueryable = $ntd->isQueryable();
             $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
             $this->primaryItemName = $ntd->getPrimaryItemName();
             $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
@@ -35,103 +45,103 @@ class jackalope_NodeType_NodeTypeTemplate extends jackalope_NodeType_NodeTypeDef
     }
 
 
-	/**
-	 * Sets the name of the node type.
-	 *
-	 * @param string $name a String.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the name of the node type.
+     *
+     * @param string $name a String.
+     * @return void
+     * @api
+     */
     public function setName($name) {
         $this->name = $name;
     }
 
-	/**
-	 * Sets the names of the supertypes of the node type.
-	 *
-	 * @param array $names a String array.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the names of the supertypes of the node type.
+     *
+     * @param array $names a String array.
+     * @return void
+     * @api
+     */
     public function setDeclaredSuperTypeNames(array $names) {
         $this->declaredSuperTypeNames = $names;
     }
 
-	/**
-	 * Sets the abstract flag of the node type.
-	 *
-	 * @param boolean $abstractStatus a boolean.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the abstract flag of the node type.
+     *
+     * @param boolean $abstractStatus a boolean.
+     * @return void
+     * @api
+     */
     public function setAbstract($abstractStatus) {
         $this->isAbstract = $abstractStatus;
     }
 
-	/**
-	 * Sets the mixin flag of the node type.
-	 *
-	 * @param boolean $mixin a boolean.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the mixin flag of the node type.
+     *
+     * @param boolean $mixin a boolean.
+     * @return void
+     * @api
+     */
     public function setMixin($mixin) {
         $this->isMixin = $mixin;
     }
 
-	/**
-	 * Sets the orderable child nodes flag of the node type.
-	 *
-	 * @param boolean $orderable a boolean.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the orderable child nodes flag of the node type.
+     *
+     * @param boolean $orderable a boolean.
+     * @return void
+     * @api
+     */
     public function setOrderableChildNodes($orderable) {
         $this->hasOrderableChildNodes = $orderable;
     }
 
-	/**
-	 * Sets the name of the primary item.
-	 *
-	 * @param string $name a String.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the name of the primary item.
+     *
+     * @param string $name a String.
+     * @return void
+     * @api
+     */
     public function setPrimaryItemName($name) {
         $this->primaryItemName = $name;
     }
 
-	/**
-	 * Sets the queryable status of the node type.
-	 *
-	 * @param booolean $queryable a boolean.
-	 * @return void
-	 * @api
-	 */
+    /**
+     * Sets the queryable status of the node type.
+     *
+     * @param booolean $queryable a boolean.
+     * @return void
+     * @api
+     */
     public function setQueryable($queryable) {
         $this->isQueryable = $queryable;
     }
 
-	/**
-	 * Returns a mutable List of PropertyDefinitionTemplate objects. To define a
-	 * new NodeTypeTemplate or change an existing one, PropertyDefinitionTemplate
-	 * objects can be added to or removed from this List.
-	 *
-	 * @return array a mutable List of PropertyDefinitionTemplate objects.
-	 * @api
-	 */
+    /**
+     * Returns a mutable List of PropertyDefinitionTemplate objects. To define a
+     * new NodeTypeTemplate or change an existing one, PropertyDefinitionTemplate
+     * objects can be added to or removed from this List.
+     *
+     * @return array a mutable List of PropertyDefinitionTemplate objects.
+     * @api
+     */
     public function getPropertyDefinitionTemplates() {
         return $this->declaredPropertyDefinitions;
     }
 
-	/**
-	 * Returns a mutable List of NodeDefinitionTemplate objects. To define a new
-	 * NodeTypeTemplate or change an existing one, NodeDefinitionTemplate objects
-	 * can be added to or removed from this List.
-	 *
-	 * @return array a mutable List of NodeDefinitionTemplate objects.
-	 * @api
-	 */
+    /**
+     * Returns a mutable List of NodeDefinitionTemplate objects. To define a new
+     * NodeTypeTemplate or change an existing one, NodeDefinitionTemplate objects
+     * can be added to or removed from this List.
+     *
+     * @return array a mutable List of NodeDefinitionTemplate objects.
+     * @api
+     */
     public function getNodeDefinitionTemplates() {
         return $this->declaredNodeDefinitions;
     }

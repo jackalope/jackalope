@@ -180,19 +180,42 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame(true, $defaultValues[0]->getBoolean());
     }
 
+    /**
+     * @covers jackalope_NodeType_NodeTypeManager::createNodeTypeTemplate
+     */
     public function testCreateNodeTypeTemplate() {
-      $ntm = $this->getNodeTypeManager();
+        $ntm = $this->getNodeTypeManager();
 
-      $nt = $ntm->getNodeType('nt:file');
-      $ntt = $ntm->createNodeTypeTemplate($nt);
+        $nt = $ntm->getNodeType('nt:file');
+        $ntt = $ntm->createNodeTypeTemplate($nt);
 
-      $this->assertThat($ntt, $this->isInstanceOf('jackalope_NodeType_NodeTypeDefinition'));
-      $this->assertType('jackalope_NodeType_NodeTypeTemplate', $ntt);
-      $this->assertSame('nt:file', $ntt->getName());
+        $this->assertThat($ntt, $this->isInstanceOf('jackalope_NodeType_NodeTypeDefinition'));
+        $this->assertType('jackalope_NodeType_NodeTypeTemplate', $ntt);
+        $this->assertSame('nt:file', $ntt->getName());
 
-      $ntt->setName('nt:file-ext');
-      $this->assertSame('nt:file-ext', $ntt->getName());
+        $ntt->setName('nt:file-ext');
+        $this->assertSame('nt:file-ext', $ntt->getName());
     }
-    
+
+    /**
+     * @covers jackalope_NodeType_NodeTypeManager::createNodeTypeTemplate
+     */
+    public function testCreateNodeTypeTemplateEmpty() {
+        $ntm = $this->getNodeTypeManager();
+
+        $ntt = $ntm->createNodeTypeTemplate();
+
+        // is empty as defined by spec
+        $this->assertNull($ntt->getName());
+        $this->assertSame('nt:base', $ntt->getDeclaredSupertypeNames());
+        $this->assertFalse($ntt->isAbstract());
+        $this->assertFalse($ntt->isMixin());
+        $this->assertFalse($ntt->hasOrderableChildNodes());
+        $this->assertFalse($ntt->isQueryable());
+        $this->assertNull($ntt->getPrimaryItemName());
+        $this->assertNull($ntt->getDeclaredPropertyDefinitions());
+        $this->assertNull($ntt->getDeclaredChildNodeDefinitions());
+    }
+
 }
 
