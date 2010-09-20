@@ -1,8 +1,11 @@
 <?php
 require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
 
+/**
+ * This tests NodeType, NodeTypeDefinition, and NodeTypeTemplate as well
+ */
 class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
-    //This tests NodeType and NodeTypeDefinition as well
+
     public function testGetNodeType() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
@@ -123,7 +126,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
         $this->assertSame(true, $node->allowsSameNameSiblings());
     }
-    
+
     public function testGetDefinedPropertysAndPropertyDefinition() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
@@ -176,5 +179,20 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertSame('true', $defaultValues[0]->getString());
         $this->assertSame(true, $defaultValues[0]->getBoolean());
     }
+
+    public function testCreateNodeTypeTemplate() {
+      $ntm = $this->getNodeTypeManager();
+
+      $nt = $ntm->getNodeType('nt:file');
+      $ntt = $ntm->createNodeTypeTemplate($nt);
+
+      $this->assertThat($ntt, $this->isInstanceOf('jackalope_NodeType_NodeTypeDefinition'));
+      $this->assertType('jackalope_NodeType_NodeTypeTemplate', $ntt);
+      $this->assertSame('nt:file', $ntt->getName());
+
+      $ntt->setName('nt:file-ext');
+      $this->assertSame('nt:file-ext', $ntt->getName());
+    }
     
 }
+

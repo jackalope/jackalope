@@ -194,4 +194,5 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     public function getDeclaredChildNodeDefinitions() {
         return $this->declaredNodeDefinitions;
     }
+
 }

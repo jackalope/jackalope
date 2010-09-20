@@ -158,7 +158,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function createNodeTypeTemplate($ntd = NULL) {
-        throw new jackalope_NotImplementedException();
+       return jackalope_Factory::get('NodeType_NodeTypeTemplate', array($this, $ntd));
     }
 
     /**
