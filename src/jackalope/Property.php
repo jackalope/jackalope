@@ -24,7 +24,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
         parent::__construct(null, $path, $session, $objectManager, $new);
 
         if ($data instanceof PHPCR_ValueInterface ||
-            is_array($data) && $data[0] instanceof PHPCR_ValueInterface) {
+            is_array($data) && isset($data[0]) && $data[0] instanceof PHPCR_ValueInterface) {
             $this->value = $data;
         } else {
             if (! is_array($data)) throw new PHPCR_RepositoryException("Invalid data to create property. $data");
