@@ -23,10 +23,11 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager, $new = false) {
         parent::__construct(null, $path, $session, $objectManager, $new);
 
-        if ($data instanceof PHPCR_Value ||
-            is_array($data) && $data[0] instanceof PHPCR_Value) {
+        if ($data instanceof PHPCR_ValueInterface ||
+            is_array($data) && $data[0] instanceof PHPCR_ValueInterface) {
             $this->value = $data;
         } else {
+            if (! is_array($data)) throw new PHPCR_RepositoryException("Invalid data to create property. $data");
             $type = $data['type'];
             if (is_string($type)) {
                 $type = PHPCR_PropertyType::valueFromName($type);
@@ -80,7 +81,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
     public function setValue($value) {
         if (is_array($value) && ! $this->isMultiple)
             throw new PHPCR_ValueFormatException('Can not set a single value property with an array of values');
-        if ($value instanceof PHPCR_Node) {
+        if ($value instanceof PHPCR_NodeInterface) {
             if ($this->type == PHPCR_PropertyType::REFERENCE ||
                 $this->type == PHPCR_PropertyType::WEAKREFERENCE) {
                 //FIXME how to test if node is referenceable?
@@ -89,7 +90,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
             } else {
                throw new PHPCR_ValueFormatException('A non-reference property can not have a node as value');
             }
-        } elseif ($value instanceof PHPCR_Value) {
+        } elseif ($value instanceof PHPCR_ValueInterface) {
             if ($this->type == $value->getType()) {
                 $this->value = $value;
             } else {

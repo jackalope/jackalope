@@ -298,7 +298,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
         $this->objectManager->moveItem($srcAbsPath, $destAbsPath);
     }
 
-        /**
+    /**
      * Removes the specified item and its subgraph.
      *
      * This is a session-write method and therefore requires a save in order to
@@ -356,11 +356,24 @@ class jackalope_Session implements PHPCR_SessionInterface {
     }
 
     /**
-     * not implemented
+     * If keepChanges is false, this method discards all pending changes currently
+     * recorded in this Session and returns all items to reflect the current saved
+     * state. Outside a transaction this state is simply the current state of
+     * persistent storage. Within a transaction, this state will reflect persistent
+     * storage as modified by changes that have been saved but not yet committed.
+     * If keepChanges is true then pending change are not discarded but items that
+     * do not have changes pending have their state refreshed to reflect the current
+     * saved state, thus revealing changes made by other sessions.
+     *
+     * @param boolean $keepChanges a boolean
+     * @return void
+     * @throws PHPCR_RepositoryException if an error occurs.
+     * @api
      */
     public function refresh($keepChanges) {
         throw new jackalope_NotImplementedException('Write');
         //TODO: is clearing out object manager cache enough?
+        //the $keepChanges option seems not relevant in php context. we have no long running sessions with the server and don't need to sync changes from server.
     }
 
     /**
@@ -376,10 +389,18 @@ class jackalope_Session implements PHPCR_SessionInterface {
     }
 
     /**
-     * not implemented
+     * This method returns a ValueFactory that is used to create Value objects
+     * for use when setting repository properties.
+     *
+     * @return PHPCR_ValueFactoryInterface
+     * @throws PHPCR_UnsupportedRepositoryOperationException if writing to the repository is not supported.
+     * @throws PHPCR_RepositoryException if another error occurs.
+     * @api
      */
     public function getValueFactory() {
-        throw new jackalope_NotImplementedException('Write');
+        return jackalope_Factory::get(
+                            'ValueFactory',
+                            array());
     }
 
     /**
