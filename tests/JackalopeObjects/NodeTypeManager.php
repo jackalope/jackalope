@@ -198,7 +198,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
     }
 
     /**
-     * @covers jackalope_NodeType_NodeTypeManager::createNodeTypeTemplate
+     * @covers jackalope_NodeType_NodeTypeTemplate::__construct
      */
     public function testCreateNodeTypeTemplateEmpty() {
         $ntm = $this->getNodeTypeManager();
@@ -218,7 +218,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
     }
 
     /**
-     * @covers jackalope_NodeType_NodeTypeManager::createNodeDefinitionTemplate
+     * @covers jackalope_NodeType_NodeDefinitionTemplate::__construct
      */
     public function testCreateNodeDefinitionTemplateEmpty() {
         $ntm = $this->getNodeTypeManager();
@@ -234,6 +234,28 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
         $this->assertNull($ndt->getRequiredPrimaryTypeNames());
         $this->assertNull($ndt->getDefaultPrimaryTypeName());
         $this->assertFalse($ndt->allowsSameNameSiblings());
+    }
+
+    /**
+     * @covers jackalope_NodeType_PropertyDefinitionTemplate::__construct
+     */
+    public function testCreatePropertyDefinitionTemplateEmpty() {
+        $ntm = $this->getNodeTypeManager();
+
+        $ndt = $ntm->createPropertyDefinitionTemplate();
+
+        // is empty as defined by doc
+        $this->assertNull($ndt->getName());
+        $this->assertFalse($ndt->isAutoCreated());
+        $this->assertFalse($ndt->isMandatory());
+        $this->assertSame(PHPCR_Version_OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertFalse($ndt->isProtected());
+        $this->assertSame(PHPCR_PropertyType::STRING, $ndt->getRequiredType());
+        $this->assertNull($ndt->getValueConstraints());
+        $this->assertNull($ndt->getDefaultValues());
+        $this->assertFalse($ndt->isMultiple());
+        $this->assertFalse($ndt->isFullTextSearchable());
+        $this->assertFalse($ndt->isQueryOrderable());
     }
 
 }
