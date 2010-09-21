@@ -293,9 +293,15 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function remove() {
+        // sanity checks
+        if ($this->getDepth() == 0) {
+            throw new PHPCR_RepositoryException('Cannot remove root node');
+        }
+
         //TODO: add sanity checks to all other write methods to avoid modification after deleting?
         //FIXME: property remove different or same call on objectmanager?
-        $this->objectManager->removeNode($path);
+        // TODO same-name siblings reindexing
+        $this->objectManager->removeItem($this->path);
         $this->getParent()->setModified();
     }
 
