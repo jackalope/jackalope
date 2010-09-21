@@ -10,13 +10,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
     protected $propertyDefinitions = null;
     protected $childNodeDefinitions = null;
     
-    /**
-     * Initializes the NodeTypeDefinition from the given DOM
-     * @param DOMElement NodeTypeElement
-     */
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
-        parent::__construct($node, $nodeTypeManager);
-    }
     
     /**
      * Returns all supertypes of this node type in the node type inheritance

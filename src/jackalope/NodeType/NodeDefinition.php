@@ -50,6 +50,7 @@ class jackalope_NodeType_NodeDefinition extends jackalope_NodeType_ItemDefinitio
      * @return PHPCR_NodeType_NodeTypeInterface an array of NodeType objects.
      */
     public function getRequiredPrimaryTypes() {
+        // TODO if this is not attached to a live NodeType, return NULL
         if (empty($this->requiredPrimaryTypes)) {
             foreach ($this->requiredPrimaryTypeNames as $primaryTypeName) {
                 array_push($this->requiredPrimaryTypes, $this->nodeTypeManager->getNodeType($primaryTypeName));

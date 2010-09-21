@@ -25,15 +25,23 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
         $xp = new DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
-            $nodetype = jackalope_Factory::get('NodeType_NodeType', array($nodetype, $this));
-            if ($nodetype->isMixin()) {
-                $this->mixinTypes[$nodetype->getName()] = $nodetype;
-                $this->addToNodeTree($nodetype);
-            } else {
-                $this->primaryTypes[$nodetype->getName()] = $nodetype;
-                $this->addToNodeTree($nodetype);
-            }
+            $nodetype = jackalope_Factory::get('NodeType_NodeType', array($this, $nodetype));
+            $this->addNodeType($nodetype);
         }
+    }
+
+    /**
+     * Stores the node type in our internal structures (flat && tree)
+     *
+     * @param   PHPCR_NodeType_NodeTypeInterface  $nodetype   The nodetype to add
+     */
+    protected function addNodeType(PHPCR_NodeType_NodeTypeInterface $nodetype) {
+        if ($nodetype->isMixin()) {
+            $this->mixinTypes[$nodetype->getName()] = $nodetype;
+        } else {
+            $this->primaryTypes[$nodetype->getName()] = $nodetype;
+        }
+        $this->addToNodeTree($nodetype);
     }
     
     /**
@@ -78,7 +86,7 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
             }
         }
     }
-    
+
     /**
      * Returns the named node type.
      *
@@ -201,9 +209,24 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function registerNodeType(PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
-        throw new jackalope_NotImplementedException();
+        $nt = $this->createNodeType($ntd, $allowUpdate);
+        $this->addNodeType($nt);
+        return $nt;
     }
 
+    /**
+     * Creates a NodeType from a NodeTypeDefinition and validates it
+     *
+     * @param   PHPCR_NodeType_NodeTypeDefinitionInterface  $ntd    The node type definition
+     * @param   bool    $allowUpdate    Whether an existing note type can be updated
+     * @throws PHPCR_NodeType_NodeTypeExistsException   If the node type is already existing and allowUpdate is false
+     */
+    protected function createNodeType(PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+        if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
+            throw new PHPCR_NodeType_NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
+        }
+        return jackalope_Factory::get('NodeType_NodeType', array($this, $ntd));
+    }
     /**
      * Registers or updates the specified array of NodeTypeDefinition objects.
      * This method is used to register or update a set of node types with mutual
@@ -220,7 +243,15 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function registerNodeTypes(array $definitions, $allowUpdate) {
-        throw new jackalope_NotImplementedException();
+        $nts = array();
+        // prepare them first (all or nothing)
+        foreach ($definitions as $definition) {
+            $nts[] = $this->createNodeType($ntd, $allowUpdate);
+        }
+        foreach ($nts as $nt) {
+            $this->addNodeType($nt);
+        }
+        return jackalope_Factory('NodeType_NodeTypeIterator', array($nts));
     }
 
     /**
@@ -233,6 +264,14 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function unregisterNodeType($name) {
+        if (!empty($this->primaryTypes[$name])) {
+            unset($this->primaryTypes[$name]);
+        } elseif (!empty($this->mixinTypes[$name])) {
+            unset($this->mixinTypes[$name]);
+        } else {
+            throw new PHPCR_NodeType_NoSuchNodeTypeException('NodeType not found: '.$name);
+        }
+        // TODO remove from nodeTree
         throw new jackalope_NotImplementedException();
     }
 
@@ -247,6 +286,8 @@ class jackalope_NodeType_NodeTypeManager implements PHPCR_NodeType_NodeTypeManag
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function unregisterNodeTypes(array $names) {
-        throw new jackalope_NotImplementedException();
+        foreach ($names as $name) {
+            $this->unregisterNodeType($name);
+        }
     }
 }

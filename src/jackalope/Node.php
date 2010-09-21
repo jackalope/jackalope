@@ -3,6 +3,7 @@
 class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
 
     protected $index = 1;
+    /** @var string */
     protected $primaryType;
 
     /**
@@ -102,13 +103,41 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      */
     public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
 
-        if(strstr($relPath, '/')!==false) {
-            throw new jackalope_NotImplementedException('TODO: Resolve relative path to get the parent node and the node name');
-            //return $node->addNode($name, $primaryNodeTypeName, $identifier);
+        $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+
+        // are we not the immediate parent?
+        if (strpos($relPath, '/') !== false) {
+            // forward to real parent
+            try {
+                $parentNode = $this->objectManager->getNode(dirname($relPath), $this->path);
+            } catch(PHPCR_ItemNotFoundException $e) {
+                throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+            }
+            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName, $identifier);
         }
-        if (is_null($primaryNodeTypeName)) {
-            throw new jackalope_NotImplementedException('TODO: How to determine the node type?');
+
+        if (!is_null($primaryNodeTypeName)) {
+            // sanitize
+            $nt = $ntm->getNodeType($primaryNodeTypename);
+            if ($nt->isMixin()) {
+                throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
+            } elseif ($nt->isAbstract()) {
+                throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
+            }
+        } else {
+            $nodeDefinitions = $ntm->getNodeType($this->primaryType)->getChildNodeDefinitions();
+            foreach ($nodeDefinitions as $def) {
+                if (!is_null($def->getDefaultPrimaryType())) {
+                    $primaryNodeTypeName = $def->getDefaultPrimaryType();
+                    break;
+                }
+            }
+            if (is_null($primaryNodeTypeName)) {
+                throw new PHPCR_NodeType_ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
+            }
         }
+
+        // create child node
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         if (! is_null($identifier)) {
             $data['jcr:uuid'] = $identifier;
@@ -119,6 +148,8 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
         $this->setModified();
+
+        return $node;
     }
 
     /**
@@ -589,7 +620,8 @@ class jackalope_Node extends jackalope_Item implements PHPCR_NodeInterface {
      * @api
      */
     public function getPrimaryNodeType() {
-        throw new jackalope_NotImplementedException(); //create nodetype instance for $this->primaryType
+        $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+        return $ntm->getNodeType($this->primaryType);
     }
 
     /**

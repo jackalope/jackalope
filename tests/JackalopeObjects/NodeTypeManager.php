@@ -207,7 +207,7 @@ class jackalope_tests_NodeTypeManager extends jackalope_JackalopeObjectsCase {
 
         // is empty as defined by doc
         $this->assertNull($ntt->getName());
-        $this->assertSame('nt:base', $ntt->getDeclaredSupertypeNames());
+        $this->assertEquals(array('nt:base'), $ntt->getDeclaredSupertypeNames());
         $this->assertFalse($ntt->isAbstract());
         $this->assertFalse($ntt->isMixin());
         $this->assertFalse($ntt->hasOrderableChildNodes());

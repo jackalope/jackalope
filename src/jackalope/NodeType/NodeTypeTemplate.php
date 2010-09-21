@@ -18,33 +18,6 @@
 class jackalope_NodeType_NodeTypeTemplate extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeTemplateInterface {
 
 
-    public function __construct(jackalope_NodeType_NodeTypeManager $nodeTypeManager, PHPCR_NodeType_NodeTypeDefinitionInterface $ntd = null) {
-        $this->nodeTypeManager = $nodeTypeManager;
-
-        if (is_null($ntd)) {
-            $this->name = null;
-            $this->isAbstract = false;
-            $this->isMixin = false;
-            $this->isQueryable = false;
-            $this->hasOrderableChildNodes = false;
-            $this->primaryItemName = null;
-            $this->declaredSuperTypeNames = 'nt:base';
-            $this->declaredPropertyDefinitions = null;
-            $this->declaredNodeDefinitions = null;
-        } else {
-            $this->name = $ntd->getName();
-            $this->isAbstract = $ntd->isAbstract();
-            $this->isMixin = $ntd->isMixin();
-            $this->isQueryable = $ntd->isQueryable();
-            $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
-            $this->primaryItemName = $ntd->getPrimaryItemName();
-            $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
-            $this->declaredPropertyDefinitions = $ntd->getDeclaredPropertyDefinitions();
-            $this->declaredNodeDefinitions = $ntd->getDeclaredChildNodeDefinitions();
-        }
-    }
-
-
     /**
      * Sets the name of the node type.
      *
