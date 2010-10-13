@@ -6,7 +6,7 @@ namespace jackalope;
  * Allows easy iteration through a list of Nodes with nextNode as well as a skip method
  * inherited from RangeIterator.
  */
-class NodeIterator extends jackalope_RangeIterator implements \PHPCR_NodeIteratorInterface {
+class NodeIterator extends RangeIterator implements \PHPCR_NodeIteratorInterface {
     /**
      * Returns the next Node in the iteration.
      *

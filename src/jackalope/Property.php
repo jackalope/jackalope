@@ -4,16 +4,16 @@ namespace jackalope;
 
 
 class Property extends Item implements \PHPCR_PropertyInterface {
-    
+
     protected $value;
     protected $isMultiple = false;
     protected $type;
     protected $definition;
-    
+
     public function __construct($data, $path, Session $session, ObjectManager $objectManager) {
         parent::__construct(null, $path, $session, $objectManager);
 
-        $this->type = PHPCR_PropertyType::valueFromName($data['type']);
+        $this->type = \PHPCR_PropertyType::valueFromName($data['type']);
 
         if (is_array($data['value'])) {
             $this->isMultiple = true;
@@ -66,7 +66,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
                 $this->type == \PHPCR_PropertyType::WEAKREFERENCE) {
                 //FIXME how to test if node is referenceable?
                 //throw new \PHPCR_ValueFormatException('reference property may only be set to a referenceable node');
-                $this->value = jackalope_Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
+                $this->value = Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
             } else {
                throw new \PHPCR_ValueFormatException('A non-reference property can not have a node as value');
             }
@@ -286,7 +286,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      */
     public function getLength() {
         $this->checkMultiple();
-        if (PHPCR_PropertyType::BINARY === $this->type) {
+        if (\PHPCR_PropertyType::BINARY === $this->type) {
             throw new NotImplementedException('Binaries not implemented');
         } else {
             return strlen($this->value->getString());
@@ -307,7 +307,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
         $this->checkMultiple(false);
         $ret = array();
         foreach ($this->value as $value) {
-            if (PHPCR_PropertyType::BINARY === $this->type) {
+            if (\PHPCR_PropertyType::BINARY === $this->type) {
                 throw new NotImplementedException('Binaries not implemented');
             } else {
                 array_push($ret, strlen($value->getString()));
@@ -383,7 +383,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      */
     protected function checkMultiple($isMultiple = true) {
         if ($isMultiple === $this->isMultiple) {
-            throw new PHPCR_ValueFormatException();
+            throw new \PHPCR_ValueFormatException();
         }
     }
 }

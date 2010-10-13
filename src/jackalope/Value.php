@@ -44,7 +44,7 @@ class Value implements \PHPCR_ValueInterface {
         if ('Binary' === $type) {
             throw new NotImplementedException('Binaries not implemented');
         }
-        $this->type = PHPCR_PropertyType::valueFromName($type);
+        $this->type = \PHPCR_PropertyType::valueFromName($type);
         $this->data = $data;
     }
 
@@ -171,7 +171,7 @@ class Value implements \PHPCR_ValueInterface {
         if (settype($ret, $type)) {
             return $ret;
         } else {
-            throw new PHPCR_ValueFormatException;
+            throw new \PHPCR_ValueFormatException;
         }
     }
 }

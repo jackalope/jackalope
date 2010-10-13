@@ -19,7 +19,7 @@ class Repository implements \PHPCR_RepositoryInterface {
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = Factory::get('transport_DavexClient', array($uri));
+            $transport = Factory::get('transport\DavexClient', array($uri));
         }
         $this->transport = $transport;
         $this->descriptors = $transport->getRepositoryDescriptors();
@@ -52,9 +52,9 @@ class Repository implements \PHPCR_RepositoryInterface {
     public function login($credentials = NULL, $workspaceName = NULL) {
         if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
-            throw new PHPCR_RepositoryException('transport failed to login without telling why');
+            throw new \PHPCR_RepositoryException('transport failed to login without telling why');
         }
-        $session = jackalope\Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        $session = Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
 
         return $session;
     }
@@ -83,7 +83,7 @@ class Repository implements \PHPCR_RepositoryInterface {
      * @api
      */
     public function isStandardDescriptor($key) {
-        $ref = new ReflectionClass('PHPCR_RepositoryInterface');
+        $ref = new ReflectionClass('\PHPCR_RepositoryInterface');
         $consts = $ref->getConstantcs();
         return in_array($key, $consts);
     }

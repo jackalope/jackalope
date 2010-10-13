@@ -34,7 +34,7 @@ class ObjectManager {
     protected $unsaved = false;
 
     public function __construct(TransportInterface $transport,
-                                PHPCR_SessionInterface $session) {
+                                \PHPCR_SessionInterface $session) {
         $this->transport = $transport;
         $this->session = $session;
     }
@@ -221,10 +221,10 @@ class ObjectManager {
      */
     public function verifyAbsolutePath($path) {
         if (!Helper::isAbsolutePath($path)) {
-            throw new PHPCR_RepositoryException('Path is not absolute: ' . $path);
+            throw new \PHPCR_RepositoryException('Path is not absolute: ' . $path);
         }
         if (!Helper::isValidPath($path)) {
-            throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
+            throw new \PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
         return true;
     }

@@ -22,14 +22,8 @@ function jackalope_autoloader($class) {
             include($incFile);
             return $incFile;
         }
-    } else if (0 === strpos($class, 'jackalope_')) {
-        //Hardcoded length of jackalope_
-        $incFile = dirname(__FILE__) . '/' . str_replace("_", DIRECTORY_SEPARATOR, substr($class, 9)) . ".php";
-        if (@fopen($incFile, "r", TRUE)) {
-            include($incFile);
-            return $incFile;
-        }
     }
     return FALSE;
 }
+spl_autoload_extensions('.php');
 spl_autoload_register('jackalope_autoloader');

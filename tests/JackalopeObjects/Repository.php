@@ -1,11 +1,13 @@
 <?php
+namespace jackalope\tests\JackalopeObjects;
+
 require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
-class jackalope_tests_Repository extends jackalope_baseCase {
+class Repository extends \jackalope\baseCase {
     public function testConstructor() {
-        $credentials = new PHPCR_SimpleCredentials('test', 'cred');
+        $credentials = new \PHPCR_SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMock('jackalope_transport_DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
+        $transport = $this->getMock('\jackalope\transport\DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))
@@ -14,9 +16,9 @@ class jackalope_tests_Repository extends jackalope_baseCase {
             ->method('getRepositoryDescriptors')
             ->will($this->returnValue(array('bla'=>'bli')));
 
-        $repo = new jackalope_Repository(null, $transport);
+        $repo = new \jackalope\Repository(null, $transport);
         $session = $repo->login($credentials, $workspaceName);
-        $this->assertType('jackalope_Session', $session);
+        $this->assertType('\jackalope\Session', $session);
 
         $this->assertEquals(array('bla'), $repo->getDescriptorKeys());
         $this->assertEquals('bli', $repo->getDescriptorValue('bla'));

@@ -18,7 +18,7 @@ class Workspace implements \PHPCR_WorkspaceInterface {
 
     public function __construct(Session $session, ObjectManager $objectManager, $name) {
         $this->session = $session;
-        $this->nodeTypeManager = Factory::get('NodeType_NodeTypeManager', array($objectManager));
+        $this->nodeTypeManager = Factory::get('NodeType\NodeTypeManager', array($objectManager));
         $this->name = $name;
     }
 
@@ -85,7 +85,7 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      * @api
      */
     public function getQueryManager() {
-        return Factory::get('Query_QueryManager', array($this->session->getObjectManager()));
+        return Factory::get('Query\QueryManager', array($this->session->getObjectManager()));
     }
 
     /**

@@ -85,7 +85,7 @@ class Item implements \PHPCR_ItemInterface {
      */
     public function getAncestor($depth) {
         if ($depth < 0 || $depth > $this->depth) {
-            throw new PHPCR_ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
+            throw new \PHPCR_ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
         if ($depth == $this->depth) {
             return $this;
@@ -214,7 +214,7 @@ class Item implements \PHPCR_ItemInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      * @api
      */
-    public function isSame(PHPCR_ItemInterface $otherItem) {
+    public function isSame(\PHPCR_ItemInterface $otherItem) {
         if ($this === $otherItem) { // trivial case
             return true;
         }
@@ -244,7 +244,7 @@ class Item implements \PHPCR_ItemInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      * @api
      */
-    public function accept(PHPCR_ItemVisitorInterface $visitor) {
+    public function accept(\PHPCR_ItemVisitorInterface $visitor) {
         throw new NotImplementedException();
     }
 

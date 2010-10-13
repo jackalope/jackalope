@@ -15,7 +15,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     
     protected $nodeTree = array();
     
-    public function __construct(ObjectManager $objectManager) {
+    public function __construct(\jackalope\ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
     
@@ -25,7 +25,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @return void
      */
     protected function createNodeTypes($dom) {
-        $xp = new DOMXpath($dom);
+        $xp = new \DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
             $nodetype = Factory::get('NodeType_NodeType', array($nodetype, $this));

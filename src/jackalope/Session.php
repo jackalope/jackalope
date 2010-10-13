@@ -24,7 +24,7 @@ class Session implements \PHPCR_SessionInterface {
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(Repository $repository, $workspaceName, PHPCR_SimpleCredentials $credentials, TransportInterface $transport) {
+    public function __construct(Repository $repository, $workspaceName, \PHPCR_SimpleCredentials $credentials, TransportInterface $transport) {
         $this->repository = $repository;
         $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
         $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
@@ -117,8 +117,8 @@ class Session implements \PHPCR_SessionInterface {
      * @throws PHPCR_RepositoryException if another error occurs.
      * @api
      */
-    public function impersonate(PHPCR_CredentialsInterface $credentials) {
-        throw new PHPCR_LoginException('Not supported');
+    public function impersonate(\PHPCR_CredentialsInterface $credentials) {
+        throw new \PHPCR_LoginException('Not supported');
     }
 
     /**
@@ -155,7 +155,7 @@ class Session implements \PHPCR_SessionInterface {
     public function getItem($absPath) {
 
         if(strpos($absPath,'/') !== 0) {
-            throw new PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+            throw new \PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
         if ($this->nodeExists($absPath)) {
@@ -218,7 +218,7 @@ class Session implements \PHPCR_SessionInterface {
         if ($absPath == '/') return true;
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
         }
 
         try {
@@ -244,7 +244,7 @@ class Session implements \PHPCR_SessionInterface {
         // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
         }
 
         try {
@@ -425,7 +425,7 @@ class Session implements \PHPCR_SessionInterface {
      */
     public function checkPermission($absPath, $actions) {
         if (! $this->hasPermission($absPath, $actions)) {
-            throw new PHPCR_Security_AccessControlException($absPath);
+            throw new \PHPCR_Security_AccessControlException($absPath);
         }
     }
 
@@ -637,7 +637,7 @@ class Session implements \PHPCR_SessionInterface {
      * @api
      */
     public function getAccessControlManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -649,7 +649,7 @@ class Session implements \PHPCR_SessionInterface {
      * @api
      */
     public function getRetentionManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**

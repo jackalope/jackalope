@@ -216,8 +216,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
         $node = null;
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
-        } catch (PHPCR_ItemNotFoundException $e) {
-            throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (\PHPCR_ItemNotFoundException $e) {
+            throw new \PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
         return $node;
     }
@@ -294,7 +294,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
             if (isset($this->properties[$relPath])) {
                 return $this->properties[$relPath];
             } else {
-                throw new PHPCR_PathNotFoundException($relPath);
+                throw new \PHPCR_PathNotFoundException($relPath);
             }
         } else {
             $this->session->getProperty($this->path . '/.' . $relPath);
