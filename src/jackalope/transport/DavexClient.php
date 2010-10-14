@@ -1,7 +1,7 @@
 <?php
 
 namespace jackalope\transport;
-use \jackalope\Factory;
+use jackalope\Factory, jackalope\TransportInterface;
 use \DOMDocument;
 
 /**
@@ -9,7 +9,7 @@ use \DOMDocument;
  * Once the login method has been called, the workspace is set and can not be
  * changed anymore.
  */
-class DavexClient implements \jackalope\TransportInterface {
+class DavexClient implements TransportInterface {
     /** server url including protocol.
      * i.e http://localhost:8080/server/
      * constructor ensures the trailing slash /

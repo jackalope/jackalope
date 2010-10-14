@@ -1,7 +1,7 @@
 <?php
 
 namespace jackalope\NodeType;
-use \jackalope\Factory;
+use jackalope\Factory, jackalope\ObjectManager;
 
 /**
  * Allows for the retrieval and (in implementations that support it) the
@@ -15,7 +15,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
 
     protected $nodeTree = array();
 
-    public function __construct(\jackalope\ObjectManager $objectManager) {
+    public function __construct(ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
 
