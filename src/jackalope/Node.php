@@ -1,7 +1,9 @@
 <?php
-
 namespace jackalope;
 
+/**
+ * The Node interface represents a node in a workspace.
+ */
 class Node extends Item implements \PHPCR_NodeInterface {
 
     protected $index = 1;

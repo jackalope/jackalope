@@ -1,7 +1,11 @@
 <?php
-
 namespace jackalope;
 
+/**
+ * The Item is the base interface of Node and Property.
+ * This class implements methods for both types.
+ * It should not be instantiated directly.
+ */
 class Item implements \PHPCR_ItemInterface {
 
     /** session this node belongs to */

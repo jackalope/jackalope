@@ -1,7 +1,7 @@
 <?php
-
 namespace jackalope\Query;
-use jackalope;
+
+use jackalope\ObjectManager, jackalope\NotImplementedException;
 
 /**
  * This interface encapsulates methods for the management of search queries.

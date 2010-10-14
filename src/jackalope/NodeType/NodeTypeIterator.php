@@ -1,17 +1,17 @@
 <?php
 
 namespace jackalope\NodeType;
-use jackalope;
+use jackalope\RangeIterator;
 
 /**
  * An iterator for NodeType objects.
  */
 class NodeTypeIterator extends RangeIterator implements \PHPCR_NodeType_NodeTypeIteratorInterface {
-    
+
     public function __construct($items) {
         parent::__construct($items);
     }
-    
+
     /**
      * Returns the next NodeType in the iteration.
      *

@@ -1,7 +1,7 @@
 <?php
+namespace jackalope\Query;
 
-namespace Query;
-use jackelope;
+use jackalope\ObjectManager;
 
 /**
  * SQL2 Query Object

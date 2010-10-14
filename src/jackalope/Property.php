@@ -1,7 +1,5 @@
 <?php
-
 namespace jackalope;
-
 
 class Property extends Item implements \PHPCR_PropertyInterface {
 

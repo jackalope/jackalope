@@ -1,7 +1,8 @@
 <?php
-
 namespace jackalope\NodeType;
-use jackalope;
+
+use jackalope\Factory, jackalope\Helper;
+use \DOMElement, \DOMXPath;
 
 class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_PropertyDefinitionInterface {
     protected $requiredType;
@@ -11,25 +12,25 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_Prope
     protected $availableQueryOperators = array();
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
-    
+
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
         $this->requiredType = \PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
         $this->isQueryOrderable = Helper::getBoolAttribute($node, 'queryOrderable');
-        
-        $xp = new DOMXpath($node->ownerDocument);
+
+        $xp = new DOMXPath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
         foreach ($valueConstraints as $valueConstraint) {
             array_push($this->valueConstraints, $valueConstraint->nodeValue);
         }
-        
+
         $availableQueryOperators = $xp->query('availableQueryOperators/availableQueryOperator', $node);
         foreach ($availableQueryOperators as $availableQueryOperator) {
             array_push($this->availableQueryOperators, $availableQueryOperator->nodeValue);
         }
-        
+
         $defaultValues = $xp->query('defaultValues/defaultValue', $node);
         foreach ($defaultValues as $defaultValue) {
             array_push(
@@ -38,7 +39,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_Prope
             );
         }
     }
-    
+
     /**
      * Gets the required type of the property. One of:
      *  PropertyType.STRING

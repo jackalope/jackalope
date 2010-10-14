@@ -1,14 +1,15 @@
 <?php
 
 namespace jackalope\transport;
-use jackalope;
+use \jackalope\Factory;
+use \DOMDocument;
 
 /**
  * Connection to one Jackrabbit server.
  * Once the login method has been called, the workspace is set and can not be
  * changed anymore.
  */
-class DavexClient implements jackalope\TransportInterface {
+class DavexClient implements \jackalope\TransportInterface {
     /** server url including protocol.
      * i.e http://localhost:8080/server/
      * constructor ensures the trailing slash /
@@ -145,7 +146,7 @@ class DavexClient implements jackalope\TransportInterface {
         }
         return $descriptors;
     }
-    
+
     /**
      * Returns the accessible workspace names
      */
@@ -162,7 +163,7 @@ class DavexClient implements jackalope\TransportInterface {
         }
         return array_unique($workspaces);
     }
-    
+
     /**
      * Get the item from an absolute path
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
@@ -187,7 +188,7 @@ class DavexClient implements jackalope\TransportInterface {
      */
     public function getNodePathForIdentifier($uuid) {
         $this->checkLogin();
-        
+
         $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
                                         self::buildLocateRequest($uuid));
         /* answer looks like
@@ -239,7 +240,7 @@ class DavexClient implements jackalope\TransportInterface {
      */
     public function getNodeTypes($nodeTypes = array()) {
         $this->checkLogin();
-        
+
         $dom = $this->getDomFromBackend(
             self::REPORT, $this->workspaceUri . '/jcr:root',
             self::buildNodeTypesRequest($nodeTypes)
@@ -249,7 +250,7 @@ class DavexClient implements jackalope\TransportInterface {
         }
         return $dom;
     }
-    
+
     /**
      * Throws an error if the there is no login
      * @throws PHPCR_RepositoryException if now logged in
@@ -259,7 +260,7 @@ class DavexClient implements jackalope\TransportInterface {
             throw new \PHPCR_RepositoryException("Implementation error: Please login before accessing content");
         }
     }
-    
+
     /**
      * Returns the XML required to request nodetypes
      * @param array the nodetypes you want to request
@@ -329,7 +330,7 @@ class DavexClient implements jackalope\TransportInterface {
         if ($this->credentials instanceof \PHPCR_SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
         }
-        
+
         $headers = array(
             'Depth: ' . $depth,
             'Content-Type: text/xml; charset=UTF-8',

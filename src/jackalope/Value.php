@@ -1,7 +1,5 @@
 <?php
-
 namespace jackalope;
-
 
 /**
  * A generic holder for the value of a property. A Value object can be used

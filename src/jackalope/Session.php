@@ -1,7 +1,5 @@
 <?php
-
 namespace jackalope;
-
 
 /**
  * The Session object provides read and (if implemented) write access to the

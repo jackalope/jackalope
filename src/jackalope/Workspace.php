@@ -1,7 +1,5 @@
 <?php
-
 namespace jackalope;
-
 
 /**
  * A Workspace object represents a view onto a persistent workspace within a

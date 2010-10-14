@@ -1,8 +1,10 @@
 <?php
+namespace jackalope\tests\ImplementationHelpers;
+
 require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
 
-class OMT extends jackalope\ObjectManager {
-    
+class OMT extends \jackalope\ObjectManager {
+
     public function isUUID($i) {
         return parent::isUUID($i);
     }
@@ -16,27 +18,27 @@ class OMT extends jackalope\ObjectManager {
     }
 }
 
-class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
+class ObjectManager extends \jackalope\JackalopeObjectsCase {
 
     public function testGetNodeByPath() {
         $path = '/jcr:root';
-        $om = new jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
+        $om = new \jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
-        $this->assertType('jackalope\Node', $node);
+        $this->assertType('\jackalope\Node', $node);
         $children = $node->getNodes();
-        $this->assertType('jackalope\NodeIterator', $children);
+        $this->assertType('\jackalope\NodeIterator', $children);
         $this->assertEquals(2, $children->getSize());
         $this->assertEquals($node, $om->getNode($path));
     }
-    
+
     public function testGetNodeTypes() {
-        $om = new jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
         $this->assertType('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
         $this->assertType('DOMDocument', $nodetypes);
     }
-    
+
     public function testIsUUID() {
         $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertFalse($om->isUUID(''));
@@ -65,14 +67,14 @@ class jackalope_tests_ObjectManager extends jackalope_JackalopeObjectsCase {
 
         $this->assertNotEquals($path, $om->normalizePath($uuid), 'Path normalization accepted improperly formatted UUID path');
     }
-    
+
     /**
      * @dataProvider dataproviderAbsolutePath
-     * @covers jackalope\ObjectManager::absolutePath
-     * @covers jackalope\ObjectManager::normalizePath
+     * @covers \jackalope\ObjectManager::absolutePath
+     * @covers \jackalope\ObjectManager::normalizePath
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
-        $om = new jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertEquals($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 namespace jackalope\NodeType;
-use jackalope;
+use \jackalope\Factory;
 
 /**
  * Allows for the retrieval and (in implementations that support it) the
@@ -9,16 +9,16 @@ use jackalope;
  */
 class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     protected $objectManager;
-    
+
     protected $primaryTypes;
     protected $mixinTypes;
-    
+
     protected $nodeTree = array();
-    
+
     public function __construct(\jackalope\ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
-    
+
     /**
      * Creates NodeTypes from the given dom
      * @param DOMDocument nodetypes dom from jackrabbit
@@ -28,7 +28,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
         $xp = new \DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
-            $nodetype = Factory::get('NodeType_NodeType', array($nodetype, $this));
+            $nodetype = Factory::get('NodeType\NodeType', array($nodetype, $this));
             if ($nodetype->isMixin()) {
                 $this->mixinTypes[$nodetype->getName()] = $nodetype;
                 $this->addToNodeTree($nodetype);
@@ -38,7 +38,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
             }
         }
     }
-    
+
     /**
      * Returns the declared subnodes of a given nodename
      * @param string Nodename
@@ -50,7 +50,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
         }
         return $this->nodeTree[$nodeTypeName];
     }
-    
+
     /**
      * Returns the subnode hirarchie of a given nodename
      * @param string Nodename
@@ -61,13 +61,13 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
-        
+
         foreach ($this->nodeTree[$nodeTypeName] as $subnode) {
             $ret = array_merge($ret, array($subnode), $this->getDeclaredSubtypes($subnode));
         }
         return $ret;
     }
-    
+
     /**
      * Adds a node to the tree to get the subnodes later on
      * @param NodeType the nodetype to add
@@ -81,7 +81,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
             }
         }
     }
-    
+
     /**
      * Returns the named node type.
      *
@@ -94,7 +94,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
         if (empty($this->primaryTypes[$nodeTypeName]) && empty($this->mixinTypes[$nodeTypeName])) {
             $this->createNodeTypes($this->objectManager->getNodeType($nodeTypeName));
         }
-        
+
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
         } elseif (isset($this->mixinTypes[$nodeTypeName])) {
@@ -123,7 +123,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getAllNodeTypes() {
-        return Factory::get('NodeType_NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
+        return Factory::get('NodeType\NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
     }
 
     /**
@@ -133,7 +133,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
-        return Factory::get('NodeType_NodeTypeIterator', array(array_values($this->primaryTypes)));
+        return Factory::get('NodeType\NodeTypeIterator', array(array_values($this->primaryTypes)));
     }
 
     /**
@@ -144,7 +144,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
-        return Factory::get('NodeType_NodeTypeIterator', array(array_values($this->mixinTypes)));
+        return Factory::get('NodeType\NodeTypeIterator', array(array_values($this->mixinTypes)));
     }
 
     /**

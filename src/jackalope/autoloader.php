@@ -1,11 +1,12 @@
 <?php
-/*
+/**
+ * Implementation specific helper:
  * Autoloader takes care of loading classes only when they are required.
  * If your project does not provide its own autoloader, you can require()
- * this file in your entry points.
- */
-
-/** load a class named $class */
+ * this file in your entry points. It will automatically register the
+ * jackalope_autoloader function with spl_autoload_register
+ *
+ * load a class named $class */
 function jackalope_autoloader($class) {
     if (false !== ($pos = strripos($class, '\\')) && 0 === strpos($class, 'jackalope')) {
         // namespaced class name
@@ -25,5 +26,5 @@ function jackalope_autoloader($class) {
     }
     return FALSE;
 }
-spl_autoload_extensions('.php');
+#spl_autoload_extensions('.php');
 spl_autoload_register('jackalope_autoloader');

@@ -1,27 +1,28 @@
 <?php
-
 namespace jackalope\NodeType;
-use jackalope;
+
+use jackalope\Helper;
+use \DOMElement, \DOMXPath;
 
 class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefinitionInterface {
     const DEFAULT_PRIMARY_NODE = 'nt:base';
-    
+
     protected $requiredPrimaryTypes = array();
     protected $requiredPrimaryTypeNames = array();
     protected $defaultPrimaryTypeName;
     protected $allowsSameNameSiblings;
-    
-    
+
+
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
-        
+
         $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
         if (empty($this->defaultPrimaryTypeName)) {
             $this->defaultPrimaryTypeName = null;
         }
-        
-        $xp = new DOMXpath($node->ownerDocument);
+
+        $xp = new DOMXPath($node->ownerDocument);
         $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
         if (0 < $requiredPrimaryTypes->length) {
             foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
@@ -30,10 +31,10 @@ class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefin
         } else {
             array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
         }
-        
-        
+
+
     }
-    
+
     /**
      * Gets the minimum set of primary node types that the child node must have.
      * Returns an array to support those implementations with multiple inheritance.
@@ -127,5 +128,5 @@ class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefin
     public function allowsSameNameSiblings() {
         return $this->allowsSameNameSiblings;
     }
-    
+
 }

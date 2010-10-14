@@ -1,7 +1,8 @@
 <?php
 
 namespace jackalope\NodeType;
-use jackalope;
+use jackalope\Factory;
+use \DOMElement;
 
 /**
  * A NodeType object represents a "live" node type that is registered in the repository.
@@ -10,10 +11,10 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
     protected $declaredSupertypes = null;
     protected $superTypeNames = null;
     protected $superTypes = null;
-    
+
     protected $propertyDefinitions = null;
     protected $childNodeDefinitions = null;
-    
+
     /**
      * Initializes the NodeTypeDefinition from the given DOM
      * @param DOMElement NodeTypeElement
@@ -21,7 +22,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
     }
-    
+
     /**
      * Returns all supertypes of this node type in the node type inheritance
      * hierarchy. For primary types apart from nt:base, this list will always
@@ -39,7 +40,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
         }
         return $this->superTypes;
     }
-    
+
     /**
      * Returns all names of the supertypes
      *
@@ -87,7 +88,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
         foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return Factory::get('NodeType_NodeTypeIterator', array($ret));
+        return Factory::get('NodeType\NodeTypeIterator', array($ret));
     }
 
     /**
@@ -104,7 +105,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
         foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return Factory::get('NodeType_NodeTypeIterator', array($ret));
+        return Factory::get('NodeType\NodeTypeIterator', array($ret));
     }
 
     /**

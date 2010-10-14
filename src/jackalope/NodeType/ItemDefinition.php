@@ -1,18 +1,19 @@
 <?php
 
 namespace jackalope\NodeType;
-use jackalope;
+use jackalope\Helper;
+use \DOMElement;
 
 class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
     protected $nodeTypeManager;
-    
+
     protected $declaringNodeType;
     protected $name;
     protected $isAutoCreated;
     protected $isMandatory;
     protected $isProtected;
     protected $onParentVersion;
-    
+
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
         $this->declaringNodeType = $node->getAttribute('declaringNodeType');
@@ -22,7 +23,7 @@ class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
         $this->isProtected = Helper::getBoolAttribute($node, 'isProtected');
         $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
     }
-    
+
     /**
      * Gets the node type that contains the declaration of this ItemDefinition.
      * In implementations that support node type registration an ItemDefinition
@@ -32,7 +33,7 @@ class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
      *
      * @return PHPCR_NodeType_NodeTypeInterface a NodeType object.
      */
-     
+
     public function getDeclaringNodeType() {
         return $this->nodeTypeManager->getNodeType($this->declaringNodeType);
     }

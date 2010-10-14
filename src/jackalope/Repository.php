@@ -1,7 +1,5 @@
 <?php
-
 namespace jackalope;
-
 
 class Repository implements \PHPCR_RepositoryInterface {
     protected $transport;

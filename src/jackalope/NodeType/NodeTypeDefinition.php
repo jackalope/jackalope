@@ -1,7 +1,8 @@
 <?php
 
 namespace jackalope\NodeType;
-use jackalope;
+use \jackalope\Helper, \jackalope\Factory;
+use \DOMElement, \DOMXPath;
 
 /**
  * The NodeTypeDefinition interface provides methods for discovering the
@@ -17,60 +18,60 @@ use jackalope;
  */
 class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface {
     protected $nodeTypeManager;
-    
+
     protected $name;
     protected $isAbstract;
     protected $isMixin;
     protected $isQueryable;
     protected $hasOrderableChildNodes;
     protected $primaryItemName;
-    
+
     protected $declaredSuperTypeNames = array();
-    
+
     protected $declaredPropertyDefinitions = array();
     protected $declaredNodeDefinitions = array();
-    
+
     /**
      * Initializes the NodeTypeDefinition from the given DOM
      * @param DOMElement NodeTypeElement
      */
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
-        
+
         $this->name = $node->getAttribute('name');
         $this->isAbstract = Helper::getBoolAttribute($node, 'isAbstract');
         $this->isMixin = Helper::getBoolAttribute($node, 'isMixin');
         $this->isQueryable = Helper::getBoolAttribute($node, 'isQueryable');
         $this->hasOrderableChildNodes = Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
-        
+
         $this->primaryItemName = $node->getAttribute('primaryItemName');
         if (empty($this->primaryItemName)) {
             $this->primaryItemName = null;
         }
-        
+
         $xp = new DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
             array_push($this->declaredSuperTypeNames, $supertype->nodeValue);
         }
-        
+
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
             array_push($this->declaredPropertyDefinitions, Factory::get(
-                'NodeType_PropertyDefinition',
+                'NodeType\PropertyDefinition',
                 array($property, $nodeTypeManager)
             ));
         }
-        
+
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
             array_push($this->declaredNodeDefinitions, Factory::get(
-                'NodeType_NodeDefinition',
+                'NodeType\NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
             ));
         }
     }
-    
+
     /**
      * Returns the name of the node type.
      * In implementations that support node type registration, if this

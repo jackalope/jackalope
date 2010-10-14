@@ -1,5 +1,4 @@
 <?php
-
 namespace jackalope;
 
 /**
@@ -8,6 +7,9 @@ namespace jackalope;
  *
  * It should be used in the commands like that:
  * Factory::get('Node', array(...));
+ * Factory::get('NodeType\PropertyDefinition', array(...));
+ * //note the \ for sub namespaces. the name is relative to the jackalope namespace
+ *
  * The result will be an object from jackalope with the given named params.
  */
 class Factory {
