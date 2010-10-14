@@ -1,5 +1,12 @@
 <?php
-class jackalope_Item implements PHPCR_ItemInterface {
+namespace jackalope;
+
+/**
+ * The Item is the base interface of Node and Property.
+ * This class implements methods for both types.
+ * It should not be instantiated directly.
+ */
+class Item implements \PHPCR_ItemInterface {
 
     /** session this node belongs to */
     protected $session;
@@ -21,12 +28,12 @@ class jackalope_Item implements PHPCR_ItemInterface {
     /**
      * @param stdClass  $rawData
      * @param string    $path   The normalized and absolute path to this item
-     * @param jackalope_Session $session
-     * @param jackalope_ObjectManager $objectManager
+     * @param Session $session
+     * @param ObjectManager $objectManager
      * @param boolean $new can be set to true to tell the object that it has been created locally
      */
-    public function __construct($rawData, $path,  jackalope_Session $session,
-                                jackalope_ObjectManager $objectManager, $new = false) {
+    public function __construct($rawData, $path,  Session $session,
+                                ObjectManager $objectManager, $new = false) {
         $this->path = $path;
         $this->session = $session;
         $this->objectManager = $objectManager;
@@ -84,7 +91,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      */
     public function getAncestor($depth) {
         if ($depth < 0 || $depth > $this->depth) {
-            throw new PHPCR_ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
+            throw new \PHPCR_ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
         if ($depth == $this->depth) {
             return $this;
@@ -213,7 +220,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      * @api
      */
-    public function isSame(PHPCR_ItemInterface $otherItem) {
+    public function isSame(\PHPCR_ItemInterface $otherItem) {
         if ($this === $otherItem) { // trivial case
             return true;
         }
@@ -221,11 +228,11 @@ class jackalope_Item implements PHPCR_ItemInterface {
             $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() &&
             get_class($this) == get_class($otherItem)) {
 
-            if ($this instanceof jackalope_Node) {
+            if ($this instanceof Node) {
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
-            } else { // assert($this instanceof jackalope_Property)
+            } else { // assert($this instanceof Property)
                 if ($this->name == $otherItem->getName() &&
                     $this->getParent()->isSame($otherItem->getParent())) {
                         return true;
@@ -243,8 +250,8 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      * @api
      */
-    public function accept(PHPCR_ItemVisitorInterface $visitor) {
-        throw new jackalope_NotImplementedException();
+    public function accept(\PHPCR_ItemVisitorInterface $visitor) {
+        throw new NotImplementedException();
     }
 
     /**
@@ -268,7 +275,7 @@ class jackalope_Item implements PHPCR_ItemInterface {
      * @api
      */
     public function refresh($keepChanges) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**

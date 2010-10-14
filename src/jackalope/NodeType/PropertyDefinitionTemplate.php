@@ -1,4 +1,6 @@
 <?php
+namespace jackalope\NodeType;
+
 /**
  * The PropertyDefinitionTemplate interface extends PropertyDefinition with the
  * addition of write methods, enabling the characteristics of a child property
@@ -9,13 +11,13 @@
  * the default values assumed when a new empty PropertyDefinitionTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class jackalope_NodeType_PropertyDefinitionTemplate extends jackalope_NodeType_PropertyDefinition implements PHPCR_NodeType_PropertyDefinitionTemplateInterface {
+class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR_NodeType_PropertyDefinitionTemplateInterface {
 
-    public function __construct(jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
-        $this->requiredType = PHPCR_PropertyType::STRING;
+        $this->requiredType = \PHPCR_PropertyType::STRING;
         $this->valueConstraints = null;
         $this->defaultValues = null;
         $this->isMultiple = false;
@@ -25,7 +27,7 @@ class jackalope_NodeType_PropertyDefinitionTemplate extends jackalope_NodeType_P
         $this->name = null;
         $this->isAutoCreated = false;
         $this->isMandatory = false;
-        $this->onParentVersion = PHPCR_Version_OnParentVersionAction::COPY;
+        $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::COPY;
         $this->isProtected = false;
     }
 
@@ -164,4 +166,3 @@ class jackalope_NodeType_PropertyDefinitionTemplate extends jackalope_NodeType_P
     }
 
 }
-

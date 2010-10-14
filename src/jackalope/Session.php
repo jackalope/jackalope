@@ -1,4 +1,5 @@
 <?php
+namespace jackalope;
 
 /**
  * The Session object provides read and (if implemented) write access to the
@@ -13,7 +14,7 @@
  * Workspace object represents a "view" of an actual repository workspace
  * entity as seen through the authorization settings of its associated Session.
  */
-class jackalope_Session implements PHPCR_SessionInterface {
+class Session implements \PHPCR_SessionInterface {
     protected $repository;
     protected $workspace;
     protected $objectManager;
@@ -21,10 +22,10 @@ class jackalope_Session implements PHPCR_SessionInterface {
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(jackalope_Repository $repository, $workspaceName, PHPCR_SimpleCredentials $credentials, jackalope_TransportInterface $transport) {
+    public function __construct(Repository $repository, $workspaceName, \PHPCR_SimpleCredentials $credentials, TransportInterface $transport) {
         $this->repository = $repository;
-        $this->objectManager = jackalope_Factory::get('ObjectManager', array($transport, $this));
-        $this->workspace = jackalope_Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
+        $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
+        $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
     }
     /**
@@ -114,8 +115,8 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @throws PHPCR_RepositoryException if another error occurs.
      * @api
      */
-    public function impersonate(PHPCR_CredentialsInterface $credentials) {
-        throw new PHPCR_LoginException('Not supported');
+    public function impersonate(\PHPCR_CredentialsInterface $credentials) {
+        throw new \PHPCR_LoginException('Not supported');
     }
 
     /**
@@ -152,7 +153,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
     public function getItem($absPath) {
 
         if(strpos($absPath,'/') !== 0) {
-            throw new PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+            throw new \PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
         if ($this->nodeExists($absPath)) {
@@ -214,15 +215,15 @@ class jackalope_Session implements PHPCR_SessionInterface {
     public function nodeExists($absPath) {
         if ($absPath == '/') return true;
 
-        if (!jackalope_Helper::isAbsolutePath($absPath) || !jackalope_Helper::isValidPath($absPath)) {
-            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+        if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
+            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
         }
 
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getNode($absPath);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return false;
         }
         return true;
@@ -240,15 +241,15 @@ class jackalope_Session implements PHPCR_SessionInterface {
     public function propertyExists($absPath) {
         // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
 
-        if (!jackalope_Helper::isAbsolutePath($absPath) || !jackalope_Helper::isValidPath($absPath)) {
-            throw new PHPCR_RepositoryException("Path is invalid: $absPath");
+        if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
+            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
         }
 
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getProperty($absPath);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return false;
         }
         return true;
@@ -371,9 +372,10 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function refresh($keepChanges) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
+
         //TODO: is clearing out object manager cache enough?
-        //the $keepChanges option seems not relevant in php context. we have no long running sessions with the server and don't need to sync changes from server.
+        //the $keepChanges option seems not important in php context. we have no long running sessions with the server and don't need to sync changes from server.
     }
 
     /**
@@ -398,7 +400,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getValueFactory() {
-        return jackalope_Factory::get(
+        return Factory::get(
                             'ValueFactory',
                             array());
     }
@@ -416,7 +418,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      */
     public function hasPermission($absPath, $actions) {
         if ($actions == self::ACTION_READ) {
-            throw new jackalope_NotImplementedException('TODO: check read permission');
+            throw new NotImplementedException('TODO: check read permission');
            /*
             * The information returned through this method will only reflect the access
             * control status (both JCR defined and implementation-specific) and not
@@ -443,7 +445,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      */
     public function checkPermission($absPath, $actions) {
         if (! $this->hasPermission($absPath, $actions)) {
-            throw new PHPCR_Security_AccessControlException($absPath);
+            throw new \PHPCR_Security_AccessControlException($absPath);
         }
     }
 
@@ -467,14 +469,14 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * not implemented
      */
     public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function importXML($parentAbsPath, $in, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -518,7 +520,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function exportSystemView($absPath, $out, $skipBinary, $noRecurse) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -559,7 +561,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function exportDocumentView($absPath, $out, $skipBinary, $noRecurse) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -578,7 +580,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function setNamespacePrefix($prefix, $uri) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -589,7 +591,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getNamespacePrefixes() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -603,7 +605,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getNamespaceURI($prefix) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -617,7 +619,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getNamespacePrefix($uri) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -655,7 +657,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getAccessControlManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -667,7 +669,7 @@ class jackalope_Session implements PHPCR_SessionInterface {
      * @api
      */
     public function getRetentionManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**

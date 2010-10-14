@@ -1,4 +1,6 @@
 <?php
+namespace jackalope;
+use \PHPCR_PropertyType;
 
 /**
  * A generic holder for the value of a property. A Value object can be used
@@ -23,13 +25,9 @@
  *
  * The deprecated getStream() method and it's related exceptions and rules have been
  * omitted in this PHP port of the API.
- *
- * @version  $Id$
- * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License, version 3 or later
- * @license http://opensource.org/licenses/bsd-license.php Simplified BSD License
- * @api
  */
-class jackalope_Value implements PHPCR_ValueInterface {
+class Value implements \PHPCR_ValueInterface {
+    /** system type id */
     protected $type;
     protected $data;
 
@@ -42,7 +40,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
             $type = PHPCR_PropertyType::valueFromName($type);
         }
         if (PHPCR_PropertyType::BINARY === $type) {
-            throw new jackalope_NotImplementedException('Binaries not implemented');
+            throw new NotImplementedException('Binaries not implemented');
         }
         $this->type = $type;
         $this->data = $data;
@@ -71,7 +69,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @api
      */
     public function getBinary() {
-        throw new jackalope_NotImplementedException('Binaries not implemented');
+        throw new NotImplementedException('Binaries not implemented');
     }
 
     /**
@@ -122,7 +120,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
      * @api
      */
     public function getDate() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -171,7 +169,7 @@ class jackalope_Value implements PHPCR_ValueInterface {
         if (settype($ret, $type)) {
             return $ret;
         } else {
-            throw new PHPCR_ValueFormatException;
+            throw new \PHPCR_ValueFormatException;
         }
     }
 }

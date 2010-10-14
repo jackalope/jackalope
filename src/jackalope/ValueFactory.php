@@ -1,10 +1,13 @@
 <?php
+namespace jackalope;
+
+use \PHPCR_PropertyType;
 
 /**
  * The ValueFactory object provides methods for the creation Value objects that can
  * then be used to set properties.
  */
-class jackalope_ValueFactory implements PHPCR_ValueFactoryInterface {
+class ValueFactory implements \PHPCR_ValueFactoryInterface {
 
     /**
      * Returns a PHPCR_Binary object with a value consisting of the content of
@@ -18,7 +21,7 @@ class jackalope_ValueFactory implements PHPCR_ValueFactoryInterface {
      * @api
      */
     public function createBinary($handle) {
-        throw new jackalope_NotImplementedException('How to handle binaries?');
+        throw new NotImplementedException('How to handle binaries?');
     }
 
     /**
@@ -89,10 +92,10 @@ class jackalope_ValueFactory implements PHPCR_ValueFactoryInterface {
                     break;
                 case PHPCR_PropertyType::REFERENCE:
                 case PHPCR_PropertyType::WEAKREFERENCE:
-                    if ($value instanceof PHPCR_NodeInterface) {
+                    if ($value instanceof \PHPCR_NodeInterface) {
                         $value = $value->getIdentifier();
                     } elseif (! is_string($value)) {
-                        throw new PHPCR_ValueFormatException("$value is not a unique id");
+                        throw new \PHPCR_ValueFormatException("$value is not a unique id");
                     }
                     //could check if uuid, but backend will do that
                     break;
@@ -101,7 +104,7 @@ class jackalope_ValueFactory implements PHPCR_ValueFactoryInterface {
                 //TODO: more type checks or casts? name, path, uri, decimal. but the backend can handle the checks.
             }
         }
-        return jackalope_Factory::get('Value', array(
+        return Factory::get('Value', array(
                         $type,
                         $value
                     ));

@@ -1,4 +1,5 @@
 <?php
+namespace jackalope\NodeType;
 
 /**
  * The NodeTypeTemplate interface represents a simple container structure used
@@ -15,7 +16,7 @@
  * for the default values assumed when a new empty NodeTypeTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class jackalope_NodeType_NodeTypeTemplate extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeTemplateInterface {
+class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeTemplateInterface {
 
 
     /**
@@ -120,5 +121,3 @@ class jackalope_NodeType_NodeTypeTemplate extends jackalope_NodeType_NodeTypeDef
     }
 
 }
-
-

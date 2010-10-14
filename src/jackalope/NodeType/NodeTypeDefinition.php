@@ -1,4 +1,9 @@
 <?php
+namespace jackalope\NodeType;
+
+use jackalope\Helper, jackalope\Factory;
+use \DOMElement, \DOMXPath;
+
 /**
  * The NodeTypeDefinition interface provides methods for discovering the
  * static definition of a node type. These are accessible both before and
@@ -11,12 +16,10 @@
  * registration, only objects implementing the subinterface NodeType will
  * be encountered.
  */
-class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDefinitionInterface {
-
+class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface {
     const NAME_NT_BASE = 'nt:base';
 
     protected $nodeTypeManager;
-    
     protected $name = null;
     protected $isAbstract = false;
     /** Whether this is a mixin node type (otherwise it's a primary node type). */
@@ -24,24 +27,24 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
     protected $isQueryable = false;
     protected $hasOrderableChildNodes = false;
     protected $primaryItemName= null;
-    
+
     /** @var array */
     protected $declaredSuperTypeNames = null;
     /** @var array */
     protected $declaredPropertyDefinitions = null;
     /** @var array */
     protected $declaredNodeDefinitions = null;
-    
+
     /**
      * Initializes the NodeTypeDefinition from an optional source
      * @param DOMElement|PHPCR_NodeType_NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
      */
-    public function __construct(jackalope_NodeType_NodeTypeManager $nodeTypeManager, $nodetype = null) {
+    public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null) {
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
             $this->fromXml($nodetype);
-        } elseif ($nodetype instanceof PHPCR_NodeType_NodeTypeDefinitionInterface) {
+        } elseif ($nodetype instanceof \PHPCR_NodeType_NodeTypeDefinitionInterface) {
             $this->fromNodeTypeDefinition($nodetype); // copy ctor
         } elseif (!is_null($nodetype)) {
             throw new InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
@@ -52,7 +55,7 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      * Copies properties from a NodeType_NodeTypeDefinition
      * @param   PHPCR_NodeType_NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
      */
-    protected function fromNodeTypeDefinition(PHPCR_NodeType_NodeTypeDefinitionInterface $ntd) {
+    protected function fromNodeTypeDefinition(\PHPCR_NodeType_NodeTypeDefinitionInterface $ntd) {
         $this->name = $ntd->getName();
         $this->isAbstract = $ntd->isAbstract();
         $this->isMixin = $ntd->isMixin();
@@ -70,42 +73,42 @@ class jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeDe
      */
     protected function fromXml(DOMElement $node) {
         $this->name = $node->getAttribute('name');
-        $this->isAbstract = jackalope_Helper::getBoolAttribute($node, 'isAbstract');
-        $this->isMixin = jackalope_Helper::getBoolAttribute($node, 'isMixin');
-        $this->isQueryable = jackalope_Helper::getBoolAttribute($node, 'isQueryable');
-        $this->hasOrderableChildNodes = jackalope_Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
-        
+        $this->isAbstract = Helper::getBoolAttribute($node, 'isAbstract');
+        $this->isMixin = Helper::getBoolAttribute($node, 'isMixin');
+        $this->isQueryable = Helper::getBoolAttribute($node, 'isQueryable');
+        $this->hasOrderableChildNodes = Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
+
         $this->primaryItemName = $node->getAttribute('primaryItemName');
         if (empty($this->primaryItemName)) {
             $this->primaryItemName = null;
         }
-        
+
         $this->declaredSuperTypeNames = array();
         $xp = new DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
             array_push($this->declaredSuperTypeNames, $supertype->nodeValue);
         }
-        
+
         $this->declaredPropertyDefinitions = array();
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
-            array_push($this->declaredPropertyDefinitions, jackalope_Factory::get(
-                'NodeType_PropertyDefinition',
+            array_push($this->declaredPropertyDefinitions, Factory::get(
+                'NodeType\PropertyDefinition',
                 array($property, $this->nodeTypeManager)
             ));
         }
-        
+
         $this->declaredNodeDefinitions = array();
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
-            array_push($this->declaredNodeDefinitions, jackalope_Factory::get(
-                'NodeType_NodeDefinition',
+            array_push($this->declaredNodeDefinitions, Factory::get(
+                'NodeType\NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
             ));
         }
     }
-    
+
     /**
      * Returns the name of the node type.
      * In implementations that support node type registration, if this

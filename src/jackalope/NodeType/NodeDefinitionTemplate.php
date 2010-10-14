@@ -1,4 +1,6 @@
 <?php
+namespace jackalope\NodeType;
+
 /**
  * The NodeDefinitionTemplate interface extends NodeDefinition with the addition
  * of write methods, enabling the characteristics of a child node definition to
@@ -8,16 +10,16 @@
  * default values assumed when a new empty NodeDefinitionTemplate is created (as
  * opposed to one extracted from an existing NodeType).
  */
-class jackalope_NodeType_NodeDefinitionTemplate extends jackalope_NodeType_NodeDefinition implements PHPCR_NodeType_NodeDefinitionTemplateInterface {
+class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR_NodeType_NodeDefinitionTemplateInterface {
 
-    public function __construct(jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+    public function __construct(NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
         $this->name = null;
         $this->isAutoCreated = false;
         $this->isMandatory = false;
-        $this->onParentVersion = PHPCR_Version_OnParentVersionAction::COPY;
+        $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::COPY;
         $this->isProtected = false;
         $this->requiredPrimaryTypeNames = null;
         $this->defaultPrimaryTypeName = null;
