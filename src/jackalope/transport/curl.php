@@ -1,10 +1,10 @@
 <?php
-
 namespace jackalope\transport;
 
 \PHPUnit_Util_Filter::addFileToFilter(__FILE__);
 //TODO: Write phpt tests
 
+/** Capsulate curl as an object */
 class curl {
     protected $curl;
     

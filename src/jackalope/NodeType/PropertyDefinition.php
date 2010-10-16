@@ -4,6 +4,9 @@ namespace jackalope\NodeType;
 use jackalope\Factory, jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
+/**
+ * A property definition. Used in node type definitions.
+ */
 class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_PropertyDefinitionInterface {
     protected $requiredType;
     protected $valueConstraints = array();

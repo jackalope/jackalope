@@ -1,6 +1,11 @@
 <?php
 namespace jackalope;
 
+/**
+ * The entry point into the content repository. The Repository object is
+ * usually acquired through the RepositoryFactory.
+ *
+ */
 class Repository implements \PHPCR_RepositoryInterface {
     protected $transport;
     protected $descriptors;

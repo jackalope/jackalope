@@ -173,7 +173,11 @@ class Session implements \PHPCR_SessionInterface {
      * @api
      */
     public function getNode($absPath) {
-        return $this->objectManager->getNodeByPath($absPath);
+        try {
+            return $this->objectManager->getNodeByPath($absPath);
+        } catch (\PHPCR_ItemNotFoundException $e) {
+            throw new \PHPCR_PathNotFoundException($e);
+        }
     }
 
     /**
@@ -186,7 +190,11 @@ class Session implements \PHPCR_SessionInterface {
      * @api
      */
     public function getProperty($absPath) {
-        return $this->objectManager->getPropertyByPath($absPath);
+        try {
+            return $this->objectManager->getPropertyByPath($absPath);
+        } catch (\PHPCR_ItemNotFoundException $e) {
+            throw new \PHPCR_PathNotFoundException($e);
+        }
     }
 
     /**

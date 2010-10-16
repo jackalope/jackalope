@@ -49,6 +49,7 @@ class ObjectManager {
      *
      * @param string $path The absolute path of the node to create
      * @return PHPCR_Node
+     * @throws PHPCR_ItemNotFoundException If nothing is found at that absolute path
      * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
     public function getNodeByPath($absPath) {
@@ -57,8 +58,9 @@ class ObjectManager {
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            if (isset($this->nodesRemove[$absPath]))
-                throw new  PHPCR_ItemNotFoundException('Path not found (deleted in current session): ' . $uri);
+            if (isset($this->nodesRemove[$absPath])) {
+                throw new  PHPCR_PathNotFoundException('Path not found (deleted in current session): ' . $uri);
+            }
             $node = Factory::get(
                 'Node',
                 array(
@@ -68,7 +70,7 @@ class ObjectManager {
                     $this
                 )
             );
-            $this->objectsByUuid[$node->getIdentifier()] = $absPath;
+            $this->objectsByUuid[$node->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
             $this->objectsByPath[$absPath] = $node;
         }
 

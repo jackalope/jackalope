@@ -66,9 +66,11 @@ function getJCRSession($config, $credentials = null) {
         }
         return $repository->login($credentials, $config['workspace']);
     } elseif (isset($config['workspace'])) {
-        return $repository->login(null, $config['workspace']);
+        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        //return $repository->login(null, $config['workspace']);
     } else {
-        return $repository->login(null, null);
+        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        //return $repository->login(null, null);
     }
 }
 /** some constants */

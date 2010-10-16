@@ -3,6 +3,14 @@ namespace jackalope;
 
 use \PHPCR_ValueInterface, \PHPCR_PropertyType, \PHPCR_RepositoryException, \PHPCR_ItemNotFoundException, \PHPCR_PathNotFoundException, \PHPCR_ValueFormatException;
 
+/**
+ * A Property object represents the smallest granularity of content storage.
+ * It has a single parent node and no children. A property consists of a name
+ * and a value, or in the case of multi-value properties, a set of values all
+ * of the same type. See Value.
+ *
+ * @api
+ */
 class Property extends Item implements \PHPCR_PropertyInterface {
 
     protected $value;

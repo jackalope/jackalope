@@ -1,9 +1,12 @@
 <?php
-
 namespace jackalope\NodeType;
+
 use jackalope\Helper;
 use \DOMElement;
 
+/**
+ * Superclass of NodeDefinition and PropertyDefinition.
+ */
 class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
     protected $nodeTypeManager;
 
