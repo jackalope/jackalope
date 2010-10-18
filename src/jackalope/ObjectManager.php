@@ -1,4 +1,8 @@
 <?php
+namespace jackalope;
+
+use \PHPCR_SessionInterface, \PHPCR_RepositoryException, \PHPCR_ItemInterface;
+
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
  * and caches every node retrieved to improve performance.
@@ -6,7 +10,7 @@
  * For update method, the object manager keeps track which nodes are dirty so it
  * knows what to give to transport to write to the backend.
  */
-class jackalope_ObjectManager {
+class ObjectManager {
     protected $session;
     protected $transport;
 
@@ -33,7 +37,7 @@ class jackalope_ObjectManager {
 
     protected $unsaved = false;
 
-    public function __construct(jackalope_TransportInterface $transport,
+    public function __construct(TransportInterface $transport,
                                 PHPCR_SessionInterface $session) {
         $this->transport = $transport;
         $this->session = $session;
@@ -45,6 +49,7 @@ class jackalope_ObjectManager {
      *
      * @param string $path The absolute path of the node to create
      * @return PHPCR_Node
+     * @throws PHPCR_ItemNotFoundException If nothing is found at that absolute path
      * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
      */
     public function getNodeByPath($absPath) {
@@ -53,9 +58,10 @@ class jackalope_ObjectManager {
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            if (isset($this->nodesRemove[$absPath]))
-                throw new  PHPCR_ItemNotFoundException('Path not found (deleted in current session): ' . $uri);
-            $node = jackalope_Factory::get(
+            if (isset($this->nodesRemove[$absPath])) {
+                throw new  PHPCR_PathNotFoundException('Path not found (deleted in current session): ' . $uri);
+            }
+            $node = Factory::get(
                 'Node',
                 array(
                     $this->transport->getItem($absPath),
@@ -64,7 +70,7 @@ class jackalope_ObjectManager {
                     $this
                 )
             );
-            $this->objectsByUuid[$node->getIdentifier()] = $absPath;
+            $this->objectsByUuid[$node->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
             $this->objectsByPath[$absPath] = $node;
         }
 
@@ -175,7 +181,7 @@ class jackalope_ObjectManager {
      *
      * @param string uuid or relative path
      * @param string optional root if you are in a node context - not used if $identifier is an uuid
-     * @return return jackalope_Node
+     * @return The specified Node. if not available, ItemNotFoundException is thrown
      * @throws PHPCR_ItemNotFoundException If the path was not found
      * @throws PHPCR_RepositoryException if another error occurs.
      */
@@ -222,10 +228,10 @@ class jackalope_ObjectManager {
      * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
      */
     public function verifyAbsolutePath($path) {
-        if (!jackalope_Helper::isAbsolutePath($path)) {
+        if (!Helper::isAbsolutePath($path)) {
             throw new PHPCR_RepositoryException('Path is not absolute: ' . $path);
         }
-        if (!jackalope_Helper::isValidPath($path)) {
+        if (!Helper::isValidPath($path)) {
             throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
         return true;
@@ -254,7 +260,7 @@ class jackalope_ObjectManager {
      * 4. commit any other changes
      */
     public function save() {
-        throw jackalope_NotImplementedException(); //TODO
+        throw NotImplementedException(); //TODO
 
         foreach($this->nodesRemove as $path => $dummy) {
             //TODO: have a davex client method to push a remove of a path
@@ -295,8 +301,9 @@ class jackalope_ObjectManager {
      * @throws PHPCR_ItemExistsException if a node already exists at that path
      */
     public function removeItem($absPath) {
-        if (! isset($this->objectsByPath[$absPath]))
+        if (! isset($this->objectsByPath[$absPath])) {
             throw new PHPCR_RepositoryException("Internal error: nothing at $absPath");
+        }
 
         //FIXME: same-name-siblings...
         $id = $this->objectsByPath[$absPath]->getIdentifier();
@@ -316,7 +323,7 @@ class jackalope_ObjectManager {
     public function moveItem($srcAbsPath, $destAbsPath) {
         $this->nodeMove[$srcAbsPath] = $destAbsPath;
         $this->unsaved = true;
-        throw new jackalope_NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
+        throw new NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
         /*
         FIXME: dispatch everything to backend immediatly (without saving) on move so the backend cares about translating all requests to the new path? how do we know if things are modified after that operation?
         otherwise we have to update all cached objects, tell this item its new path and make it dirty.
@@ -331,8 +338,9 @@ class jackalope_ObjectManager {
      * @throws PHPCR_ItemExistsException if a node already exists at that path
      */
     public function addItem($absPath, PHPCR_ItemInterface $item) {
-        if (isset($this->objectsByPath[$absPath]))
-            throw new PHPCR_ItemExistsException($absPath); //FIXME: same-name-siblings...
+        if (isset($this->objectsByPath[$absPath])) {
+            throw new \PHPCR_ItemExistsException($absPath); //FIXME: same-name-siblings...
+        }
         $this->objectsByPath[$absPath] = $item;
         if($item instanceof PHPCR_NodeInterface) {
             //TODO: determine if we have an identifier.

@@ -1,8 +1,10 @@
 <?php
+namespace jackalope;
+
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
+class NamespaceRegistry implements \PHPCR_NamespaceRegistryInterface {
     protected $transport;
 
     protected $defaultNamespaces = array(
@@ -14,7 +16,7 @@ class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
     );
     protected $userNamespaces = array();
 
-    public function __construct(jackalope_TransportInterface $transport) {
+    public function __construct(TransportInterface $transport) {
         $this->transport = $transport;
         $namespaces = $transport->getNamespaces();
         foreach($namespaces as $prefix => $uri) {
@@ -56,7 +58,7 @@ class jackalope_NamespaceRegistry implements PHPCR_NamespaceRegistryInterface {
      */
     public function registerNamespace($prefix, $uri) {
         $this->checkPrefix($prefix);
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
         //first try putting the stuff in backend, and only afterwards update lokal info
         //validation happens on the server, see second request trace below
         /*
@@ -121,9 +123,9 @@ Server: Jetty(6.1.x)
         $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
-            throw new PHPCR_NamespaceException("Prefix $prefix is not currently registered");
+            throw new \PHPCR_NamespaceException("Prefix $prefix is not currently registered");
         }
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -165,7 +167,7 @@ Server: Jetty(6.1.x)
         } else if (isset($this->userNamespaces[$prefix])) {
             return $this->userNamespaces[$prefix];
         }
-        throw new PHPCR_NamespaceException("Mapping for '$prefix' is not defined");
+        throw new \PHPCR_NamespaceException("Mapping for '$prefix' is not defined");
     }
 
     /**
@@ -181,7 +183,7 @@ Server: Jetty(6.1.x)
         if ($prefix === false) {
             array_search($uri, $this->userNamespaces);
             if ($prefix === false) {
-                throw new PHPCR_NamespaceException("URI '$uri' is not defined in registry");
+                throw new \PHPCR_NamespaceException("URI '$uri' is not defined in registry");
             }
         }
         return $prefix;
@@ -196,10 +198,10 @@ Server: Jetty(6.1.x)
      */
     protected function checkPrefix($prefix) {
         if (! strncasecmp('xml', $prefix, 3)) {
-            throw new PHPCR_NamespaceException('Do not use xml in prefixes for namespace changes');
+            throw new \PHPCR_NamespaceException('Do not use xml in prefixes for namespace changes');
         }
         if (array_key_exists($prefix, $this->defaultNamespaces)) {
-            throw new PHPCR_NamespaceException('Do not change the predefined prefixes');
+            throw new \PHPCR_NamespaceException('Do not change the predefined prefixes');
         }
     }
 }

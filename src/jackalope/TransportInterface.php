@@ -1,11 +1,16 @@
 <?php
+namespace jackalope;
+
 /**
- * Transport is responsible of talking to the backend.
+ * Implementation specific interface:
+ * Jackalope encapsulates all communication to the backend within this interface.
+ * 
  * The Transport is told how to access that backend in its constructor.
  * Look in the transport/ subfolder for actual implementations.
+ *
+ * TODO: THIS INTERFACE IS INCOMPLETE! get all methods that are really needed from DavexClient
  */
-interface jackalope_TransportInterface {
-    //TODO: extract methods from DavexClient
+interface TransportInterface {
     /**
      * Set this transport to a specific credential and a workspace.
      * This can only be called once. To connect to another workspace or with
@@ -18,7 +23,7 @@ interface jackalope_TransportInterface {
      * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws PHPCR_RepositoryException if another error occurs
      */
-    public function login(PHPCR_CredentialsInterface $credentials, $workspaceName);
+    public function login(\PHPCR_CredentialsInterface $credentials, $workspaceName);
 
     /**
      * Get the repository descriptors from the jackrabbit server

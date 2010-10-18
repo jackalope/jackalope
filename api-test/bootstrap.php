@@ -37,7 +37,7 @@ function getRepository($config) {
         return false;
     }
     if ($config['transport'] != 'davex') throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
-    return new jackalope_Repository($config['url'], null); //let jackalope factory create the transport
+    return new \jackalope\Repository($config['url'], null); //let jackalope factory create the transport
 }
 
 /**
@@ -66,9 +66,11 @@ function getJCRSession($config, $credentials = null) {
         }
         return $repository->login($credentials, $config['workspace']);
     } elseif (isset($config['workspace'])) {
-        return $repository->login(null, $config['workspace']);
+        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        //return $repository->login(null, $config['workspace']);
     } else {
-        return $repository->login(null, null);
+        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        //return $repository->login(null, null);
     }
 }
 /** some constants */
@@ -88,3 +90,4 @@ define('OPTION_LOCKING_SUPPORTED', 'option.locking.supported');
 define('OPTION_QUERY_SQL_SUPPORTED', 'option.query.sql.supported');
 define('QUERY_XPATH_POS_INDEX', 'query.xpath.pos.index');
 define('QUERY_XPATH_DOC_ORDER', 'query.xpath.doc.order');
+

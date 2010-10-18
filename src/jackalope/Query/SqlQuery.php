@@ -1,9 +1,12 @@
 <?php
+namespace jackalope\Query;
+
+use jackalope\ObjectManager;
 
 /**
  * SQL2 Query Object
  */
-class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
+class SqlQuery implements \PHPCR_Query_QueryInterface {
     protected $statement;
     protected $objectmanager;
     protected $path;
@@ -13,7 +16,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @param objectmanager Object manager to execute query against
      * @param path If this query is loaded from workspace with QueryManager->getQuery, path has to be stored here
      */
-    public function __construct($statement, jackalope_ObjectManager $objectmanager, $path = null) {
+    public function __construct($statement, ObjectManager $objectmanager, $path = null) {
         $this->statement = $statement;
         $this->objectmanager = $objectmanager;
         $this->path = $path;
@@ -28,8 +31,8 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @throws RepositoryException if an error occurs.
      * @api
      */
-    public function bindValue($varName, PHPCR_ValueInterface $value) {
-        throw PHPCR_RepositoryException('Not Implemented...');
+    public function bindValue($varName, \PHPCR_ValueInterface $value) {
+        throw new \PHPCR_RepositoryException('Not Implemented...');
     }
 
     /**
@@ -41,7 +44,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function execute() {
-        throw PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR_RepositoryException('Not Implemented...');
     }
 
     /**
@@ -53,7 +56,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function getBindVariableNames() {
-        throw PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR_RepositoryException('Not Implemented...');
     }
 
     /**
@@ -64,7 +67,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function setLimit($limit) {
-        throw PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR_RepositoryException('Not Implemented...');
     }
 
     /**
@@ -75,7 +78,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function setOffset($offset) {
-        throw PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR_RepositoryException('Not Implemented...');
     }
 
     /**
@@ -117,7 +120,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function getStoredQueryPath() {
-        if ($this->path == null) throw new PHPCR_ItemNotFoundException('Not a stored query');
+        if ($this->path == null) throw new \PHPCR_ItemNotFoundException('Not a stored query');
         return $this->path;
     }
 
@@ -144,7 +147,7 @@ class jackalope_Query_SqlQuery implements PHPCR_Query_QueryInterface {
      * @api
      */
     public function storeAsNode($absPath) {
-        throw new PHPCR_UnsupportedRepositoryOperationException('Level 2');
+        throw new \PHPCR_UnsupportedRepositoryOperationException('Level 2');
     }
 
 }

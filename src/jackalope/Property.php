@@ -1,6 +1,17 @@
 <?php
+namespace jackalope;
 
-class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterface {
+use \PHPCR_ValueInterface, \PHPCR_PropertyType, \PHPCR_RepositoryException, \PHPCR_ItemNotFoundException, \PHPCR_PathNotFoundException, \PHPCR_ValueFormatException;
+
+/**
+ * A Property object represents the smallest granularity of content storage.
+ * It has a single parent node and no children. A property consists of a name
+ * and a value, or in the case of multi-value properties, a set of values all
+ * of the same type. See Value.
+ *
+ * @api
+ */
+class Property extends Item implements \PHPCR_PropertyInterface {
 
     protected $value;
     protected $isMultiple = false;
@@ -16,11 +27,11 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
                         and value (data for creating value object)
                       or value object.
      * @param string $path the absolute path of this item
-     * @param jackalope_Session the session instance
-     * @param jackalope_ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
+     * @param Session the session instance
+     * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
      */
-    public function __construct($data, $path, jackalope_Session $session, jackalope_ObjectManager $objectManager, $new = false) {
+    public function __construct($data, $path, Session $session, ObjectManager $objectManager, $new = false) {
         parent::__construct(null, $path, $session, $objectManager, $new);
 
         if ($data instanceof PHPCR_ValueInterface ||
@@ -38,13 +49,13 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
                 $this->isMultiple = true;
                 $this->value = array();
                 foreach ($data['value'] as $value) {
-                    array_push($this->value, jackalope_Factory::get('Value', array(
+                    array_push($this->value, Factory::get('Value', array(
                         $type,
                         $value
                     )));
                 }
             } else {
-                $this->value = jackalope_Factory::get('Value', array($type, $data['value']));
+                $this->value = Factory::get('Value', array($type, $data['value']));
             }
         }
     }
@@ -86,7 +97,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
                 $this->type == PHPCR_PropertyType::WEAKREFERENCE) {
                 //FIXME how to test if node is referenceable?
                 //throw new PHPCR_ValueFormatException('reference property may only be set to a referenceable node');
-                $this->value = jackalope_Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
+                $this->value = Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
             } else {
                throw new PHPCR_ValueFormatException('A non-reference property can not have a node as value');
             }
@@ -94,13 +105,13 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
             if ($this->type == $value->getType()) {
                 $this->value = $value;
             } else {
-                throw new jackalope_NotImplementedException('converting value seems like pain. do we have to?');
+                throw new NotImplementedException('converting value seems like pain. do we have to?');
             }
         } elseif (is_null($value)) {
             $this->remove();
         } else {
             //TODO: some sanity check on types? do we care?
-            $this->value = jackalope_Factory::get('Value', array($this->type, $value));
+            $this->value = Factory::get('Value', array($this->type, $value));
         }
         $this->setModified(); //OPTIMIZE: should we detect setting to the same value and in that case not do anything?
     }
@@ -286,7 +297,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      * @api
      */
     public function getProperty() {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -306,8 +317,8 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     public function getLength() {
         $this->checkMultiple();
-        if (PHPCR_PropertyType::BINARY === $this->type) {
-            throw new jackalope_NotImplementedException('Binaries not implemented');
+        if (\PHPCR_PropertyType::BINARY === $this->type) {
+            throw new NotImplementedException('Binaries not implemented');
         } else {
             return strlen($this->value->getString());
         }
@@ -327,8 +338,8 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
         $this->checkMultiple(false);
         $ret = array();
         foreach ($this->value as $value) {
-            if (PHPCR_PropertyType::BINARY === $this->type) {
-                throw new jackalope_NotImplementedException('Binaries not implemented');
+            if (\PHPCR_PropertyType::BINARY === $this->type) {
+                throw new NotImplementedException('Binaries not implemented');
             } else {
                 array_push($ret, strlen($value->getString()));
             }
@@ -403,7 +414,7 @@ class jackalope_Property extends jackalope_Item implements PHPCR_PropertyInterfa
      */
     protected function checkMultiple($isMultiple = true) {
         if ($isMultiple === $this->isMultiple) {
-            throw new PHPCR_ValueFormatException();
+            throw new \PHPCR_ValueFormatException();
         }
     }
 }

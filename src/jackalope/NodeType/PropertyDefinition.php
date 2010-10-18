@@ -1,6 +1,13 @@
 <?php
+namespace jackalope\NodeType;
 
-class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefinition implements PHPCR_NodeType_PropertyDefinitionInterface {
+use jackalope\Factory, jackalope\Helper;
+use \DOMElement, \DOMXPath;
+
+/**
+ * A property definition. Used in node type definitions.
+ */
+class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_PropertyDefinitionInterface {
     protected $requiredType;
     protected $valueConstraints = array();
     protected $defaultValues = array();
@@ -8,34 +15,34 @@ class jackalope_NodeType_PropertyDefinition extends jackalope_NodeType_ItemDefin
     protected $availableQueryOperators = array();
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
-    
-    public function __construct(DOMElement $node, jackalope_NodeType_NodeTypeManager $nodeTypeManager) {
+
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
-        $this->requiredType = PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
-        $this->isMultiple = jackalope_Helper::getBoolAttribute($node, 'multiple');
-        $this->isFullTextSearchable = jackalope_Helper::getBoolAttribute($node, 'fullTextSearchable');
-        $this->isQueryOrderable = jackalope_Helper::getBoolAttribute($node, 'queryOrderable');
-        
-        $xp = new DOMXpath($node->ownerDocument);
+        $this->requiredType = \PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
+        $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
+        $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
+        $this->isQueryOrderable = Helper::getBoolAttribute($node, 'queryOrderable');
+
+        $xp = new DOMXPath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
         foreach ($valueConstraints as $valueConstraint) {
             array_push($this->valueConstraints, $valueConstraint->nodeValue);
         }
-        
+
         $availableQueryOperators = $xp->query('availableQueryOperators/availableQueryOperator', $node);
         foreach ($availableQueryOperators as $availableQueryOperator) {
             array_push($this->availableQueryOperators, $availableQueryOperator->nodeValue);
         }
-        
+
         $defaultValues = $xp->query('defaultValues/defaultValue', $node);
         foreach ($defaultValues as $defaultValue) {
             array_push(
                 $this->defaultValues,
-                jackalope_Factory::get('Value', array(PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
+                Factory::get('Value', array(\PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
             );
         }
     }
-    
+
     /**
      * Gets the required type of the property. One of:
      *  PropertyType.STRING

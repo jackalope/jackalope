@@ -1,6 +1,12 @@
 <?php
+namespace jackalope;
 
-class jackalope_Repository implements PHPCR_RepositoryInterface {
+/**
+ * The entry point into the content repository. The Repository object is
+ * usually acquired through the RepositoryFactory.
+ *
+ */
+class Repository implements \PHPCR_RepositoryInterface {
     protected $transport;
     protected $descriptors;
 
@@ -11,12 +17,12 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct($uri=null, jackalope_TransportInterface $transport=null) {
+    public function __construct($uri=null, TransportInterface $transport=null) {
         if ($transport==null) {
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = jackalope_Factory::get('transport_DavexClient', array($uri));
+            $transport = Factory::get('transport\DavexClient', array($uri));
         }
         $this->transport = $transport;
         $this->descriptors = $transport->getRepositoryDescriptors();
@@ -49,9 +55,9 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
     public function login($credentials = NULL, $workspaceName = NULL) {
         if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
-            throw new PHPCR_RepositoryException('transport failed to login without telling why');
+            throw new \PHPCR_RepositoryException('transport failed to login without telling why');
         }
-        $session = jackalope_Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        $session = Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
 
         return $session;
     }
@@ -80,7 +86,7 @@ class jackalope_Repository implements PHPCR_RepositoryInterface {
      * @api
      */
     public function isStandardDescriptor($key) {
-        $ref = new ReflectionClass('PHPCR_RepositoryInterface');
+        $ref = new ReflectionClass('\PHPCR_RepositoryInterface');
         $consts = $ref->getConstantcs();
         return in_array($key, $consts);
     }

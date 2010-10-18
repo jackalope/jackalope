@@ -1,4 +1,5 @@
 <?php
+namespace jackalope;
 
 /**
  * A Workspace object represents a view onto a persistent workspace within a
@@ -7,15 +8,15 @@
  * associated one-to-one with a Session object. The Workspace object can be
  * acquired by calling Session.getWorkspace() on the associated Session object.
  */
-class jackalope_Workspace implements PHPCR_WorkspaceInterface {
+class Workspace implements \PHPCR_WorkspaceInterface {
     protected $session;
     protected $nodeTypeManager;
     protected $name;
     protected $namespaceRegistry;
 
-    public function __construct(jackalope_Session $session, jackalope_ObjectManager $objectManager, $name) {
+    public function __construct(Session $session, ObjectManager $objectManager, $name) {
         $this->session = $session;
-        $this->nodeTypeManager = jackalope_Factory::get('NodeType_NodeTypeManager', array($objectManager));
+        $this->nodeTypeManager = Factory::get('NodeType\NodeTypeManager', array($objectManager));
         $this->name = $name;
     }
 
@@ -44,7 +45,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * not implemented
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -52,14 +53,14 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      */
      //clone is a reserved keyword in php and may not be used as a function name.
     public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function move($srcAbsPath, $destAbsPath) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -71,7 +72,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getLockManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -82,7 +83,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getQueryManager() {
-        return jackalope_Factory::get('Query_QueryManager', array($this->session->getObjectManager()));
+        return Factory::get('Query\QueryManager', array($this->session->getObjectManager()));
     }
 
     /**
@@ -95,7 +96,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      */
     public function getNamespaceRegistry() {
         if ($this->namespaceRegistry == false) {
-            $this->namespaceRegistry = jackalope_Factory::get('NamespaceRegistry', array($this->session->getTransport()));
+            $this->namespaceRegistry = Factory::get('NamespaceRegistry', array($this->session->getTransport()));
         }
         return $this->namespaceRegistry;
     }
@@ -124,7 +125,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getObservationManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -136,7 +137,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function getVersionManager() {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -159,14 +160,14 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * not implemented
      */
     public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
     public function importXML($parentAbsPath, $in, $uuidBehavior) {
-        throw new jackalope_NotImplementedException('Write');
+        throw new NotImplementedException('Write');
     }
 
     /**
@@ -193,7 +194,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function createWorkspace($name, $srcWorkspace = NULL) {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -209,7 +210,7 @@ class jackalope_Workspace implements PHPCR_WorkspaceInterface {
      * @api
      */
     public function deleteWorkspace($name) {
-        throw new PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR_UnsupportedRepositoryOperationException();
     }
 
 }

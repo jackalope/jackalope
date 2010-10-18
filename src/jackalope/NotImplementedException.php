@@ -1,4 +1,9 @@
 <?php
-class jackalope_NotImplementedException extends RuntimeException {
-}
+namespace jackalope;
 
+/** Implementation Class:
+ *  Exception to throw when something has not yet been implemented
+ *  Should become obsolete once everything is implemented.
+ */
+class NotImplementedException extends \RuntimeException {
+}

@@ -1,9 +1,11 @@
 <?php
+namespace jackalope;
+
 /**
  * Extends Iterator with the skip, getSize and getPosition methods. The base
  * iterator of all type-specific iterators in the JCR and its sub packages.
  */
-class jackalope_RangeIterator implements PHPCR_RangeIteratorInterface {
+class RangeIterator implements \PHPCR_RangeIteratorInterface {
     protected $items;
     protected $pos;
     /**

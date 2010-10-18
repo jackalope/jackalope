@@ -1,11 +1,13 @@
 <?php
-PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__ . '/..');
+namespace jackalope;
+
+\PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__ . '/..');
 
 //require_once(dirname(__FILE__) . '/importexport.php');
 require_once 'PHPUnit/Framework.php';
 require_once dirname(__FILE__) . '/../../src/jackalope/autoloader.php';
 
-abstract class jackalope_baseSuite extends PHPUnit_Framework_TestSuite {
+abstract class baseSuite extends \PHPUnit_Framework_TestSuite {
     protected $path = '';
     protected $configKeys = array('jcr.url', 'jcr.user', 'jcr.pass', 'jcr.workspace', 'jcr.transport');
     

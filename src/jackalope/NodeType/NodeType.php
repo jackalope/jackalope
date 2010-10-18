@@ -1,16 +1,20 @@
 <?php
+namespace jackalope\NodeType;
+
+use jackalope\Factory;
+use \DOMElement;
+
 /**
  * A NodeType object represents a "live" node type that is registered in the repository.
  */
-class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition implements PHPCR_NodeType_NodeTypeInterface {
+class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInterface {
     protected $declaredSupertypes = null;
     protected $superTypeNames = null;
     protected $superTypes = null;
-    
+
     protected $propertyDefinitions = null;
     protected $childNodeDefinitions = null;
-    
-    
+
     /**
      * Returns all supertypes of this node type in the node type inheritance
      * hierarchy. For primary types apart from nt:base, this list will always
@@ -28,7 +32,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
         }
         return $this->superTypes;
     }
-    
+
     /**
      * Returns all names of the supertypes
      *
@@ -76,7 +80,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
         foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return jackalope_Factory::get('NodeType_NodeTypeIterator', array($ret));
+        return Factory::get('NodeType\NodeTypeIterator', array($ret));
     }
 
     /**
@@ -93,7 +97,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
         foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return jackalope_Factory::get('NodeType_NodeTypeIterator', array($ret));
+        return Factory::get('NodeType\NodeTypeIterator', array($ret));
     }
 
     /**
@@ -150,7 +154,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return boolean
      */
     public function canSetProperty($propertyName, $value) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -167,7 +171,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return boolean
      */
     public function canAddChildNode($childNodeName, $nodeTypeName = NULL) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -178,7 +182,7 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return boolean
      */
     public function canRemoveNode($nodeName) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -189,6 +193,6 @@ class jackalope_NodeType_NodeType extends jackalope_NodeType_NodeTypeDefinition 
      * @return boolean
      */
     public function canRemoveProperty($propertyName) {
-        throw new jackalope_NotImplementedException();
+        throw new NotImplementedException();
     }
 }
