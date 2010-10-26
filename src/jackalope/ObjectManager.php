@@ -54,7 +54,6 @@ class ObjectManager {
      */
     public function getNodeByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
-
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {

@@ -45,7 +45,7 @@ class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface 
         if ($nodetype instanceof DOMElement) {
             $this->fromXml($nodetype);
         } elseif ($nodetype instanceof \PHPCR_NodeType_NodeTypeDefinitionInterface) {
-            $this->fromNodeTypeDefinition($nodetype); // copy ctor
+            $this->fromNodeTypeDefinition($nodetype); // copy constructor
         } elseif (!is_null($nodetype)) {
             throw new InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
         }

@@ -116,6 +116,16 @@ class Node extends Item implements \PHPCR_NodeInterface {
             try {
                 $parentNode = $this->objectManager->getNode(dirname($relPath), $this->path);
             } catch(PHPCR_ItemNotFoundException $e) {
+                try {
+                    //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
+                    $prop = $this->objectManager->getPropertyByPath($this->path . '/' . dirname($relPath));
+                    if (! is_null($prop)) {
+                        throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node below a property');
+                    }
+                } catch(PHPCR_ItemNotFoundException $e) {
+                    //ignore to throw the PathNotFoundException below
+                }
+
                 throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
             return $parentNode->addNode(basename($relPath), $primaryNodeTypeName, $identifier);
@@ -123,14 +133,15 @@ class Node extends Item implements \PHPCR_NodeInterface {
 
         if (!is_null($primaryNodeTypeName)) {
             // sanitize
-            $nt = $ntm->getNodeType($primaryNodeTypename);
+            $nt = $ntm->getNodeType($primaryNodeTypeName);
             if ($nt->isMixin()) {
                 throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
             } elseif ($nt->isAbstract()) {
                 throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
             }
         } else {
-            $nodeDefinitions = $ntm->getNodeType($this->primaryType)->getChildNodeDefinitions();
+            $type = $ntm->getNodeType($this->primaryType);
+            $nodeDefinitions = $type->getChildNodeDefinitions();
             foreach ($nodeDefinitions as $def) {
                 if (!is_null($def->getDefaultPrimaryType())) {
                     $primaryNodeTypeName = $def->getDefaultPrimaryType();
@@ -143,6 +154,10 @@ class Node extends Item implements \PHPCR_NodeInterface {
         }
 
         // create child node
+        //sanity check: no index allowed. TODO: we should verify this is a valid node name
+        if (false !== strpos($relPath, ']')) {
+            throw new \PHPCR_RepositoryException("Index not allowed in name of newly created node: $relPath");
+        }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         if (! is_null($identifier)) {
             $data['jcr:uuid'] = $identifier;
@@ -568,9 +583,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
      */
     public function hasNode($relPath) {
         if (false === strpos($relPath, '/')) {
-            return isset($this->nodes[$relPath]);
+            return array_search($relPath, $this->nodes) !== false;
         } else {
-            $this->session->nodeExists($this->path . '/'. $relPath);
+            return $this->session->nodeExists($this->path . '/'. $relPath);
         }
     }
 

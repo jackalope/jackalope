@@ -76,7 +76,7 @@ interface PHPCR_NodeInterface extends PHPCR_ItemInterface {
 	 * is dispatched upon Session#save.
 	 *
 	 * The $relPath provided must not have an index on its final element,
-	 * otherwise a Repository
+	 * otherwise a Repository must throw the PathNotFoundException.
 	 *
 	 * If ordering is supported by the node type of the parent node of the new
 	 * node then the new node is appended to the end of the child node list.

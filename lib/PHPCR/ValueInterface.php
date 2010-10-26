@@ -118,6 +118,12 @@ interface PHPCR_ValueInterface {
 
 	/**
 	 * Returns a boolean representation of this value.
+         * 
+         * Note that according to jcr 2.0 (page 31) string to boolean conversion uses 
+         * java.lang.Boolean.valueOf(String) which only gives true if the string equals
+         * "true" (ignoring case). This can be surprising for PHP users as PHP treats
+         * any non-empty string as true. PHPCR has to follow the Java specification for
+         * consistency.
 	 *
 	 * @return boolean A boolean representation of the value of this property.
 	 * @throws PHPCR_ValueFormatException if conversion to a boolean is not possible.

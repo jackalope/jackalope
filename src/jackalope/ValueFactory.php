@@ -1,7 +1,7 @@
 <?php
 namespace jackalope;
 
-use \PHPCR_PropertyType;
+use \PHPCR_PropertyType, \PHPCR_NodeInterface, \PHPCR_ValueFormatException;
 
 /**
  * The ValueFactory object provides methods for the creation Value objects that can
@@ -32,9 +32,9 @@ class ValueFactory implements \PHPCR_ValueFactoryInterface {
      * preserved. Exceptions are:
      * * if the given $value is a Node object, it's Identifier is fetched for the
      *   Value object and the type of that object will be REFERENCE
-     * * if the given $value is a Node object, it's Identifier is fetched for the
-     *   Value object and the type of that object will be WEAKREFERENCE if $weak
-     *   is set to TRUE
+     * * if the given $value is a Node object and the $weak parameter is set to true,
+     *   the value is set to the Identifier of that node and the type will
+     *   be WEAKREFERENCE
      * * if the given $Value is a DateTime object, the Value type will be DATE.
      *
      * Note: The Java API defines this with multiple differing signatures, you
@@ -49,13 +49,14 @@ class ValueFactory implements \PHPCR_ValueFactoryInterface {
      * @throws IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      * @api
      */
-    public function createValue($value, $type = NULL, $weak = FALSE) {
+    public function createValue($value, $type = null, $weak = false) {
         if (is_null($type)) {
             //determine type from variable type of value.
             //this is mainly needed to create a new property
             if (is_string($value)) {
                 $type = PHPCR_PropertyType::STRING;
             //TODO: binary!
+            //TODO: datetime type
             } elseif (is_int($value)) {
                 $type = PHPCR_PropertyType::LONG;
             } elseif (is_float($value)) {
@@ -66,8 +67,10 @@ class ValueFactory implements \PHPCR_ValueFactoryInterface {
                 $type = PHPCR_PropertyType::BOOLEAN;
             //name, path, reference, weakreference, uri are string, explicitly specify type if you need
             //decimal is not really meaningful (its double only), explicitly specify type if you need
-            } elseif (is_object($value) && $value instanceof PHPCR_Node) {
-                $type = ($weak) ? PHPCR_PropertyType::WEAKREFERENCE : PHPCR_PropertyType::REFERENCE;
+            } elseif (is_object($value) && $value instanceof PHPCR_NodeInterface) {
+                $type = ($weak) ?
+                        PHPCR_PropertyType::WEAKREFERENCE :
+                        PHPCR_PropertyType::REFERENCE;
                 $value = $value->getIdentifier();
             } else {
                 $type = PHPCR_PropertyType::UNDEFINED;
@@ -86,16 +89,17 @@ class ValueFactory implements \PHPCR_ValueFactoryInterface {
                     break;
                 case PHPCR_PropertyType::DATE:
                     if (is_int($value)) $value = date('c', $value); //convert to ISO 8601
+                    //FIXME: need datetime object
                     break;
                 case PHPCR_PropertyType::BOOLEAN:
                     $value = (boolean) $value;
                     break;
                 case PHPCR_PropertyType::REFERENCE:
                 case PHPCR_PropertyType::WEAKREFERENCE:
-                    if ($value instanceof \PHPCR_NodeInterface) {
+                    if ($value instanceof PHPCR_NodeInterface) {
                         $value = $value->getIdentifier();
-                    } elseif (! is_string($value)) {
-                        throw new \PHPCR_ValueFormatException("$value is not a unique id");
+                    } elseif (! is_string($value)) { //FIXME: check for valid uuid?
+                        throw new PHPCR_ValueFormatException("$value is not a unique id");
                     }
                     //could check if uuid, but backend will do that
                     break;

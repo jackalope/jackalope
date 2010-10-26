@@ -37,11 +37,19 @@ class Property extends Item implements \PHPCR_PropertyInterface {
         if ($data instanceof PHPCR_ValueInterface ||
             is_array($data) && isset($data[0]) && $data[0] instanceof PHPCR_ValueInterface) {
             $this->value = $data;
+            if (is_array($data)) {
+                $this->isMultiple = true;
+                $this->type = $data[0]->getType();
+            } else {
+                $this->type = $data->getType();
+            }
         } else {
             if (! is_array($data)) throw new PHPCR_RepositoryException("Invalid data to create property. $data");
             $type = $data['type'];
             if (is_string($type)) {
                 $type = PHPCR_PropertyType::valueFromName($type);
+            } elseif (! is_numeric($type)) {
+                throw new \PHPCR_RepositoryException('INTERNAL ERROR -- No type specified');
             }
             $this->type = $type;
 

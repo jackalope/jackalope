@@ -44,7 +44,9 @@ class Value extends \jackalope\baseCase {
         $this->assertSame(1, $val->getLong());
         $this->assertSame(1.1, $val->getDecimal());
         $this->assertSame(1.1, $val->getDouble());
-        $this->assertSame(true, $val->getBoolean());
+        $this->assertSame(false, $val->getBoolean());
 
+        $val = new \jackalope\Value('String', 'TrUe');
+        $this->assertSame(true, $val->getBoolean());
     }
 }

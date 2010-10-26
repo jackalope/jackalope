@@ -6,6 +6,9 @@ use jackalope\Factory, jackalope\ObjectManager, jackalope\NotImplementedExceptio
 /**
  * Allows for the retrieval and (in implementations that support it) the
  * registration of node types. Accessed via Workspace.getNodeTypeManager().
+ *
+ * Implementation:
+ * We try to do lazy fetching of node types.
  */
 class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     protected $objectManager;
@@ -15,21 +18,55 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
 
     protected $nodeTree = array();
 
+    /**
+     * Flag to only load all node types from the backend once.
+     *
+     * methods like hasNodeType need to fetch all node types.
+     * others like getNodeType do not need all, but just the requested one.
+     */
+    protected $fetchedAllFromBackend = false;
+
     public function __construct(ObjectManager $objectManager) {
         $this->objectManager = $objectManager;
     }
 
     /**
-     * Creates NodeTypes from the given dom
-     * @param DOMDocument nodetypes dom from jackrabbit
+     * Fetch a node type from backend.
+     * Without a filter parameter, this will fetch all node types from the backend.
+     *
+     * It is no problem to trigger the fetch all multiple times, fetch all will occur
+     * only once.
+     * This will not attempt to overwrite existing node types.
+     *
+     * @param namelist string type name to fetch. defaults to null which will fetch all nodes.
      * @return void
      */
-    protected function createNodeTypes($dom) {
+    protected function fetchNodeTypes($name = null) {
+        if ($this->fetchedAllFromBackend) return;
+
+        if (! is_null($name)) {
+            if (empty($this->primaryTypes[$name]) &&
+                empty($this->mixinTypes[$name])) {
+                //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
+                $dom = $this->objectManager->getNodeType($name);
+            } else {
+                return; //we already know this node
+            }
+        } else {
+            $dom = $this->objectManager->getNodeTypes();
+            $this->fetchedAllFromBackend = true;
+        }
+
         $xp = new \DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
             $nodetype = Factory::get('NodeType\NodeType', array($this, $nodetype));
-            $this->addNodeType($nodetype);
+            $name = $nodetype->getName();
+            //do not overwrite existing types. maybe they where changed locally
+            if (empty($this->primaryTypes[$name]) &&
+                empty($this->mixinTypes[$name])) {
+                $this->addNodeType($nodetype);
+            }
         }
     }
 
@@ -99,15 +136,14 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if another error occurs.
      */
     public function getNodeType($nodeTypeName) {
-        if (empty($this->primaryTypes[$nodeTypeName]) && empty($this->mixinTypes[$nodeTypeName])) {
-            $this->createNodeTypes($this->objectManager->getNodeType($nodeTypeName));
-        }
+        $this->fetchNodeTypes($nodeTypeName);
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
         } elseif (isset($this->mixinTypes[$nodeTypeName])) {
             return $this->mixinTypes[$nodeTypeName];
         } else {
+            if (is_null($nodeTypeName)) $nodeTypeName = 'nodeTypeName was <null>';
             throw new \PHPCR_NodeType_NoSuchNodeTypeException($nodeTypeName);
         }
     }
@@ -121,6 +157,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function hasNodeType($name) {
+        $this->fetchNodeTypes();
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
@@ -131,6 +168,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getAllNodeTypes() {
+        $this->fetchNodeTypes($nodeTypeName);
         return Factory::get('NodeType\NodeTypeIterator', array(array_values(array_merge($this->primaryTypes, $this->mixinTypes))));
     }
 
@@ -141,6 +179,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
+        $this->fetchNodeTypes($nodeTypeName);
         return Factory::get('NodeType\NodeTypeIterator', array(array_values($this->primaryTypes)));
     }
 
@@ -152,6 +191,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * @throws PHPCR_RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
+        $this->fetchNodeTypes($nodeTypeName);
         return Factory::get('NodeType\NodeTypeIterator', array(array_values($this->mixinTypes)));
     }
 

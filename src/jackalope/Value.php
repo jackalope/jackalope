@@ -125,6 +125,7 @@ class Value implements \PHPCR_ValueInterface {
 
     /**
      * Returns a boolean representation of this value.
+     * According to jcr 2.0, strings are only true if they equal "true" (case insensitive)
      *
      * @return boolean A boolean representation of the value of this property.
      * @throws PHPCR_ValueFormatException if conversion to a boolean is not possible.
@@ -132,6 +133,9 @@ class Value implements \PHPCR_ValueInterface {
      * @api
      */
     public function getBoolean() {
+        if (is_string($this->data)) {
+            return strcasecmp('true', $this->data) == 0;
+        }
         return $this->convertType('bool');
     }
 
