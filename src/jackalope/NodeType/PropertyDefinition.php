@@ -7,7 +7,7 @@ use \DOMElement, \DOMXPath;
 /**
  * A property definition. Used in node type definitions.
  */
-class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_PropertyDefinitionInterface {
+class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\PropertyDefinitionInterface {
     protected $requiredType;
     protected $valueConstraints = array();
     protected $defaultValues = array();
@@ -18,7 +18,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_Prope
 
     public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
         parent::__construct($node, $nodeTypeManager);
-        $this->requiredType = \PHPCR_PropertyType::valueFromName($node->getAttribute('requiredType'));
+        $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
         $this->isQueryOrderable = Helper::getBoolAttribute($node, 'queryOrderable');
@@ -38,7 +38,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR_NodeType_Prope
         foreach ($defaultValues as $defaultValue) {
             array_push(
                 $this->defaultValues,
-                Factory::get('Value', array(\PHPCR_PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
+                Factory::get('Value', array(\PHPCR\PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
             );
         }
     }

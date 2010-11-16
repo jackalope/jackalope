@@ -11,13 +11,13 @@ namespace jackalope\NodeType;
  * the default values assumed when a new empty PropertyDefinitionTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR_NodeType_PropertyDefinitionTemplateInterface {
+class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\NodeType\PropertyDefinitionTemplateInterface {
 
     public function __construct(NodeTypeManager $nodeTypeManager) {
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
-        $this->requiredType = \PHPCR_PropertyType::STRING;
+        $this->requiredType = \PHPCR\PropertyType::STRING;
         $this->valueConstraints = null;
         $this->defaultValues = null;
         $this->isMultiple = false;
@@ -27,7 +27,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR_No
         $this->name = null;
         $this->isAutoCreated = false;
         $this->isMandatory = false;
-        $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::COPY;
+        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::COPY;
         $this->isProtected = false;
     }
 

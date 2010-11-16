@@ -7,7 +7,7 @@ use \DOMElement;
 /**
  * Superclass of NodeDefinition and PropertyDefinition.
  */
-class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
+class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
     protected $nodeTypeManager;
 
     protected $declaringNodeType;
@@ -24,7 +24,7 @@ class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
         $this->isAutoCreated = Helper::getBoolAttribute($node, 'isAutoCreated');
         $this->isMandatory = Helper::getBoolAttribute($node, 'mandatory');
         $this->isProtected = Helper::getBoolAttribute($node, 'isProtected');
-        $this->onParentVersion = \PHPCR_Version_OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
+        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
     }
 
     /**
@@ -34,7 +34,7 @@ class ItemDefinition implements \PHPCR_NodeType_ItemDefinitionInterface {
      * PropertyDefinitionTemplate) that is not attached to a live NodeType. In
      * such cases this method returns null.
      *
-     * @return PHPCR_NodeType_NodeTypeInterface a NodeType object.
+     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType object.
      */
 
     public function getDeclaringNodeType() {

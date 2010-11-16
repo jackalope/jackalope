@@ -80,19 +80,19 @@ class DavexClient implements TransportInterface {
      * This can only be called once. To connect to another workspace or with
      * another credential, use a fresh instance of transport.
      *
-     * @param credentials A PHPCR_SimpleCredentials instance (this is the only type currently understood)
+     * @param credentials A \PHPCR\SimpleCredentials instance (this is the only type currently understood)
      * @param workspaceName The workspace name for this transport.
      * @return true on success (exceptions on failure)
-     * @throws PHPCR_LoginException if authentication or authorization (for the specified workspace) fails
-     * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
+     * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+     * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(\PHPCR_CredentialsInterface $credentials, $workspaceName) {
+    public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName) {
         if ($this->credentials !== false) {
-            throw new \PHPCR_RepositoryException('Do not call login twice. Rather instantiate a new Transport object to log in as different user or for a different workspace.');
+            throw new \PHPCR\RepositoryException('Do not call login twice. Rather instantiate a new Transport object to log in as different user or for a different workspace.');
         }
-        if (! $credentials instanceof \PHPCR_SimpleCredentials) {
-            throw new \PHPCR_LoginException('Unkown Credentials Type: '.get_class($credentials));
+        if (! $credentials instanceof \PHPCR\SimpleCredentials) {
+            throw new \PHPCR\LoginException('Unkown Credentials Type: '.get_class($credentials));
         }
 
         $this->credentials = $credentials;
@@ -105,11 +105,11 @@ class DavexClient implements TransportInterface {
 
         $set = $dom->getElementsByTagNameNS(self::NS_DCR, 'workspaceName');
         if ($set->length != 1) {
-            throw new \PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
 
         if ($set->item(0)->textContent != $this->workspace) {
-            throw new \PHPCR_RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Wrong workspace in answer from server: '.$dom->saveXML());
         }
         return true;
     }
@@ -119,14 +119,14 @@ class DavexClient implements TransportInterface {
      * This happens without login or accessing a specific workspace.
      *
      * @return Array with name => Value for the descriptors
-     * @throws PHPCR_RepositoryException if error occurs
+     * @throws \PHPCR\RepositoryException if error occurs
      */
      public function getRepositoryDescriptors() {
         $dom = $this->getDomFromBackend(self::REPORT, $this->server,
                                         self::buildReportRequest('dcr:repositorydescriptors'));
         if ($dom->firstChild->localName != 'repositorydescriptors-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
-            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
@@ -135,7 +135,7 @@ class DavexClient implements TransportInterface {
             $values = array();
             foreach($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
                 $type = $value->getAttribute('type');
-                if ($type == '') $type = \PHPCR_PropertyType::TYPENAME_UNDEFINED;
+                if ($type == '') $type = \PHPCR\PropertyType::TYPENAME_UNDEFINED;
                 $values[] = Factory::get('Value', array($type, $value->textContent));
             }
             if ($desc->childNodes->length == 2) {
@@ -169,12 +169,12 @@ class DavexClient implements TransportInterface {
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
      * @param path absolute path to item
      * @return array for the node (decoded from json)
-     * @throws PHPCR_RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getItem($path) {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
-            throw new \PHPCR_RepositoryException("Implementation error: '$path' is not an absolute path");
+            throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
         }
         $this->checkLogin();
         return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
@@ -183,8 +183,8 @@ class DavexClient implements TransportInterface {
      * Get the node path from a JCR uuid
      * @param uuid the id in JCR format
      * @return string path to the node
-     * @throws PHPCR_ItemNotFoundException if the backend does not know the uuid
-     * @throws PHPCR_RepositoryException if now logged in
+     * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
+     * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getNodePathForIdentifier($uuid) {
         $this->checkLogin();
@@ -200,11 +200,11 @@ class DavexClient implements TransportInterface {
         */
         $set = $dom->getElementsByTagNameNS(self::NS_DAV, 'href');
         if ($set->length != 1) {
-            throw new \PHPCR_RepositoryException('Unexpected answer from server: '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Unexpected answer from server: '.$dom->saveXML());
         }
         $fullPath = $set->item(0)->textContent;
         if (strncmp($this->workspaceUriRoot, $fullPath, strlen($this->workspaceUri))) {
-            throw new \PHPCR_RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
+            throw new \PHPCR\RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
         }
         return substr(substr($fullPath, 0, -1), //cut trailing slash /
                       strlen($this->workspaceUriRoot)); //remove uri, workspace and root node
@@ -213,7 +213,7 @@ class DavexClient implements TransportInterface {
     /**
      * get the registered namespaces mappings from the backend
      * @return associative array of prefix => uri
-     * @throws PHPCR_RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getNamespaces() {
         $this->checkLogin();
@@ -222,7 +222,7 @@ class DavexClient implements TransportInterface {
                                         self::buildReportRequest('dcr:registerednamespaces'));
         if ($dom->firstChild->localName != 'registerednamespaces-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
-            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
         $mappings = array();
         $namespaces = $dom->getElementsByTagNameNS(self::NS_DCR, 'namespace');
@@ -236,7 +236,7 @@ class DavexClient implements TransportInterface {
      * Returns node types
      * @param array nodetypes to request
      * @return dom with the definitions
-     * @throws PHPCR_RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getNodeTypes($nodeTypes = array()) {
         $this->checkLogin();
@@ -246,18 +246,18 @@ class DavexClient implements TransportInterface {
             self::buildNodeTypesRequest($nodeTypes)
         );
         if ($dom->firstChild->localName != 'nodeTypes') {
-            throw new \PHPCR_RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
         return $dom;
     }
 
     /**
      * Throws an error if the there is no login
-     * @throws PHPCR_RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if now logged in
      */
     protected function checkLogin() {
         if (empty($this->workspaceUri)) {
-            throw new \PHPCR_RepositoryException("Implementation error: Please login before accessing content");
+            throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
         }
     }
 
@@ -327,7 +327,7 @@ class DavexClient implements TransportInterface {
         // make sure we have a curl handle
         $this->initConnection();
 
-        if ($this->credentials instanceof \PHPCR_SimpleCredentials) {
+        if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
         }
 
@@ -347,7 +347,7 @@ class DavexClient implements TransportInterface {
      * Takes a curl handle prepared by prepareRequest, executes it and checks
      * for transport level errors, throwing the appropriate exceptions.
      * @return raw data string
-     * @throws PHPCR_RepositoryExceptions and descendants on connection errors
+     * @throws \PHPCR\RepositoryExceptions and descendants on connection errors
      */
     protected function getRawFromBackend() {
         $data = $this->curl->exec();
@@ -355,12 +355,12 @@ class DavexClient implements TransportInterface {
             switch($this->curl->errno()) {
                 case CURLE_COULDNT_RESOLVE_HOST:
                 case CURLE_COULDNT_CONNECT:
-                    throw new \PHPCR_NoSuchWorkspaceException($this->curl->error());
+                    throw new \PHPCR\NoSuchWorkspaceException($this->curl->error());
                 default:
                     $curlError = $this->curl->error();
                     $msg = 'No data returned by server: ';
                     $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
-                    throw new \PHPCR_RepositoryException($msg);
+                    throw new \PHPCR\RepositoryException($msg);
             }
         }
         return $data;
@@ -372,8 +372,8 @@ class DavexClient implements TransportInterface {
      *
      * @param curl The curl handle you want to fetch from
      * @return DOMDocument the loaded XML
-     * @throws PHPCR_RepositoryException
-     * @throws PHPCR_NoSuchWorkspaceException
+     * @throws \PHPCR\RepositoryException
+     * @throws \PHPCR\NoSuchWorkspaceException
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
         $this->prepareRequest($type, $uri, $body, $depth);
@@ -390,15 +390,15 @@ class DavexClient implements TransportInterface {
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
-                    throw new \PHPCR_NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR\NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                    throw new \PHPCR_NodeType_NoSuchNodeTypeException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR\NodeType\NoSuchNodeTypeException('HTTP '.$status . ": $errMsg");
                 case 'javax.jcr.ItemNotFoundException':
-                    throw new \PHPCR_ItemNotFoundException('HTTP '.$status . ": $errMsg");
+                    throw new \PHPCR\ItemNotFoundException('HTTP '.$status . ": $errMsg");
 
                 //TODO: map more errors here?
                 default:
-                    throw new \PHPCR_RepositoryException('HTTP '.$status . ": $errMsg ($errClass)");
+                    throw new \PHPCR\RepositoryException('HTTP '.$status . ": $errMsg ($errClass)");
             }
         }
         return $dom;
@@ -410,8 +410,8 @@ class DavexClient implements TransportInterface {
      *
      * @param curl The curl handle you want to fetch from
      * @return array decoded json
-     * @throws PHPCR_ItemNotFoundException if the response is not valid
-     * @throws PHPCR_RepositoryException
+     * @throws \PHPCR\ItemNotFoundException if the response is not valid
+     * @throws \PHPCR\RepositoryException
      */
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
         //OPTIMIZE: re-use connection. JACK-7
@@ -422,9 +422,9 @@ class DavexClient implements TransportInterface {
         if (! is_object($json)) {
             $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
             if (404 === $status) {
-                throw new \PHPCR_ItemNotFoundException('Path not found: ' . $uri);
+                throw new \PHPCR\ItemNotFoundException('Path not found: ' . $uri);
             } elseif (500 <= $status) {
-                throw new \PHPCR_RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
+                throw new \PHPCR\RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
             } else {
                 //FIXME: this might be an xml error response like
                 /*
@@ -437,7 +437,7 @@ class DavexClient implements TransportInterface {
                   </D:error>
                 */
 
-                throw new \PHPCR_RepositoryException("Not a valid json object. '$status' '$jsonstring' ('$type'  '$uri')");
+                throw new \PHPCR\RepositoryException("Not a valid json object. '$status' '$jsonstring' ('$type'  '$uri')");
             }
         }
         //TODO: are there error responses in json format? if so, handle them

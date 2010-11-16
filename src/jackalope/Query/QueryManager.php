@@ -7,7 +7,7 @@ use jackalope\ObjectManager, jackalope\NotImplementedException;
  * This interface encapsulates methods for the management of search queries.
  * Provides methods for the creation and retrieval of search queries.
  */
-class QueryManager implements \PHPCR_Query_QueryManagerInterface {
+class QueryManager implements \PHPCR\Query\QueryManagerInterface {
     protected $objectmanager;
 
     public function __construct(ObjectManager $objectmanager) {
@@ -20,19 +20,19 @@ class QueryManager implements \PHPCR_Query_QueryManagerInterface {
      *
      * @param string $statement
      * @param string $language
-     * @return PHPCR_Query_QueryInterface a Query object
-     * @throws PHPCR_Query_InvalidQueryException if the query statement is syntactically invalid or the specified language is not supported
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @return \PHPCR\Query\QueryInterface a Query object
+     * @throws \PHPCR\Query\InvalidQueryException if the query statement is syntactically invalid or the specified language is not supported
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function createQuery($statement, $language) {
         switch($language) {
-            case \PHPCR_Query_QueryInterface::JCR_SQL2:
+            case \PHPCR\Query\QueryInterface::JCR_SQL2:
                 return new SqlQuery($statement, $this->objectmanager);
-            case \PHPCR_Query_QueryInterface::JCR_JQOM:
+            case \PHPCR\Query\QueryInterface::JCR_JQOM:
                 throw new NotImplementedException();
             default:
-                throw new \PHPCR_Query_InvalidQueryException("No such query language: $language");
+                throw new \PHPCR\Query\InvalidQueryException("No such query language: $language");
         }
     }
 
@@ -40,20 +40,20 @@ class QueryManager implements \PHPCR_Query_QueryManagerInterface {
      * Returns a QueryObjectModelFactory with which a JCR-JQOM query can be built
      * programmatically.
      *
-     * @return PHPCR_Query_QOM_QueryObjectModelFactoryInterface a QueryObjectModelFactory object
+     * @return \PHPCR\Query\QOM\QueryObjectModelFactoryInterface a QueryObjectModelFactory object
      * @api
      */
     public function getQOMFactory() {
         throw new NotImplementedException();
     }
 
-    /*
+    /**
      * Retrieves an existing persistent query.
      *
-     * @param PHPCR_NodeInterface $node a persisted query (that is, a node of type nt:query).
-     * @return PHPCR_Query_QueryInterface a Query object.
-     * @throws PHPCR_Query_InvalidQueryException If node is not a valid persisted query (that is, a node of type nt:query).
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @param \PHPCR\NodeInterface $node a persisted query (that is, a node of type nt:query).
+     * @return \PHPCR\Query\QueryInterface a Query object.
+     * @throws \PHPCR\Query\InvalidQueryException If node is not a valid persisted query (that is, a node of type nt:query).
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getQuery($node) {
@@ -64,10 +64,10 @@ class QueryManager implements \PHPCR_Query_QueryManagerInterface {
      * Supports Query.JCR_SQL2 and Query.JCR_JQOM
      *
      * @return array A string array.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getSupportedQueryLanguages() {
-        return array(\PHPCR_Query_QueryInterface::JCR_SQL2, \PHPCR_Query_QueryInterface::JCR_JQOM);
+        return array(\PHPCR\Query\QueryInterface::JCR_SQL2, \PHPCR\Query\QueryInterface::JCR_JQOM);
     }
 }

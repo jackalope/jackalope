@@ -4,7 +4,7 @@ namespace jackalope\NodeType;
 use jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
-class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefinitionInterface {
+class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface {
     const DEFAULT_PRIMARY_NODE = 'nt:base';
 
     protected $requiredPrimaryTypes = array();
@@ -51,7 +51,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefin
      * object may be acquired (in the form of a NodeDefinitionTemplate) that is
      * not attached to a live NodeType. In such cases this method returns NULL.
      *
-     * @return PHPCR_NodeType_NodeTypeInterface an array of NodeType objects.
+     * @return \PHPCR\NodeType\NodeTypeInterface an array of NodeType objects.
      */
     public function getRequiredPrimaryTypes() {
         // TODO if this is not attached to a live NodeType, return NULL
@@ -91,7 +91,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR_NodeType_NodeDefin
      * object may be acquired (in the form of a NodeDefinitionTemplate) that is
      * not attached to a live NodeType. In such cases this method returns null.
      *
-     * @return PHPCR_NodeType_NodeTypeInterface a NodeType.
+     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType.
      */
     public function getDefaultPrimaryType() {
         if (null === $this->defaultPrimaryTypeName) {

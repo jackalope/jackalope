@@ -1,17 +1,15 @@
 <?php
 namespace jackalope;
 
-use \PHPCR_ValueInterface, \PHPCR_PropertyType, \PHPCR_RepositoryException, \PHPCR_ItemNotFoundException, \PHPCR_PathNotFoundException, \PHPCR_ValueFormatException;
-
 /**
  * A Property object represents the smallest granularity of content storage.
  * It has a single parent node and no children. A property consists of a name
  * and a value, or in the case of multi-value properties, a set of values all
- * of the same type. See Value.
+ * of the same type.
  *
  * @api
  */
-class Property extends Item implements \PHPCR_PropertyInterface {
+class Property extends Item implements \PHPCR\PropertyInterface {
 
     protected $value;
     protected $isMultiple = false;
@@ -22,10 +20,9 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * create a property, either from server data or locally
      * to indicate this has been created locally, make sure to pass true for the $new parameter
      *
-     * @param mixed $data either array with fields
+     * @param mixed $data array with fields
                         type (integer or string from PropertyType)
                         and value (data for creating value object)
-                      or value object.
      * @param string $path the absolute path of this item
      * @param Session the session instance
      * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
@@ -34,37 +31,26 @@ class Property extends Item implements \PHPCR_PropertyInterface {
     public function __construct($data, $path, Session $session, ObjectManager $objectManager, $new = false) {
         parent::__construct(null, $path, $session, $objectManager, $new);
 
-        if ($data instanceof PHPCR_ValueInterface ||
-            is_array($data) && isset($data[0]) && $data[0] instanceof PHPCR_ValueInterface) {
-            $this->value = $data;
-            if (is_array($data)) {
-                $this->isMultiple = true;
-                $this->type = $data[0]->getType();
-            } else {
-                $this->type = $data->getType();
+        if (! is_array($data)) throw new \PHPCR\RepositoryException("Invalid data to create property. $data");
+        $type = $data['type'];
+        if (is_string($type)) {
+            $type = \PHPCR\PropertyType::valueFromName($type);
+        } elseif (! is_numeric($type)) {
+            throw new \PHPCR\RepositoryException('INTERNAL ERROR -- No type specified');
+        } else {
+            //sanity check. this will throw InvalidArgumentException if $type is not a valid type
+            \PHPCR\PropertyType::nameFromValue($type);
+        }
+        $this->type = $type;
+
+        if (is_array($data['value'])) {
+            $this->isMultiple = true;
+            $this->value = array();
+            foreach ($data['value'] as $value) {
+                array_push($this->value, Helper::convertType($value, $type));
             }
         } else {
-            if (! is_array($data)) throw new PHPCR_RepositoryException("Invalid data to create property. $data");
-            $type = $data['type'];
-            if (is_string($type)) {
-                $type = PHPCR_PropertyType::valueFromName($type);
-            } elseif (! is_numeric($type)) {
-                throw new \PHPCR_RepositoryException('INTERNAL ERROR -- No type specified');
-            }
-            $this->type = $type;
-
-            if (is_array($data['value'])) {
-                $this->isMultiple = true;
-                $this->value = array();
-                foreach ($data['value'] as $value) {
-                    array_push($this->value, Factory::get('Value', array(
-                        $type,
-                        $value
-                    )));
-                }
-            } else {
-                $this->value = Factory::get('Value', array($type, $data['value']));
-            }
+            $this->value = $data['value'];
         }
     }
 
@@ -77,6 +63,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * This method is a session-write and therefore requires a <code>save</code>
      * to dispatch the change.
      *
+     * If no type is given, the value is stored as is, i.e. it's type is
+     * preserved. Exceptions are:
+     * * if the given $value is a Node object, it's Identifier is fetched and
+     *   the type of this property is set to REFERENCE
+     * * if the given $value is a Node object, it's Identifier is fetched and
+     *   the type of this property is set to WEAKREFERENCE if $weak is set to
+     *   TRUE
+     * * if the given $value is a DateTime object, the property type will be
+     *   set to DATE.
+     *
      * For Node objects as value:
      * Sets this REFERENCE OR WEAKREFERENCE property to refer to the specified
      * node. If this property is not of type REFERENCE or WEAKREFERENCE or the
@@ -86,72 +82,54 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * If this property is not multi-valued then a ValueFormatException is
      * thrown immediately.
      *
-     * Note: the Java API defines this method with multiple differing signatures.
+     * PHPCR Note: The Java API defines this method with multiple differing signatures.
+     * PHPCR Note: Because we removed the Value interface, this method replaces
+     * ValueFactory::createValue.
      *
-     * @param mixed $value The value to set
+     * @param mixed $value The value to set. Array for multivalue properties
+     * @param integer $type Type request for the property, optional. Must be a constant from PropertyType
+     * @param boolean $weak When a Node is given as $value this can be given as TRUE to create a WEAKREFERENCE, by default a REFERENCE is created
      * @return void
-     * @throws PHPCR_ValueFormatException if the type or format of the specified value is incompatible with the type of this property.
-     * @throws PHPCR_Version_VersionException if this property belongs to a node that is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the setting of the value and this implementation performs this validation immediately.
-     * @throws PHPCR_ConstraintViolationException if the change would violate a node-type or other constraint and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ValueFormatException if the type or format of the specified value is incompatible with the type of this property.
+     * @throws \PHPCR\Version\VersionException if this property belongs to a node that is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the setting of the value and this implementation performs this validation immediately.
+     * @throws \PHPCR\ConstraintViolationException if the change would violate a node-type or other constraint and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws \IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      * @api
      */
-    public function setValue($value) {
+    public function setValue($value, $type = NULL, $weak = false) {
         if (is_array($value) && ! $this->isMultiple)
-            throw new PHPCR_ValueFormatException('Can not set a single value property with an array of values');
-        if ($value instanceof PHPCR_NodeInterface) {
-            if ($this->type == PHPCR_PropertyType::REFERENCE ||
-                $this->type == PHPCR_PropertyType::WEAKREFERENCE) {
+            throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
+
+        if (is_null($type)) {
+            $type = Helper::determineType((is_array($value)) ? $value[0] : $value, $weak);
+        }
+        if ($value instanceof \PHPCR\NodeInterface) {
+            if ($this->type == \PHPCR\PropertyType::REFERENCE ||
+                $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
                 //FIXME how to test if node is referenceable?
-                //throw new PHPCR_ValueFormatException('reference property may only be set to a referenceable node');
-                $this->value = Factory::get('Value', array($this->type, $value->getIdentifier())); //the value has to return the referenced node id string, so this is automatically fine
+                //throw new \PHPCR\ValueFormatException('reference property may only be set to a referenceable node');
+                $this->value = $value->getIdentifier();
             } else {
-               throw new PHPCR_ValueFormatException('A non-reference property can not have a node as value');
-            }
-        } elseif ($value instanceof PHPCR_ValueInterface) {
-            if ($this->type == $value->getType()) {
-                $this->value = $value;
-            } else {
-                throw new NotImplementedException('converting value seems like pain. do we have to?');
+               throw new \PHPCR\ValueFormatException('A non-reference property can not have a node as value');
             }
         } elseif (is_null($value)) {
             $this->remove();
         } else {
-            //TODO: some sanity check on types? do we care?
-            $this->value = Factory::get('Value', array($this->type, $value));
+            $this->value = Helper::convertType($value, $this->type);
         }
         $this->setModified(); //OPTIMIZE: should we detect setting to the same value and in that case not do anything?
     }
 
     /**
-     * Returns the value of this property as a Value object.
+     * Get the value in format default for the PropertyType of this property.
      *
-     * The object returned is a copy of the stored value and is immutable.
+     * PHPCR Note: This is an additional method not found in JSR-283
      *
-     * @return PHPCR_ValueInterface the value
-     * @throws PHPCR_ValueFormatException if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs.
-     * @api
+     * @return mixed value of this property, or array in case of multi-value
      */
-    public function getValue() {
-        $this->checkMultiple();
-        return $this->value;
-    }
-
-    /**
-     * Returns an array of all the values of this property. Used to access
-     * multi-value properties. If the property is single-valued, this method
-     * throws a ValueFormatException. The array returned is a copy of the
-     * stored values, so changes to it are not reflected in internal storage.
-     *
-     * @return array of PHPCR_ValueInterface
-     * @throws PHPCR_ValueFormatException if the property is single-valued.
-     * @throws PHPCR_RepositoryException if another error occurs.
-     * @api
-     */
-    public function getValues() {
-        $this->checkMultiple(false);
+    public function getNativeValue() {
         return $this->value;
     }
 
@@ -160,27 +138,33 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * shortcut for Property.getValue().getString(). See Value.
      *
      * @return string A string representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a String is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ValueFormatException if conversion to a String is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getString() {
-        $this->checkMultiple();
-        return $this->value->getString();
+        if ($this->type != \PHPCR\PropertyType::STRING) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::STRING);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
      * Returns a Binary representation of the value of this property. A
      * shortcut for Property.getValue().getBinary(). See Value.
      *
-     * @return PHPCR_BinaryInterface A Binary representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @return \PHPCR\BinaryInterface A Binary representation of the value of this property.
+     * @throws \PHPCR\ValueFormatException if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getBinary() {
-        $this->checkMultiple();
-        return $this->value->getBinary();
+        if ($this->type != \PHPCR\PropertyType::BINARY) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::BINARY);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -188,13 +172,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * for Property.getValue().getLong(). See Value.
      *
      * @return integer An integer representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a long is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\ValueFormatException if conversion to a long is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getLong() {
-        $this->checkMultiple();
-        return $this->value->getLong();
+        if ($this->type != \PHPCR\PropertyType::LONG) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::LONG);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -202,13 +189,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * shortcut for Property.getValue().getDouble(). See Value.
      *
      * @return float A float representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a double is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\ValueFormatException if conversion to a double is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDouble() {
-        $this->checkMultiple();
-        return $this->value->getDouble();
+        if ($this->type != \PHPCR\PropertyType::DOUBLE) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::DOUBLE);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -216,13 +206,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * shortcut for Property.getValue().getDecimal(). See Value.
      *
      * @return float A float representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a BigDecimal is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\ValueFormatException if conversion to a BigDecimal is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDecimal() {
-        $this->checkMultiple();
-        return $this->value->getDecimal();
+        if ($this->type != \PHPCR\PropertyType::DECIMAL) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::DECIMAL);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -230,13 +223,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * shortcut for Property.getValue().getDate(). See Value.
      *
      * @return DateTime A date representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a string is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\ValueFormatException if conversion to a string is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDate() {
-        $this->checkMultiple();
-        return $this->value->getDate();
+        if ($this->type != \PHPCR\PropertyType::DATE) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::DATE);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -244,13 +240,16 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * shortcut for Property.getValue().getBoolean(). See Value.
      *
      * @return boolean A boolean representation of the value of this property.
-     * @throws PHPCR_ValueFormatException if conversion to a boolean is not possible or if the property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\ValueFormatException if conversion to a boolean is not possible or if the property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getBoolean() {
-        $this->checkMultiple();
-        return $this->value->getBoolean();
+        if ($this->type != \PHPCR\PropertyType::BOOLEAN) {
+            return Helper::convertType($this->value, \PHPCR\PropertyType::BOOLEAN);
+        } else {
+            return $this->value;
+        }
     }
 
     /**
@@ -262,27 +261,27 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * refers to the parent node itself, ".." to the parent of the parent node
      * and "foo" to a sibling node of this property.
      *
-     * @return PHPCR_NodeInterface the referenced Node
-     * @throws PHPCR_ValueFormatException if this property cannot be converted to a referring type (REFERENCE, WEAKREFERENCE or PATH), if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
-     * @throws PHPCR_ItemNotFoundException If this property is of type PATH or WEAKREFERENCE and no target node accessible by the current Session exists in this workspace. Note that this applies even if the property is a PATH and a property exists at the specified location. To dereference to a target property (as opposed to a target node), the method Property.getProperty is used.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeInterface the referenced Node
+     * @throws \PHPCR\ValueFormatException if this property cannot be converted to a referring type (REFERENCE, WEAKREFERENCE or PATH), if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
+     * @throws \PHPCR\ItemNotFoundException If this property is of type PATH or WEAKREFERENCE and no target node accessible by the current Session exists in this workspace. Note that this applies even if the property is a PATH and a property exists at the specified location. To dereference to a target property (as opposed to a target node), the method Property.getProperty is used.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getNode() {
-        $this->checkMultiple();
+        $this->checkMultiple(); //FIXME: multi-value
         switch($this->type) {
-            case PHPCR_PropertyType::PATH:
-                return $this->objectManager->getNode($this->value->getString(), $this->parentPath);
-            case PHPCR_PropertyType::REFERENCE:
+            case \PHPCR\PropertyType::PATH:
+                return $this->objectManager->getNode($this->value, $this->parentPath);
+            case \PHPCR\PropertyType::REFERENCE:
                 try {
-                    return $this->objectManager->getNode($this->value->getString);
-                } catch(PHPCR_ItemNotFoundException $e) {
-                    throw new PHPCR_RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
+                    return $this->objectManager->getNode($this->value);
+                } catch(\PHPCR\ItemNotFoundException $e) {
+                    throw new \PHPCR\RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
                 }
-            case PHPCR_PropertyType::WEAKREFERENCE:
-                return $this->objectManager->getNode($this->value->getString);
+            case \PHPCR\PropertyType::WEAKREFERENCE:
+                return $this->objectManager->getNode($this->value);
             default:
-                throw new PHPCR_ValueFormatException('Property is not a reference, weakreference or path');
+                throw new \PHPCR\ValueFormatException('Property is not a reference, weakreference or path');
         }
     }
 
@@ -298,10 +297,10 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * For example, if this property is located at /a/b/c and it has a value of
      * "../d" then this method will return the property at /a/d if such exists.
      *
-     * @return PHPCR_PropertyInterface the referenced property
-     * @throws PHPCR_ValueFormatException if this property cannot be converted to a PATH, if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
-     * @throws PHPCR_ItemNotFoundException If no property accessible by the current Session exists in this workspace at the specified path. Note that this applies even if a node exists at the specified location. To dereference to a target node, the method Property.getNode is used.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @return \PHPCR\PropertyInterface the referenced property
+     * @throws \PHPCR\ValueFormatException if this property cannot be converted to a PATH, if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
+     * @throws \PHPCR\ItemNotFoundException If no property accessible by the current Session exists in this workspace at the specified path. Note that this applies even if a node exists at the specified location. To dereference to a target node, the method Property.getNode is used.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getProperty() {
@@ -319,16 +318,20 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * Returns -1 if the implementation cannot determine the length.
      *
      * @return integer an integer.
-     * @throws PHPCR_ValueFormatException if this property is multi-valued.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ValueFormatException if this property is multi-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getLength() {
         $this->checkMultiple();
-        if (\PHPCR_PropertyType::BINARY === $this->type) {
+        if (\PHPCR\PropertyType::BINARY === $this->type) {
             throw new NotImplementedException('Binaries not implemented');
         } else {
-            return strlen($this->value->getString());
+            try {
+                return strlen(Helper::convertType($this->value, \PHPCR\PropertyType::STRING));
+            } catch (Exception $e) {
+                return -1;
+            }
         }
     }
 
@@ -338,18 +341,22 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * getLength().
      *
      * @return array an array of lengths (integers)
-     * @throws PHPCR_ValueFormatException if this property is single-valued.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ValueFormatException if this property is single-valued.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getLengths() {
         $this->checkMultiple(false);
         $ret = array();
         foreach ($this->value as $value) {
-            if (\PHPCR_PropertyType::BINARY === $this->type) {
+            if (\PHPCR\PropertyType::BINARY === $this->type) {
                 throw new NotImplementedException('Binaries not implemented');
             } else {
-                array_push($ret, strlen($value->getString()));
+                try {
+                    array_push($ret, strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING)));
+                } catch(Exception $e) {
+                    array_push($ret, -1);
+                }
             }
         }
         return $ret;
@@ -365,13 +372,13 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * among others which may have been applicable is an implementation issue
      * and is not covered by this specification.
      *
-     * @return PHPCR_NodeType_PropertyDefinitionInterface a PropertyDefinition object.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\PropertyDefinitionInterface a PropertyDefinition object.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getDefinition() {
         if (empty($this->definition)) {
-
+            //FIXME: acquire definition
         }
         return $this->definition;
     }
@@ -397,7 +404,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * never UNDEFINED (it must always have some actual type).
      *
      * @return integer an int
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getType() {
@@ -409,7 +416,7 @@ class Property extends Item implements \PHPCR_PropertyInterface {
      * is single-valued.
      *
      * @return boolean TRUE if this property is multi-valued; FALSE otherwise.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function isMultiple() {
@@ -418,12 +425,11 @@ class Property extends Item implements \PHPCR_PropertyInterface {
 
     /**
      * Throws an exception if the property is multivalued
-     * @throws PHPCR_ValueFormatException
+     * @throws \PHPCR\ValueFormatException
      */
     protected function checkMultiple($isMultiple = true) {
         if ($isMultiple === $this->isMultiple) {
-            throw new \PHPCR_ValueFormatException();
+            throw new \PHPCR\ValueFormatException();
         }
     }
 }
-

@@ -16,7 +16,7 @@ namespace jackalope\NodeType;
  * for the default values assumed when a new empty NodeTypeTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeTemplateInterface {
+class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeTemplateInterface {
 
 
     /**

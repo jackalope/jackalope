@@ -14,7 +14,7 @@ namespace jackalope;
  * Workspace object represents a "view" of an actual repository workspace
  * entity as seen through the authorization settings of its associated Session.
  */
-class Session implements \PHPCR_SessionInterface {
+class Session implements \PHPCR\SessionInterface {
     protected $repository;
     protected $workspace;
     protected $objectManager;
@@ -22,7 +22,7 @@ class Session implements \PHPCR_SessionInterface {
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(Repository $repository, $workspaceName, \PHPCR_SimpleCredentials $credentials, TransportInterface $transport) {
+    public function __construct(Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport) {
         $this->repository = $repository;
         $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
         $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
@@ -31,7 +31,7 @@ class Session implements \PHPCR_SessionInterface {
     /**
      * Returns the Repository object through which this session was acquired.
      *
-     * @return PHPCR_RepositoryInterface a Repository object.
+     * @return \PHPCR\RepositoryInterface a Repository object.
      * @api
      */
     public function getRepository() {
@@ -80,7 +80,7 @@ class Session implements \PHPCR_SessionInterface {
     /**
      * Returns the Workspace attached to this Session.
      *
-     * @return PHPCR_WorkspaceInterface a Workspace object.
+     * @return \PHPCR\WorkspaceInterface a Workspace object.
      * @api
      */
     public function getWorkspace() {
@@ -91,7 +91,7 @@ class Session implements \PHPCR_SessionInterface {
      * Returns the root node of the workspace, "/". This node is the main access
      * point to the content of the workspace.
      *
-     * @return PHPCR_NodeInterface The root node of the workspace: a Node object.
+     * @return \PHPCR\NodeInterface The root node of the workspace: a Node object.
      * @throws RepositoryException if an error occurs.
      * @api
      */
@@ -109,14 +109,14 @@ class Session implements \PHPCR_SessionInterface {
      * the same actual persistent workspace entity in the repository as is represented
      * by the Workspace object tied to this Session.
      *
-     * @param PHPCR_CredentialsInterface $credentials A Credentials object
-     * @return PHPCR_SessionInterface a Session object
-     * @throws PHPCR_LoginException if the current session does not have sufficient access to perform the operation.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @param \PHPCR\CredentialsInterface $credentials A Credentials object
+     * @return \PHPCR\SessionInterface a Session object
+     * @throws \PHPCR\LoginException if the current session does not have sufficient access to perform the operation.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function impersonate(\PHPCR_CredentialsInterface $credentials) {
-        throw new \PHPCR_LoginException('Not supported');
+    public function impersonate(\PHPCR\CredentialsInterface $credentials) {
+        throw new \PHPCR\LoginException('Not supported');
     }
 
     /**
@@ -124,9 +124,9 @@ class Session implements \PHPCR_SessionInterface {
      * and non-referenceable nodes.
      *
      * @param string $id An identifier.
-     * @return PHPCR_NodeInterface A Node.
-     * @throws PHPCR_ItemNotFoundException if no node with the specified identifier exists or if this Session does not have read access to the node with the specified identifier.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeInterface A Node.
+     * @throws \PHPCR\ItemNotFoundException if no node with the specified identifier exists or if this Session does not have read access to the node with the specified identifier.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getNodeByIdentifier($id) {
@@ -145,15 +145,15 @@ class Session implements \PHPCR_SessionInterface {
      * efficient than getItem.
      *
      * @param string $absPath An absolute path.
-     * @return PHPCR_ItemInterface
-     * @throws PHPCR_PathNotFoundException if no accessible item is found at the specified path.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\ItemInterface
+     * @throws \PHPCR\PathNotFoundException if no accessible item is found at the specified path.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getItem($absPath) {
 
         if(strpos($absPath,'/') !== 0) {
-            throw new \PHPCR_PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+            throw new \PHPCR\PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
         if ($this->nodeExists($absPath)) {
@@ -167,16 +167,16 @@ class Session implements \PHPCR_SessionInterface {
      * Returns the node at the specified absolute path in the workspace.
      *
      * @param string $absPath An absolute path.
-     * @return PHPCR_NodeInterface A node
-     * @throws PHPCR_PathNotFoundException if no accessible node is found at the specified path.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeInterface A node
+     * @throws \PHPCR\PathNotFoundException if no accessible node is found at the specified path.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getNode($absPath) {
         try {
             return $this->objectManager->getNodeByPath($absPath);
-        } catch (\PHPCR_ItemNotFoundException $e) {
-            throw new \PHPCR_PathNotFoundException($e);
+        } catch (\PHPCR\ItemNotFoundException $e) {
+            throw new \PHPCR\PathNotFoundException($e);
         }
     }
 
@@ -184,16 +184,16 @@ class Session implements \PHPCR_SessionInterface {
      * Returns the property at the specified absolute path in the workspace.
      *
      * @param string $absPath An absolute path.
-     * @return PHPCR_PropertyInterface A property
-     * @throws PHPCR_PathNotFoundException if no accessible property is found at the specified path.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\PropertyInterface A property
+     * @throws \PHPCR\PathNotFoundException if no accessible property is found at the specified path.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getProperty($absPath) {
         try {
             return $this->objectManager->getPropertyByPath($absPath);
-        } catch (\PHPCR_ItemNotFoundException $e) {
-            throw new \PHPCR_PathNotFoundException($e);
+        } catch (\PHPCR\ItemNotFoundException $e) {
+            throw new \PHPCR\PathNotFoundException($e);
         }
     }
 
@@ -203,7 +203,7 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $absPath An absolute path.
      * @return boolean a boolean
-     * @throws PHPCR_RepositoryException if absPath is not a well-formed absolute path.
+     * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
     public function itemExists($absPath) {
@@ -217,14 +217,14 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $absPath An absolute path.
      * @return boolean a boolean
-     * @throws PHPCR_RepositoryException if absPath is not a well-formed absolute path.
+     * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
     public function nodeExists($absPath) {
         if ($absPath == '/') return true;
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
+            throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
         }
 
         try {
@@ -243,14 +243,14 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $absPath An absolute path.
      * @return boolean a boolean
-     * @throws PHPCR_RepositoryException if absPath is not a well-formed absolute path.
+     * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
     public function propertyExists($absPath) {
         // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new \PHPCR_RepositoryException("Path is invalid: $absPath");
+            throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
         }
 
         try {
@@ -295,12 +295,12 @@ class Session implements \PHPCR_SessionInterface {
      * @param string $srcAbsPath the root of the subgraph to be moved.
      * @param string $destAbsPath the location to which the subgraph is to be moved.
      * @return void
-     * @throws PHPCR_ItemExistsException if a node already exists at destAbsPath and same-name siblings are not allowed.
-     * @throws PHPCR_PathNotFoundException if either srcAbsPath or destAbsPath cannot be found and this implementation performs this validation immediately.
-     * @throws PHPCR_Version_VersionException if the parent node of destAbsPath or the parent node of srcAbsPath is versionable and checked-in, or or is non-versionable and its nearest versionable ancestor is checked-in and this implementation performs this validation immediately.
-     * @throws PHPCR_ConstraintViolationException if a node-type or other constraint violation is detected immediately and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if the move operation would violate a lock and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if the last element of destAbsPath has an index or if another error occurs.
+     * @throws \PHPCR\ItemExistsException if a node already exists at destAbsPath and same-name siblings are not allowed.
+     * @throws \PHPCR\PathNotFoundException if either srcAbsPath or destAbsPath cannot be found and this implementation performs this validation immediately.
+     * @throws \PHPCR\Version\VersionException if the parent node of destAbsPath or the parent node of srcAbsPath is versionable and checked-in, or or is non-versionable and its nearest versionable ancestor is checked-in and this implementation performs this validation immediately.
+     * @throws \PHPCR\ConstraintViolationException if a node-type or other constraint violation is detected immediately and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if the move operation would violate a lock and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if the last element of destAbsPath has an index or if another error occurs.
      * @api
      */
     public function move($srcAbsPath, $destAbsPath) {
@@ -321,12 +321,12 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $absPath the absolute path of the item to be removed.
      * @return void
-     * @throws PHPCR_Version_VersionException if the parent node of the item at absPath is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the removal of the specified item and this implementation performs this validation immediately instead.
-     * @throws PHPCR_ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately.
-     * @throws PHPCR_PathNotFoundException if no accessible item is found at $absPath property or if the specified item or an item in its subgraph is currently the target of a REFERENCE property located in this workspace but outside the specified item's subgraph and the current Session does not have read access to that REFERENCE property.
-     * @throws PHPCR_RepositoryException if another error occurs.
-     * @see Item::remove()
+     * @throws \PHPCR\Version\VersionException if the parent node of the item at absPath is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the removal of the specified item and this implementation performs this validation immediately instead.
+     * @throws \PHPCR\ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately.
+     * @throws \PHPCR\PathNotFoundException if no accessible item is found at $absPath property or if the specified item or an item in its subgraph is currently the target of a REFERENCE property located in this workspace but outside the specified item's subgraph and the current Session does not have read access to that REFERENCE property.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @see \PHPCR\ItemInterface::remove()
      * @api
      */
     public function removeItem($absPath) {
@@ -349,15 +349,15 @@ class Session implements \PHPCR_SessionInterface {
      * remain recorded on the Session. There is no best-effort or partial save.
      *
      * @return void
-     * @throws PHPCR_AccessDeniedException if any of the changes to be persisted would violate the access privileges of the this Session. Also thrown if any of the changes to be persisted would cause the removal of a node that is currently referenced by a REFERENCE property that this Session does not have read access to.
-     * @throws PHPCR_ItemExistsException if any of the changes to be persisted would be prevented by the presence of an already existing item in the workspace.
-     * @throws PHPCR_ConstraintViolationException if any of the changes to be persisted would violate a node type or restriction. Additionally, a repository may use this exception to enforce implementation- or configuration-dependent restrictions.
-     * @throws PHPCR_InvalidItemStateException if any of the changes to be persisted conflicts with a change already persisted through another session and the implementation is such that this conflict can only be detected at save-time and therefore was not detected earlier, at change-time.
-     * @throws PHPCR_ReferentialIntegrityException if any of the changes to be persisted would cause the removal of a node that is currently referenced by a REFERENCE property that this Session has read access to.
-     * @throws PHPCR_Version_VersionException if the save would make a result in a change to persistent storage that would violate the read-only status of a checked-in node.
-     * @throws PHPCR_Lock_LockException if the save would result in a change to persistent storage that would violate a lock.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if the save would result in the addition of a node with an unrecognized node type.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\AccessDeniedException if any of the changes to be persisted would violate the access privileges of the this Session. Also thrown if any of the changes to be persisted would cause the removal of a node that is currently referenced by a REFERENCE property that this Session does not have read access to.
+     * @throws \PHPCR\ItemExistsException if any of the changes to be persisted would be prevented by the presence of an already existing item in the workspace.
+     * @throws \PHPCR\ConstraintViolationException if any of the changes to be persisted would violate a node type or restriction. Additionally, a repository may use this exception to enforce implementation- or configuration-dependent restrictions.
+     * @throws \PHPCR\InvalidItemStateException if any of the changes to be persisted conflicts with a change already persisted through another session and the implementation is such that this conflict can only be detected at save-time and therefore was not detected earlier, at change-time.
+     * @throws \PHPCR\ReferentialIntegrityException if any of the changes to be persisted would cause the removal of a node that is currently referenced by a REFERENCE property that this Session has read access to.
+     * @throws \PHPCR\Version\VersionException if the save would make a result in a change to persistent storage that would violate the read-only status of a checked-in node.
+     * @throws \PHPCR\Lock\LockException if the save would result in a change to persistent storage that would violate a lock.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if the save would result in the addition of a node with an unrecognized node type.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function save() {
@@ -376,7 +376,7 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param boolean $keepChanges a boolean
      * @return void
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function refresh($keepChanges) {
@@ -391,7 +391,7 @@ class Session implements \PHPCR_SessionInterface {
      * otherwise returns false.
      *
      * @return boolean a boolean
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function hasPendingChanges() {
@@ -402,9 +402,9 @@ class Session implements \PHPCR_SessionInterface {
      * This method returns a ValueFactory that is used to create Value objects
      * for use when setting repository properties.
      *
-     * @return PHPCR_ValueFactoryInterface
-     * @throws PHPCR_UnsupportedRepositoryOperationException if writing to the repository is not supported.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\ValueFactoryInterface
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if writing to the repository is not supported.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getValueFactory() {
@@ -421,7 +421,7 @@ class Session implements \PHPCR_SessionInterface {
      * @param string $absPath an absolute path.
      * @param string $actions a comma separated list of action strings.
      * @return boolean true if this Session has permission to perform the specified actions at the specified absPath.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function hasPermission($absPath, $actions) {
@@ -447,13 +447,13 @@ class Session implements \PHPCR_SessionInterface {
      * @param string $absPath an absolute path.
      * @param string $actions a comma separated list of action strings.
      * @return void
-     * @throws PHPCR_Security_AccessControlException If permission is denied.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\Security\AccessControlException If permission is denied.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function checkPermission($absPath, $actions) {
         if (! $this->hasPermission($absPath, $actions)) {
-            throw new \PHPCR_Security_AccessControlException($absPath);
+            throw new \PHPCR\Security\AccessControlException($absPath);
         }
     }
 
@@ -464,7 +464,7 @@ class Session implements \PHPCR_SessionInterface {
      * @param object $target the target object of the operation.
      * @param array $arguments the arguments of the operation.
      * @return boolean FALSE if the operation cannot be performed, TRUE if the operation can be performed or if the repository cannot determine whether the operation can be performed.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function hasCapability($methodName, $target, array $arguments) {
@@ -522,9 +522,9 @@ class Session implements \PHPCR_SessionInterface {
      * @param boolean $skipBinary A boolean governing whether binary properties are to be serialized.
      * @param boolean $noRecurse A boolean governing whether the subgraph at absPath is to be recursed.
      * @return void
-     * @throws PHPCR_PathNotFoundException if no node exists at absPath.
+     * @throws \PHPCR\PathNotFoundException if no node exists at absPath.
      * @throws RuntimeException if an error during an I/O operation occurs.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function exportSystemView($absPath, $out, $skipBinary, $noRecurse) {
@@ -563,9 +563,9 @@ class Session implements \PHPCR_SessionInterface {
      * @param boolean $skipBinary A boolean governing whether binary properties are to be serialized.
      * @param boolean $noRecurse A boolean governing whether the subgraph at absPath is to be recursed.
      * @return void
-     * @throws PHPCR_PathNotFoundException if no node exists at absPath.
+     * @throws \PHPCR\PathNotFoundException if no node exists at absPath.
      * @throws RuntimeException if an error during an I/O operation occurs.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function exportDocumentView($absPath, $out, $skipBinary, $noRecurse) {
@@ -583,8 +583,8 @@ class Session implements \PHPCR_SessionInterface {
      * @param string $prefix a string
      * @param string $uri a string
      * @return void
-     * @throws PHPCR_NamespaceException if an attempt is made to map a namespace URI to a prefix beginning with the characters "xml" (in any combination of case) or if an attempt is made to map either the empty prefix or the empty namespace (i.e., if either $prefix or $uri are the empty string).
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\NamespaceException if an attempt is made to map a namespace URI to a prefix beginning with the characters "xml" (in any combination of case) or if an attempt is made to map either the empty prefix or the empty namespace (i.e., if either $prefix or $uri are the empty string).
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function setNamespacePrefix($prefix, $uri) {
@@ -595,7 +595,7 @@ class Session implements \PHPCR_SessionInterface {
      * Returns all prefixes currently mapped to URIs in this Session.
      *
      * @return array a string array
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getNamespacePrefixes() {
@@ -608,8 +608,8 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $prefix a string
      * @return string a string
-     * @throws PHPCR_NamespaceException if the specified prefix is unknown.
-     * @throws PHPCR_RepositoryException if another error occurs
+     * @throws \PHPCR\NamespaceException if the specified prefix is unknown.
+     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getNamespaceURI($prefix) {
@@ -622,8 +622,8 @@ class Session implements \PHPCR_SessionInterface {
      *
      * @param string $uri a string
      * @return string a string
-     * @throws PHPCR_NamespaceException if the specified uri is unknown.
-     * @throws PHPCR_RepositoryException - if another error occurs
+     * @throws \PHPCR\NamespaceException if the specified uri is unknown.
+     * @throws \PHPCR\RepositoryException - if another error occurs
      * @api
      */
     public function getNamespacePrefix($uri) {
@@ -659,25 +659,25 @@ class Session implements \PHPCR_SessionInterface {
     /**
      * Returns the access control manager for this Session.
      *
-     * @return PHPCR_Security_AccessControlManager the access control manager for this Session
-     * @throws PHPCR_UnsupportedRepositoryOperationException if access control is not supported.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\Security\AccessControlManager the access control manager for this Session
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if access control is not supported.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getAccessControlManager() {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**
      * Returns the retention and hold manager for this Session.
      *
-     * @return PHPCR_Retention_RetentionManagerInterface the retention manager for this Session.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if retention and hold are not supported.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\Retention\RetentionManagerInterface the retention manager for this Session.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if retention and hold are not supported.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getRetentionManager() {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**

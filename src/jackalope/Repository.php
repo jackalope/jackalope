@@ -6,7 +6,7 @@ namespace jackalope;
  * usually acquired through the RepositoryFactory.
  *
  */
-class Repository implements \PHPCR_RepositoryInterface {
+class Repository implements \PHPCR\RepositoryInterface {
     protected $transport;
     protected $descriptors;
 
@@ -44,18 +44,18 @@ class Repository implements \PHPCR_RepositoryInterface {
     *
     * Note: The Java API defines this method with multiple differing signatures.
     *
-    * @param PHPCR_CredentialsInterface $credentials The credentials of the user
+    * @param \PHPCR\CredentialsInterface $credentials The credentials of the user
     * @param string $workspaceName the name of a workspace
-    * @return PHPCR_SessionInterface a valid session for the user to access the repository
-    * @throws PHPCR_LoginException if authentication or authorization (for the specified workspace) fails
-    * @throws PHPCR_NoSuchWorkspacexception if the specified workspaceName is not recognized
-    * @throws PHPCR_RepositoryException if another error occurs
+    * @return \PHPCR\SessionInterface a valid session for the user to access the repository
+    * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
+    * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+    * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
     public function login($credentials = NULL, $workspaceName = NULL) {
         if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
-            throw new \PHPCR_RepositoryException('transport failed to login without telling why');
+            throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
         $session = Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
 
@@ -86,64 +86,16 @@ class Repository implements \PHPCR_RepositoryInterface {
      * @api
      */
     public function isStandardDescriptor($key) {
-        $ref = new ReflectionClass('\PHPCR_RepositoryInterface');
+        $ref = new ReflectionClass('\PHPCR\RepositoryInterface');
         $consts = $ref->getConstantcs();
         return in_array($key, $consts);
     }
 
     /**
-     * Returns TRUE if $key is a valid single-value descriptor;
-     * otherwise returns FALSE.
+     * Get the string value(s) for this key.
      *
      * @param string $key a descriptor key.
-     * @return boolean whether the specified descriptor is multi-valued.
-     * @api
-     */
-    public function isSingleValueDescriptor($key) {
-        return isset($this->descriptors[$key]) && ! is_array($this->descriptors[$key]);
-    }
-
-    /**
-     * The value of a single-value descriptor is found by
-     * passing the key for that descriptor to this method.
-     * If $key is the key of a multi-value descriptor
-     * or not a valid key this method returns NULL.
-     *
-     * @param string $key a descriptor key.
-     * @return PHPCR_ValueInterface The value of the indicated descriptor
-     * @api
-     */
-    public function getDescriptorValue($key) {
-        if (! $this->isSingleValueDescriptor($key)) return null;
-        return $this->descriptors[$key];
-    }
-
-    /**
-     * The value array of a multi-value descriptor is found by
-     * passing the key for that descriptor to this method.
-     * If $key is the key of a single-value descriptor
-     * then this method returns that value as an array of size one.
-     * If $key is not a valid key this method returns NULL.
-     *
-     * @param string $key a descriptor key.
-     * @return array of PHPCR_ValueInterface the value array for the indicated descriptor
-     * @api
-     */
-    public function getDescriptorValues($key) {
-        if (! isset($this->descriptors[$key])) return null;
-        if (! is_array($this->descriptors[$key])) return array($this->descriptors[$key]);
-        return $this->descriptors[$key];
-    }
-
-    /**
-     * A convenience method. The call
-     *  String s = repository.getDescriptor(key);
-     * is equivalent to
-     *  Value v = repository.getDescriptorValue(key);
-     *  String s = (v == null) ? null : v.getString();
-     *
-     * @param string $key a descriptor key.
-     * @return a descriptor value in string form.
+     * @return a descriptor value in string form or an array of strings for multivalue descriptors
      * @api
      */
     public function getDescriptor($key) {

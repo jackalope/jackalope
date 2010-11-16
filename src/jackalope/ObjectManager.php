@@ -1,8 +1,6 @@
 <?php
 namespace jackalope;
 
-use \PHPCR_SessionInterface, \PHPCR_RepositoryException, \PHPCR_ItemInterface;
-
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
  * and caches every node retrieved to improve performance.
@@ -38,7 +36,7 @@ class ObjectManager {
     protected $unsaved = false;
 
     public function __construct(TransportInterface $transport,
-                                PHPCR_SessionInterface $session) {
+                                \PHPCR\SessionInterface $session) {
         $this->transport = $transport;
         $this->session = $session;
     }
@@ -48,9 +46,9 @@ class ObjectManager {
      * Uses the factory to instantiate Node
      *
      * @param string $path The absolute path of the node to create
-     * @return PHPCR_Node
-     * @throws PHPCR_ItemNotFoundException If nothing is found at that absolute path
-     * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
+     * @return \PHPCR\Node
+     * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
+     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
     public function getNodeByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
@@ -58,7 +56,7 @@ class ObjectManager {
 
         if (empty($this->objectsByPath[$absPath])) {
             if (isset($this->nodesRemove[$absPath])) {
-                throw new  PHPCR_PathNotFoundException('Path not found (deleted in current session): ' . $uri);
+                throw new  \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $uri);
             }
             $node = Factory::get(
                 'Node',
@@ -81,8 +79,8 @@ class ObjectManager {
      * Uses the factory to instantiate Property
      *
      * @param string $path The absolute path of the property to create
-     * @return PHPCR_Property
-     * @throws PHPCR_RepositoryException    If the path is not absolute or not well-formed
+     * @return \PHPCR\Property
+     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
     public function getPropertyByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
@@ -181,8 +179,8 @@ class ObjectManager {
      * @param string uuid or relative path
      * @param string optional root if you are in a node context - not used if $identifier is an uuid
      * @return The specified Node. if not available, ItemNotFoundException is thrown
-     * @throws PHPCR_ItemNotFoundException If the path was not found
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ItemNotFoundException If the path was not found
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function getNode($identifier, $root = '/'){
         if ($this->isUUID($identifier)) {
@@ -224,14 +222,14 @@ class ObjectManager {
      *
      * @param string $path the path to verify
      * @return  bool    Always true :)
-     * @throws PHPCR_RepositoryException    If the path is not absolute or well-formed
+     * @throws \PHPCR\RepositoryException    If the path is not absolute or well-formed
      */
     public function verifyAbsolutePath($path) {
         if (!Helper::isAbsolutePath($path)) {
-            throw new PHPCR_RepositoryException('Path is not absolute: ' . $path);
+            throw new \PHPCR\RepositoryException('Path is not absolute: ' . $path);
         }
         if (!Helper::isValidPath($path)) {
-            throw new PHPCR_RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
+            throw new \PHPCR\RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
         return true;
     }
@@ -284,7 +282,7 @@ class ObjectManager {
 
     /** Determine if any object is modified */
     public function hasPendingChanges() {
-        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesRemove)) return true;
+        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMoved) || count($this->nodesRemove)) return true;
         foreach($this->objectsByPath as $item) {
             if ($item->isModified()) return true;
         }
@@ -296,12 +294,12 @@ class ObjectManager {
      * WRITE: add a node at the specified path
      *
      * @param string $absPath the path to the node, including the node identifier
-     * @param PHPCR_Node $node the node to add
-     * @throws PHPCR_ItemExistsException if a node already exists at that path
+     * @param \PHPCR\Node $node the node to add
+     * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
     public function removeItem($absPath) {
         if (! isset($this->objectsByPath[$absPath])) {
-            throw new PHPCR_RepositoryException("Internal error: nothing at $absPath");
+            throw new \PHPCR\RepositoryException("Internal error: nothing at $absPath");
         }
 
         //FIXME: same-name-siblings...
@@ -333,15 +331,15 @@ class ObjectManager {
      * WRITE: add an item at the specified path.
      *
      * @param string $absPath the path to the node, including the node identifier
-     * @param PHPCR_Node $item the item to add
-     * @throws PHPCR_ItemExistsException if a node already exists at that path
+     * @param \PHPCR\Node $item the item to add
+     * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
-    public function addItem($absPath, PHPCR_ItemInterface $item) {
+    public function addItem($absPath, \PHPCR\ItemInterface $item) {
         if (isset($this->objectsByPath[$absPath])) {
-            throw new \PHPCR_ItemExistsException($absPath); //FIXME: same-name-siblings...
+            throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
         $this->objectsByPath[$absPath] = $item;
-        if($item instanceof PHPCR_NodeInterface) {
+        if($item instanceof \PHPCR\NodeInterface) {
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
         }

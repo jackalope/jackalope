@@ -46,7 +46,7 @@ function getRepository($config) {
  * @return the simple credentials instance for this implementation with the specified username/password
  */
 function getSimpleCredentials($user, $password) {
-    return new PHPCR_SimpleCredentials($user, $password);
+    return new \PHPCR\SimpleCredentials($user, $password);
 }
 
 /**
@@ -66,10 +66,10 @@ function getJCRSession($config, $credentials = null) {
         }
         return $repository->login($credentials, $config['workspace']);
     } elseif (isset($config['workspace'])) {
-        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, $config['workspace']);
     } else {
-        throw new PHPCR_RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, null);
     }
 }

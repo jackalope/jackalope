@@ -1,12 +1,10 @@
 <?php
 namespace jackalope;
 
-use \PHPCR_ItemNotFoundException, \PHPCR_PathNotFoundException, \PHPCR_NodeType_ConstraintViolationException, \PHPCR_ValueInterface;
-
 /**
  * The Node interface represents a node in a workspace.
  */
-class Node extends Item implements \PHPCR_NodeInterface {
+class Node extends Item implements \PHPCR\NodeInterface {
 
     protected $index = 1;
     /** @var string */
@@ -14,6 +12,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
 
     /**
      * mapping of property name to property objects. all properties are loaded in constructor
+     * OPTIMIZE: lazy instantiate property objects, just have local array
      */
     protected $properties = array();
     /**
@@ -53,9 +52,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
                     case 'jcr:uuid':
                         $this->uuid = $value;
                         break;
-
                     //TODO: more special information?
-                    //TODO: optimization? not instantiate objects but just have value for the simple cases, then shortcut funktion to avoid getProperty()->getValue()
+
+                    //OPTIMIZE: do not instantiate properties unless needed
                     default:
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
                         $this->properties[$key] = Factory::get(
@@ -98,13 +97,13 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * @param string $relPath The path of the new node to be created.
      * @param string $primaryNodeTypeName The name of the primary node type of the new node.
      * @param string $identifier The identifier to use for the new node, if not given an UUID will be created. Non-JCR-spec parameter!
-     * @return PHPCR_NodeInterface The node that was added.
-     * @throws PHPCR_ItemExistsException if the identifier is already used, if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
-     * @throws PHPCR_PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
-     * @throws PHPCR_ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
-     * @throws PHPCR_Version_VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the addition of the node and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_RepositoryException If the last element of relPath has an index or if another error occurs.
+     * @return \PHPCR\NodeInterface The node that was added.
+     * @throws \PHPCR\ItemExistsException if the identifier is already used, if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
+     * @throws \PHPCR\PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
+     * @throws \PHPCR\ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
+     * @throws \PHPCR\Version\VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the addition of the node and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\RepositoryException If the last element of relPath has an index or if another error occurs.
      * @api
      */
     public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
@@ -115,18 +114,18 @@ class Node extends Item implements \PHPCR_NodeInterface {
             // forward to real parent
             try {
                 $parentNode = $this->objectManager->getNode(dirname($relPath), $this->path);
-            } catch(PHPCR_ItemNotFoundException $e) {
+            } catch(\PHPCR\ItemNotFoundException $e) {
                 try {
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
                     $prop = $this->objectManager->getPropertyByPath($this->path . '/' . dirname($relPath));
                     if (! is_null($prop)) {
-                        throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node below a property');
+                        throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node below a property');
                     }
-                } catch(PHPCR_ItemNotFoundException $e) {
+                } catch(\PHPCR\ItemNotFoundException $e) {
                     //ignore to throw the PathNotFoundException below
                 }
 
-                throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+                throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
             return $parentNode->addNode(basename($relPath), $primaryNodeTypeName, $identifier);
         }
@@ -135,9 +134,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
             // sanitize
             $nt = $ntm->getNodeType($primaryNodeTypeName);
             if ($nt->isMixin()) {
-                throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
+                throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
             } elseif ($nt->isAbstract()) {
-                throw new PHPCR_NodeType_ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
+                throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
             }
         } else {
             $type = $ntm->getNodeType($this->primaryType);
@@ -149,14 +148,14 @@ class Node extends Item implements \PHPCR_NodeInterface {
                 }
             }
             if (is_null($primaryNodeTypeName)) {
-                throw new PHPCR_NodeType_ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
+                throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
             }
         }
 
         // create child node
         //sanity check: no index allowed. TODO: we should verify this is a valid node name
         if (false !== strpos($relPath, ']')) {
-            throw new \PHPCR_RepositoryException("Index not allowed in name of newly created node: $relPath");
+            throw new \PHPCR\RepositoryException("Index not allowed in name of newly created node: $relPath");
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         if (! is_null($identifier)) {
@@ -193,19 +192,19 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * @param string $srcChildRelPath the relative path to the child node (that is, name plus possible index) to be moved in the ordering
      * @param string $destChildRelPath the the relative path to the child node (that is, name plus possible index) before which the node srcChildRelPath will be placed.
      * @return void
-     * @throws PHPCR_UnsupportedRepositoryOperationException if ordering is not supported on this node.
-     * @throws PHPCR_ConstraintViolationException if an implementation-specific ordering restriction is violated and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_ItemNotFoundException if either parameter is not the relative path of a child node of this node.
-     * @throws PHPCR_Version_VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the re-ordering and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if ordering is not supported on this node.
+     * @throws \PHPCR\ConstraintViolationException if an implementation-specific ordering restriction is violated and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\ItemNotFoundException if either parameter is not the relative path of a child node of this node.
+     * @throws \PHPCR\Version\VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the re-ordering and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath) {
         if ($srcChildRelPath == $destChildRelPath) return; //nothing to move
         $oldpos = array_search($srcChildRelPath, $this->nodes);
         if ($oldpos === false)
-            throw new PHPCR_ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+            throw new \PHPCR\ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
 
         if ($destChildRelPath == null) {
             //null means move to end
@@ -215,7 +214,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
             //insert somewhere specified by dest path
             $newpos = array_search($destChildRelPath, $this->nodes);
             if ($newpos === false)
-                throw new PHPCR_ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
+                throw new \PHPCR\ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             if ($oldpos < $newpos) $newpos--; //we first unset, so
             unset($this->nodes[$oldpos]);
             array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
@@ -225,8 +224,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
     }
 
     /**
-     * Sets the single-value property of this node called $name to the specified
-     * value.
+     * Sets the property of this node called $name to the specified value.
+     * This method works as factory method to create new properties and as a
+     * shortcut for PropertyInterface::setValue
      *
      * If the property does not yet exist, it is created and its property type
      * determined by the node type of this node. If, based on the name and value
@@ -266,27 +266,24 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * @param string $name The name of a property of this node
      * @param mixed $value The value to be assigned
      * @param integer $type The type to set for the property
-     * @return PHPCR_PropertyInterface The updated Property object
-     * @throws PHPCR_ValueFormatException if the specified property is a DATE but the value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format or if value cannot be converted to the type of the specified property or if the property already exists and is multi-valued.
-     * @throws PHPCR_Version_VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_Lock_LockException  if a lock prevents the setting of the property and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_ConstraintViolationException if the change would violate a node-type or other constraint and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\PropertyInterface The updated Property object
+     * @throws \PHPCR\ValueFormatException if the specified property is a DATE but the value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format or if value cannot be converted to the type of the specified property or if the property already exists and is multi-valued.
+     * @throws \PHPCR\Version\VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\Lock\LockException  if a lock prevents the setting of the property and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\ConstraintViolationException if the change would violate a node-type or other constraint and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function setProperty($name, $value, $type = NULL) {
-        if ($value instanceof PHPCR_ValueInterface) {
-            if (! is_null($type) && $type != $value->getType()) {
-                throw new NotImplementedException('converting value seems like pain. do we have to?'); //valuefactory has some logic to this end
-            } else {
-                $type = $value->getType();
-            }
+        if (is_null($type)) {
+            $type = Helper::determineType($value);
             $data = $value;
         } else {
-            //use the valuefactory to solve type issues
-            $data = $this->session->getValueFactory()->createValue($value, $type);
-            $type = $data->getType();
+            $data = Helper::convertType($value, $type);
         }
+
+
+
         if (! isset($this->properties[$name])) {
             $path = $this->path . "/$name";
             $property = Factory::get(
@@ -298,8 +295,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
             $this->properties[$name] = $property;
             //validity check will be done by backend on commit, which is allowed by spec
         } else {
-            if (! is_null($type) && $this->properties[$name]->getType() != $type)
-                throw new NotImplementedException('converting value seems like pain. do we have to?');//valuefactory has some logic to this end
+            if (! is_null($type) && $this->properties[$name]->getType() != $type) {
+                throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
+            }
             $this->properties[$name]->setValue($value);
         }
     }
@@ -318,17 +316,17 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * wrapping the same state, is up to the implementation.
      *
      * @param string $relPath The relative path of the node to retrieve.
-     * @return PHPCR_NodeInterface The node at relPath.
-     * @throws PHPCR_PathNotFoundException If no node exists at the specified path or the current Session does not read access to the node at the specified path.
-     * @throws PHPCR_RepositoryException If another error occurs.
+     * @return \PHPCR\NodeInterface The node at relPath.
+     * @throws \PHPCR\PathNotFoundException If no node exists at the specified path or the current Session does not read access to the node at the specified path.
+     * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
     public function getNode($relPath) {
         $node = null;
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
-        } catch (PHPCR_ItemNotFoundException $e) {
-            throw new PHPCR_PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (\PHPCR\ItemNotFoundException $e) {
+            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
         return $node;
     }
@@ -377,8 +375,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * The same reacquisition semantics apply as with getNode($relPath).
      *
      * @param string|array $filter a name pattern or an array of globbing strings.
-     * @return PHPCR_NodeIteratorInterface a NodeIterator over all (matching) child Nodes
-     * @throws PHPCR_RepositoryException If an unexpected error occurs.
+     * @return \PHPCR\NodeIteratorInterface a NodeIterator over all (matching) child Nodes
+     * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
     public function getNodes($filter = NULL) {
@@ -387,7 +385,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
             //OPTIMIZE: batch get nodes
             $result[] = $this->getNode($name);
         }
-        return new NodeIterator($result);
+        return new ArrayIterator($result);
     }
 
     /**
@@ -395,9 +393,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * reacquisition semantics apply as with getNode(String).
      *
      * @param string $relPath The relative path of the property to retrieve.
-     * @return PHPCR_PropertyInterface The property at relPath.
-     * @throws PHPCR_PathNotFoundException if no property exists at the specified path or if the current Session does not have read access to the specified property.
-     * @throws PHPCR_RepositoryException If another error occurs.
+     * @return \PHPCR\PropertyInterface The property at relPath.
+     * @throws \PHPCR\PathNotFoundException if no property exists at the specified path or if the current Session does not have read access to the specified property.
+     * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
     public function getProperty($relPath) {
@@ -405,11 +403,33 @@ class Node extends Item implements \PHPCR_NodeInterface {
             if (isset($this->properties[$relPath])) {
                 return $this->properties[$relPath];
             } else {
-                throw new PHPCR_PathNotFoundException($relPath);
+                throw new \PHPCR\PathNotFoundException($relPath);
             }
         } else {
             $this->session->getProperty($this->path . '/.' . $relPath);
         }
+    }
+
+    /**
+     * Returns the property of this node with name $name. If $type is set,
+     * attempts to convert the value to the specified type.
+     *
+     * This is a shortcut for getProperty().getXXX()
+     *
+     * @param string $name Name of this property
+     * @param integer $type Type conversion request, optional. Must be a constant from PropertyType
+     * @return mixed The value of the property with $name.
+     * @throws \PHPCR\PathNotFoundException if no property exists at the specified path or if the current Session does not have read access to the specified property.
+     * @throws \PHPCR\ValueFormatException if the type or format of the property can not be converted to the specified type.
+     * @throws \PHPCR\RepositoryException If another error occurs.
+     * @api
+     */
+    public function getPropertyValue($name, $type=null) {
+        $val = $this->getProperty($name)->getValue();
+        if (! is_null($type)) {
+            $val = Helper::convertType($val, $type);
+        }
+        return $val;
     }
 
     /**
@@ -455,16 +475,37 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * The same reacquisition semantics apply as with getNode(String).
      *
      * @param string|array $filter a name pattern
-     * @return PHPCR_PropertyIteratorInterface a PropertyIterator
-     * @throws PHPCR_RepositoryException If an unexpected error occurs.
+     * @return \PHPCR\PropertyIteratorInterface a PropertyIterator
+     * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
     public function getProperties($filter = NULL) {
+        //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         foreach($names as $name) {
             $result[] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
-        return new PropertyIterator($result);
+        return new \ArrayIterator($result);
+    }
+
+    /**
+     * Shortcut for getProperties and then getting the values of the properties.
+     *
+     * See NodeInterface::getProperties for a full documentation
+     *
+     * @param string|array $filter a name pattern
+     * @return Iterator implementing SeekableIterator and Countable. Keys are the property names, values the corresponding property value (or array of values in case of multi-valued properties)
+     * @throws \PHPCR\RepositoryException If an unexpected error occurs.
+     * @api
+     */
+    public function getPropertiesValues($filter=null) {
+        //OPTIMIZE: lazy iterator?
+        $names = self::filterNames($filter, array_keys($this->properties));
+        foreach($names as $name) {
+            //we know for sure the properties exist, as they come from the array keys of the array we are accessing
+            $result[] = $this->properties[$name]->getValue();
+        }
+        return new \ArrayIterator($result);
     }
 
     /**
@@ -478,9 +519,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * The same reacquisition semantics apply as with getNode(String).
      *
-     * @return PHPCR_ItemInterface the primary child item.
-     * @throws PHPCR_ItemNotFoundException if this node does not have a primary child item, either because none is declared in the node type or because a declared primary item is not present on this node instance, or because none accessible through the current Session
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\ItemInterface the primary child item.
+     * @throws \PHPCR\ItemNotFoundException if this node does not have a primary child item, either because none is declared in the node type or because a declared primary item is not present on this node instance, or because none accessible through the current Session
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getPrimaryItem() {
@@ -492,7 +533,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * non-referenceable nodes.
      *
      * @return string the identifier of this node
-     * @throws PHPCR_RepositoryException If an error occurs.
+     * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
     public function getIdentifier() {
@@ -508,7 +549,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * always return 1.
      *
      * @return integer The index of this node within the ordered set of its same-name sibling nodes.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getIndex() {
@@ -535,8 +576,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * iterator is returned.
      *
      * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
-     * @return PHPCR_PropertyIteratorInterface A PropertyIterator.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @return \PHPCR\PropertyIteratorInterface A PropertyIterator.
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getReferences($name = NULL) {
@@ -563,8 +604,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * iterator is returned.
      *
      * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
-     * @return PHPCR_PropertyIteratorInterface A PropertyIterator.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @return \PHPCR\PropertyIteratorInterface A PropertyIterator.
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getWeakReferences($name = NULL) {
@@ -578,7 +619,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $relPath The path of a (possible) node.
      * @return boolean true if a node exists at relPath; false otherwise.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function hasNode($relPath) {
@@ -595,7 +636,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $relPath The path of a (possible) property.
      * @return boolean true if a property exists at relPath; false otherwise.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function hasProperty($relPath) {
@@ -611,7 +652,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * one or more child nodes accessible through the current Session; false otherwise.
      *
      * @return boolean true if this node has one or more child nodes; false otherwise.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function hasNodes() {
@@ -623,7 +664,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * one or more properties accessible through the current Session; false otherwise.
      *
      * @return boolean true if this node has one or more properties; false otherwise.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function hasProperties() {
@@ -635,8 +676,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * returned when this method is called on the root node of a workspace is up
      * to the implementation.
      *
-     * @return PHPCR_NodeType_NodeTypeInterface a NodeType object.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType object.
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getPrimaryNodeType() {
@@ -652,8 +693,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * addition of supertypes to the type hierarchy of any of the declared mixin
      * types.
      *
-     * @return array of PHPCR_NodeType_NodeTypeInterface objects.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @return array of \PHPCR\NodeType\NodeTypeInterface objects.
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getMixinNodeTypes() {
@@ -667,7 +708,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $nodeTypeName the name of a node type.
      * @return boolean true if this node is of the specified primary node type or mixin type, or a subtype thereof. Returns false otherwise.
-     * @throws PHPCR_RepositoryException If an error occurs.
+     * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
     public function isNodeType($nodeTypeName) {
@@ -685,11 +726,11 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $nodeTypeName the name of the new node type.
      * @return void
-     * @throws PHPCR_ConstraintViolationException If the specified primary node type creates a type conflict and this implementation performs this validation immediately.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException If the specified nodeTypeName is not recognized and this implementation performs this validation immediately.
-     * @throws PHPCR_Version_VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the change of the primary node type and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ConstraintViolationException If the specified primary node type creates a type conflict and this implementation performs this validation immediately.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException If the specified nodeTypeName is not recognized and this implementation performs this validation immediately.
+     * @throws \PHPCR\Version\VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the change of the primary node type and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function setPrimaryType($nodeTypeName) {
@@ -719,11 +760,11 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $mixinName the name of the mixin node type to be added
      * @return void
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException If the specified mixinName is not recognized and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_ConstraintViolationException If the specified mixin node type is prevented from being assigned.
-     * @throws PHPCR_Version_VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save..
-     * @throws PHPCR_Lock_LockException if a lock prevents the addition of the mixin and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException If the specified mixinName is not recognized and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\ConstraintViolationException If the specified mixin node type is prevented from being assigned.
+     * @throws \PHPCR\Version\VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save..
+     * @throws \PHPCR\Lock\LockException if a lock prevents the addition of the mixin and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function addMixin($mixinName) {
@@ -738,11 +779,11 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $mixinName the name of the mixin node type to be removed.
      * @return void
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if the specified mixinName is not currently assigned to this node and this implementation performs this validation immediately.
-     * @throws PHPCR_ConstraintViolationException if the specified mixin node type is prevented from being removed and this implementation performs this validation immediately.
-     * @throws PHPCR_Version_VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the removal of the mixin and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if the specified mixinName is not currently assigned to this node and this implementation performs this validation immediately.
+     * @throws \PHPCR\ConstraintViolationException if the specified mixin node type is prevented from being removed and this implementation performs this validation immediately.
+     * @throws \PHPCR\Version\VersionException if this node is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the removal of the mixin and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function removeMixin($mixinName) {
@@ -765,8 +806,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $mixinName The name of the mixin to be tested.
      * @return boolean true if the specified mixin node type, mixinName, can be added to this node; false otherwise.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if the specified mixin node type name is not recognized.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if the specified mixin node type name is not recognized.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function canAddMixin($mixinName) {
@@ -784,8 +825,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * method is called on the root node of a workspace is also up to the
      * implementation.
      *
-     * @return PHPCR_NodeType_NodeDefinitionInterface a NodeDefinition object.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\NodeDefinitionInterface a NodeDefinition object.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getDefinition() {
@@ -808,11 +849,11 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $srcWorkspace the name of the source workspace.
      * @return void
-     * @throws PHPCR_NoSuchWorkspaceException if srcWorkspace does not exist.
-     * @throws PHPCR_InvalidItemStateException if this Session (not necessarily this Node) has pending unsaved changes.
-     * @throws PHPCR_AccessDeniedException if the current session does not have sufficient access to perform the operation.
-     * @throws PHPCR_Lock_LockException if a lock prevents the update.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\NoSuchWorkspaceException if srcWorkspace does not exist.
+     * @throws \PHPCR\InvalidItemStateException if this Session (not necessarily this Node) has pending unsaved changes.
+     * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to perform the operation.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the update.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function update($srcWorkspace) {
@@ -827,10 +868,10 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $workspaceName the name of the workspace.
      * @return string the absolute path to the corresponding node.
-     * @throws PHPCR_ItemNotFoundException if no corresponding node is found.
-     * @throws PHPCR_NoSuchWorkspaceException if the workspace is unknown.
-     * @throws PHPCR_AccessDeniedException if the current session has insufficient access capabilities to perform this operation.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ItemNotFoundException if no corresponding node is found.
+     * @throws \PHPCR\NoSuchWorkspaceException if the workspace is unknown.
+     * @throws \PHPCR\AccessDeniedException if the current session has insufficient access capabilities to perform this operation.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getCorrespondingNodePath($workspaceName) {
@@ -841,8 +882,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * Returns an iterator over all nodes that are in the shared set of this node.
      * If this node is not shared then the returned iterator contains only this node.
      *
-     * @return PHPCR_NodeIteratorInterface a NodeIterator
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeIteratorInterface a NodeIterator
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getSharedSet() {
@@ -859,12 +900,12 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * If this node is not shared this method removes only this node.
      *
      * @return void
-     * @throws PHPCR_Version_VersionException if the parent node of this item is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the removal of this item and this implementation performs this validation immediately.
-     * @throws PHPCR_NodeType_ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\Version\VersionException if the parent node of this item is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the removal of this item and this implementation performs this validation immediately.
+     * @throws \PHPCR\NodeType\ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @see removeShare()
-     * @see Item::remove()
+     * @see ItemInterface::remove()
      * @see SessionInterface::removeItem
      * @api
      */
@@ -877,10 +918,10 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * of this node.
      *
      * @return void
-     * @throws PHPCR_Version_VersionException if the parent node of this item is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_Lock_LockException if a lock prevents the removal of this item and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_NodeType_ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_RepositoryException if this node cannot be removed without removing another node in the shared set of this node or another error occurs.
+     * @throws \PHPCR\Version\VersionException if the parent node of this item is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the removal of this item and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\NodeType\ConstraintViolationException if removing the specified item would violate a node type or implementation-specific constraint and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\RepositoryException if this node cannot be removed without removing another node in the shared set of this node or another error occurs.
      * @see removeSharedSet()
      * @see Item::remove()
      * @see SessionInterface::removeItem
@@ -899,7 +940,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * by default).
      *
      * @return boolean
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function isCheckedOut() {
@@ -913,7 +954,7 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * not support locking (in which case all nodes are "unlocked" by default).
      *
      * @return boolean.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function isLocked() {
@@ -931,9 +972,9 @@ class Node extends Item implements \PHPCR_NodeInterface {
      *
      * @param string $transition a state transition
      * @return void
-     * @throws PHPCR_UnsupportedRepositoryOperationException  if this implementation does not support lifecycle actions or if this node does not have the mix:lifecycle mixin.
-     * @throws PHPCR_InvalidLifecycleTransitionException if the lifecycle transition is not successful.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException  if this implementation does not support lifecycle actions or if this node does not have the mix:lifecycle mixin.
+     * @throws \PHPCR\InvalidLifecycleTransitionException if the lifecycle transition is not successful.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function followLifecycleTransition($transition) {
@@ -944,8 +985,8 @@ class Node extends Item implements \PHPCR_NodeInterface {
      * Returns the list of valid state transitions for this node.
      *
      * @return array a string array.
-     * @throws PHPCR_UnsupportedRepositoryOperationException  if this implementation does not support lifecycle actions or if this node does not have the mix:lifecycle mixin.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException  if this implementation does not support lifecycle actions or if this node does not have the mix:lifecycle mixin.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getAllowedLifecycleTransitions() {

@@ -10,7 +10,7 @@ use jackalope\Factory, jackalope\ObjectManager, jackalope\NotImplementedExceptio
  * Implementation:
  * We try to do lazy fetching of node types.
  */
-class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
+class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
     protected $objectManager;
 
     protected $primaryTypes;
@@ -73,9 +73,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     /**
      * Stores the node type in our internal structures (flat && tree)
      *
-     * @param   PHPCR_NodeType_NodeTypeInterface  $nodetype   The nodetype to add
+     * @param   \PHPCR\NodeType\NodeTypeInterface  $nodetype   The nodetype to add
      */
-    protected function addNodeType(\PHPCR_NodeType_NodeTypeInterface $nodetype) {
+    protected function addNodeType(\PHPCR\NodeType\NodeTypeInterface $nodetype) {
         if ($nodetype->isMixin()) {
             $this->mixinTypes[$nodetype->getName()] = $nodetype;
         } else {
@@ -131,9 +131,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * Returns the named node type.
      *
      * @param string $nodeTypeName the name of an existing node type.
-     * @return PHPCR_NodeType_NodeTypeInterface A NodeType object.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if no node type by the given name exists.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeType\NodeTypeInterface A NodeType object.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no node type by the given name exists.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function getNodeType($nodeTypeName) {
         $this->fetchNodeTypes($nodeTypeName);
@@ -144,7 +144,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
             return $this->mixinTypes[$nodeTypeName];
         } else {
             if (is_null($nodeTypeName)) $nodeTypeName = 'nodeTypeName was <null>';
-            throw new \PHPCR_NodeType_NoSuchNodeTypeException($nodeTypeName);
+            throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
         }
     }
 
@@ -154,7 +154,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      *
      * @param string $name - a String.
      * @return boolean a boolean
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function hasNodeType($name) {
         $this->fetchNodeTypes();
@@ -164,8 +164,8 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     /**
      * Returns an iterator over all available node types (primary and mixin).
      *
-     * @return PHPCR_NodeType_NodeTypeInteratorInterface An NodeTypeIterator.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\NodeTypeInteratorInterface An NodeTypeIterator.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getAllNodeTypes() {
         $this->fetchNodeTypes($nodeTypeName);
@@ -175,8 +175,8 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     /**
      * Returns an iterator over all available primary node types.
      *
-     * @return PHPCR_NodeType_NodeTypeIteratorInterface An NodeTypeIterator.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\NodeTypeIteratorInterface An NodeTypeIterator.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
         $this->fetchNodeTypes($nodeTypeName);
@@ -187,8 +187,8 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * Returns an iterator over all available mixin node types. If none are available,
      * an empty iterator is returned.
      *
-     * @return PHPCR_NodeType_NodeTypeIteratorInterface An NodeTypeIterator.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\NodeTypeIteratorInterface An NodeTypeIterator.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
         $this->fetchNodeTypes($nodeTypeName);
@@ -203,10 +203,10 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * Returns a NodeTypeTemplate holding the specified node type definition. This
      * template can then be altered and passed to NodeTypeManager.registerNodeType.
      *
-     * @param PHPCR_NodeType_NodeTypeDefinitionInterface $ntd a NodeTypeDefinition.
-     * @return PHPCR_NodeType_NodeTypeTemplateInterface A NodeTypeTemplate.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd a NodeTypeDefinition.
+     * @return \PHPCR\NodeType\NodeTypeTemplateInterface A NodeTypeTemplate.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function createNodeTypeTemplate($ntd = NULL) {
        return Factory::get('NodeType\NodeTypeTemplate', array($this, $ntd));
@@ -216,9 +216,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * Returns an empty NodeDefinitionTemplate which can then be used to create a
      * child node definition and attached to a NodeTypeTemplate.
      *
-     * @return PHPCR_NodeType_NodeDefinitionTemplateInterface A NodeDefinitionTemplate.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeType\NodeDefinitionTemplateInterface A NodeDefinitionTemplate.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function createNodeDefinitionTemplate() {
        return Factory::get('NodeType\NodeDefinitionTemplate', array($this));
@@ -228,9 +228,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * Returns an empty PropertyDefinitionTemplate which can then be used to create
      * a property definition and attached to a NodeTypeTemplate.
      *
-     * @return PHPCR_NodeType_PropertyDefinitionTemplateInterface A PropertyDefinitionTemplate.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeType\PropertyDefinitionTemplateInterface A PropertyDefinitionTemplate.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function createPropertyDefinitionTemplate() {
        return Factory::get('NodeType\PropertyDefinitionTemplate', array($this));
@@ -243,15 +243,15 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      * subclass of NodeTypeDefinition) acquired from NodeTypeManager.createNodeTypeTemplate
      * and then filled-in with definition information.
      *
-     * @param PHPCR_NodeType_NodeTypeDefinitionInterface $ntd an NodeTypeDefinition.
+     * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd an NodeTypeDefinition.
      * @param boolean $allowUpdate a boolean
-     * @return PHPCR_NodeType_NodeTypeInterface the registered node type
-     * @throws PHPCR_InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
-     * @throws PHPCR_NodeType_NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeType\NodeTypeInterface the registered node type
+     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
+     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function registerNodeType(\PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+    public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate) {
         $nt = $this->createNodeType($ntd, $allowUpdate);
         $this->addNodeType($nt);
         return $nt;
@@ -260,13 +260,13 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
     /**
      * Creates a NodeType from a NodeTypeDefinition and validates it
      *
-     * @param   PHPCR_NodeType_NodeTypeDefinitionInterface  $ntd    The node type definition
+     * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition
      * @param   bool    $allowUpdate    Whether an existing note type can be updated
-     * @throws PHPCR_NodeType_NodeTypeExistsException   If the node type is already existing and allowUpdate is false
+     * @throws \PHPCR\NodeType\NodeTypeExistsException   If the node type is already existing and allowUpdate is false
      */
-    protected function createNodeType(\PHPCR_NodeType_NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+    protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate) {
         if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
-            throw new \PHPCR_NodeType_NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
+            throw new \PHPCR\NodeType\NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
         return Factory::get('NodeType\NodeType', array($this, $ntd));
     }
@@ -279,11 +279,11 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      *
      * @param array $definitions an array of NodeTypeDefinitions
      * @param boolean $allowUpdate a boolean
-     * @return PHPCR_NodeType_NodeTypeIteratorInterface the registered node types.
-     * @throws PHPCR_InvalidNodeTypeDefinitionException - if a NodeTypeDefinition within the Collection is invalid or if the Collection contains an object of a type other than NodeTypeDefinition.
-     * @throws PHPCR_NodeType_NodeTypeExistsException if allowUpdate is false and a NodeTypeDefinition within the Collection specifies a node type name that is already registered.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @return \PHPCR\NodeType\NodeTypeIteratorInterface the registered node types.
+     * @throws \PHPCR\InvalidNodeTypeDefinitionException - if a NodeTypeDefinition within the Collection is invalid or if the Collection contains an object of a type other than NodeTypeDefinition.
+     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and a NodeTypeDefinition within the Collection specifies a node type name that is already registered.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function registerNodeTypes(array $definitions, $allowUpdate) {
         $nts = array();
@@ -302,9 +302,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      *
      * @param string $name a String.
      * @return void
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if no registered node type exists with the specified name.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no registered node type exists with the specified name.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function unregisterNodeType($name) {
         if (!empty($this->primaryTypes[$name])) {
@@ -312,7 +312,7 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
         } elseif (!empty($this->mixinTypes[$name])) {
             unset($this->mixinTypes[$name]);
         } else {
-            throw new \PHPCR_NodeType_NoSuchNodeTypeException('NodeType not found: '.$name);
+            throw new \PHPCR\NodeType\NoSuchNodeTypeException('NodeType not found: '.$name);
         }
         // TODO remove from nodeTree
         throw new NotImplementedException();
@@ -324,9 +324,9 @@ class NodeTypeManager implements \PHPCR_NodeType_NodeTypeManagerInterface {
      *
      * @param array $names a String array
      * @return void
-     * @throws PHPCR_UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws PHPCR_NodeType_NoSuchNodeTypeException if one of the names listed is not a registered node type.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if one of the names listed is not a registered node type.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function unregisterNodeTypes(array $names) {
         foreach ($names as $name) {

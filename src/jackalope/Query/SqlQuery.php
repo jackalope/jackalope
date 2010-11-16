@@ -6,7 +6,7 @@ use jackalope\ObjectManager;
 /**
  * SQL2 Query Object
  */
-class SqlQuery implements \PHPCR_Query_QueryInterface {
+class SqlQuery implements \PHPCR\Query\QueryInterface {
     protected $statement;
     protected $objectmanager;
     protected $path;
@@ -25,26 +25,26 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * Binds the given value to the variable named $varName.
      *
      * @param string $varName name of variable in query
-     * @param PHPCR_ValueInterface $value value to bind
+     * @param \PHPCR\ValueInterface $value value to bind
      * @return void
      * @throws InvalidArgumentException if $varName is not a valid variable in this query.
      * @throws RepositoryException if an error occurs.
      * @api
      */
-    public function bindValue($varName, \PHPCR_ValueInterface $value) {
-        throw new \PHPCR_RepositoryException('Not Implemented...');
+    public function bindValue($varName, \PHPCR\ValueInterface $value) {
+        throw new \PHPCR\RepositoryException('Not Implemented...');
     }
 
     /**
      * Executes this query and returns a QueryResult object.
      *
-     * @return PHPCR_Query_QueryInterface a QueryResult object
-     * @throws PHPCR_Query_InvalidQueryException if the query contains an unbound variable.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @return \PHPCR\Query\QueryInterface a QueryResult object
+     * @throws \PHPCR\Query\InvalidQueryException if the query contains an unbound variable.
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function execute() {
-        throw new \PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR\RepositoryException('Not Implemented...');
     }
 
     /**
@@ -52,11 +52,11 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * does not contains any bind variables then an empty array is returned.
      *
      * @return array the names of the bind variables in this query.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getBindVariableNames() {
-        throw new \PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR\RepositoryException('Not Implemented...');
     }
 
     /**
@@ -67,7 +67,7 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * @api
      */
     public function setLimit($limit) {
-        throw new \PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR\RepositoryException('Not Implemented...');
     }
 
     /**
@@ -78,7 +78,7 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * @api
      */
     public function setOffset($offset) {
-        throw new \PHPCR_RepositoryException('Not Implemented...');
+        throw new \PHPCR\RepositoryException('Not Implemented...');
     }
 
     /**
@@ -115,12 +115,12 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * of the nt:query node that stores the query.
      *
      * @return string path of the node representing this query.
-     * @throws PHPCR_ItemNotFoundException if this query is not a stored query.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\ItemNotFoundException if this query is not a stored query.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getStoredQueryPath() {
-        if ($this->path == null) throw new \PHPCR_ItemNotFoundException('Not a stored query');
+        if ($this->path == null) throw new \PHPCR\ItemNotFoundException('Not a stored query');
         return $this->path;
     }
 
@@ -136,18 +136,18 @@ class SqlQuery implements \PHPCR_Query_QueryInterface {
      * node is appended to the end of the child node list.
      *
      * @param string $absPath absolute path the query should be stored at
-     * @return PHPCR_NodeInterface the newly created node.
-     * @throws PHPCR_ItemExistsException if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
-     * @throws PHPCR_PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
-     * @throws PHPCR_NodeType_ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
-     * @throws PHPCR_Version_VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws PHPCR_Lock_LockException if a lock prevents the addition of the node and this implementation performs this validation immediately instead of waiting until save.
-     * @throws PHPCR_UnsupportedRepositoryOperationException in a level 1 implementation.
-     * @throws PHPCR_RepositoryException if another error occurs or if the absPath provided has an index on its final element.
+     * @return \PHPCR\NodeInterface the newly created node.
+     * @throws \PHPCR\ItemExistsException if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
+     * @throws \PHPCR\PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
+     * @throws \PHPCR\NodeType\ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
+     * @throws \PHPCR\Version\VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the addition of the node and this implementation performs this validation immediately instead of waiting until save.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException in a level 1 implementation.
+     * @throws \PHPCR\RepositoryException if another error occurs or if the absPath provided has an index on its final element.
      * @api
      */
     public function storeAsNode($absPath) {
-        throw new \PHPCR_UnsupportedRepositoryOperationException('Level 2');
+        throw new \PHPCR\UnsupportedRepositoryOperationException('Level 2');
     }
 
 }

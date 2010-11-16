@@ -8,7 +8,7 @@ namespace jackalope;
  * associated one-to-one with a Session object. The Workspace object can be
  * acquired by calling Session.getWorkspace() on the associated Session object.
  */
-class Workspace implements \PHPCR_WorkspaceInterface {
+class Workspace implements \PHPCR\WorkspaceInterface {
     protected $session;
     protected $nodeTypeManager;
     protected $name;
@@ -23,7 +23,7 @@ class Workspace implements \PHPCR_WorkspaceInterface {
     /**
      * Returns the Session object through which this Workspace object was acquired.
      *
-     * @return PHPCR_SessionInterface a Session object.
+     * @return \PHPCR\SessionInterface a Session object.
      * @api
      */
     public function getSession() {
@@ -66,20 +66,20 @@ class Workspace implements \PHPCR_WorkspaceInterface {
     /**
      * Returns the LockManager object, through which locking methods are accessed.
      *
-     * @return PHPCR_Lock_LockManagerInterface
-     * @throws PHPCR_UnsupportedRepositoryOperationException if the implementation does not support locking.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\Lock\LockManagerInterface
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the implementation does not support locking.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getLockManager() {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**
      * Returns the QueryManager object, through search methods are accessed.
      *
-     * @return PHPCR_Query_QueryManagerInterface the QueryManager object.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\Query\QueryManagerInterface the QueryManager object.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getQueryManager() {
@@ -90,8 +90,8 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      * Returns the NamespaceRegistry object, which is used to access the mapping
      * between prefixes and namespaces.
      *
-     * @return PHPCR_NamespaceRegistryInterface the NamespaceRegistry.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NamespaceRegistryInterface the NamespaceRegistry.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getNamespaceRegistry() {
@@ -108,8 +108,8 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      * repository-wide set of available node types. In repositories that support it,
      * the NodeTypeManager can also be used to register new node types.
      *
-     * @return PHPCR_NodeType_NodeTypeManagerInterface a NodeTypeManager object.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\NodeType\NodeTypeManagerInterface a NodeTypeManager object.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getNodeTypeManager() {
@@ -119,25 +119,25 @@ class Workspace implements \PHPCR_WorkspaceInterface {
     /**
      * Returns the ObservationManager object.
      *
-     * @return PHPCR_Observation_ObservationManagerInterface an ObservationManager object.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if the implementation does not support observation.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\Observation\ObservationManagerInterface an ObservationManager object.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the implementation does not support observation.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getObservationManager() {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**
      * Returns the VersionManager object.
      *
-     * @return PHPCR_Version_VersionManagerInterface a VersionManager object.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if the implementation does not support versioning.
-     * @throws PHPCR_RepositoryException if an error occurs.
+     * @return \PHPCR\Version\VersionManagerInterface a VersionManager object.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the implementation does not support versioning.
+     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getVersionManager() {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -149,7 +149,7 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      * and receives a new Session object.
      *
      * @return array string array of names of accessible workspaces.
-     * @throws PHPCR_RepositoryException if an error occurs
+     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getAccessibleWorkspaceNames() {
@@ -187,14 +187,14 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      * @param string $name A String, the name of the new workspace.
      * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
      * @return void
-     * @throws PHPCR_AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
-     * @throws PHPCR_NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function createWorkspace($name, $srcWorkspace = NULL) {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
     /**
@@ -203,14 +203,14 @@ class Workspace implements \PHPCR_WorkspaceInterface {
      *
      * @param string $name A String, the name of the workspace to be deleted.
      * @return void
-     * @throws PHPCR_AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to remove the workspace.
-     * @throws PHPCR_UnsupportedRepositoryOperationException if the repository does not support the removal of workspaces.
-     * @throws PHPCR_NoSuchWorkspaceException if $name does not exist.
-     * @throws PHPCR_RepositoryException if another error occurs.
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to remove the workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the removal of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $name does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function deleteWorkspace($name) {
-        throw new \PHPCR_UnsupportedRepositoryOperationException();
+        throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
 }

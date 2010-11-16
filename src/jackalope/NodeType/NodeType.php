@@ -7,7 +7,7 @@ use \DOMElement;
 /**
  * A NodeType object represents a "live" node type that is registered in the repository.
  */
-class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInterface {
+class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInterface {
     protected $declaredSupertypes = null;
     protected $superTypeNames = null;
     protected $superTypes = null;
@@ -20,7 +20,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      * hierarchy. For primary types apart from nt:base, this list will always
      * include at least nt:base. For mixin types, there is no required supertype.
      *
-     * @return array of PHPCR_NodeType_NodeType objects.
+     * @return array of \PHPCR\NodeType\NodeType objects.
      */
     public function getSupertypes() {
         if (null === $this->superTypes) {
@@ -55,7 +55,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      * size 0 or 1. In systems that support multiple inheritance of node
      * types this array may be of size greater than 1.
      *
-     * @return array of PHPCR_NodeType_NodeType objects.
+     * @return array of \PHPCR\NodeType\NodeType objects.
      */
     public function getDeclaredSupertypes() {
         if (null === $this->declaredSupertypes) {
@@ -73,7 +73,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      *
      * @see getDeclaredSubtypes()
      *
-     * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
+     * @return \PHPCR\NodeType\NodeTypeIteratorInterface a NodeTypeIterator.
      */
     public function getSubtypes() {
         $ret = array();
@@ -90,7 +90,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      *
      * @see getSubtypes()
      *
-     * @return PHPCR_NodeType_NodeTypeIteratorInterface a NodeTypeIterator.
+     * @return \PHPCR\NodeType\NodeTypeIteratorInterface a NodeTypeIterator.
      */
     public function getDeclaredSubtypes() {
         $ret = array();
@@ -116,7 +116,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      * type. This includes both those property definitions actually declared
      * in this node type and those inherited from the supertypes of this type.
      *
-     * @return array an array of PHPCR_NodeType_PropertyDefinition containing the property definitions.
+     * @return array of \PHPCR\NodeType\PropertyDefinition containing the property definitions.
      */
     public function getPropertyDefinitions() {
         if (null === $this->propertyDefinitions) {
@@ -133,7 +133,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      * This includes both those child node definitions actually declared in this
      * node type and those inherited from the supertypes of this node type.
      *
-     * @return array an array of PHPCR_NodeType_NodeDefinition containing the child node definitions.
+     * @return array an array of \PHPCR\NodeType\NodeDefinition containing the child node definitions.
      */
     public function getChildNodeDefinitions() {
         if (null === $this->childNodeDefinitions) {
@@ -150,7 +150,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeInt
      * Otherwise returns false.
      *
      * @param string $propertyName The name of the property
-     * @param PHPCR_ValueInterface|array $value A PHPCR_ValueInterface object or an array of PHPCR_ValueInterface objects.
+     * @param \PHPCR\ValueInterface|array $value A \PHPCR\ValueInterface object or an array of \PHPCR\ValueInterface objects.
      * @return boolean
      */
     public function canSetProperty($propertyName, $value) {

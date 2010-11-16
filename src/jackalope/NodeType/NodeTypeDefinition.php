@@ -16,7 +16,7 @@ use \DOMElement, \DOMXPath;
  * registration, only objects implementing the subinterface NodeType will
  * be encountered.
  */
-class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface {
+class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface {
     const NAME_NT_BASE = 'nt:base';
 
     protected $nodeTypeManager;
@@ -37,14 +37,14 @@ class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface 
 
     /**
      * Initializes the NodeTypeDefinition from an optional source
-     * @param DOMElement|PHPCR_NodeType_NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
+     * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
      */
     public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null) {
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
             $this->fromXml($nodetype);
-        } elseif ($nodetype instanceof \PHPCR_NodeType_NodeTypeDefinitionInterface) {
+        } elseif ($nodetype instanceof \PHPCR\NodeType\NodeTypeDefinitionInterface) {
             $this->fromNodeTypeDefinition($nodetype); // copy constructor
         } elseif (!is_null($nodetype)) {
             throw new InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
@@ -52,10 +52,10 @@ class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface 
     }
 
     /**
-     * Copies properties from a NodeType_NodeTypeDefinition
-     * @param   PHPCR_NodeType_NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
+     * Copies properties from a NodeType\NodeTypeDefinition
+     * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
      */
-    protected function fromNodeTypeDefinition(\PHPCR_NodeType_NodeTypeDefinitionInterface $ntd) {
+    protected function fromNodeTypeDefinition(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd) {
         $this->name = $ntd->getName();
         $this->isAbstract = $ntd->isAbstract();
         $this->isMixin = $ntd->isMixin();
@@ -165,7 +165,7 @@ class NodeTypeDefinition implements \PHPCR_NodeType_NodeTypeDefinitionInterface 
         return $this->isMixin;
     }
 
-    /*
+    /**
      * Returns true if nodes of this type must support orderable child nodes;
      * returns false otherwise. If a node type returns true on a call to this
      * method, then all nodes of that node type must support the method
