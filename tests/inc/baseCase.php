@@ -13,7 +13,7 @@ abstract class baseCase extends \PHPUnit_Framework_TestCase {
         foreach ($this->configKeys as $cfgKey) {
             $this->config[substr($cfgKey, 4)] = $GLOBALS[$cfgKey];
         }
-        $this->credentials = new \PHPCR_SimpleCredentials($this->config['user'], $this->config['pass']);
+        $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
     }
 }
 

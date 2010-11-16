@@ -1,6 +1,8 @@
 <?php
 namespace jackalope;
 
+use ArrayIterator;
+
 /**
  * The Node interface represents a node in a workspace.
  */

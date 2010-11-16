@@ -24,9 +24,9 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $path = '/jcr:root';
         $om = new \jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
-        $this->assertType('\jackalope\Node', $node);
+        $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
-        $this->assertType('\jackalope\NodeIterator', $children);
+        $this->assertType('jackalope\NodeIterator', $children);
         $this->assertEquals(2, $children->getSize());
         $this->assertEquals($node, $om->getNode($path));
     }
@@ -105,13 +105,13 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $om->verifyAbsolutePath('/jcr:root');
         $om->verifyAbsolutePath('/jcr:foo_/b-a/0^.txt');
 
-        $this->setExpectedException('PHPCR_RepositoryException');
+        $this->setExpectedException('\PHPCR\RepositoryException');
         $om->verifyAbsolutePath('jcr:root');
 
-        $this->setExpectedException('PHPCR_RepositoryException');
+        $this->setExpectedException('\PHPCR\RepositoryException');
         $om->verifyAbsolutePath('/jcr:root//foo');
 
-        $this->setExpectedException('PHPCR_RepositoryException');
+        $this->setExpectedException('\PHPCR\RepositoryException');
         $om->verifyAbsolutePath('/jcr:root/foo?');
     }
 

@@ -41,7 +41,7 @@ class TypeTemplates extends \jackalope\JackalopeObjectsCase {
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR_Version_OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
         $this->assertNull($ndt->getRequiredPrimaryTypeNames());
         $this->assertNull($ndt->getDefaultPrimaryTypeName());
@@ -60,9 +60,9 @@ class TypeTemplates extends \jackalope\JackalopeObjectsCase {
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR_Version_OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
-        $this->assertSame(\PHPCR_PropertyType::STRING, $ndt->getRequiredType());
+        $this->assertSame(\PHPCR\PropertyType::STRING, $ndt->getRequiredType());
         $this->assertNull($ndt->getValueConstraints());
         $this->assertNull($ndt->getDefaultValues());
         $this->assertFalse($ndt->isMultiple());

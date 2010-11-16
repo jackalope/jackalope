@@ -20,7 +20,7 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
      */
     public function testGetNodeType() {
         $nt = $this->ntm->getNodeType('nt:file');
-        $this->assertType('\jackalope\NodeType\NodeType', $nt);
+        $this->assertType('jackalope\NodeType\NodeType', $nt);
         $this->assertSame('nt:file', $nt->getName());
         $this->assertSame(false, $nt->isAbstract());
         $this->assertSame(false, $nt->isMixin());
@@ -51,17 +51,17 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
 
     public function testCountTypeClasses() {
         $allNodes = $this->ntm->getAllNodeTypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $allNodes);
+        $this->assertType('jackalope\NodeType\NodeTypeIterator', $allNodes);
         $this->assertEquals(52, $allNodes->getSize());
-        $this->assertType('\jackalope\NodeType\NodeType', $allNodes->nextNodeType());
+        $this->assertType('jackalope\NodeType\NodeType', $allNodes->nextNodeType());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $primaryNodes);
+        $this->assertType('jackalope\NodeType\NodeTypeIterator', $primaryNodes);
         $this->assertEquals(36, $primaryNodes->getSize());
-        $this->assertType('\jackalope\NodeType\NodeType', $primaryNodes->nextNodeType());
+        $this->assertType('jackalope\NodeType\NodeType', $primaryNodes->nextNodeType());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $mixinNodes);
+        $this->assertType('jackalope\NodeType\NodeTypeIterator', $mixinNodes);
         $this->assertEquals(16, $mixinNodes->getSize());
-        $this->assertType('\jackalope\NodeType\NodeType', $mixinNodes->nextNodeType());
+        $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->nextNodeType());
     }
 
     /**
@@ -74,7 +74,7 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
         $ntt = $ntm->createNodeTypeTemplate($nt);
 
         $this->assertThat($ntt, $this->isInstanceOf('\jackalope\NodeType\NodeTypeDefinition'));
-        $this->assertType('\jackalope\NodeType\NodeTypeTemplate', $ntt);
+        $this->assertType('jackalope\NodeType\NodeTypeTemplate', $ntt);
         $this->assertSame('nt:file', $ntt->getName());
 
         $ntt->setName('nt:file-ext');

@@ -2,7 +2,8 @@
 namespace jackalope\NodeType;
 
 use jackalope\Factory;
-use \DOMElement;
+use DOMElement;
+use ArrayIterator;
 
 /**
  * A NodeType object represents a "live" node type that is registered in the repository.
@@ -97,7 +98,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
         foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return Factory::get('NodeType\NodeTypeIterator', array($ret));
+        return new ArrayIterator($ret);
     }
 
     /**
@@ -150,7 +151,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * Otherwise returns false.
      *
      * @param string $propertyName The name of the property
-     * @param \PHPCR\ValueInterface|array $value A \PHPCR\ValueInterface object or an array of \PHPCR\ValueInterface objects.
+     * @param mixed $value A variable or an array of variables
      * @return boolean
      */
     public function canSetProperty($propertyName, $value) {

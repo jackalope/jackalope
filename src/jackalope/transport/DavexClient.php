@@ -134,11 +134,11 @@ class DavexClient implements TransportInterface {
         foreach($descs as $desc) {
             $values = array();
             foreach($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
-                $type = $value->getAttribute('type');
-                if ($type == '') $type = \PHPCR\PropertyType::TYPENAME_UNDEFINED;
-                $values[] = Factory::get('Value', array($type, $value->textContent));
+                $values[] = $value->textContent;
             }
             if ($desc->childNodes->length == 2) {
+                //there was one type and one value => this is a single value property
+                //TODO: is this the correct assumption? or should the backend tell us specifically?
                 $descriptors[$desc->firstChild->textContent] = $values[0];
             } else {
                 $descriptors[$desc->firstChild->textContent] = $values;

@@ -6,6 +6,8 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 class Value extends \jackalope\baseCase {
 
     public function testTypeInstances() {
+        $this->markTestSkipped('Port this over to test property types and the helper type conversions');
+        /*
         $val = new \jackalope\Value('undefined', '');
         $this->assertSame(\PHPCR_PropertyType::UNDEFINED, $val->getType());
         $val = new \jackalope\Value('String', '');
@@ -36,9 +38,12 @@ class Value extends \jackalope\baseCase {
         $this->assertSame(\PHPCR_PropertyType::DECIMAL, $val->getType());
         $this->setExpectedException('InvalidArgumentException');
         new \jackalope\Value('InvalidArgument', '');
+        */
     }
 
     public function testBaseConversions() {
+        $this->markTestSkipped('Port this over to test property types and the helper type conversions');
+        /*
         $val = new \jackalope\Value('String', '1.1');
         $this->assertSame('1.1', $val->getString());
         $this->assertSame(1, $val->getLong());
@@ -48,5 +53,6 @@ class Value extends \jackalope\baseCase {
 
         $val = new \jackalope\Value('String', 'TrUe');
         $this->assertSame(true, $val->getBoolean());
+        */
     }
 }

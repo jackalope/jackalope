@@ -10,12 +10,12 @@ class Node extends \jackalope\baseCase {
         $objectManager = $this->getMock('\jackalope\ObjectManager', array(), array(), '', false);
         $node = new \jackalope\Node(json_decode($this->JSON), '/jcr:node', $session, $objectManager);
         $this->assertSame($session, $node->getSession());
-        $this->assertType('\jackalope\Node', $node);
+        $this->assertType('jackalope\Node', $node);
         //TODO: Activate this…
         // $this->assertTrue($node->getPrimaryNodeType()->isNodeType('rep:root'));
         $children = $node->getNodes();
-        $this->assertType('\jackalope\NodeIterator', $children);
-        $this->assertEquals(2, $children->getSize());
+        $this->assertType('Iterator', $children);
+        $this->assertEquals(2, count($children));
     }
     public function testFilterNames() {
         $filter = 'test';

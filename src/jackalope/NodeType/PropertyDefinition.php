@@ -36,10 +36,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
 
         $defaultValues = $xp->query('defaultValues/defaultValue', $node);
         foreach ($defaultValues as $defaultValue) {
-            array_push(
-                $this->defaultValues,
-                Factory::get('Value', array(\PHPCR\PropertyType::valueFromType($defaultValue->nodeValue), $defaultValue->nodeValue))
-            );
+            array_push($this->defaultValues, $defaultValue->nodeValue);
         }
     }
 
@@ -226,7 +223,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      * PropertyDefinition object is actually a newly-created empty
      * PropertyDefinitionTemplate, then this method will return null.
      *
-     * @return array an array of Value objects.
+     * @return array an array of php values.
      */
     public function getDefaultValues() {
         return $this->defaultValues;

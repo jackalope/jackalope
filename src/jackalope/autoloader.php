@@ -13,7 +13,7 @@ function jackalope_autoloader($class) {
         if (0 === strpos($class, 'jackalope')) {
             $relpath = '/../';
         } else if (0 === strpos($class, 'PHPCR')) {
-            $relpath = '/../../lib/';
+            $relpath = '/../../lib/phpcr/src/';
         }
         if ($relpath) {
             // namespaced class name
@@ -22,7 +22,7 @@ function jackalope_autoloader($class) {
             $file = __DIR__.$relpath.str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR.$class.'.php';
             if (file_exists($file)) {
                 require $file;
-            }else die($file);
+            }
             return;
         }
     }

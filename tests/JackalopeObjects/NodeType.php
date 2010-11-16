@@ -19,20 +19,20 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $declaredSubTypes);
-        $this->assertSame(0, $declaredSubTypes->getSize());
+        $this->assertType('Iterator', $declaredSubTypes);
+        $this->assertSame(0, count($declaredSubTypes));
         $subTypes = $nt->getSubtypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $subTypes);
-        $this->assertSame(0, $subTypes->getSize());
-        $this->assertSame(true,$nt->isNodeType('nt:configuration'));
-        $this->assertSame(true,$nt->isNodeType('nt:base'));
-        $this->assertSame(true,$nt->isNodeType('mix:simpleVersionable'));
-        $this->assertSame(false,$nt->isNodeType('notanodetype'));
+        $this->assertType('Iterator', $subTypes);
+        $this->assertSame(0, count($subTypes));
+        $this->assertTrue($nt->isNodeType('nt:configuration'));
+        $this->assertTrue($nt->isNodeType('nt:base'));
+        $this->assertTrue($nt->isNodeType('mix:simpleVersionable'));
+        $this->assertFalse($nt->isNodeType('notanodetype'));
         $expectedProperties = array('jcr:root', 'jcr:predecessors', 'jcr:configuration', 'jcr:activity', 'jcr:mergeFailed', 'jcr:versionHistory', 'jcr:baseVersion', 'jcr:uuid', 'jcr:isCheckedOut', 'jcr:mixinTypes', 'jcr:primaryType');
         $this->assertSame(count($expectedProperties), count($nt->getPropertyDefinitions()));
         $i = 0;
         foreach ($nt->getPropertyDefinitions() as $propDef) {
-            $this->assertType('\jackalope\NodeType\PropertyDefinition', $propDef);
+            $this->assertType('jackalope\NodeType\PropertyDefinition', $propDef);
             $this->assertSame($expectedProperties[$i], $propDef->getName());
             $i++;
         }
@@ -40,17 +40,17 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
 
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $declaredSubTypes);
-        $this->assertSame(5, $declaredSubTypes->getSize());
+        $this->assertType('Iterator', $declaredSubTypes);
+        $this->assertSame(5, count($declaredSubTypes));
         $subnode = $declaredSubTypes->nextNodeType();
-        $this->assertType('\jackalope\NodeType\NodeType', $subnode);
+        $this->assertType('jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('nt:file', $subnode->getName());
         $subTypes = $nt->getSubtypes();
-        $this->assertType('\jackalope\NodeType\NodeTypeIterator', $subTypes);
-        $this->assertSame(7, $subTypes->getSize());
+        $this->assertType('Iterator', $subTypes);
+        $this->assertSame(7, count($subTypes));
         $subTypes->skip(4);
         $subnode = $subTypes->nextNodeType();
-        $this->assertType('\jackalope\NodeType\NodeType', $subnode);
+        $this->assertType('jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('rep:Group', $subnode->getName());
 
         $nt = $ntm->getNodeType('rep:PrincipalAccessControl');
@@ -58,7 +58,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertSame(count($expectedChildNodes), count($nt->getChildNodeDefinitions()));
         $i = 0;
         foreach ($nt->getChildNodeDefinitions() as $childNode) {
-            $this->assertType('\jackalope\NodeType\NodeDefinition', $childNode);
+            $this->assertType('jackalope\NodeType\NodeDefinition', $childNode);
             $this->assertSame($expectedChildNodes[$i], $childNode->getName());
             $i++;
         }
@@ -71,7 +71,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
         $this->assertEquals(1, count($nodes));
         $node = $nodes[0];
-        $this->assertType('\jackalope\NodeType\NodeDefinition', $node);
+        $this->assertType('jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('*', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:hierarchyNode')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:hierarchyNode'), $node->getRequiredPrimaryTypeNames());
@@ -84,7 +84,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
         $this->assertEquals(1, count($nodes));
         $node = $nodes[0];
-        $this->assertType('\jackalope\NodeType\NodeDefinition', $node);
+        $this->assertType('jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('jcr:content', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:base'), $ntm->getNodeType('nt:folder')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:base', 'nt:folder'), $node->getRequiredPrimaryTypeNames());
@@ -109,7 +109,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertEquals(0, count($properties));
 
         $nt = $ntm->getNodeType('mix:created');
-        $this->assertType('\jackalope\NodeType\NodeType', $nt);
+        $this->assertType('jackalope\NodeType\NodeType', $nt);
         $this->assertSame('mix:created', $nt->getName());
         $this->assertSame(array(), $nt->getDeclaredSupertypeNames());
         $this->assertSame(false, $nt->isAbstract());
@@ -127,12 +127,12 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertSame('jcr:createdBy',$property->getName());
         $this->assertSame(true,$property->isAutoCreated());
         $this->assertSame(false,$property->isMandatory());
-        $this->assertSame(\PHPCR_Version_OnParentVersionAction::COPY,$property->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY,$property->getOnParentVersion());
         $this->assertSame(true,$property->isProtected());
         $this->assertSame(array(),$property->getDefaultValues());
 
         //PropertyDefinition
-        $this->assertSame(\PHPCR_PropertyType::STRING, $property->getRequiredType());
+        $this->assertSame(\PHPCR\PropertyType::STRING, $property->getRequiredType());
         $this->assertSame(array(), $property->getValueConstraints());
         $this->assertSame(false, $property->isMultiple());
         $this->assertSame(array('jcr.operator.equal.to', 'jcr.operator.not.equal.to', 'jcr.operator.greater.than', 'jcr.operator.greater.than.or.equal.to', 'jcr.operator.less.than', 'jcr.operator.less.than.or.equal.to', 'jcr.operator.like'), $property->getAvailableQueryOperators());
@@ -149,7 +149,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $property = $properties[0];
         $defaultValues = $property->getDefaultValues();
         $this->assertEquals(1, count($defaultValues));
-        $this->assertType('\jackalope\Value', $defaultValues[0]);
+        $this->assertType('jackalope\Value', $defaultValues[0]);
         $this->assertSame('true', $defaultValues[0]->getString());
         $this->assertSame(true, $defaultValues[0]->getBoolean());
     }
@@ -186,7 +186,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR_Version_OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
         $this->assertNull($ndt->getRequiredPrimaryTypeNames());
         $this->assertNull($ndt->getDefaultPrimaryTypeName());
@@ -205,9 +205,9 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR_Version_OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
-        $this->assertSame(\PHPCR_PropertyType::STRING, $ndt->getRequiredType());
+        $this->assertSame(\PHPCR\PropertyType::STRING, $ndt->getRequiredType());
         $this->assertNull($ndt->getValueConstraints());
         $this->assertNull($ndt->getDefaultValues());
         $this->assertFalse($ndt->isMultiple());

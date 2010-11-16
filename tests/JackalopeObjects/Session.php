@@ -8,7 +8,7 @@ class Session extends \jackalope\baseCase {
         $repository = $this->getMock('\jackalope\Repository', array(), array(), '', false);
         $workspaceName = 'asdfads';
         $userID = 'abcd';
-        $cred = new \PHPCR_SimpleCredentials($userID, 'xxxx');
+        $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
         $transport = new \jackalope\transport\DavexClient('http://example.com');

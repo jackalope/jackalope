@@ -8,6 +8,7 @@ namespace jackalope;
  */
 class Repository implements \PHPCR\RepositoryInterface {
     protected $transport;
+    /** Array of descriptors. Each is either a string or an array of strings. */
     protected $descriptors;
 
     /**
@@ -22,7 +23,7 @@ class Repository implements \PHPCR\RepositoryInterface {
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = Factory::get('transport\DavexClient', array($uri));
+            $transport = Factory::get('transport\DavexClient', array($uri)); //default if not specified
         }
         $this->transport = $transport;
         $this->descriptors = $transport->getRepositoryDescriptors();
@@ -95,12 +96,12 @@ class Repository implements \PHPCR\RepositoryInterface {
      * Get the string value(s) for this key.
      *
      * @param string $key a descriptor key.
-     * @return a descriptor value in string form or an array of strings for multivalue descriptors
+     * @return mixed a descriptor value in string form or an array of strings for multivalue descriptors
      * @api
      */
     public function getDescriptor($key) {
-        $v = $this->getDescriptorValue($key);
-        return ($v == null) ? null : $v->getString();
+        return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
+        //TODO: is this the proper behaviour? Or what should happen on inexisting key?
     }
 
 }

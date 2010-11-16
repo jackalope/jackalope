@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . '/../inc/baseCase.php');
 
 class Repository extends \jackalope\baseCase {
     public function testConstructor() {
-        $credentials = new \PHPCR_SimpleCredentials('test', 'cred');
+        $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
         $transport = $this->getMock('\jackalope\transport\DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
         $transport->expects($this->once())
@@ -21,7 +21,7 @@ class Repository extends \jackalope\baseCase {
         $this->assertType('\jackalope\Session', $session);
 
         $this->assertEquals(array('bla'), $repo->getDescriptorKeys());
-        $this->assertEquals('bli', $repo->getDescriptorValue('bla'));
+        $this->assertEquals('bli', $repo->getDescriptor('bla'));
     }
     //descriptors are tested by jackalope-api-tests AccessTest/RepositoryDescriptors.php
 }
