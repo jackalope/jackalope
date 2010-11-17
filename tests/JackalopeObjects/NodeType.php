@@ -42,14 +42,14 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertType('Iterator', $declaredSubTypes);
         $this->assertSame(5, count($declaredSubTypes));
-        $subnode = $declaredSubTypes->nextNodeType();
+        $subnode = $declaredSubTypes->current();
         $this->assertType('jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('nt:file', $subnode->getName());
         $subTypes = $nt->getSubtypes();
         $this->assertType('Iterator', $subTypes);
         $this->assertSame(7, count($subTypes));
-        $subTypes->skip(4);
-        $subnode = $subTypes->nextNodeType();
+        $subTypes->seek(4);
+        $subnode = $subTypes->current();
         $this->assertType('jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('rep:Group', $subnode->getName());
 
@@ -98,7 +98,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $node = $nodes[0];
         $this->assertSame('nt:childNodeDefinition', $node->getDefaultPrimaryTypeName());
         $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
-        $this->assertSame(true, $node->allowsSameNameSiblings());
+        $this->assertTrue($node->allowsSameNameSiblings());
     }
 
     public function testGetDefinedPropertysAndPropertyDefinition() {
@@ -112,11 +112,11 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertType('jackalope\NodeType\NodeType', $nt);
         $this->assertSame('mix:created', $nt->getName());
         $this->assertSame(array(), $nt->getDeclaredSupertypeNames());
-        $this->assertSame(false, $nt->isAbstract());
-        $this->assertSame(true, $nt->isMixin());
-        $this->assertSame(false, $nt->hasOrderableChildNodes());
-        $this->assertSame(true, $nt->isQueryable());
-        $this->assertSame(null, $nt->getPrimaryItemName());
+        $this->assertFalse($nt->isAbstract());
+        $this->assertTrue($nt->isMixin());
+        $this->assertFalse($nt->hasOrderableChildNodes());
+        $this->assertTrue($nt->isQueryable());
+        $this->assertNull($nt->getPrimaryItemName());
 
         //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
@@ -125,19 +125,19 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
         $this->assertSame('jcr:createdBy',$property->getName());
-        $this->assertSame(true,$property->isAutoCreated());
-        $this->assertSame(false,$property->isMandatory());
+        $this->assertTrue($property->isAutoCreated());
+        $this->assertFalse($property->isMandatory());
         $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY,$property->getOnParentVersion());
-        $this->assertSame(true,$property->isProtected());
+        $this->assertTrue($property->isProtected());
         $this->assertSame(array(),$property->getDefaultValues());
 
         //PropertyDefinition
         $this->assertSame(\PHPCR\PropertyType::STRING, $property->getRequiredType());
         $this->assertSame(array(), $property->getValueConstraints());
-        $this->assertSame(false, $property->isMultiple());
+        $this->assertFalse($property->isMultiple());
         $this->assertSame(array('jcr.operator.equal.to', 'jcr.operator.not.equal.to', 'jcr.operator.greater.than', 'jcr.operator.greater.than.or.equal.to', 'jcr.operator.less.than', 'jcr.operator.less.than.or.equal.to', 'jcr.operator.like'), $property->getAvailableQueryOperators());
-        $this->assertSame(true, $property->isFullTextSearchable());
-        $this->assertSame(true, $property->isQueryOrderable());
+        $this->assertTrue($property->isFullTextSearchable());
+        $this->assertTrue($property->isQueryOrderable());
 
         $nt = $ntm->getNodeType('mix:versionable');
         $properties = $nt->getDeclaredPropertyDefinitions();
@@ -149,9 +149,8 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $property = $properties[0];
         $defaultValues = $property->getDefaultValues();
         $this->assertEquals(1, count($defaultValues));
-        $this->assertType('jackalope\Value', $defaultValues[0]);
-        $this->assertSame('true', $defaultValues[0]->getString());
-        $this->assertSame(true, $defaultValues[0]->getBoolean());
+        $this->assertTrue(is_string($defaultValues[0]));
+        $this->assertSame('true', $defaultValues[0]);
     }
 
     /**

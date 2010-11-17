@@ -26,8 +26,8 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $node = $om->getNodeByPath($path);
         $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
-        $this->assertType('jackalope\NodeIterator', $children);
-        $this->assertEquals(2, $children->getSize());
+        $this->assertType('Iterator', $children);
+        $this->assertEquals(2, count($children));
         $this->assertEquals($node, $om->getNode($path));
     }
 

@@ -158,7 +158,7 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function hasNodeType($name) {
-        $this->fetchNodeTypes();
+        $this->fetchNodeTypes($name);
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
@@ -180,7 +180,7 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getPrimaryNodeTypes() {
-        $this->fetchNodeTypes($nodeTypeName);
+        $this->fetchNodeTypes();
         return new ArrayIterator(array_values($this->primaryTypes));
     }
 
@@ -192,7 +192,7 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getMixinNodeTypes() {
-        $this->fetchNodeTypes($nodeTypeName);
+        $this->fetchNodeTypes();
         return new ArrayIterator(array_values($this->mixinTypes));
     }
 

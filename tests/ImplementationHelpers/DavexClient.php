@@ -391,11 +391,11 @@ class DavexClient extends \jackalope\baseCase {
 
         $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
-        $this->assertType('PHPCR\ValueInterface', $desc['identifier.stability']);
-        $this->assertEquals('identifier.stability.indefinite.duration', $desc['identifier.stability']->getString());
+        $this->assertType('string', $desc['identifier.stability']);
+        $this->assertEquals('identifier.stability.indefinite.duration', $desc['identifier.stability']);
         $this->assertType('array', $desc['node.type.management.property.types']);
-        $this->assertType('PHPCR\ValueInterface', $desc['node.type.management.property.types'][0]);
-        $this->assertEquals(2, $desc['node.type.management.property.types'][0]->getString());
+        $this->assertType('string', $desc['node.type.management.property.types'][0]);
+        $this->assertEquals('2', $desc['node.type.management.property.types'][0]);
     }
 
     /**

@@ -22,10 +22,10 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertType('jackalope\NodeType\NodeType', $nt);
         $this->assertSame('nt:file', $nt->getName());
-        $this->assertSame(false, $nt->isAbstract());
-        $this->assertSame(false, $nt->isMixin());
-        $this->assertSame(false, $nt->hasOrderableChildNodes());
-        $this->assertSame(true, $nt->isQueryable());
+        $this->assertFalse($nt->isAbstract());
+        $this->assertFalse($nt->isMixin());
+        $this->assertFalse($nt->hasOrderableChildNodes());
+        $this->assertTrue($nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
     }
     /**
@@ -51,17 +51,17 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
 
     public function testCountTypeClasses() {
         $allNodes = $this->ntm->getAllNodeTypes();
-        $this->assertType('jackalope\NodeType\NodeTypeIterator', $allNodes);
-        $this->assertEquals(52, $allNodes->getSize());
-        $this->assertType('jackalope\NodeType\NodeType', $allNodes->nextNodeType());
+        $this->assertType('Iterator', $allNodes);
+        $this->assertEquals(52, count($allNodes));
+        $this->assertType('jackalope\NodeType\NodeType', $allNodes->current());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
-        $this->assertType('jackalope\NodeType\NodeTypeIterator', $primaryNodes);
-        $this->assertEquals(36, $primaryNodes->getSize());
-        $this->assertType('jackalope\NodeType\NodeType', $primaryNodes->nextNodeType());
+        $this->assertType('Iterator', $primaryNodes);
+        $this->assertEquals(36, count($primaryNodes));
+        $this->assertType('jackalope\NodeType\NodeType', $primaryNodes->current());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
-        $this->assertType('jackalope\NodeType\NodeTypeIterator', $mixinNodes);
-        $this->assertEquals(16, $mixinNodes->getSize());
-        $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->nextNodeType());
+        $this->assertType('Iterator', $mixinNodes);
+        $this->assertEquals(16, count($mixinNodes));
+        $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 
     /**

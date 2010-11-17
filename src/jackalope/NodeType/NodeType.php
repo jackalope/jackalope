@@ -81,7 +81,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
         foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
         }
-        return Factory::get('NodeType\NodeTypeIterator', array($ret));
+        return new ArrayIterator($ret);
     }
 
     /**
