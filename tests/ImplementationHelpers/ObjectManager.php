@@ -27,8 +27,8 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
         $this->assertType('Iterator', $children);
-        $this->assertEquals(2, count($children));
-        $this->assertEquals($node, $om->getNode($path));
+        $this->assertSame(2, count($children));
+        $this->assertSame($node, $om->getNode($path));
     }
 
     public function testGetNodeTypes() {
@@ -59,11 +59,11 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $path = '/jcr:root/uuid/to/path';
 
         $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertEquals($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
+        $this->assertSame($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
         // also verify it was cached
         $objectsByUuid = $om->getObjectsByUuid();
         $this->assertArrayHasKey($uuid, $objectsByUuid, 'Node UUID was not cached');
-        $this->assertEquals($path, $objectsByUuid[$uuid], 'Cached Node UUID path is wrong');
+        $this->assertSame($path, $objectsByUuid[$uuid], 'Cached Node UUID path is wrong');
 
         $this->assertNotEquals($path, $om->normalizePath($uuid), 'Path normalization accepted improperly formatted UUID path');
     }
@@ -75,7 +75,7 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
         $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertEquals($output, $om->absolutePath($inputRoot, $inputRelPath));
+        $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 
     public static function dataproviderAbsolutePath() {

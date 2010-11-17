@@ -11,7 +11,7 @@ class Workspace extends \jackalope\baseCase {
         $name = 'a3lkjas';
         $w = new \jackalope\Workspace($session, $objManager, $name);
         $this->assertSame($session, $w->getSession());
-        $this->assertEquals($name, $w->getName());
+        $this->assertSame($name, $w->getName());
     }
 
     public function testGetNodeTypeManager() {

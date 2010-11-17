@@ -69,7 +69,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
-        $this->assertEquals(1, count($nodes));
+        $this->assertSame(1, count($nodes));
         $node = $nodes[0];
         $this->assertType('jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('*', $node->getName());
@@ -82,7 +82,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $nt = $ntm->getNodeType('nt:file');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
-        $this->assertEquals(1, count($nodes));
+        $this->assertSame(1, count($nodes));
         $node = $nodes[0];
         $this->assertType('jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('jcr:content', $node->getName());
@@ -94,7 +94,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         //Test defaultPrimaryType
         $nt = $ntm->getNodeType('nt:nodeType');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertEquals(2, count($nodes));
+        $this->assertSame(2, count($nodes));
         $node = $nodes[0];
         $this->assertSame('nt:childNodeDefinition', $node->getDefaultPrimaryTypeName());
         $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
@@ -106,7 +106,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
-        $this->assertEquals(0, count($properties));
+        $this->assertSame(0, count($properties));
 
         $nt = $ntm->getNodeType('mix:created');
         $this->assertType('jackalope\NodeType\NodeType', $nt);
@@ -121,7 +121,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
-        $this->assertEquals(2, count($properties));
+        $this->assertSame(2, count($properties));
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
         $this->assertSame('jcr:createdBy',$property->getName());
@@ -148,7 +148,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $properties = $nt->getDeclaredPropertyDefinitions();
         $property = $properties[0];
         $defaultValues = $property->getDefaultValues();
-        $this->assertEquals(1, count($defaultValues));
+        $this->assertSame(1, count($defaultValues));
         $this->assertTrue(is_string($defaultValues[0]));
         $this->assertSame('true', $defaultValues[0]);
     }
@@ -163,7 +163,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
 
         // is empty as defined by doc
         $this->assertNull($ntt->getName());
-        $this->assertEquals(array('nt:base'), $ntt->getDeclaredSupertypeNames());
+        $this->assertSame(array('nt:base'), $ntt->getDeclaredSupertypeNames());
         $this->assertFalse($ntt->isAbstract());
         $this->assertFalse($ntt->isMixin());
         $this->assertFalse($ntt->hasOrderableChildNodes());

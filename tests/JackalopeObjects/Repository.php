@@ -20,8 +20,8 @@ class Repository extends \jackalope\baseCase {
         $session = $repo->login($credentials, $workspaceName);
         $this->assertType('\jackalope\Session', $session);
 
-        $this->assertEquals(array('bla'), $repo->getDescriptorKeys());
-        $this->assertEquals('bli', $repo->getDescriptor('bla'));
+        $this->assertSame(array('bla'), $repo->getDescriptorKeys());
+        $this->assertSame('bli', $repo->getDescriptor('bla'));
     }
     //descriptors are tested by jackalope-api-tests AccessTest/RepositoryDescriptors.php
 }

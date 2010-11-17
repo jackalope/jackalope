@@ -52,15 +52,15 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
     public function testCountTypeClasses() {
         $allNodes = $this->ntm->getAllNodeTypes();
         $this->assertType('Iterator', $allNodes);
-        $this->assertEquals(52, count($allNodes));
+        $this->assertSame(52, count($allNodes));
         $this->assertType('jackalope\NodeType\NodeType', $allNodes->current());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
         $this->assertType('Iterator', $primaryNodes);
-        $this->assertEquals(36, count($primaryNodes));
+        $this->assertSame(36, count($primaryNodes));
         $this->assertType('jackalope\NodeType\NodeType', $primaryNodes->current());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
         $this->assertType('Iterator', $mixinNodes);
-        $this->assertEquals(16, count($mixinNodes));
+        $this->assertSame(16, count($mixinNodes));
         $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 

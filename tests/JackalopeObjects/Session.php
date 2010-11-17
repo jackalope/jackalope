@@ -14,10 +14,10 @@ class Session extends \jackalope\baseCase {
         $transport = new \jackalope\transport\DavexClient('http://example.com');
         $s = new \jackalope\Session($repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());
-        $this->assertEquals($userID, $s->getUserID());
-        $this->assertEquals(array('test', 'other'), $s->getAttributeNames());
-        $this->assertEquals('toast', $s->getAttribute('test'));
-        $this->assertEquals('value', $s->getAttribute('other'));
+        $this->assertSame($userID, $s->getUserID());
+        $this->assertSame(array('test', 'other'), $s->getAttributeNames());
+        $this->assertSame('toast', $s->getAttribute('test'));
+        $this->assertSame('value', $s->getAttribute('other'));
     }
     public function testLogout() {
         $this->markTestSkipped();

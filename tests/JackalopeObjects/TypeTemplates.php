@@ -19,7 +19,7 @@ class TypeTemplates extends \jackalope\JackalopeObjectsCase {
 
         // is empty as defined by doc
         $this->assertNull($ntt->getName());
-        $this->assertEquals(array('nt:base'), $ntt->getDeclaredSupertypeNames());
+        $this->assertSame(array('nt:base'), $ntt->getDeclaredSupertypeNames());
         $this->assertFalse($ntt->isAbstract());
         $this->assertFalse($ntt->isMixin());
         $this->assertFalse($ntt->hasOrderableChildNodes());

@@ -15,69 +15,69 @@ class Node extends \jackalope\baseCase {
         // $this->assertTrue($node->getPrimaryNodeType()->isNodeType('rep:root'));
         $children = $node->getNodes();
         $this->assertType('Iterator', $children);
-        $this->assertEquals(2, count($children));
+        $this->assertSame(2, count($children));
     }
     public function testFilterNames() {
         $filter = 'test';
         $names = array('test', 'toast');
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(1, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
+        $this->assertSame(1, count($filtered));
+        $this->assertSame('test', $filtered[0]);
 
         $filter = 't*t';
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = 'te.t';
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(0, count($filtered));
+        $this->assertSame(0, count($filtered));
 
         $filter = 'test|toast';
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = 'test|toast ';
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = array('test ', 'toa*');
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = null;
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = '*';
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
 
         $filter = array('*');
         $filtered = PublicFilter::filterNames($filter, $names);
         $this->assertType('array', $filtered);
-        $this->assertEquals(2, count($filtered));
-        $this->assertEquals('test', $filtered[0]);
-        $this->assertEquals('toast', $filtered[1]);
+        $this->assertSame(2, count($filtered));
+        $this->assertSame('test', $filtered[0]);
+        $this->assertSame('toast', $filtered[1]);
     }
 }
 class PublicFilter extends \jackalope\Node {
