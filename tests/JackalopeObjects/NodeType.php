@@ -149,7 +149,6 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $property = $properties[0];
         $defaultValues = $property->getDefaultValues();
         $this->assertSame(1, count($defaultValues));
-        $this->assertTrue(is_string($defaultValues[0]));
         $this->assertSame('true', $defaultValues[0]);
     }
 
