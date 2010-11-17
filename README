@@ -4,7 +4,8 @@ Jackalope
 Implementation of a PHP client for the Jackrabbit server, an implementation of
 the Java Content Repository JCR.
 
-Implements the phpCR interface.
+Implements the PHPCR interface (see the phpcr submodule in the lib directory for
+more about PHPCR).
 
 http://liip.to/jackalope
 
