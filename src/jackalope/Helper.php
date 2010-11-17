@@ -84,6 +84,7 @@ class Helper {
         } else {
             $type = \PHPCR\PropertyType::UNDEFINED;
         }
+        return $type;
     }
     /**
      * Attempt to convert $value into the proper format for $type.
@@ -108,30 +109,62 @@ class Helper {
         }
         switch($type) {
             case \PHPCR\PropertyType::STRING:
-                $typename = 'string';
+                foreach($value as $v) {
+                    if (is_bool($v)) {
+                        $ret[] = $v ? 'true' : 'false';
+                    } else {
+                        settype($v, 'string');
+                        $ret[] = $v;
+                    }
+                }
                 break;
             //TODO: what about binary?
             case \PHPCR\PropertyType::LONG:
                 $typename = 'integer';
                 break;
+            case \PHPCR\PropertyType::DECIMAL:
             case \PHPCR\PropertyType::DOUBLE:
                 $typename = 'double';
                 break;
             case \PHPCR\PropertyType::BOOLEAN:
-                $typename = 'boolean';
+                /*
+                 * When converting String values to boolean, JCR uses
+                 * java.lang.Boolean.valueOf(String) which evaluates to true only for the
+                 * string "true" (case insensitive).
+                 * PHP usually treats everything not null|0|false as true. The PHPCR API
+                 * follows the JCR specification here in order to be consistent.
+                 */
+                foreach($value as $v) {
+                    $ret[] = $v === true || is_string($v) && strcasecmp('true', $v) == 0;
+                }
                 break;
             case \PHPCR\PropertyType::DATE:
+                //FIXME: need datetime object, not date strings
                 foreach($value as $v) {
-                    if (is_int($v)) $ret[] = date('c', $value); //convert to ISO 8601
+                    if (is_int($v)) {
+                        $ret[] = date('c', $v); //convert to ISO 8601
+                    } elseif (is_string($v)) {
+                        //TODO: if it is a string, parse it
+                        $ret[] = $v;
+                    } else {
+                        throw new \PHPCR\ValueFormatException("Can not convert '$v' into a date"); //TODO other cases?
+                    }
                 }
-                //FIXME: need datetime object
                 break;
             case \PHPCR\PropertyType::REFERENCE:
             case \PHPCR\PropertyType::WEAKREFERENCE:
                 foreach($value as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
-                        $ret[] = $v->getIdentifier();
-                    } elseif (! is_string($v)) { //FIXME: check for valid uuid?
+                        $id = $v->getIdentifier();
+                        //TODO: we should check the type if node is referencable, not rely on getting no identifier
+                        if (empty($id)) {
+                            throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
+                        }
+                        $ret[] = $id;
+                    } elseif (is_string($v) && ! empty($v)) {
+                        //FIXME: check for valid uuid?
+                        $ret[] = $v;
+                    } else {
                         throw new \PHPCR\ValueFormatException("$v is not a unique id");
                     }
                     //else: could check if string is valid uuid, but backend will do that

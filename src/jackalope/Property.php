@@ -20,7 +20,7 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * create a property, either from server data or locally
      * to indicate this has been created locally, make sure to pass true for the $new parameter
      *
-     * @param mixed $data array with fields
+     * @param array $data array with fields
                         type (integer or string from PropertyType)
                         and value (data for creating value object)
      * @param string $path the absolute path of this item
@@ -28,15 +28,14 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
      */
-    public function __construct($data, $path, Session $session, ObjectManager $objectManager, $new = false) {
+    public function __construct(array $data, $path, Session $session, ObjectManager $objectManager, $new = false) {
         parent::__construct(null, $path, $session, $objectManager, $new);
 
-        if (! is_array($data)) throw new \PHPCR\RepositoryException("Invalid data to create property. $data");
         $type = $data['type'];
         if (is_string($type)) {
             $type = \PHPCR\PropertyType::valueFromName($type);
         } elseif (! is_numeric($type)) {
-            throw new \PHPCR\RepositoryException('INTERNAL ERROR -- No type specified');
+            throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
         } else {
             //sanity check. this will throw InvalidArgumentException if $type is not a valid type
             \PHPCR\PropertyType::nameFromValue($type);
@@ -49,8 +48,10 @@ class Property extends Item implements \PHPCR\PropertyInterface {
             foreach ($data['value'] as $value) {
                 array_push($this->value, Helper::convertType($value, $type));
             }
+        } elseif (null !== $data['value']) {
+            $this->value = Helper::convertType($data['value'], $type);
         } else {
-            $this->value = $data['value'];
+            throw new \PHPCR\RepositoryException('INTERNAL ERROR -- data[value] may not be null');
         }
     }
 
@@ -138,7 +139,7 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * shortcut for Property.getValue().getString(). See Value.
      *
      * @return string A string representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a String is not possible or if the property is multi-valued.
+     * @throws \PHPCR\ValueFormatException if conversion to a String is not possible
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
@@ -155,7 +156,6 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * shortcut for Property.getValue().getBinary(). See Value.
      *
      * @return \PHPCR\BinaryInterface A Binary representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if the property is multi-valued.
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
@@ -172,7 +172,7 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * for Property.getValue().getLong(). See Value.
      *
      * @return integer An integer representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a long is not possible or if the property is multi-valued.
+     * @throws \PHPCR\ValueFormatException if conversion to a long is not possible
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
@@ -189,7 +189,7 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * shortcut for Property.getValue().getDouble(). See Value.
      *
      * @return float A float representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a double is not possible or if the property is multi-valued.
+     * @throws \PHPCR\ValueFormatException if conversion to a double is not possible
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */

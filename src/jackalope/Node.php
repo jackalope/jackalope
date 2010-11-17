@@ -24,6 +24,9 @@ class Node extends Item implements \PHPCR\NodeInterface {
 
     protected $uuid = null;
 
+    /**
+     * TODO: document! especially the parameters.
+     */
     public function __construct($rawData, $path,  $session, $objectManager, $new = false) {
         parent::__construct($rawData, $path,  $session, $objectManager, $new);
         $this->isNode = true;
@@ -44,7 +47,7 @@ class Node extends Item implements \PHPCR\NodeInterface {
                         $this->properties[$key] = Factory::get(
                             'Property',
                             array(
-                                array('type' => $rawData->{':jcr:primaryType'},  'value' => $value),
+                                array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
                                 $this->getPath() . '/jcr:primaryType',
                                 $this->session,
                                 $this->objectManager,
@@ -58,6 +61,7 @@ class Node extends Item implements \PHPCR\NodeInterface {
 
                     //OPTIMIZE: do not instantiate properties unless needed
                     default:
+                        //TODO: if we create node locally, $rawData might be a plain array. So far this is not triggered, but its a bit flaky
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
                         $this->properties[$key] = Factory::get(
                             'Property',
@@ -284,13 +288,11 @@ class Node extends Item implements \PHPCR\NodeInterface {
             $data = Helper::convertType($value, $type);
         }
 
-
-
         if (! isset($this->properties[$name])) {
             $path = $this->path . "/$name";
             $property = Factory::get(
                             'Property',
-                            array($data, $path,
+                            array(array('value'=>$data, 'type'=>$type), $path,
                                   $this->session, $this->objectManager,
                                   true));
             $this->objectManager->addItem($path, $property);
@@ -302,6 +304,7 @@ class Node extends Item implements \PHPCR\NodeInterface {
             }
             $this->properties[$name]->setValue($value);
         }
+        return $this->properties[$name];
     }
 
     /**
@@ -405,7 +408,7 @@ class Node extends Item implements \PHPCR\NodeInterface {
             if (isset($this->properties[$relPath])) {
                 return $this->properties[$relPath];
             } else {
-                throw new \PHPCR\PathNotFoundException($relPath);
+                throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
             }
         } else {
             $this->session->getProperty($this->path . '/.' . $relPath);
