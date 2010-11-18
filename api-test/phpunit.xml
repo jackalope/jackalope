@@ -1,4 +1,13 @@
-<phpunit bootstrap="bootstrap.php">
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="bootstrap.php">
     <php>
         <var name="jcr.url" value="http://localhost:8080/server" />
         <var name="jcr.user" value="admin" />
@@ -8,50 +17,19 @@
     </php>
 
     <testsuites>
-      <testsuite name="phpCR Access Control">
-        <directory>.</directory>
-        <file>suite/tests/read/AccessControlTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Access">
-          <directory>.</directory>
-          <file>suite/tests/read/AccessTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Export">
-          <directory>.</directory>
-          <file>suite/tests/read/ExportTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Lock">
-          <directory>.</directory>
-          <file>suite/tests/read/LockTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Namespaces">
-          <directory>.</directory>
-          <file>suite/tests/read/NamespacesTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Node Types">
-          <directory>.</directory>
-          <file>suite/tests/read/NodeTypesTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Query Object Model">
-          <directory>.</directory>
-          <file>suite/tests/read/QueryObjectModelTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Read">
-          <directory>.</directory>
-          <file>suite/tests/read/ReadTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR Search">
-          <directory>.</directory>
-          <file>suite/tests/read/SearchTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR System Node">
-          <directory>.</directory>
-          <file>suite/tests/read/SystemNodeTest.php</file>
-      </testsuite>
-      <testsuite name="phpCR XMLMappings">
-          <directory>.</directory>
-          <file>suite/tests/read/XMLMappingsTest.php</file>
-      </testsuite>
+        <testsuite name="phpCR">
+            <directory>suite/tests/</directory>
+        </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist>
+            <directory>../</directory>
+            <exclude>
+                <directory>../tests</directory>
+                <directory>.</directory>
+                <file>../src/jackalope/transport/curl.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>

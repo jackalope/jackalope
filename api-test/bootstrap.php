@@ -1,5 +1,10 @@
 <?php
-PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__);
+
+// PHPUnit 3.4 compat
+if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
+    PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__);
+    PHPUnit_Util_Filter::addFileToFilter(__DIR__.'/../src/jackalope/transport/curl.php');
+}
 
 /**
  * Bootstrap file for jackalope
