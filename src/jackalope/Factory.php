@@ -21,8 +21,8 @@ class Factory {
      * @return jackalope
      */
     public static function get($name, $params = array()) {
-        if (class_exists('\jackalope\\' . $name)) {
-            $name = '\jackalope\\' . $name;
+        if (class_exists('jackalope\\' . $name)) {
+            $name = 'jackalope\\' . $name;
         }
         if (count($params) == 0) {
             return new $name;
