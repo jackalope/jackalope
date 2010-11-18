@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class to handle the .
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ *
+ * @package jackalope
+ */
+
 namespace jackalope;
 
 /**
@@ -7,48 +15,93 @@ namespace jackalope;
  *
  * For update method, the object manager keeps track which nodes are dirty so it
  * knows what to give to transport to write to the backend.
+ *
+ * @package jackalope
  */
 class ObjectManager {
+
+    /**
+     * Instance of an implementation of the \PHPCR\SessionInterface.
+     * @var \PHPCR\SessionInterface
+     */
     protected $session;
+
+    /**
+     * Instance of an implementation of the TransportInterface
+     * @var TransportInterface
+     */
     protected $transport;
 
     /**
-     * mapping of absolutePath => node object
-     * there is no notion of order here. the order is defined by order in Node::nodes array
+     * Mapping of absolutePath => node object.
+     *
+     * There is no notion of order here. The order is defined by order in Node::nodes array.
+     *
+     * @var array
      */
     protected $objectsByPath = array();
+
     /**
-     * mapping of uuid => absolutePath
-     * take care never to put a path in here unless there is a node for that path in objectsByPath
+     * Mapping of uuid to an absolutePath.
+     *
+     * Take care never to put a path in here unless there is a node for that path in objectsByPath.
+     *
+     * @var array
      */
     protected $objectsByUuid = array();
 
     /* properties separate? or in same array?
      * commit: make sure to delete before add, in case a node was removed and replaced with a new one
      */
-    /** keys: nodes to add */
+
+    /**
+     * Contains a list of node to be added to the workspace.
+     * @var array
+     */
     protected $nodesAdd = array();
-    /** keys: nodes to remove */
+
+    /**
+     * Contains a list of node to be removed from the workspace.
+     * @var array
+     */
     protected $nodesRemove = array();
-    /** keys: nodes to update */
+
+    /**
+     * Contains a list of node to be updated on the workspace.
+     * @var array
+     */
     protected $nodesUpdate = array();
 
+    /**
+     * identifier to determine if the current objectManager is in an unsaved state.
+     * @var boolean
+     */
     protected $unsaved = false;
 
-    public function __construct(TransportInterface $transport,
-                                \PHPCR\SessionInterface $session) {
+    /**
+     * Registers the provided parameters as attribute to the instance.
+     *
+     * @param TransportInterface $transport
+     * @param \PHPCR\SessionInterface $session
+     */
+    public function __construct(TransportInterface $transport, \PHPCR\SessionInterface $session) {
         $this->transport = $transport;
         $this->session = $session;
     }
 
     /**
      * Get the node identified by an absolute path.
-     * Uses the factory to instantiate Node
      *
-     * @param string $path The absolute path of the node to create
+     * To prevent unnecessary work to be done a register will be written containing already retrieved nodes.
+     * Unfortunately there is currently no way to refetch a node once it has been fetched.
+     *
+     * @param string $absPath The absolute path of the node to create.
      * @return \PHPCR\Node
+     *
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
+     *
+     * @uses Factory::get()
      */
     public function getNodeByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
@@ -78,10 +131,8 @@ class ObjectManager {
      * Get the property identified by an absolute path.
      * Uses the factory to instantiate Property
      *
-     * @param string $path The absolute path of the property to create
+     * @param string $absPath The absolute path of the property to create.
      * @return \PHPCR\Property
-     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
-     * @throws \PHPCR\PathNotFoundException  If the node has not such property, or if read access is denied.
      */
     public function getPropertyByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
@@ -90,6 +141,7 @@ class ObjectManager {
 
         $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
         $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
+
         /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
          * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
          * (davex getItem uses json, which is not applicable to properties)
@@ -99,7 +151,7 @@ class ObjectManager {
     }
 
     /**
-     * Normalizes a path according to JCR's spec (3.4.5)
+     * Normalizes a path according to JCR's spec (3.4.5).
      *
      * <ul>
      *   <li>All self segments(.) are removed.</li>
@@ -110,8 +162,8 @@ class ObjectManager {
      *
      * Note: A well-formed input path implies a well-formed and normalized path returned.
      *
-     * @param   string  $path   The path to normalize
-     * @return  string  The normalized path
+     * @param string $path The path to normalize.
+     * @return string The normalized path.
      */
     public function normalizePath($path) {
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
@@ -149,8 +201,7 @@ class ObjectManager {
     }
 
     /**
-     * Creates an absolute path from a root and a relative path
-     * and then normalizes it
+     * Creates an absolute path from a root and a relative path and then normalizes it.
      *
      * If root is missing or does not start with a slash, a slash will be prepended
      *
@@ -174,12 +225,19 @@ class ObjectManager {
     }
 
     /**
+<<<<<<< HEAD
      * Get the node identified by an uuid or path or root path and relative
      * path. If you have an absolute path use getNodeByPath.
+=======
+     * Get the node idenfied by an uuid or path or root path and relative path.
+     *
+     * If you have an absolute path use getNodeByPath.
+>>>>>>> Added a page level DocBlock and some documentation
      *
      * @param string uuid or relative path
      * @param string optional root if you are in a node context - not used if $identifier is an uuid
-     * @return The specified Node. if not available, ItemNotFoundException is thrown
+     * @return \PHPCR\Node The specified Node. if not available, ItemNotFoundException is thrown
+     *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
@@ -200,9 +258,9 @@ class ObjectManager {
     }
 
     /**
-     * This is only a proxy to the transport it returns all node types if none
-     * is given or only the ones given as array.
-     * @param array empty for all or selected node types by name
+     * This is only a proxy to the transport it returns all node types if none is given or only the ones given as array.
+     *
+     * @param array $nodeTypes Empty for all or selected node types by name
      * @return DOMDoocument containing the nodetype information
      */
     public function getNodeTypes($nodeTypes = array()) {
@@ -210,21 +268,29 @@ class ObjectManager {
     }
 
     /**
+<<<<<<< HEAD
      * Get a single nodetype
      * @see getNodeTypes
+=======
+     * Get a single nodetype.
+     *
+>>>>>>> Added a page level DocBlock and some documentation
      * @param string the nodetype you want
      * @return DOMDocument containing the nodetype information
+     *
+     * @see getNodeTypes()
      */
     public function getNodeType($nodeType) {
         return $this->getNodeTypes(array($nodeType));
     }
 
     /**
-     * Verifies the path to be absolute and well-formed
+     * Verifies the path to be absolute and well-formed.
      *
      * @param string $path the path to verify
-     * @return  bool    Always true :)
-     * @throws \PHPCR\RepositoryException    If the path is not absolute or well-formed
+     * @return boolean Always true :)
+     *
+     * @throws \PHPCR\RepositoryException if the path is not absolute or well-formed
      */
     public function verifyAbsolutePath($path) {
         if (!Helper::isAbsolutePath($path)) {
@@ -237,9 +303,10 @@ class ObjectManager {
     }
 
     /**
-     * Checks if the string could be a uuid
-     * @param string possible uuid
-     * @return bool if it looks like a uuid it will return true
+     * Checks if the string could be a uuid.
+     *
+     * @param string $id Possible uuid
+     * @return boolean True if the test was passed, else false.
      */
     protected function isUUID($id) {
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
@@ -251,12 +318,15 @@ class ObjectManager {
     }
 
     /**
-     * push all recorded changes to the backend
-     * the order is important to avoid conflicts
+     * Push all recorded changes to the backend.
+     *
+     * The order is important to avoid conflicts
      * 1. remove nodes
      * 2. move nodes
      * 3. add new nodes
      * 4. commit any other changes
+     *
+     * @return void
      */
     public function save() {
         throw NotImplementedException(); //TODO
@@ -282,7 +352,11 @@ class ObjectManager {
         $this->unsaved = false;
     }
 
-    /** Determine if any object is modified */
+    /**
+     * Determine if any object is modified
+     *
+     * @return boolean False
+     */
     public function hasPendingChanges() {
         if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMoved) || count($this->nodesRemove)) return true;
         foreach($this->objectsByPath as $item) {
@@ -297,6 +371,7 @@ class ObjectManager {
      *
      * @param string $absPath the path to the node, including the node identifier
      * @param \PHPCR\Node $node the node to add
+     *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
     public function removeItem($absPath) {
@@ -318,10 +393,16 @@ class ObjectManager {
 
     /**
      * WRITE: move node from source path to destination path
+     *
+     * @param string $srcAbsPath Absolute path to the source node.
+     * @param string $destAbsPath Absolute path to the destination where the node shall be moved to.
+     *
+     * @throws NotImplementedException
      */
     public function moveItem($srcAbsPath, $destAbsPath) {
         $this->nodeMove[$srcAbsPath] = $destAbsPath;
         $this->unsaved = true;
+
         throw new NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
         /*
         FIXME: dispatch everything to backend immediatly (without saving) on move so the backend cares about translating all requests to the new path? how do we know if things are modified after that operation?
@@ -333,7 +414,8 @@ class ObjectManager {
      * WRITE: add an item at the specified path.
      *
      * @param string $absPath the path to the node, including the node identifier
-     * @param \PHPCR\Node $item the item to add
+     * @param \PHPCR\ItemInterface $item The item to add.
+     *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
     public function addItem($absPath, \PHPCR\ItemInterface $item) {
@@ -348,9 +430,11 @@ class ObjectManager {
         $this->nodesAdd[$absPath] = 1;
     }
 
-
-
-    /** Implementation specific: Transport is used elsewhere, provide it here for Session */
+    /**
+     * Implementation specific: Transport is used elsewhere, provide it here for Session
+     *
+     * @return TransportInterface
+     */
     public function getTransport() {
         return $this->transport;
     }
