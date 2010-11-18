@@ -1,7 +1,7 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
-use jackalope\Helper, jackalope\Factory;
+use Jackalope\Helper, Jackalope\Factory;
 use \DOMElement, \DOMXPath;
 
 /**

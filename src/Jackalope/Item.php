@@ -1,5 +1,5 @@
 <?php
-namespace jackalope;
+namespace Jackalope;
 
 /**
  * The Item is the base interface of Node and Property.

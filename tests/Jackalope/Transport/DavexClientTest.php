@@ -21,7 +21,7 @@ class DavexClientTest extends TestCase
     }
 
     public function getCurlFixture($fixture = null, $errno = null) {
-        $curl =  $this->getMock('jackalope\transport\curl');
+        $curl =  $this->getMock('Jackalope\Transport\curl');
         if (isset($fixture)) {
             if (is_file($fixture)) {
                 $fixture = file_get_contents($fixture);
@@ -109,7 +109,7 @@ class DavexClientTest extends TestCase
      */
     public function testPrepareRequest() {
         $t = $this->getTransportMock();
-        $t->curl = $this->getMock('\jackalope\transport\curl', array());
+        $t->curl = $this->getMock('Jackalope\Transport\curl', array());
         $t->curl->expects($this->at(0))
             ->method('setopt')
             ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
@@ -138,7 +138,7 @@ class DavexClientTest extends TestCase
     public function testPrepareRequestWithCredentials() {
         $t = $this->getTransportMock();
         $t->setCredentials(new \PHPCR\SimpleCredentials('foo', 'bar'));
-        $t->curl = $this->getMock('\jackalope\transport\curl', array());
+        $t->curl = $this->getMock('Jackalope\Transport\curl', array());
         $t->curl->expects($this->at(0))
             ->method('setopt')
             ->with(CURLOPT_USERPWD, 'foo:bar');
@@ -683,7 +683,7 @@ class falseCredentialsMock implements \PHPCR\CredentialsInterface {
 
 }
 
-class DavexClientMock extends \jackalope\transport\DavexClient {
+class DavexClientMock extends DavexClient {
     public $curl;
     public $server = 'testserver';
     public $workspace = 'testWorkspace';

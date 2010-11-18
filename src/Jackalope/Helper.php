@@ -1,5 +1,5 @@
 <?php
-namespace jackalope;
+namespace Jackalope;
 
 use \DOMElement;
 

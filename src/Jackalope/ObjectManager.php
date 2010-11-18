@@ -7,7 +7,7 @@
  * @package jackalope
  */
 
-namespace jackalope;
+namespace Jackalope;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes

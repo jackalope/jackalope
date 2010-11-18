@@ -1,5 +1,5 @@
 <?php
-namespace jackalope;
+namespace Jackalope;
 
 /**
  * This factory is used to centralize the jackalope instantiations and make
@@ -18,11 +18,11 @@ class Factory {
      *
      * @param $name string: Model name.
      * @param $params array: Parameters in order of their appearance in the constructor.
-     * @return jackalope
+     * @return object
      */
     public static function get($name, $params = array()) {
-        if (class_exists('jackalope\\' . $name)) {
-            $name = 'jackalope\\' . $name;
+        if (class_exists('Jackalope\\' . $name)) {
+            $name = 'Jackalope\\' . $name;
         }
         if (count($params) == 0) {
             return new $name;

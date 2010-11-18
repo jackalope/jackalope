@@ -5,11 +5,11 @@ namespace Jackalope;
 class NodeTest extends TestCase
 {
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
-    
+
     public function testConstructor() {
-        $session = $this->getMock('\jackalope\Session', array(), array(), '', false);
-        $objectManager = $this->getMock('\jackalope\ObjectManager', array(), array(), '', false);
-        $node = new \jackalope\Node(json_decode($this->JSON), '/jcr:node', $session, $objectManager);
+        $session = $this->getMock('Jackalope\Session', array(), array(), '', false);
+        $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array(), '', false);
+        $node = new Node(json_decode($this->JSON), '/jcr:node', $session, $objectManager);
         $this->assertSame($session, $node->getSession());
         $this->assertType('jackalope\Node', $node);
         //TODO: Activate this…
@@ -83,7 +83,7 @@ class NodeTest extends TestCase
     }
 }
 
-class NodeMock extends \jackalope\Node {
+class NodeMock extends Node {
     public static function filterNames($filter,$names) {
         return parent::filterNames($filter,$names);
     }

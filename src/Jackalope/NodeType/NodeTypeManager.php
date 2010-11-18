@@ -1,7 +1,7 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
-use jackalope\Factory, jackalope\ObjectManager, jackalope\NotImplementedException;
+use Jackalope\Factory, Jackalope\ObjectManager, Jackalope\NotImplementedException;
 use ArrayIterator;
 
 /**

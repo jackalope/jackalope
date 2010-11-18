@@ -1,7 +1,7 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
-use jackalope\Factory;
+use Jackalope\Factory;
 use DOMElement;
 use ArrayIterator;
 

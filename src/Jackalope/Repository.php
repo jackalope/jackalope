@@ -1,5 +1,5 @@
 <?php
-namespace jackalope;
+namespace Jackalope;
 
 /**
  * The entry point into the content repository. The Repository object is

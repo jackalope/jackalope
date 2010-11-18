@@ -10,7 +10,7 @@
 function jackalope_autoloader($class) {
     if (false !== ($pos = strripos($class, '\\'))) {
         $relpath = false;
-        if (0 === strpos($class, 'jackalope')) {
+        if (0 === strpos($class, 'Jackalope')) {
             $relpath = '/../';
         } else if (0 === strpos($class, 'PHPCR')) {
             $relpath = '/../../lib/phpcr/src/';

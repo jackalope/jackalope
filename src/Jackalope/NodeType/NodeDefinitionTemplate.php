@@ -1,5 +1,5 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
 /**
  * The NodeDefinitionTemplate interface extends NodeDefinition with the addition

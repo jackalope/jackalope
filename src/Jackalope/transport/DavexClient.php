@@ -8,8 +8,8 @@
  * @subpackage transport
  */
 
-namespace jackalope\transport;
-use jackalope\Factory, jackalope\TransportInterface;
+namespace Jackalope\Transport;
+use Jackalope\Factory, Jackalope\TransportInterface;
 use \DOMDocument;
 
 /**

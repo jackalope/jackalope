@@ -1,5 +1,5 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
 /**
  * The NodeTypeTemplate interface represents a simple container structure used

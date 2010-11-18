@@ -1,5 +1,5 @@
 <?php
-namespace jackalope\NodeType;
+namespace Jackalope\NodeType;
 
 /**
  * The PropertyDefinitionTemplate interface extends PropertyDefinition with the

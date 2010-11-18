@@ -101,7 +101,7 @@ class ObjectManagerTest extends TestCase
 
 }
 
-class ObjectManagerMock extends \jackalope\ObjectManager 
+class ObjectManagerMock extends ObjectManager
 {
     public function isUUID($i) {
         return parent::isUUID($i);

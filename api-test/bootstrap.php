@@ -42,7 +42,7 @@ function getRepository($config) {
         return false;
     }
     if ($config['transport'] != 'davex') throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
-    return new \jackalope\Repository($config['url'], null); //let jackalope factory create the transport
+    return new \Jackalope\Repository($config['url'], null); //let jackalope factory create the transport
 }
 
 /**

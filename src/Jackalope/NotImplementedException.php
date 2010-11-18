@@ -1,5 +1,5 @@
 <?php
-namespace jackalope;
+namespace Jackalope;
 
 /** Implementation Class:
  *  Exception to throw when something has not yet been implemented

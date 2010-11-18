@@ -7,8 +7,7 @@
  * @package jackalope
  * @subpackage transport
  */
-
-namespace jackalope\transport;
+namespace Jackalope\Transport;
 
 /**
  * Capsulate curl as an object
