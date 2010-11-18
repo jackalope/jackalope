@@ -225,14 +225,9 @@ class ObjectManager {
     }
 
     /**
-<<<<<<< HEAD
-     * Get the node identified by an uuid or path or root path and relative
-     * path. If you have an absolute path use getNodeByPath.
-=======
      * Get the node idenfied by an uuid or path or root path and relative path.
      *
      * If you have an absolute path use getNodeByPath.
->>>>>>> Added a page level DocBlock and some documentation
      *
      * @param string uuid or relative path
      * @param string optional root if you are in a node context - not used if $identifier is an uuid
@@ -268,13 +263,8 @@ class ObjectManager {
     }
 
     /**
-<<<<<<< HEAD
-     * Get a single nodetype
-     * @see getNodeTypes
-=======
      * Get a single nodetype.
      *
->>>>>>> Added a page level DocBlock and some documentation
      * @param string the nodetype you want
      * @return DOMDocument containing the nodetype information
      *
