@@ -1,10 +1,11 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+namespace Jackalope;
 
-class Node extends \jackalope\baseCase {
-    private $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
+class NodeTest extends TestCase
+{
+    protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
+    
     public function testConstructor() {
         $session = $this->getMock('\jackalope\Session', array(), array(), '', false);
         $objectManager = $this->getMock('\jackalope\ObjectManager', array(), array(), '', false);
@@ -17,70 +18,72 @@ class Node extends \jackalope\baseCase {
         $this->assertType('Iterator', $children);
         $this->assertSame(2, count($children));
     }
+
     public function testFilterNames() {
         $filter = 'test';
         $names = array('test', 'toast');
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(1, count($filtered));
         $this->assertSame('test', $filtered[0]);
 
         $filter = 't*t';
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = 'te.t';
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(0, count($filtered));
 
         $filter = 'test|toast';
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = 'test|toast ';
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = array('test ', 'toa*');
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = null;
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = '*';
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = array('*');
-        $filtered = PublicFilter::filterNames($filter, $names);
+        $filtered = NodeMock::filterNames($filter, $names);
         $this->assertType('array', $filtered);
         $this->assertSame(2, count($filtered));
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
     }
 }
-class PublicFilter extends \jackalope\Node {
+
+class NodeMock extends \jackalope\Node {
     public static function filterNames($filter,$names) {
         return parent::filterNames($filter,$names);
     }

@@ -1,9 +1,9 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+namespace Jackalope;
 
-class Session extends \jackalope\baseCase {
+class SessionTest extends TestCase
+{
     public function testConstructor() {
         $repository = $this->getMock('\jackalope\Repository', array(), array(), '', false);
         $workspaceName = 'asdfads';
@@ -19,6 +19,7 @@ class Session extends \jackalope\baseCase {
         $this->assertSame('toast', $s->getAttribute('test'));
         $this->assertSame('value', $s->getAttribute('other'));
     }
+    
     public function testLogout() {
         $this->markTestSkipped();
         //TODO: test flush object manager with the help of mock objects

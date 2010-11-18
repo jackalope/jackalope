@@ -1,25 +1,9 @@
 <?php
-namespace jackalope\tests\ImplementationHelpers;
 
-require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
+namespace Jackalope;
 
-class OMT extends \jackalope\ObjectManager {
-
-    public function isUUID($i) {
-        return parent::isUUID($i);
-    }
-
-    public function verifyAbsolutePath($path) {
-        parent::verifyAbsolutePath($path);
-    }
-
-    public function getObjectsByUuid() {
-        return $this->objectsByUuid;
-    }
-}
-
-class ObjectManager extends \jackalope\JackalopeObjectsCase {
-
+class ObjectManagerTest extends TestCase
+{
     public function testGetNodeByPath() {
         $path = '/jcr:root';
         $om = new \jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
@@ -40,7 +24,7 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
     }
 
     public function testIsUUID() {
-        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertFalse($om->isUUID(''));
         $this->assertFalse($om->isUUID('/'));
         $this->assertFalse($om->isUUID('/foo'));
@@ -58,7 +42,7 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
         $path = '/jcr:root/uuid/to/path';
 
-        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
         // also verify it was cached
         $objectsByUuid = $om->getObjectsByUuid();
@@ -100,7 +84,7 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
     }
 
     public function testVerifyAbsolutePath() {
-        $om = new OMT($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
 
         $om->verifyAbsolutePath('/jcr:root');
         $om->verifyAbsolutePath('/jcr:foo_/b-a/0^.txt');
@@ -115,4 +99,19 @@ class ObjectManager extends \jackalope\JackalopeObjectsCase {
         $om->verifyAbsolutePath('/jcr:root/foo?');
     }
 
+}
+
+class ObjectManagerMock extends \jackalope\ObjectManager 
+{
+    public function isUUID($i) {
+        return parent::isUUID($i);
+    }
+
+    public function verifyAbsolutePath($path) {
+        parent::verifyAbsolutePath($path);
+    }
+
+    public function getObjectsByUuid() {
+        return $this->objectsByUuid;
+    }
 }

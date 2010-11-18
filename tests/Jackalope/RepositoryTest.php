@@ -1,9 +1,9 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+namespace Jackalope;
 
-class Repository extends \jackalope\baseCase {
+class RepositoryTest extends TestCase
+{
     public function testConstructor() {
         $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
@@ -23,5 +23,5 @@ class Repository extends \jackalope\baseCase {
         $this->assertSame(array('bla'), $repo->getDescriptorKeys());
         $this->assertSame('bli', $repo->getDescriptor('bla'));
     }
-    //descriptors are tested by jackalope-api-tests AccessTest/RepositoryDescriptors.php
+    //descriptors are tested by jackalope-api-tests Access/RepositoryDescriptorsTest.php
 }

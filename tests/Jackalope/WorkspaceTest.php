@@ -1,9 +1,9 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+namespace Jackalope;
 
-class Workspace extends \jackalope\baseCase {
+class WorkspaceTest extends TestCase
+{
     public function testConstructor() {
         $session = $this->getMock('\jackalope\Session', array(), array(), '', false);
         $transport = $this->getMock('\jackalope\transport\DavexClient', array(), array('http://example.com'));

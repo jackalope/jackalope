@@ -1,5 +1,5 @@
 <!-- unit level tests for jackalope. please see api-tests for api conformity tests -->
-<phpunit>
+<phpunit bootstrap="bootstrap.php">
     <php>
         <var name="jcr.url" value="http://localhost:8080/server" />
         <var name="jcr.user" value="admin" />
@@ -9,13 +9,8 @@
     </php>
     
     <testsuites>
-      <testsuite name="Jackalope Objects">
+      <testsuite name="Jackalope Unit Tests">
         <directory>.</directory>
-        <file>JackalopeObjects.php</file>
-      </testsuite>
-      <testsuite name="Implementation Helpers">
-        <directory>.</directory>
-        <file>ImplementationHelpers.php</file>
       </testsuite>
     </testsuites>
 </phpunit>

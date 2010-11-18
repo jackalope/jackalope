@@ -1,14 +1,11 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-use \PHPUnit_Framework_Constraint_IsType;
+namespace Jackalope\NodeType;
 
-require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
+use Jackalope\TestCase;
 
-/**
- * @covers: NodeTypeManager
- */
-class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
+class NodeTypeManagerTest extends TestCase
+{
     protected $ntm;
 
     public function setUp() {
@@ -28,6 +25,7 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
         $this->assertTrue($nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
     }
+    
     /**
      * @covers jackalope\NodeType\NodeTypeManager::getDeclaredSubtypes
      * @covers jackalope\NodeType\NodeTypeManager::getSubtypes
@@ -82,4 +80,3 @@ class NodeTypeManager extends \jackalope\JackalopeObjectsCase {
     }
 
 }
-

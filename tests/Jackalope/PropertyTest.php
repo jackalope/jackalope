@@ -1,10 +1,9 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-require_once(dirname(__FILE__) . '/../inc/baseCase.php');
+namespace Jackalope;
 
-class Value extends \jackalope\baseCase {
-
+class PropertyTest extends TestCase
+{
     public function testTypeInstances() {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*

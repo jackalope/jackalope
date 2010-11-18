@@ -1,9 +1,8 @@
 <?php
-namespace jackalope\tests\JackalopeObjects;
 
-use \PHPUnit_Framework_Constraint_IsType;
+namespace Jackalope\NodeType;
 
-require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
+use Jackalope\TestCase;
 
 /**
  * Test the Node Type.
@@ -11,8 +10,8 @@ require_once(dirname(__FILE__) . '/../inc/JackalopeObjectsCase.php');
  * TODO: tests for ItemDefinition, PropertyDefinition and NodeDefinition probably missing or incomplete inside NodeType
  * @covers NodeType
  */
-class NodeType extends \jackalope\JackalopeObjectsCase {
-
+class NodeTypeTest extends TestCase
+{
     public function testNodeTypeMethods() {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
@@ -68,7 +67,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
         $this->assertSame(1, count($nodes));
         $node = $nodes[0];
         $this->assertType('jackalope\NodeType\NodeDefinition', $node);
@@ -81,7 +80,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
 
         $nt = $ntm->getNodeType('nt:file');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
         $this->assertSame(1, count($nodes));
         $node = $nodes[0];
         $this->assertType('jackalope\NodeType\NodeDefinition', $node);
@@ -105,7 +104,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
         $this->assertSame(0, count($properties));
 
         $nt = $ntm->getNodeType('mix:created');
@@ -120,7 +119,7 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
 
         //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
         $this->assertSame(2, count($properties));
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
@@ -151,66 +150,4 @@ class NodeType extends \jackalope\JackalopeObjectsCase {
         $this->assertSame(1, count($defaultValues));
         $this->assertSame('true', $defaultValues[0]);
     }
-
-    /**
-     * @covers jackalope\NodeType\NodeTypeTemplate::__construct
-     */
-    public function testCreateNodeTypeTemplateEmpty() {
-        $ntm = $this->getNodeTypeManager();
-
-        $ntt = $ntm->createNodeTypeTemplate();
-
-        // is empty as defined by doc
-        $this->assertNull($ntt->getName());
-        $this->assertSame(array('nt:base'), $ntt->getDeclaredSupertypeNames());
-        $this->assertFalse($ntt->isAbstract());
-        $this->assertFalse($ntt->isMixin());
-        $this->assertFalse($ntt->hasOrderableChildNodes());
-        $this->assertFalse($ntt->isQueryable());
-        $this->assertNull($ntt->getPrimaryItemName());
-        $this->assertNull($ntt->getDeclaredPropertyDefinitions());
-        $this->assertNull($ntt->getDeclaredChildNodeDefinitions());
-    }
-
-    /**
-     * @covers jackalope\NodeType\NodeDefinitionTemplate::__construct
-     */
-    public function testCreateNodeDefinitionTemplateEmpty() {
-        $ntm = $this->getNodeTypeManager();
-
-        $ndt = $ntm->createNodeDefinitionTemplate();
-
-        // is empty as defined by doc
-        $this->assertNull($ndt->getName());
-        $this->assertFalse($ndt->isAutoCreated());
-        $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
-        $this->assertFalse($ndt->isProtected());
-        $this->assertNull($ndt->getRequiredPrimaryTypeNames());
-        $this->assertNull($ndt->getDefaultPrimaryTypeName());
-        $this->assertFalse($ndt->allowsSameNameSiblings());
-    }
-
-    /**
-     * @covers jackalope\NodeType\PropertyDefinitionTemplate::__construct
-     */
-    public function testCreatePropertyDefinitionTemplateEmpty() {
-        $ntm = $this->getNodeTypeManager();
-
-        $ndt = $ntm->createPropertyDefinitionTemplate();
-
-        // is empty as defined by doc
-        $this->assertNull($ndt->getName());
-        $this->assertFalse($ndt->isAutoCreated());
-        $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
-        $this->assertFalse($ndt->isProtected());
-        $this->assertSame(\PHPCR\PropertyType::STRING, $ndt->getRequiredType());
-        $this->assertNull($ndt->getValueConstraints());
-        $this->assertNull($ndt->getDefaultValues());
-        $this->assertFalse($ndt->isMultiple());
-        $this->assertFalse($ndt->isFullTextSearchable());
-        $this->assertFalse($ndt->isQueryOrderable());
-    }
 }
-

@@ -1,10 +1,21 @@
 <?php
-namespace jackalope;
 
-require_once('baseCase.php');
+namespace Jackalope;
 
-class JackalopeObjectsCase extends baseCase {
+abstract class TestCase extends \PHPUnit_Framework_TestCase 
+{
+    protected $config;
+    protected $configKeys = array('jcr.url', 'jcr.user', 'jcr.pass', 'jcr.workspace', 'jcr.transport');
+    protected $credentials;
+
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
+    
+    protected function setUp() {
+        foreach ($this->configKeys as $cfgKey) {
+            $this->config[substr($cfgKey, 4)] = $GLOBALS[$cfgKey];
+        }
+        $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
+    }
     
     protected function getTransportStub($path) {
         $transport = $this->getMock('\jackalope\transport\DavexClient', array('getItem', 'getNodeTypes', 'getNodePathForIdentifier'), array('http://example.com'));
@@ -40,5 +51,4 @@ class JackalopeObjectsCase extends baseCase {
             ->will($this->returnValue($dom));
         return new \jackalope\NodeType\NodeTypeManager($om);
     }
-    
 }
