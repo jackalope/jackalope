@@ -15,30 +15,100 @@ use \DOMDocument;
 /**
  * Connection to one Jackrabbit server.
  *
- * Once the login method has been called, the workspace is set and can not be
- * changed anymore.
+ * Once the login method has been called, the workspace is set and can not be changed anymore.
  *
  * @package jackalope
  * @subpackage transport
  */
 class DavexClient implements TransportInterface {
-    /** server url including protocol.
+
+    /**
+     * Name of the user agent to be exposed to a client.
+     * @var string
+     */
+    const USER_AGENT = 'jackalope-php/1.0';
+
+    /**
+     * Description of the namspace to be used for communication with the server.
+     * @var string
+     */
+    const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
+
+    /**
+     * Identifier of the used namespace.
+     * @var string
+     */
+    const NS_DAV = 'DAV:';
+
+    /**
+     * Identifier of the 'GET' http request method.
+     * @var string
+     */
+    const GET = 'GET';
+
+    /**
+     * Identifier of the 'REPORT' http request method.
+     * @var string
+     */
+    const REPORT = 'REPORT';
+
+    /**
+     * Identifier of the 'PROPFIND' http request method.
+     * @var string
+     */
+    const PROPFIND = 'PROPFIND';
+
+    /**
+     * Representation of a XML string header.
+     *
+     * @todo TODO: seems not to be used anymore.
+     *
+     * @var string
+     */
+    const REGISTERED_NAMESPACES =
+        '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
+
+    /**
+     * Server url including protocol.
+     *
      * i.e http://localhost:8080/server/
      * constructor ensures the trailing slash /
+     *
+     * @var string
      */
     protected $server;
-    /** workspace name the transport is bound to */
-    protected $workspace;
-    /** "$server/$workspace" without trailing slash */
-    protected $workspaceUri;
+
     /**
-     * root node path with server domain without trailing slash
+     * Workspace name the transport is bound to
+     * @var string
+     */
+    protected $workspace;
+
+    /**
+     * Identifier of the workspace including the used protocol and server name.
+     *
+     * "$server/$workspace" without trailing slash
+     *
+     *  @var string
+     */
+    protected $workspaceUri;
+
+    /**
+     * Root node path with server domain without trailing slash.
+     *
      * "$server/$workspace/jcr%3aroot
      * (make sure you never hardcode the jcr%3aroot, its ugly)
-     * TODO: apparently, jackrabbit handles the root node by name - it is invisible everywhere for the api, but needed when talking to the backend... could that name change?
+     * @todo TODO: apparently, jackrabbit handles the root node by name - it is invisible everywhere for the api,
+     *             but needed when talking to the backend... could that name change?
+     *
+     * @var string
      */
     protected $workspaceUriRoot;
 
+    /**
+     * Set of credentials necessary to connect to the server or else.
+     * @var \PHPCR\CredentialsInterface
+     */
     protected $credentials = false;
 
     /**
@@ -46,15 +116,6 @@ class DavexClient implements TransportInterface {
      * @var curl
      */
     protected $curl = null;
-
-    const USER_AGENT = 'jackalope-php/1.0';
-    const NS_DCR = 'http://www.day.com/jcr/webdav/1.0';
-    const NS_DAV = 'DAV:';
-    const REGISTERED_NAMESPACES = '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>'; //TODO: unused
-
-    const GET = 'GET';
-    const REPORT = 'REPORT';
-    const PROPFIND = 'PROPFIND';
 
     /**
      * Create a transport pointing to a server url.
@@ -112,7 +173,7 @@ class DavexClient implements TransportInterface {
      *
      * @param \PHPCR\CredentialsInterface $credentials A set of attributes to be used to login per example.
      * @param string $workspaceName The workspace name for this transport.
-     * @return boolean True on success, exceptions on failure
+     * @return boolean True on success, exceptions on failure.
      *
      * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
      * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
@@ -133,9 +194,11 @@ class DavexClient implements TransportInterface {
         $this->workspace = $workspaceName;
         $this->workspaceUri = $this->server . $workspaceName;
         $this->workspaceUriRoot = $this->workspaceUri . "/jcr%3aroot";
-        $dom = $this->getDomFromBackend(self::PROPFIND,
-                                        $this->workspaceUri,
-                                        self::buildPropfindRequest(array('D:workspace', 'dcr:workspaceName')));
+        $dom = $this->getDomFromBackend(
+            self::PROPFIND,
+            $this->workspaceUri,
+            self::buildPropfindRequest(array('D:workspace', 'dcr:workspaceName'))
+        );
 
         $set = $dom->getElementsByTagNameNS(self::NS_DCR, 'workspaceName');
         if ($set->length != 1) {
@@ -213,6 +276,7 @@ class DavexClient implements TransportInterface {
      *
      * @param string $path Absolute path to identify a special item.
      * @return array for the node (decoded from json)
+     *
      * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getItem($path) {
@@ -395,9 +459,9 @@ class DavexClient implements TransportInterface {
      * without fearing that information from one request messes with the
      * next request.
      *
-     * @param string $type The http method to use
-     * @param string $uri The uri to request
-     * @param string $body The body to send as post, default is empty
+     * @param string $type The http method to use to communicate with the server.
+     * @param string $uri The uri of the node to request from the server.
+     * @param string $body The body to send as post, default is empty.
      * @param integer $depth How far the request should go, default is 0 (setting the Depth HTTP header)
      *
      * @uses curl::setopt()
@@ -433,6 +497,9 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\NoSuchWorkspaceException if it was not possible to reach the server (resolve host or connect)
      * @throws \PHPCR\RepositoryExceptions if on any other error.
+     *
+     * @uses curl::errno()
+     * @uses curl::exec()
      */
     protected function getRawFromBackend() {
 
@@ -470,6 +537,8 @@ class DavexClient implements TransportInterface {
      * @throws \PHPCR\NodeType\NoSuchNodeTypeException
      * @throws \PHPCR\ItemNotFoundException
      * @throws \PHPCR\RepositoryException
+     *
+     * @uses curl::getInfo()
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
 
@@ -522,6 +591,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\ItemNotFoundException if the response is not valid
      * @throws \PHPCR\RepositoryException
+     *
+     * @uses curl::getInfo()
      */
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
 
