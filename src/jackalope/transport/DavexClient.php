@@ -29,7 +29,10 @@ class DavexClient implements TransportInterface {
 
     protected $credentials = false;
 
-    /** The cURL resource handle */
+    /**
+     * The cURL resource handle
+     * @var curl
+     */
     protected $curl = null;
 
     const USER_AGENT = 'jackalope-php/1.0';
@@ -41,21 +44,31 @@ class DavexClient implements TransportInterface {
     const REPORT = 'REPORT';
     const PROPFIND = 'PROPFIND';
 
-    /** Create a transport pointing to a server url.
-     *  @param serverUri location of the server
+    /**
+     * Create a transport pointing to a server url.
+     *
+     * @param serverUri location of the server
      */
     public function __construct($serverUri) {
+        // append a slash if not there
         if ('/' !== substr($serverUri, -1, 1)) {
             $serverUri .= '/';
         }
         $this->server = $serverUri;
     }
 
+    /**
+     * Tidies up the current cUrl connection.
+     */
     public function __destruct() {
         $this->closeConnection();
     }
 
-    /** Opens a cURL session if not yet one open. */
+    /**
+     * Opens a cURL session if not yet one open.
+     *
+     * @return null|false False in case there is already an open connection, else null;
+     */
     protected function initConnection() {
 
         if (!is_null($this->curl)) {
@@ -66,7 +79,11 @@ class DavexClient implements TransportInterface {
         $this->curl->setopt(CURLOPT_RETURNTRANSFER, 1);
     }
 
-    /** Closes the cURL session. */
+    /**
+     * Closes the cURL session.
+     *
+     * @return null|false False in case there is no open connection, else null;
+     */
     protected function closeConnection() {
         if (is_null($this->curl)) {
             return false;
@@ -77,19 +94,24 @@ class DavexClient implements TransportInterface {
 
     /**
      * Set this transport to a specific credential and a workspace.
+     *
      * This can only be called once. To connect to another workspace or with
      * another credential, use a fresh instance of transport.
      *
-     * @param credentials A \PHPCR\SimpleCredentials instance (this is the only type currently understood)
-     * @param workspaceName The workspace name for this transport.
-     * @return true on success (exceptions on failure)
+     * @param \PHPCR\CredentialsInterface $credentials A set of attributes to be used to login per example.
+     * @param string $workspaceName The workspace name for this transport.
+     * @return boolean True on success, exceptions on failure
+     *
      * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
      * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName) {
         if ($this->credentials !== false) {
-            throw new \PHPCR\RepositoryException('Do not call login twice. Rather instantiate a new Transport object to log in as different user or for a different workspace.');
+            throw new \PHPCR\RepositoryException(
+                'Do not call login twice. Rather instantiate a new Transport object '.
+                'to log in as different user or for a different workspace.'
+            );
         }
         if (! $credentials instanceof \PHPCR\SimpleCredentials) {
             throw new \PHPCR\LoginException('Unkown Credentials Type: '.get_class($credentials));
@@ -122,8 +144,12 @@ class DavexClient implements TransportInterface {
      * @throws \PHPCR\RepositoryException if error occurs
      */
      public function getRepositoryDescriptors() {
-        $dom = $this->getDomFromBackend(self::REPORT, $this->server,
-                                        self::buildReportRequest('dcr:repositorydescriptors'));
+
+         $dom = $this->getDomFromBackend(
+            self::REPORT, $this->server,
+            self::buildReportRequest('dcr:repositorydescriptors')
+        );
+
         if ($dom->firstChild->localName != 'repositorydescriptors-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
@@ -149,6 +175,8 @@ class DavexClient implements TransportInterface {
 
     /**
      * Returns the accessible workspace names
+     *
+     * @return array Set of workspaces to work on.
      */
     public function getAccessibleWorkspaceNames() {
         $dom = $this->getDomFromBackend(self::PROPFIND,
@@ -166,12 +194,16 @@ class DavexClient implements TransportInterface {
 
     /**
      * Get the item from an absolute path
+     *
      * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
-     * @param path absolute path to item
+     *
+     * @param string $path Absolute path to identify a special item.
      * @return array for the node (decoded from json)
      * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getItem($path) {
+
+        // it has to be an absolute path!
         if ('/' != substr($path, 0, 1)) {
             //sanity check
             throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
@@ -181,8 +213,10 @@ class DavexClient implements TransportInterface {
     }
     /**
      * Get the node path from a JCR uuid
-     * @param uuid the id in JCR format
-     * @return string path to the node
+     *
+     * @param string $uuid the id in JCR format
+     * @return string Absolute path to the node
+     *
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
      * @throws \PHPCR\RepositoryException if now logged in
      */
@@ -211,19 +245,25 @@ class DavexClient implements TransportInterface {
     }
 
     /**
-     * get the registered namespaces mappings from the backend
-     * @return associative array of prefix => uri
+     * Get the registered namespaces mappings from the backend.
+     *
+     * @return array Associative array of prefix => uri
+     *
      * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getNamespaces() {
         $this->checkLogin();
 
-        $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
-                                        self::buildReportRequest('dcr:registerednamespaces'));
+        $dom = $this->getDomFromBackend(
+            self::REPORT, $this->workspaceUri,
+            self::buildReportRequest('dcr:registerednamespaces')
+        );
+
         if ($dom->firstChild->localName != 'registerednamespaces-report' ||
             $dom->firstChild->namespaceURI != self::NS_DCR) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
+
         $mappings = array();
         $namespaces = $dom->getElementsByTagNameNS(self::NS_DCR, 'namespace');
         foreach($namespaces as $elem) {
@@ -252,8 +292,9 @@ class DavexClient implements TransportInterface {
     }
 
     /**
-     * Throws an error if the there is no login
-     * @throws \PHPCR\RepositoryException if now logged in
+     * Chechs if login procedure has been passed already.
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
      */
     protected function checkLogin() {
         if (empty($this->workspaceUri)) {
@@ -263,8 +304,9 @@ class DavexClient implements TransportInterface {
 
     /**
      * Returns the XML required to request nodetypes
-     * @param array the nodetypes you want to request
-     * @return string XML with the request
+     *
+     * @param array $nodesType The list of nodetypes you want to request for.
+     * @return string XML with the request information.
      */
     protected static function buildNodeTypesRequest(Array $nodeTypes) {
         $xmlStr = '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
@@ -298,29 +340,45 @@ class DavexClient implements TransportInterface {
         return $xml;
     }
 
-    /** build a REPORT XML request string */
+    /**
+     * Build a REPORT XML request string
+     *
+     * @param string $name Name of the resource to be requested.
+     * @return string XML string representing the head of the request.
+     */
     protected static function buildReportRequest($name) {
         return '<?xml version="1.0" encoding="UTF-8"?><' .
                 $name .
                ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
     }
-    /** build REPORT XML request for locating a node path by uuid */
+
+    /**
+     * Build REPORT XML request for locating a node path by uuid
+     *
+     * @param string $uuid Unique identifier of the node to be asked for.
+     * @return string XML sring representing the content of the request.
+     */
     protected static function buildLocateRequest($uuid) {
-        return '<?xml version="1.0" encoding="UTF-8"?><dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:href xmlns:D="DAV:">' .
+        return '<?xml version="1.0" encoding="UTF-8"?>'.
+               '<dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
+               '<D:href xmlns:D="DAV:">' .
                 $uuid .
                '</D:href></dcr:locate-by-uuid>';
     }
 
     /**
      * Set the standard parameters for a curl session.
+     *
      * If you only use this function, you can do a multi request session
      * without fearing that information from one request messes with the
      * next request.
      *
-     * @param string type the http method to use
-     * @param string uri the uri to request
-     * @param string body the body to send as post, default is empty
-     * @param int depth How far the request should go, default is 0 (setting the Depth HTTP header)
+     * @param string $type The http method to use
+     * @param string $uri The uri to request
+     * @param string $body The body to send as post, default is empty
+     * @param integer $depth How far the request should go, default is 0 (setting the Depth HTTP header)
+     *
+     * @uses curl::setopt()
      */
     protected function prepareRequest($type, $uri, $body = '', $depth = 0) {
 
@@ -342,14 +400,22 @@ class DavexClient implements TransportInterface {
         $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $this->curl->setopt(CURLOPT_POSTFIELDS, $body);
     }
+
     /**
+     * Requests the data to be identified by a formerly prepared request.
+     *
      * Takes a curl handle prepared by prepareRequest, executes it and checks
      * for transport level errors, throwing the appropriate exceptions.
-     * @return raw data string
-     * @throws \PHPCR\RepositoryExceptions and descendants on connection errors
+     *
+     * @return string XML representation of the response.
+     *
+     * @throws \PHPCR\NoSuchWorkspaceException if it was not possible to reach the server (resolve host or connect)
+     * @throws \PHPCR\RepositoryExceptions if on any other error.
      */
     protected function getRawFromBackend() {
+
         $data = $this->curl->exec();
+
         if (NULL === $data || empty($data)) {
             switch($this->curl->errno()) {
                 case CURLE_COULDNT_RESOLVE_HOST:
@@ -362,31 +428,48 @@ class DavexClient implements TransportInterface {
                     throw new \PHPCR\RepositoryException($msg);
             }
         }
+
         return $data;
     }
 
     /**
-     * Returns a DOMDocument from the backend or throws exception
+     * Loads the response into an DOMDocument.
+     *
+     * Returns a DOMDocument from the backend or throws exception.
      * Does error handling for both connection errors and dcr:exception response
      *
-     * @param curl The curl handle you want to fetch from
-     * @return DOMDocument the loaded XML
-     * @throws \PHPCR\RepositoryException
+     * @param string $type Identifier of the request type (e.g. DELETE, GET, POST, CONNECT, …)
+     * @param string $uri String identifying the resource to be called.
+     * @param string $body the body to send as post, default is empty
+     * @param integer $depth How far the request should go, default is 0 (setting the Depth HTTP header)
+     * @return DOMDocument The loaded XML response text.
+     *
      * @throws \PHPCR\NoSuchWorkspaceException
+     * @throws \PHPCR\NodeType\NoSuchNodeTypeException
+     * @throws \PHPCR\ItemNotFoundException
+     * @throws \PHPCR\RepositoryException
      */
     protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
+
+        // request information from the server via HTTP
         $this->prepareRequest($type, $uri, $body, $depth);
         $xml = $this->getRawFromBackend();
+
+        // create new DOMDocument and load the response text.
         $dom = new DOMDocument();
         $dom->loadXML($xml);
 
+        // determine if there is an error returned
         $err = $dom->getElementsByTagNameNS(self::NS_DCR, 'exception');
         if ($err->length > 0) {
+
             //TODO: can we trust jackrabbit to always have an exception node if status is not OK?
             $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
+
             $err = $err->item(0);
             $errClass = $err->getElementsByTagNameNS(self::NS_DCR, 'class')->item(0)->textContent;
             $errMsg = $err->getElementsByTagNameNS(self::NS_DCR, 'message')->item(0)->textContent;
+
             switch($errClass) {
                 case 'javax.jcr.NoSuchWorkspaceException':
                     throw new \PHPCR\NoSuchWorkspaceException('HTTP '.$status . ": $errMsg");
@@ -404,19 +487,27 @@ class DavexClient implements TransportInterface {
     }
 
     /**
+     * Loads the server response into a DOMDocument.
+     *
      * Returns a DOMDocument from the backend or throws exception
      * Does error handling for both connection errors and json problems
      *
-     * @param curl The curl handle you want to fetch from
-     * @return array decoded json
+     * @param string $type Identifier of the request type (e.g. DELETE, GET, POST, CONNECT, …)
+     * @param string $uri String identifying the resource to be called.
+     * @param string $body the body to send as post, default is empty
+     * @param integer $depth How far the request should go, default is 0 (setting the Depth HTTP header)
+     * @return object DOMDocument or DOMDOcumentFragment representing the response.
+     *
      * @throws \PHPCR\ItemNotFoundException if the response is not valid
      * @throws \PHPCR\RepositoryException
      */
     protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
-        //OPTIMIZE: re-use connection. JACK-7
-        $this->prepareRequest($type, $uri, $body, $depth);
 
+        //@todo: OPTIMIZE: re-use connection. JACK-7
+        //@todo: prepareRequest only returns XML never json. It has a fixed content-type.
+        $this->prepareRequest($type, $uri, $body, $depth);
         $jsonstring = $this->getRawFromBackend();
+
         $json = json_decode($jsonstring);
         if (! is_object($json)) {
             $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
