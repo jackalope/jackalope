@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class to handle the communication between Jackalope and Jackrabbit via Davex.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ *
+ * @package jackalope
+ * @subpackage transport
+ */
 
 namespace jackalope\transport;
 use jackalope\Factory, jackalope\TransportInterface;
@@ -6,8 +14,12 @@ use \DOMDocument;
 
 /**
  * Connection to one Jackrabbit server.
+ *
  * Once the login method has been called, the workspace is set and can not be
  * changed anymore.
+ *
+ * @package jackalope
+ * @subpackage transport
  */
 class DavexClient implements TransportInterface {
     /** server url including protocol.
