@@ -191,10 +191,12 @@ class DavexClient implements TransportInterface {
      * @return array Set of workspaces to work on.
      */
     public function getAccessibleWorkspaceNames() {
-        $dom = $this->getDomFromBackend(self::PROPFIND,
-                                        $this->server,
-                                        self::buildPropfindRequest(array('D:workspace')),
-                                        1);
+        $dom = $this->getDomFromBackend(
+            self::PROPFIND,
+            $this->server,
+            self::buildPropfindRequest(array('D:workspace')),
+            1
+        );
         $workspaces = array();
         foreach ($dom->getElementsByTagNameNS(self::NS_DAV, 'workspace') as $value) {
             if (! empty($value->nodeValue)) {
@@ -235,8 +237,10 @@ class DavexClient implements TransportInterface {
     public function getNodePathForIdentifier($uuid) {
         $this->checkLogin();
 
-        $dom = $this->getDomFromBackend(self::REPORT, $this->workspaceUri,
-                                        self::buildLocateRequest($uuid));
+        $dom = $this->getDomFromBackend(
+            self::REPORT, $this->workspaceUri,
+            self::buildLocateRequest($uuid)
+        );
         /* answer looks like
            <D:multistatus xmlns:D="DAV:">
              <D:response>
@@ -250,10 +254,15 @@ class DavexClient implements TransportInterface {
         }
         $fullPath = $set->item(0)->textContent;
         if (strncmp($this->workspaceUriRoot, $fullPath, strlen($this->workspaceUri))) {
-            throw new \PHPCR\RepositoryException("Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".$this->workspaceUriRoot);
+            throw new \PHPCR\RepositoryException(
+                "Server answered a path that is not in the current workspace: uuid=$uuid, path=$fullPath, workspace=".
+                $this->workspaceUriRoot
+            );
         }
-        return substr(substr($fullPath, 0, -1), //cut trailing slash /
-                      strlen($this->workspaceUriRoot)); //remove uri, workspace and root node
+        return substr(
+            substr($fullPath, 0, -1), //cut trailing slash /
+            strlen($this->workspaceUriRoot) //remove uri, workspace and root node
+        );
     }
 
     /**
@@ -341,7 +350,8 @@ class DavexClient implements TransportInterface {
      * @return string XML to post in the body
      */
     protected static function buildPropfindRequest($properties) {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'.
+            '<D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
         if (!is_array($properties)) {
             $properties = array($properties);
         }
