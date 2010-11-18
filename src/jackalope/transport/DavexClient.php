@@ -317,7 +317,7 @@ class DavexClient implements TransportInterface {
      * without fearing that information from one request messes with the
      * next request.
      *
-     * @param string type the http method to use¨
+     * @param string type the http method to use
      * @param string uri the uri to request
      * @param string body the body to send as post, default is empty
      * @param int depth How far the request should go, default is 0 (setting the Depth HTTP header)
@@ -339,7 +339,6 @@ class DavexClient implements TransportInterface {
 
         $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $type);
         $this->curl->setopt(CURLOPT_URL, $uri);
-        $this->curl->setopt(CURLOPT_RETURNTRANSFER, 1);
         $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $this->curl->setopt(CURLOPT_POSTFIELDS, $body);
     }

@@ -81,6 +81,7 @@ class ObjectManager {
      * @param string $path The absolute path of the property to create
      * @return \PHPCR\Property
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
+     * @throws \PHPCR\PathNotFoundException  If the node has not such property, or if read access is denied.
      */
     public function getPropertyByPath($absPath) {
         $absPath = $this->normalizePath($absPath);
@@ -173,7 +174,7 @@ class ObjectManager {
     }
 
     /**
-     * Get the node idenfied by an uuid or path or root path and relative
+     * Get the node identified by an uuid or path or root path and relative
      * path. If you have an absolute path use getNodeByPath.
      *
      * @param string uuid or relative path
@@ -209,7 +210,8 @@ class ObjectManager {
     }
 
     /**
-     * Get a single nodetype @see getNodeTypes
+     * Get a single nodetype
+     * @see getNodeTypes
      * @param string the nodetype you want
      * @return DOMDocument containing the nodetype information
      */
