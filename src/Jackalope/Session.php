@@ -444,7 +444,6 @@ class Session implements \PHPCR\SessionInterface {
         return false;
     }
 
-
     /**
      * If hasPermission returns false, throws the security exception
      *
@@ -596,6 +595,7 @@ class Session implements \PHPCR\SessionInterface {
      * @api
      */
     public function setNamespacePrefix($prefix, $uri) {
+        throw new NotImplementedException();
     }
 
     /**
@@ -694,6 +694,7 @@ class Session implements \PHPCR\SessionInterface {
     public function getObjectManager() {
         return $this->objectManager;
     }
+
     /**
      * Implementation specific: The transport implementation is also used by other components, i.e. the NamespaceRegistry
      */
