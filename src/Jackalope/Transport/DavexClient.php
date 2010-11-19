@@ -59,6 +59,12 @@ class DavexClient implements TransportInterface {
     const PROPFIND = 'PROPFIND';
 
     /**
+     * Identifier of the 'PROPPATCH' http request method.
+     * @var string
+     */
+    const PROPPATCH = 'PROPPATCH';
+
+    /**
      * Representation of a XML string header.
      *
      * @todo TODO: seems not to be used anymore.
@@ -289,6 +295,7 @@ class DavexClient implements TransportInterface {
         $this->checkLogin();
         return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
     }
+
     /**
      * Get the node path from a JCR uuid
      *
