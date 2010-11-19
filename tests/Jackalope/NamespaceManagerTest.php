@@ -1,6 +1,8 @@
 <?php
 
-class NamespaceManagerTest extends PHPUnit_Framework_TestCase {
+namespace Jackalope;
+
+class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
 
     /*************************************************************************/
     /* Fixtures
