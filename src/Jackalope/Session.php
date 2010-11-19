@@ -583,12 +583,17 @@ class Session implements \PHPCR\SessionInterface {
      * @param string $prefix a string
      * @param string $uri a string
      * @return void
-     * @throws \PHPCR\NamespaceException if an attempt is made to map a namespace URI to a prefix beginning with the characters "xml" (in any combination of case) or if an attempt is made to map either the empty prefix or the empty namespace (i.e., if either $prefix or $uri are the empty string).
+     *
+     * @throws \PHPCR\NamespaceException if an attempt is made to map a namespace URI to a prefix beginning with the
+     *                                   characters "xml" (in any combination of case) or if an attempt is made to map
+     *                                   either the empty prefix or the empty namespace (i.e., if either $prefix or $uri
+     *                                   are the empty string).
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function setNamespacePrefix($prefix, $uri) {
-        throw new NotImplementedException();
+
+
     }
 
     /**

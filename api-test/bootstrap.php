@@ -3,7 +3,7 @@
 // PHPUnit 3.4 compat
 if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
     PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__);
-    PHPUnit_Util_Filter::addFileToFilter(__DIR__.'/../src/jackalope/transport/curl.php');
+    PHPUnit_Util_Filter::addFileToFilter(__DIR__.'/../src/Jackalope/Transport/curl.php');
 }
 
 /**
@@ -30,7 +30,7 @@ foreach ($necessaryConfigValues as $val) {
 
 /** autoloader: jackalope-api-tests relies on an autoloader.
  */
-require_once(dirname(__FILE__) . '/../src/jackalope/autoloader.php');
+require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
 /**
  * Repository lookup is implementation specific.

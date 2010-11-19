@@ -5,8 +5,17 @@ namespace Jackalope;
  * Mirrors namespaces with jackarabbit backend
  */
 class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
+
+    /**
+     * Instance of an implementation of the TransportInterface
+     * @var TransportInterface
+     */
     protected $transport;
 
+    /**
+     * List of predefined namespaces.
+     * @var array
+     */
     protected $defaultNamespaces = array(
         self::PREFIX_JCR   => self::NAMESPACE_JCR,
         self::PREFIX_NT    => self::NAMESPACE_NT,
@@ -14,8 +23,22 @@ class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
         self::PREFIX_XML   => self::NAMESPACE_XML,
         self::PREFIX_EMPTY => self::NAMESPACE_EMPTY
     );
+
+    /**
+     * Set of namespaces registered by the user.
+     * @var array
+     */
     protected $userNamespaces = array();
 
+    /**
+     * Initializes the created object.
+     *
+     * <b>ATTENTION!!</b>
+     * TransportInterface.getNamespaces() is used but not present in the interface!
+     *
+     *
+     * @param TransportInterface $transport
+     */
     public function __construct(TransportInterface $transport) {
         $this->transport = $transport;
         $namespaces = $transport->getNamespaces();
@@ -99,7 +122,6 @@ Server: Jetty(6.1.x)
 <?xml version="1.0" encoding="UTF-8"?><D:error xmlns:D="DAV:"><dcr:exception xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><dcr:class>javax.jcr.NamespaceException</dcr:class><dcr:message>failed to register namespace valid -&gt; http://www.jcp.org/jcr/1.0: reserved URI</dcr:message></dcr:exception></D:error>
          */
     }
-
 
     /**
      * Removes a namespace mapping from the registry. The following restriction
