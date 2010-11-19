@@ -31,16 +31,21 @@ class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
     protected $userNamespaces = array();
 
     /**
+     * Instance of the NamespaceManager
+     *
+     * @var NamespaceManager
+     */
+    protected $namespaceManager = null;
+
+    /**
      * Initializes the created object.
-     *
-     * <b>ATTENTION!!</b>
-     * TransportInterface.getNamespaces() is used but not present in the interface!
-     *
      *
      * @param TransportInterface $transport
      */
     public function __construct(TransportInterface $transport) {
         $this->transport = $transport;
+        $this->namespaceManager = Factory::get('NamespaceManager', array($this->defaultNamespaces));
+
         $namespaces = $transport->getNamespaces();
         foreach($namespaces as $prefix => $uri) {
             if (! array_key_exists($prefix, $this->defaultNamespaces)) {
@@ -61,27 +66,35 @@ class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
      * and re-assigning it to a new URI in effect unregisters that URI.
      * Therefore, the same restrictions apply to this operation as to
      * NamespaceRegistry.unregisterNamespace:
-     * * Attempting to re-assign a built-in prefix (jcr, nt, mix, sv, xml,
+     * - Attempting to re-assign a built-in prefix (jcr, nt, mix, sv, xml,
      *   or the empty prefix) to a new URI will throw a
      *   \PHPCR\NamespaceException.
-     * * Attempting to register a namespace with a prefix that begins with
+     * - Attempting to register a namespace with a prefix that begins with
      *   the characters "xml" (in any combination of case) will throw a
      *   \PHPCR\NamespaceException.
-     * * An implementation may prevent the re-assignment of any other namespace
+     * - An implementation may prevent the re-assignment of any other namespace
      *   prefixes for implementation-specific reasons by throwing a
      *   \PHPCR\NamespaceException.
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.
      * @return void
+     *
      * @throws \PHPCR\NamespaceException If an attempt is made to re-assign a built-in prefix to a new URI or, to register a namespace with a prefix that begins with the characters "xml" (in any combination of case) or an attempt is made to perform a prefix re-assignment that is forbidden for implementation-specific reasons.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this repository does not support namespace registry changes.
      * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to register the namespace.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function registerNamespace($prefix, $uri) {
-        $this->checkPrefix($prefix);
+
         throw new NotImplementedException('Write');
+
+        // prevent default namespace to be overridden.
+        $this->namespaceManager->checkPrefix($prefix);
+
+        // update local info
+        $this->userNamespaces[$prefix] = $uri;
+
         //first try putting the stuff in backend, and only afterwards update lokal info
         //validation happens on the server, see second request trace below
         /*
@@ -112,7 +125,44 @@ Host: localhost:8080
 Content-Length: 2078
 Content-Type: text/xml; charset=UTF-8
 
-<?xml version="1.0" encoding="UTF-8"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><dcr:namespace><dcr:prefix/><dcr:uri/></dcr:namespace><dcr:namespace><dcr:prefix>nt</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/nt/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>valid</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>test</dcr:prefix><dcr:uri>http://liip.to/jackalope</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>xs</dcr:prefix><dcr:uri>http://www.w3.org/2001/XMLSchema</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>xml</dcr:prefix><dcr:uri>http://www.w3.org/XML/1998/namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>crx</dcr:prefix><dcr:uri>http://www.day.com/crx/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn_old</dcr:prefix><dcr:uri>http://www.w3.org/2004/10/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>mix</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/mix/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>lx</dcr:prefix><dcr:uri>http://flux-cms.org/2.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>jcr</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sling</dcr:prefix><dcr:uri>http://sling.apache.org/jcr/sling/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>new_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>vlt</dcr:prefix><dcr:uri>http://www.day.com/jcr/vault/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>my_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sv</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/sv/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn</dcr:prefix><dcr:uri>http://www.w3.org/2005/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>rep</dcr:prefix><dcr:uri>internal</dcr:uri></dcr:namespace></dcr:namespaces></D:prop></D:set></D:propertyupdate>
+<?xml version="1.0" encoding="UTF-8"?>
+  <D:propertyupdate xmlns:D="DAV:">
+  <D:set>
+   <D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+     <dcr:namespace>
+       <dcr:prefix/>
+       <dcr:uri/>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>nt</dcr:prefix>
+       <dcr:uri>http://www.jcp.org/jcr/nt/1.0</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>valid</dcr:prefix>
+       <dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>test</dcr:prefix>
+       <dcr:uri>http://liip.to/jackalope</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>xs</dcr:prefix>
+       <dcr:uri>http://www.w3.org/2001/XMLSchema</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>xml</dcr:prefix>
+       <dcr:uri>http://www.w3.org/XML/1998/namespace</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>crx</dcr:prefix>
+       <dcr:uri>http://www.day.com/crx/1.0</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>fn_old</dcr:prefix>
+       <dcr:uri>http://www.w3.org/2004/10/xpath-functions</dcr:uri>
+     </dcr:namespace>
+     <dcr:namespace>
+       <dcr:prefix>mix</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/mix/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>lx</dcr:prefix><dcr:uri>http://flux-cms.org/2.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>jcr</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sling</dcr:prefix><dcr:uri>http://sling.apache.org/jcr/sling/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>new_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>vlt</dcr:prefix><dcr:uri>http://www.day.com/jcr/vault/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>my_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sv</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/sv/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn</dcr:prefix><dcr:uri>http://www.w3.org/2005/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>rep</dcr:prefix><dcr:uri>internal</dcr:uri></dcr:namespace></dcr:namespaces></D:prop></D:set></D:propertyupdate>
 
 HTTP/1.1 409 Conflict
 Content-Type: text/xml; charset=utf-8
@@ -154,7 +204,6 @@ Server: Jetty(6.1.x)
      * Returns an array holding all currently registered prefixes.
      *
      * @return array a string array
-     * @throws \PHPCR\RepositoryException if an error occurs.
      */
     public function getPrefixes() {
         return array_merge(
@@ -180,8 +229,8 @@ Server: Jetty(6.1.x)
      *
      * @param string $prefix a string
      * @return string a string
+     *
      * @throws \PHPCR\NamespaceException if a mapping with the specified prefix does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs
      */
     public function getURI($prefix) {
         if (isset($this->defaultNamespaces[$prefix])) {
@@ -197,13 +246,14 @@ Server: Jetty(6.1.x)
      *
      * @param string $uri a string
      * @return string a string
+     *
      * @throws \PHPCR\NamespaceException if a mapping with the specified uri does not exist.
      * @throws \PHPCR\RepositoryException if another error occurs
      */
     public function getPrefix($uri) {
         $prefix = array_search($uri, $this->defaultNamespaces);
         if ($prefix === false) {
-            array_search($uri, $this->userNamespaces);
+            $prefix = array_search($uri, $this->userNamespaces);
             if ($prefix === false) {
                 throw new \PHPCR\NamespaceException("URI '$uri' is not defined in registry");
             }
@@ -212,18 +262,11 @@ Server: Jetty(6.1.x)
     }
 
     /**
-     * throws the \PHPCR\NamespaceException if an attempt is made to re-assign
-     * a built-in prefix to a new URI or, to register a namespace with a prefix
-     * that begins with the characters "xml" (in any combination of case)
-     * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
-     * @return void
+     * Exposes the set of default namespaces.
+     *
+     * @return array
      */
-    protected function checkPrefix($prefix) {
-        if (! strncasecmp('xml', $prefix, 3)) {
-            throw new \PHPCR\NamespaceException('Do not use xml in prefixes for namespace changes');
-        }
-        if (array_key_exists($prefix, $this->defaultNamespaces)) {
-            throw new \PHPCR\NamespaceException('Do not change the predefined prefixes');
-        }
+    public function getDefaultNamespaces() {
+        return $this->defaultNamespaces;
     }
 }
