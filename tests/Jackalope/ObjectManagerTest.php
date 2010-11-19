@@ -54,8 +54,8 @@ class ObjectManagerTest extends TestCase
 
     /**
      * @dataProvider dataproviderAbsolutePath
-     * @covers \jackalope\ObjectManager::absolutePath
-     * @covers \jackalope\ObjectManager::normalizePath
+     * @covers \Jackalope\ObjectManager::absolutePath
+     * @covers \Jackalope\ObjectManager::normalizePath
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
         $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());

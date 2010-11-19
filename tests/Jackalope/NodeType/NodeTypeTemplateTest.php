@@ -7,7 +7,7 @@ use Jackalope\TestCase;
 class NodeTypeTemplateTest extends TestCase
 {
     /**
-     * @covers jackalope\NodeType\NodeTypeTemplate
+     * @covers Jackalope\NodeType\NodeTypeTemplate
      */
     public function testCreateNodeTypeTemplateEmpty() {
         $ntm = $this->getNodeTypeManager();

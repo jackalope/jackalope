@@ -7,7 +7,7 @@ use Jackalope\TestCase;
 class PropertyDefinitionTemplateTest extends TestCase
 {
     /**
-     * @covers jackalope\NodeType\PropertyDefinitionTemplate::__construct
+     * @covers Jackalope\NodeType\PropertyDefinitionTemplate::__construct
      */
     public function testCreatePropertyDefinitionTemplateEmpty() {
         $ntm = $this->getNodeTypeManager();
