@@ -27,7 +27,11 @@ class Session implements \PHPCR\SessionInterface {
         $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
         $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
+
+//        $namespaceRegistry = Factory::get('NamespaceRegistry', array($transport));
+//        $this->namespaceManager = '';
     }
+
     /**
      * Returns the Repository object through which this session was acquired.
      *
@@ -592,8 +596,6 @@ class Session implements \PHPCR\SessionInterface {
      * @api
      */
     public function setNamespacePrefix($prefix, $uri) {
-
-
     }
 
     /**
