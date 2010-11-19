@@ -118,15 +118,12 @@ class DavexClientTest extends TestCase
             ->with(CURLOPT_URL, 'testuri');
         $t->curl->expects($this->at(2))
             ->method('setopt')
-            ->with(CURLOPT_RETURNTRANSFER, 1);
-        $t->curl->expects($this->at(3))
-            ->method('setopt')
             ->with(CURLOPT_HTTPHEADER, array(
                 'Depth: 3',
                 'Content-Type: text/xml; charset=UTF-8',
                 'User-Agent: '. \jackalope\transport\DavexClient::USER_AGENT
             ));
-        $t->curl->expects($this->at(4))
+        $t->curl->expects($this->at(3))
             ->method('setopt')
             ->with(CURLOPT_POSTFIELDS, 'testbody');
         $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
