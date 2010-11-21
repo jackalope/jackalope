@@ -41,23 +41,42 @@ class Request {
      */
     protected $type = '';
 
+    /**
+     * Instance of an implementation of the \Jackalope\Interfaces\DavexClient\Request.
+     * @var \Jackalope\Interfaces\DavexClient\Request
+     */
+    protected $typeObject = null;
+
+    /**
+     * List of arguments to be passed to the request type object.
+     * @var array
+     */
+    protected $arguments = array();
 
     /**
      * Constructor of the class.
      *
      * @param string $type Name of the request to be handled.
      */
-    public function __construct($type) {
+    public function __construct($type, array $arguments) {
         $this->type = $type;
+        $this->arguments = $arguments;
     }
 
+    /**
+     * Wrapper to expose the request specific build method via the request object.
+     * @return null
+     */
+    public function build() {
+        $this->getTypeObject()->build();
+    }
 
     /*************************************************************************/
     /* Depedencies
     /*************************************************************************/
 
     /**
-     * Instantiates an DOMDocument object if not existant.
+     * Instantiates a DOMDocument object if not existant.
      *
      * @return DOMDocument
      */
@@ -66,6 +85,25 @@ class Request {
             $this->dom = new \DOMDocument('1.0', 'UTF-8');
         }
         return $this->dom;
+    }
+
+    /**
+     * Instantiates a type specific request object.
+     *
+     * @return Jackalope\Interfaces\DavexClient\Request
+     * @throws \
+     */
+    protected function getTypeObject() {
+        if (is_null($this->typeObject)) {
+            switch($this->type) {
+                case 'NodeTypes':
+                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\NodeTypes($this->getDomObject(), $this->arguments);
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Invalid request type ('.$this->type.').');
+            }
+        }
+        return $this->typeObject;
     }
 
     /*************************************************************************/
@@ -78,6 +116,6 @@ class Request {
      * @return string XML representation of the request.
      */
     public function __toString() {
-        return "<xml />";
+        return strval($this->getTypeObject());
     }
 }
