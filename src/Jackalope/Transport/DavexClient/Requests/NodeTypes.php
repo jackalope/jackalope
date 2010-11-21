@@ -53,7 +53,7 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
      * @param DOMDocument $dom
      * @param array $arguments
      */
-    public function __construct($dom, $arguments) {
+    public function __construct($dom, array $arguments) {
         $this->dom = $dom;
         $this->arguments = $arguments;
     }
@@ -64,14 +64,14 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
      * @throws \InvalidArgumentException
      */
     public function build() {
-        // root element
-        //<jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">
-        $doc = $this->dom->createElementNS($this->nsUri, $this->nsPrefix.':nodetypes');
 
-        // nodetypes
         if (!isset($this->arguments['nodetypes'])) {
             throw new \InvalidArgumentException('Missing NodeTypes.');
         }
+
+        // root element
+        //<jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">
+        $doc = $this->dom->createElementNS($this->nsUri, $this->nsPrefix.':nodetypes');
 
         if (empty($this->arguments['nodetypes'])) {
             // <jcr:all-nodetypes/>
