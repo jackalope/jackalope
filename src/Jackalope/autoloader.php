@@ -6,12 +6,17 @@
  * this file in your entry points. It will automatically register the
  * jackalope_autoloader function with spl_autoload_register
  *
- * load a class named $class */
+ * load a class named $class
+ */
 function jackalope_autoloader($class) {
     if (false !== ($pos = strripos($class, '\\'))) {
         $relpath = false;
-        if (0 === strpos($class, 'Jackalope')) {
+        if ($jackPos = strpos($class, 'Jackalope')) {
             $relpath = '/../';
+            if ($jackPos === 1 || $jackPos === 0) {
+                $class = substr($class, $jackPos);
+                $pos = $pos - $jackPos;
+            }
         } else if (0 === strpos($class, 'PHPCR')) {
             $relpath = '/../../lib/phpcr/src/';
         }
