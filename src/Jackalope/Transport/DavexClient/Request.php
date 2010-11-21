@@ -36,22 +36,20 @@ class Request {
     protected $dom = null;
 
     /**
-     * Identifier of the 'REPORT' http request method.
+     * Name of the request type to be used.
      * @var string
      */
-    const REPORT = 'REPORT';
+    protected $type = '';
+
 
     /**
-     * Identifier of the 'PROPFIND' http request method.
-     * @var string
+     * Constructor of the class.
+     *
+     * @param string $type Name of the request to be handled.
      */
-    const PROPFIND = 'PROPFIND';
-
-    /**
-     * Identifier of the 'PROPPATCH' http request method.
-     * @var string
-     */
-    const PROPPATCH = 'PROPPATCH';
+    public function __construct($type) {
+        $this->type = $type;
+    }
 
 
     /*************************************************************************/
