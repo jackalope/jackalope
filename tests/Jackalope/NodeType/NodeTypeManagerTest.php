@@ -13,7 +13,7 @@ class NodeTypeManagerTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeType\NodeTypeManager::getNodeType
+     * @covers \Jackalope\NodeType\NodeTypeManager::getNodeType
      */
     public function testGetNodeType() {
         $nt = $this->ntm->getNodeType('nt:file');
@@ -25,10 +25,10 @@ class NodeTypeManagerTest extends TestCase
         $this->assertTrue($nt->isQueryable());
         $this->assertSame('jcr:content', $nt->getPrimaryItemName());
     }
-    
+
     /**
-     * @covers Jackalope\NodeType\NodeTypeManager::getDeclaredSubtypes
-     * @covers Jackalope\NodeType\NodeTypeManager::getSubtypes
+     * @covers \Jackalope\NodeType\NodeTypeManager::getDeclaredSubtypes
+     * @covers \Jackalope\NodeType\NodeTypeManager::getSubtypes
      */
     public function testTypeHierarchies() {
         $nt = $this->ntm->getNodeType('nt:file');
@@ -40,7 +40,7 @@ class NodeTypeManagerTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeType\NodeTypeManager::hasNodeType
+     * @covers \Jackalope\NodeType\NodeTypeManager::hasNodeType
      */
     public function testHasNodeType() {
         $this->assertTrue($this->ntm->hasNodeType('nt:folder'), 'manager claimed to not know about nt:folder');
@@ -63,7 +63,7 @@ class NodeTypeManagerTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeType\NodeTypeManager::createNodeTypeTemplate
+     * @covers \Jackalope\NodeType\NodeTypeManager::createNodeTypeTemplate
      */
     public function testCreateNodeTypeTemplate() {
         $ntm = $this->getNodeTypeManager();

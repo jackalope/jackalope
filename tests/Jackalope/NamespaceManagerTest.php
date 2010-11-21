@@ -28,7 +28,7 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
     /*************************************************************************/
 
     /**
-     * @covers NamespaceManager::checkPrefix
+     * @covers \Jackalope\NamespaceManager::checkPrefix
      */
     public function testCheckPrefix() {
         $prefix = 'beastie';
@@ -39,7 +39,7 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider checkPrefixDataprovider
-     * @covers NamespaceManager::checkPrefix
+     * @covers \Jackalope\NamespaceManager::checkPrefix
      * @expectedException \PHPCR\NamespaceException
      */
     public function testCheckPrefixExpexctingNamespaceException($prefix) {
