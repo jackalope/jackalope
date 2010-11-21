@@ -379,7 +379,7 @@ class DavexClient implements TransportInterface {
      * Returns node types
      * @param array nodetypes to request
      * @return dom with the definitions
-     * @throws \PHPCR\RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if not logged in.
      */
     public function getNodeTypes($nodeTypes = array()) {
         $this->checkLogin();
@@ -423,6 +423,10 @@ class DavexClient implements TransportInterface {
         $xmlStr .='</jcr:nodetypes>';
 
         return $xmlStr;
+
+//        $request = new \Jackalope\Transport\DavexClient\Request('NodeTypes', array('nodetypes' => $nodeTypes));
+//        $request->build();
+//        return strval($request);
     }
 
     /**
@@ -442,6 +446,10 @@ class DavexClient implements TransportInterface {
         }
         $xml .= '</D:prop></D:propfind>';
         return $xml;
+
+//        $request = new Jackalope\Transport\DavexClient\Request('Propfind', array('properties' => $properties));
+//        $request->build();
+//        return strval($request);
     }
 
     /**
@@ -454,6 +462,10 @@ class DavexClient implements TransportInterface {
         return '<?xml version="1.0" encoding="UTF-8"?><' .
                 $name .
                ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
+
+//        $request = new Jackalope\Transport\DavexClient\Request('Report', array('name' => $name));
+//        $request->build();
+//        return strval($request);
     }
 
     /**
@@ -468,6 +480,10 @@ class DavexClient implements TransportInterface {
                '<D:href xmlns:D="DAV:">' .
                 $uuid .
                '</D:href></dcr:locate-by-uuid>';
+
+//        $request = new Jackalope\Transport\DavexClient\Request('Locate', array('uuid' => $uuid));
+//        $request->build();
+//        return strval($request);
     }
 
     /**
