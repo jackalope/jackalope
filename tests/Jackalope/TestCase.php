@@ -41,7 +41,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $this->getMock('Jackalope\Session', array(), array(), '', false);
     }
 
-
     protected function getNodeTypeManager() {
         $dom = new \DOMDocument();
         $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
