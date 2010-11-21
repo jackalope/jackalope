@@ -8,7 +8,6 @@ use Jackalope\TestCase;
  * Test the Node Type.
  * TODO this needs some cleanup and we should verify if its complete
  * TODO: tests for ItemDefinition, PropertyDefinition and NodeDefinition probably missing or incomplete inside NodeType
- * @covers NodeType
  */
 class NodeTypeTest extends TestCase
 {
