@@ -16,7 +16,9 @@
     <filter>
         <blacklist>
             <directory>.</directory>
+            <directory>../lib</directory>
             <file>../src/Jackalope/autoloader.php</file>
+            <file>../src/Jackalope/Transport/curl.php</file>
         </blacklist>
     </filter>
 </phpunit>
