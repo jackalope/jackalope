@@ -7,3 +7,5 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
 
 require __DIR__.'/../src/Jackalope/autoloader.php';
 require __DIR__.'/Jackalope/TestCase.php';
+require __DIR__.'/Framework/ProxyObject.php';
+
