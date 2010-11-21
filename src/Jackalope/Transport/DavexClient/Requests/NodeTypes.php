@@ -75,7 +75,8 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
 
         if (empty($this->arguments['nodetypes'])) {
             // <jcr:all-nodetypes/>
-            $doc = $this->dom->createElement('jcr:all-nodetypes');
+            $nType = $this->dom->createElement('jcr:all-nodetypes');
+            $doc->appendChild($nType);
         } else {
             foreach ($this->arguments['nodetypes'] as $nodetype) {
                 // '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
