@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+  <D:prop>
+    <D:workspace/>
+    <dcr:workspaceName/>
+  </D:prop>
+</D:propfind>
