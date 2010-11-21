@@ -9,17 +9,18 @@
  * load a class named $class
  */
 function jackalope_autoloader($class) {
+
     if (false !== ($pos = strripos($class, '\\'))) {
         $relpath = false;
-        if ($jackPos = strpos($class, 'Jackalope')) {
+        $jackPos = strpos($class, 'Jackalope');
+        if ($jackPos === 1 || $jackPos === 0) {
             $relpath = '/../';
-            if ($jackPos === 1 || $jackPos === 0) {
-                $class = substr($class, $jackPos);
-                $pos = $pos - $jackPos;
-            }
+            $class = substr($class, $jackPos);
+            $pos = $pos - $jackPos;
         } else if (0 === strpos($class, 'PHPCR')) {
             $relpath = '/../../lib/phpcr/src/';
         }
+
         if ($relpath) {
             // namespaced class name
             $namespace = substr($class, 0, $pos);
