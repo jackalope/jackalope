@@ -97,13 +97,25 @@ class Request {
         if (is_null($this->typeObject)) {
             switch($this->type) {
                 case 'NodeTypes':
-                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\NodeTypes($this->getDomObject(), $this->arguments);
+                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\NodeTypes(
+                        $this->getDomObject(),
+                        $this->arguments
+                    );
                     break;
                 default:
                     throw new \InvalidArgumentException('Invalid request type ('.$this->type.').');
             }
         }
         return $this->typeObject;
+    }
+
+    /**
+     * Sets the request object ot be used instead of the original one.
+     *
+     * @param \Jackalope\Interfaces\DavexClient\Request $request
+     */
+    public function setTypeObject(\Jackalope\Interfaces\DavexClient\Request $request) {
+        $this->typeObject = $request;
     }
 
     /*************************************************************************/
