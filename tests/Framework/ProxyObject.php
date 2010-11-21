@@ -47,14 +47,14 @@ class ProxyObject {
             $originalClassName, $methods, $proxyClassName, $callAutoload
         );
 
-        if (!class_exists($proxyClass['proxyClassName'], false)) {
-            eval($proxyClass['code']);
-        }
-
         if (!empty($proxyClass['namespaceName'])) {
             $classname = '\\'.$proxyClass['namespaceName'].'\\'.$proxyClass['proxyClassName'];
         } else {
             $classname = $proxyClass['proxyClassName'];
+        }
+
+        if (!class_exists($classname, false)) {
+            eval($proxyClass['code']);
         }
 
         if (empty($arguments)) {
