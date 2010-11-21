@@ -40,7 +40,7 @@ class ProxyObject {
      *
      * @return object Instance of the proxied class exposing the configured attributes and methods.
      */
-    public function getProxy($originalClassName, array $methods = NULL, array $arguments = array(),
+    public function getProxy($originalClassName, array $methods = null, array $arguments = array(),
                              $proxyClassName = '', $callAutoload = false) {
         include_once(dirname(__FILE__).'/ProxyObject/Generator.php');
         $proxyClass = ProxyObjectGenerator::generate(
@@ -52,7 +52,7 @@ class ProxyObject {
         }
 
         if (!empty($proxyClass['namespaceName'])) {
-            $classname = $proxyClass['namespaceName'].'\\'.$proxyClass['proxyClassName'];
+            $classname = '\\'.$proxyClass['namespaceName'].'\\'.$proxyClass['proxyClassName'];
         } else {
             $classname = $proxyClass['proxyClassName'];
         }

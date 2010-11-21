@@ -104,7 +104,7 @@ class ProxyObjectGenerator {
      * @return array The data to be used for the actual reflection.
      */
     public static function generate($originalClassName, array $methods = NULL, $proxyClassName = '',
-    $callAutoload = FALSE) {
+                                    $callAutoload = false) {
 
         if ($proxyClassName == '') {
             $key = md5(
@@ -140,8 +140,8 @@ class ProxyObjectGenerator {
      * @param boolean $callAutoload Switch to run the autoloader.
      * @return array The data to be used for the actual reflection.
      */
-    protected static function generateProxy($originalClassName, array $methods = NULL,
-    $proxyClassName = '', $callAutoload = FALSE) {
+    protected static function generateProxy($originalClassName, array $methods = null,
+                                            $proxyClassName = '', $callAutoload = false) {
         $templateDir = dirname(__FILE__).DIRECTORY_SEPARATOR.'Generator'.DIRECTORY_SEPARATOR;
         $classTemplate = self::createTemplateObject(
             $templateDir.'proxied_class.tpl'
@@ -259,8 +259,9 @@ class ProxyObjectGenerator {
             $namespaceName = implode('\\', $classNameParts);
             $fullClassName = $namespaceName.'\\'.$originalClassName;
 
-            // remove leading backslash since eval() has a problem with it.
-            $namespaceName = substr($namespaceName,1);
+            // eval does identifies namespaces with leading backslash as constant.
+            $namespaceName = (0 === stripos($namespaceName, '\\') ? substr($namespaceName, 1) : $namespaceName);
+
         } else {
             $namespaceName = '';
             $fullClassName = $originalClassName;
@@ -269,7 +270,7 @@ class ProxyObjectGenerator {
         if ($proxyClassName == '') {
             do {
                 $proxyClassName = 'Proxy_'.$originalClassName.'_'.substr(md5(microtime()), 0, 8);
-            } while (class_exists($proxyClassName, FALSE));
+            } while (class_exists($proxyClassName, false));
         }
 
         return array(
@@ -342,11 +343,11 @@ class ProxyObjectGenerator {
         $method->isFinal() ||
         $method->isStatic() ||
         isset(self::$blacklistedMethodNames[$method->getName()])) {
-            return FALSE;
+            return false;
         } elseif ($method->isProtected()) {
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
