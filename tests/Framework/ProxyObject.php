@@ -18,7 +18,7 @@
  * @package Jackalope
  * @subpackage Unittests
  */
-namespace Tests\Unittests;
+namespace Tests\Framework;
 
 /**
  * The proxy class wrapps the original class to expose protected or private methods or attributes.

@@ -6,7 +6,7 @@
  * @subpackage Unittests
  */
 
-namespace Tests\Unittests;
+namespace Tests\Framework;
 
 /**
  * Path to this module.
