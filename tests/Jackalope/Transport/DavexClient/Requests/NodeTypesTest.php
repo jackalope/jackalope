@@ -51,7 +51,7 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
      * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::build
      * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::__toString
      */
-    public function testBuildWithMultipleNodetypes($arguments, $fixtureFilename) {
+    public function testBuildWithNodetypes($arguments, $fixtureFilename) {
         $nt = $this->getNodeTypesObject($arguments);
         $nt->build();
 
@@ -83,6 +83,10 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
             'single Nodetypes' => array(
                 array('nodetypes' => array('Beastie')),
                 'NodeTypesBuildWithOneNodetype.xml'
+            ),
+            'empty Nodetypes' => array(
+                array('nodetypes' => array()),
+                'NodeTypesBuildWithEmptyNodetype.xml'
             ),
         );
     }

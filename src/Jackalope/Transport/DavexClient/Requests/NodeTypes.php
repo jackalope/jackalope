@@ -59,8 +59,8 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
     }
 
     /**
+     * Generates the DOMDocument representing the request to be send.
      *
-     * Enter description here ...
      * @throws \InvalidArgumentException
      */
     public function build() {
@@ -75,7 +75,7 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
 
         if (empty($this->arguments['nodetypes'])) {
             // <jcr:all-nodetypes/>
-            $item = $this->dom->createElement('jcr:all-nodetypes');
+            $doc = $this->dom->createElement('jcr:all-nodetypes');
         } else {
             foreach ($this->arguments['nodetypes'] as $nodetype) {
                 // '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
