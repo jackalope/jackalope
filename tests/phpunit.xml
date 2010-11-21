@@ -10,12 +10,13 @@
     
     <testsuites>
         <testsuite name="Jackalope Unit Tests">
-            <directory>./Jackalope</directory>
+            <directory>.</directory>
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
-            <directory>./Jackalope</directory>
-        </whitelist>
+        <blacklist>
+            <directory>.</directory>
+            <file>../src/Jackalope/autoloader.php</file>
+        </blacklist>
     </filter>
 </phpunit>
