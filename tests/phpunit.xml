@@ -9,8 +9,13 @@
     </php>
     
     <testsuites>
-      <testsuite name="Jackalope Unit Tests">
-        <directory>.</directory>
-      </testsuite>
+        <testsuite name="Jackalope Unit Tests">
+            <directory>./Jackalope</directory>
+        </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory>./Jackalope</directory>
+        </whitelist>
+    </filter>
 </phpunit>
