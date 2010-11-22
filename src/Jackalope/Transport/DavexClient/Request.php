@@ -102,6 +102,12 @@ class Request {
                         $this->arguments
                     );
                     break;
+                case 'Propfind':
+                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\Propfind(
+                        $this->getDomObject(),
+                        $this->arguments
+                    );
+                    break;
                 default:
                     throw new \InvalidArgumentException('Invalid request type ('.$this->type.').');
             }

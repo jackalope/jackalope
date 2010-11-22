@@ -54,11 +54,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @dataProvider getTypeObjectDataprovider
      * @covers  \Jackalope\Transport\DavexClient\Request::getTypeObject
      */
-    public function testGetTypeObject() {
-        $request = $this->getRequestProxy('getTypeObject', array('NodeTypes', array()));
-        $this->assertInstanceOf('\Jackalope\Transport\DavexClient\Requests\NodeTypes', $request->getTypeObject());
+    public function testGetTypeObject($expected, $requestType) {
+        $request = $this->getRequestProxy('getTypeObject', array($requestType, array()));
+        $this->assertInstanceOf($expected, $request->getTypeObject());
     }
 
     /**
@@ -96,6 +97,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $request->setTypeObject(new \Jackalope\Transport\DavexClient\DummyTypeObject);
         $this->assertEquals('Dummy object', strval($request));
     }
+
+    /*************************************************************************/
+    /* Dataprovider
+    /*************************************************************************/
+
+    public static function getTypeObjectDataprovider() {
+        return array(
+            'get NodeTypes request' => array('\Jackalope\Transport\DavexClient\Requests\NodeTypes', 'NodeTypes'),
+            'get Propfind request' => array('\Jackalope\Transport\DavexClient\Requests\Propfind', 'Propfind'),
+        );
+    }
 }
 
 /**
@@ -105,6 +117,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 class DummyTypeObject implements \Jackalope\Interfaces\DavexClient\Request {
 
     public function build(){}
+
+    public function getXml(){}
 
     public function __toString(){
         return 'Dummy object';
