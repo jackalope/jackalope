@@ -26,13 +26,21 @@ class DavexClientTest extends TestCase
             if (is_file($fixture)) {
                 $fixture = file_get_contents($fixture);
             }
-            $curl->expects($this->any())
+            $curl
+                ->expects($this->any())
                 ->method('exec')
                 ->will($this->returnValue($fixture));
+
+            $curl
+                ->expects($this->any())
+                ->method('getinfo')
+                ->with($this->equalTo('2097154')) // content of CURLINFO_HTTP_CODE
+                ->will($this->returnValue(200));
         }
 
         if (isset($errno)) {
-            $curl->expects($this->any())
+            $curl
+                ->expects($this->any())
                 ->method('errno')
                 ->will($this->returnValue($errno));
         }
@@ -120,7 +128,7 @@ class DavexClientTest extends TestCase
             ->method('setopt')
             ->with(CURLOPT_HTTPHEADER, array(
                 'Depth: 3',
-                'Content-Type: text/xml; charset=UTF-8',
+                'Content-Type: text/xml; charset=utf-8',
                 'User-Agent: '. \jackalope\transport\DavexClient::USER_AGENT
             ));
         $t->curl->expects($this->at(3))
@@ -711,8 +719,8 @@ class DavexClientMock extends DavexClient {
         return parent::closeConnection();
     }
 
-    public function prepareRequest($type, $uri, $body = '', $depth = 0) {
-        return parent::prepareRequest($type, $uri, $body, $depth);
+    public function prepareRequest($type, $uri, $body = '', $depth = 0, $contentType = 'text/xml; charset=utf-8') {
+        return parent::prepareRequest($type, $uri, $body, $depth, $contentType);
     }
 
     public function setCredentials($credentials) {
