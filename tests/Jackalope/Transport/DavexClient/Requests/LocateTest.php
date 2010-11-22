@@ -37,7 +37,6 @@ class LocateTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Locate::build
-     * @covers \Jackalope\Transport\DavexClient\Requests\Locate::__toString
      */
     public function testBuild() {
         $arguments = array('uuid' => 'b58401da57c82346c4d3c01e1509a4b861a55114');

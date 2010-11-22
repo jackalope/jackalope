@@ -30,12 +30,6 @@ namespace Jackalope\Transport\DavexClient\Requests;
 class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base {
 
     /**
-     * List of arguments to be handled.
-     * @var array
-     */
-    protected $arguments = array();
-
-    /**
      * Identifier of the used XML namespace
      * @var array
      */

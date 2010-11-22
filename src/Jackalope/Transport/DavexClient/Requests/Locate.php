@@ -22,15 +22,12 @@
 namespace Jackalope\Transport\DavexClient\Requests;
 
 /**
+ * Class to handle a Locate request.
  *
+ * @package jackalope
+ * @subpackage transport
  */
 class Locate extends \Jackalope\Transport\DavexClient\Requests\Base {
-
-    /**
-     * List of arguments to be handled.
-     * @var array
-     */
-    protected $arguments = array();
 
     /**
      * Identifier of the used XML namespace

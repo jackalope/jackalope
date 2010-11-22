@@ -36,20 +36,8 @@ class PropfindTest extends \PHPUnit_Framework_TestCase {
     /*************************************************************************/
 
     /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\Propfind::__construct
-     */
-    public function testConstruct() {
-        $arguments = array('properties' => array('D:workspace', 'dcr:workspaceName'));
-        $request = $this->getPropfindObject($arguments);
-
-        $this->assertAttributeEquals($arguments, 'arguments', $request);
-        $this->assertAttributeInstanceOf('DOMDocument', 'dom', $request);
-    }
-
-    /**
      * @dataProvider buildDataprovider
      * @covers \Jackalope\Transport\DavexClient\Requests\Propfind::build
-     * @covers \Jackalope\Transport\DavexClient\Requests\Propfind::__toString
      */
     public function testBuildWithMultipleProperties($arguments, $fixtureFilename) {
         $request = $this->getPropfindObject($arguments);
@@ -68,20 +56,6 @@ class PropfindTest extends \PHPUnit_Framework_TestCase {
     public function testBuildExpectingInvalidArgumentException() {
         $nt = $this->getPropfindObject(array());
         $nt->build();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\Propfind::getXml
-     */
-    public function testGetXml() {
-        $arguments = array('properties' => array('D:workspace', 'dcr:workspaceName'));
-        $request = $this->getPropfindObject($arguments);
-        $request->build();
-
-        $this->assertXmlStringEqualsXmlFile(
-            $this->getFixtureFile('PropfindBuildWithMultipleProperties.xml'),
-            $request->getXml()
-        );
     }
 
     /*************************************************************************/

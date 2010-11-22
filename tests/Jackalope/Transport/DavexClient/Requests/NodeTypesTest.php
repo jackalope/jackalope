@@ -36,20 +36,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
     /*************************************************************************/
 
     /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::__construct
-     */
-    public function testConstruct() {
-        $arguments = array('nodetypes' => array('Beastie', 'Puffy'));
-        $nt = $this->getNodeTypesObject($arguments);
-
-        $this->assertAttributeEquals($arguments, 'arguments', $nt);
-        $this->assertAttributeInstanceOf('DOMDocument', 'dom', $nt);
-    }
-
-    /**
      * @dataProvider buildDataprovider
      * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::build
-     * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::__toString
      */
     public function testBuildWithNodetypes($arguments, $fixtureFilename) {
         $nt = $this->getNodeTypesObject($arguments);
@@ -68,18 +56,6 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
     public function testBuildExpectingInvalidArgumentException() {
         $nt = $this->getNodeTypesObject(array());
         $nt->build();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::getXml
-     */
-    public function testGetXml() {
-        $nt = $this->getNodeTypesObject(array('nodetypes' => array('Beastie', 'Puffy')));
-        $nt->build();
-        $this->assertXmlStringEqualsXmlFile(
-            $this->getFixtureFile('NodeTypesBuildWithMultipleNodetypes.xml'),
-            $nt->getXml()
-        );
     }
 
     /*************************************************************************/
