@@ -28,13 +28,7 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
-
-    /**
-     * DOM representation of the request.
-     * @var DOMDocument
-     */
-    protected $dom = null;
+class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base {
 
     /**
      * List of arguments to be handled.
@@ -53,17 +47,6 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
      * @var string
      */
     protected $nsUri = 'http://www.day.com/jcr/webdav/1.0';
-
-    /**
-     * Initiaties the NodeTypes request object.
-     *
-     * @param DOMDocument $dom
-     * @param array $arguments
-     */
-    public function __construct($dom, array $arguments) {
-        $this->dom = $dom;
-        $this->arguments = $arguments;
-    }
 
     /**
      * Generates the DOMDocument representing the request to be send.
@@ -94,27 +77,5 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
             }
         }
         $this->dom->appendChild($doc);
-    }
-
-    /**
-     * Generate the XML string from the created DOMDocument.
-     *
-     * @return string The XML string representation of the recent generated DOMDocument.
-     */
-    public function getXml() {
-        return strval($this);
-    }
-
-    /*************************************************************************/
-    /* Magic methods
-    /*************************************************************************/
-
-    /**
-     * Generate the XML string from the created DOMDocument.
-     *
-     * @return string The XML string representation of the recent generated DOMDocument.
-     */
-    public function __toString() {
-        return $this->dom->saveXML();
     }
 }

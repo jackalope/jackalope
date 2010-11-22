@@ -36,31 +36,6 @@ class LocateTest extends \PHPUnit_Framework_TestCase {
     /*************************************************************************/
 
     /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\Locate::__construct
-     */
-    public function testConstruct() {
-        $arguments = array('properties' => array('D:workspace', 'dcr:workspaceName'));
-        $request = $this->getLocateObject($arguments);
-
-        $this->assertAttributeEquals($arguments, 'arguments', $request);
-        $this->assertAttributeInstanceOf('DOMDocument', 'dom', $request);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\DavexClient\Requests\Locate::getXml
-     */
-    public function testGetXml() {
-        $arguments = array('uuid' => 'b58401da57c82346c4d3c01e1509a4b861a55114');
-        $request = $this->getLocateObject($arguments);
-        $request->build();
-
-        $this->assertXmlStringEqualsXmlFile(
-            $this->getFixtureFile('LocateBuildWithOneUuid.xml'),
-            $request->getXml()
-        );
-    }
-
-    /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Locate::build
      * @covers \Jackalope\Transport\DavexClient\Requests\Locate::__toString
      */

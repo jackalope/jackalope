@@ -48,13 +48,6 @@ interface Request {
     const PROPPATCH = 'PROPPATCH';
 
     /**
-     * Generates the DOMDocument representing the request.
-     *
-     * @return null
-     */
-    public function build();
-
-    /**
      * Generates the XML string representing the request.
      *
      * @return string
