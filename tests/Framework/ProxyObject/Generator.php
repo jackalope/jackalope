@@ -207,7 +207,7 @@ class ProxyObjectGenerator {
                 }
             }
         } else {
-            $proxyMethods = $class->getMethods(ReflectionMethod::IS_PROTECTED);
+            $proxyMethods = $class->getMethods(\ReflectionMethod::IS_PROTECTED);
             if (!(is_array($proxyMethods) && count($proxyMethods) > 0)) {
                 throw new \PHPUnit_Framework_Exception(
                     sprintf(
@@ -285,10 +285,10 @@ class ProxyObjectGenerator {
      * Generates the definition of a method to be proxied.
      *
      * @param string $templateDir Location of the templates to be used to create the proxy.
-     * @param ReflectionMethod $method Name of the method to be reflected.
+     * @param \ReflectionMethod $method Name of the method to be reflected.
      * @return array Information about the method to be proxied.
      */
-    protected static function generateProxiedMethodDefinition($templateDir, $method) {
+    protected static function generateProxiedMethodDefinition($templateDir, \ReflectionMethod $method) {
         if ($method->returnsReference()) {
             $reference = '&';
         } else {
@@ -357,7 +357,7 @@ class ProxyObjectGenerator {
      * If a version is 3.5 of higher Text_Template, else PHPUnit_Util_Template
      * is used.
      *
-     * @param ReflectionMethod $method Name of the method to be reflected.
+     * @param string $file The location of the template file to be used.
      * @return Text_Template|PHPUnit_Util_Template The template object to create the proxy class.
      */
     protected static function createTemplateObject($file) {
