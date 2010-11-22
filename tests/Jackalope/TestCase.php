@@ -10,14 +10,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
-    protected function setUp() {
+    protected function setUp()
+    {
         foreach ($this->configKeys as $cfgKey) {
             $this->config[substr($cfgKey, 4)] = $GLOBALS[$cfgKey];
         }
         $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
     }
 
-    protected function getTransportStub($path) {
+    protected function getTransportStub($path)
+    {
         $transport = $this->getMock('Jackalope\Transport\DavexClient', array('getItem', 'getNodeTypes', 'getNodePathForIdentifier'), array('http://example.com'));
 
         $transport->expects($this->any())
@@ -37,11 +39,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $transport;
     }
 
-    protected function getSessionMock() {
+    protected function getSessionMock()
+    {
         return $this->getMock('Jackalope\Session', array(), array(), '', false);
     }
 
-    protected function getNodeTypeManager() {
+    protected function getNodeTypeManager()
+    {
         $dom = new \DOMDocument();
         $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
         $om = $this->getMock('Jackalope\ObjectManager', array('getNodeTypes'), array($this->getTransportStub('/jcr:root'), $this->getSessionMock()));

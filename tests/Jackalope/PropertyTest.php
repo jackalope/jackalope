@@ -4,7 +4,8 @@ namespace Jackalope;
 
 class PropertyTest extends TestCase
 {
-    public function testTypeInstances() {
+    public function testTypeInstances()
+    {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*
         $val = new \jackalope\Value('undefined', '');
@@ -40,7 +41,8 @@ class PropertyTest extends TestCase
         */
     }
 
-    public function testBaseConversions() {
+    public function testBaseConversions()
+    {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*
         $val = new \jackalope\Value('String', '1.1');

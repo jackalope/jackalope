@@ -4,7 +4,8 @@ namespace Jackalope;
 
 class RepositoryTest extends TestCase
 {
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
         $transport = $this->getMock('Jackalope\Transport\DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));

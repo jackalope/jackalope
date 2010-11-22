@@ -9,8 +9,8 @@ namespace Jackalope;
  *
  * @api
  */
-class Property extends Item implements \PHPCR\PropertyInterface {
-
+class Property extends Item implements \PHPCR\PropertyInterface
+{
     protected $value;
     protected $isMultiple = false;
     protected $type;
@@ -21,14 +21,15 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * to indicate this has been created locally, make sure to pass true for the $new parameter
      *
      * @param array $data array with fields
-                        type (integer or string from PropertyType)
-                        and value (data for creating value object)
+     *                    type (integer or string from PropertyType)
+     *                    and value (data for creating value object)
      * @param string $path the absolute path of this item
      * @param Session the session instance
      * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
      */
-    public function __construct(array $data, $path, Session $session, ObjectManager $objectManager, $new = false) {
+    public function __construct(array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
+    {
         parent::__construct(null, $path, $session, $objectManager, $new);
 
         $type = $data['type'];
@@ -99,7 +100,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      * @api
      */
-    public function setValue($value, $type = NULL, $weak = false) {
+    public function setValue($value, $type = NULL, $weak = false)
+    {
         if (is_array($value) && ! $this->isMultiple)
             throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
 
@@ -130,7 +132,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      *
      * @return mixed value of this property, or array in case of multi-value
      */
-    public function getNativeValue() {
+    public function getNativeValue()
+    {
         return $this->value;
     }
 
@@ -143,7 +146,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getString() {
+    public function getString()
+    {
         if ($this->type != \PHPCR\PropertyType::STRING) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::STRING);
         } else {
@@ -159,7 +163,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getBinary() {
+    public function getBinary()
+    {
         if ($this->type != \PHPCR\PropertyType::BINARY) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::BINARY);
         } else {
@@ -176,7 +181,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getLong() {
+    public function getLong()
+    {
         if ($this->type != \PHPCR\PropertyType::LONG) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::LONG);
         } else {
@@ -193,7 +199,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getDouble() {
+    public function getDouble()
+    {
         if ($this->type != \PHPCR\PropertyType::DOUBLE) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DOUBLE);
         } else {
@@ -210,7 +217,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getDecimal() {
+    public function getDecimal()
+    {
         if ($this->type != \PHPCR\PropertyType::DECIMAL) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DECIMAL);
         } else {
@@ -227,7 +235,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getDate() {
+    public function getDate()
+    {
         if ($this->type != \PHPCR\PropertyType::DATE) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DATE);
         } else {
@@ -244,7 +253,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getBoolean() {
+    public function getBoolean()
+    {
         if ($this->type != \PHPCR\PropertyType::BOOLEAN) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::BOOLEAN);
         } else {
@@ -267,7 +277,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getNode() {
+    public function getNode()
+    {
         $this->checkMultiple(); //FIXME: multi-value
         switch($this->type) {
             case \PHPCR\PropertyType::PATH:
@@ -303,7 +314,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getProperty() {
+    public function getProperty()
+    {
         throw new NotImplementedException();
     }
 
@@ -322,7 +334,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getLength() {
+    public function getLength()
+    {
         $this->checkMultiple();
         if (\PHPCR\PropertyType::BINARY === $this->type) {
             throw new NotImplementedException('Binaries not implemented');
@@ -345,7 +358,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getLengths() {
+    public function getLengths()
+    {
         $this->checkMultiple(false);
         $ret = array();
         foreach ($this->value as $value) {
@@ -376,7 +390,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getDefinition() {
+    public function getDefinition()
+    {
         if (empty($this->definition)) {
             //FIXME: acquire definition
         }
@@ -407,7 +422,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -419,7 +435,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isMultiple() {
+    public function isMultiple()
+    {
         return $this->isMultiple;
     }
 
@@ -427,7 +444,8 @@ class Property extends Item implements \PHPCR\PropertyInterface {
      * Throws an exception if the property is multivalued
      * @throws \PHPCR\ValueFormatException
      */
-    protected function checkMultiple($isMultiple = true) {
+    protected function checkMultiple($isMultiple = true)
+    {
         if ($isMultiple === $this->isMultiple) {
             throw new \PHPCR\ValueFormatException();
         }

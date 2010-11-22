@@ -4,7 +4,8 @@ namespace Jackalope\NodeType;
 use Jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
-class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface {
+class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface
+{
     const DEFAULT_PRIMARY_NODE = 'nt:base';
 
     protected $requiredPrimaryTypes = array();
@@ -13,7 +14,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     protected $allowsSameNameSiblings;
 
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    {
         parent::__construct($node, $nodeTypeManager);
 
         $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
@@ -53,7 +55,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      *
      * @return \PHPCR\NodeType\NodeTypeInterface an array of NodeType objects.
      */
-    public function getRequiredPrimaryTypes() {
+    public function getRequiredPrimaryTypes()
+    {
         // TODO if this is not attached to a live NodeType, return NULL
         if (empty($this->requiredPrimaryTypes)) {
             foreach ($this->requiredPrimaryTypeNames as $primaryTypeName) {
@@ -75,7 +78,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      *
      * @return array a String array
      */
-    public function getRequiredPrimaryTypeNames() {
+    public function getRequiredPrimaryTypeNames()
+    {
         return $this->requiredPrimaryTypeNames;
     }
 
@@ -93,7 +97,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      *
      * @return \PHPCR\NodeType\NodeTypeInterface a NodeType.
      */
-    public function getDefaultPrimaryType() {
+    public function getDefaultPrimaryType()
+    {
         if (null === $this->defaultPrimaryTypeName) {
             return null;
         }
@@ -112,7 +117,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      *
      * @return string a String
      */
-    public function getDefaultPrimaryTypeName() {
+    public function getDefaultPrimaryTypeName()
+    {
         return $this->defaultPrimaryTypeName;
     }
 
@@ -126,8 +132,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      *
      * @return boolean a boolean.
      */
-    public function allowsSameNameSiblings() {
+    public function allowsSameNameSiblings()
+    {
         return $this->allowsSameNameSiblings;
     }
-
 }

@@ -21,8 +21,8 @@
 
 namespace Jackalope\Interfaces\DavexClient;
 
-interface Request {
-
+interface Request
+{
     /**
      * Identifier of the 'GET' http request method.
      * @var string

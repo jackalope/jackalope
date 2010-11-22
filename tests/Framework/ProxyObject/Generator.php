@@ -27,8 +27,8 @@ if (version_compare(\PHPUnit_Runner_Version::id(), '3.5', '<')) {
  * @subpackage Unittests
  *
  */
-class ProxyObjectGenerator {
-
+class ProxyObjectGenerator
+{
     /**
      * Contain elements worth caching.
      * @var array
@@ -251,7 +251,8 @@ class ProxyObjectGenerator {
      * @param  string $proxyClassName Name to be used for the reflected class.
      * @return array Information of the class to be reflected.
      */
-    protected static function generateProxyClassName($originalClassName, $proxyClassName) {
+    protected static function generateProxyClassName($originalClassName, $proxyClassName)
+    {
         $classNameParts = explode('\\', $originalClassName);
 
         if (count($classNameParts) > 1) {
@@ -288,7 +289,8 @@ class ProxyObjectGenerator {
      * @param \ReflectionMethod $method Name of the method to be reflected.
      * @return array Information about the method to be proxied.
      */
-    protected static function generateProxiedMethodDefinition($templateDir, \ReflectionMethod $method) {
+    protected static function generateProxiedMethodDefinition($templateDir, \ReflectionMethod $method)
+    {
         if ($method->returnsReference()) {
             $reference = '&';
         } else {
@@ -316,7 +318,8 @@ class ProxyObjectGenerator {
      * @param string $method
      * @return array List of parameters to be passed to the proxied method.
      */
-    public static function getMethodCallParameters($method) {
+    public static function getMethodCallParameters($method)
+    {
         $parameters = array();
         foreach ($method->getParameters() as $i => $parameter) {
             $parameters[] = '$'.$parameter->getName();
@@ -338,7 +341,8 @@ class ProxyObjectGenerator {
      * @param \ReflectionMethod $method Name of the method to be reflected.
      * @return boolean True, if the given method may be reflected, else false.
      */
-    protected static function canProxyMethod(\ReflectionMethod $method) {
+    protected static function canProxyMethod(\ReflectionMethod $method)
+    {
         if ($method->isConstructor() ||
         $method->isFinal() ||
         $method->isStatic() ||
@@ -360,7 +364,8 @@ class ProxyObjectGenerator {
      * @param string $file The location of the template file to be used.
      * @return Text_Template|PHPUnit_Util_Template The template object to create the proxy class.
      */
-    protected static function createTemplateObject($file) {
+    protected static function createTemplateObject($file)
+    {
         if (version_compare(\PHPUnit_Runner_Version::id(), '3.5', '>=')) {
             include_once('Text/Template.php');
             return new \Text_Template($file);

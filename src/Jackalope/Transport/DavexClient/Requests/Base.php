@@ -27,8 +27,8 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-abstract class Base implements \Jackalope\Interfaces\DavexClient\Request {
-
+abstract class Base implements \Jackalope\Interfaces\DavexClient\Request
+{
     /**
      * DOM representation of the request.
      * @var DOMDocument
@@ -51,7 +51,8 @@ abstract class Base implements \Jackalope\Interfaces\DavexClient\Request {
      * @param DOMDocument $dom
      * @param array $arguments
      */
-    public function __construct($dom, array $arguments) {
+    public function __construct($dom, array $arguments)
+    {
         $this->dom = $dom;
         $this->arguments = $arguments;
     }
@@ -61,7 +62,8 @@ abstract class Base implements \Jackalope\Interfaces\DavexClient\Request {
      *
      * @return string The XML string representation of the recent generated DOMDocument.
      */
-    public function getXml() {
+    public function getXml()
+    {
         return strval($this);
     }
 
@@ -80,7 +82,8 @@ abstract class Base implements \Jackalope\Interfaces\DavexClient\Request {
      *
      * @return string The XML string representation of the recent generated DOMDocument.
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->dom->saveXML();
     }
 }

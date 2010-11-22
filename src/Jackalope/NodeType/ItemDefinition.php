@@ -7,7 +7,8 @@ use \DOMElement;
 /**
  * Superclass of NodeDefinition and PropertyDefinition.
  */
-class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
+class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
+{
     protected $nodeTypeManager;
 
     protected $declaringNodeType;
@@ -17,7 +18,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
     protected $isProtected;
     protected $onParentVersion;
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    {
         $this->nodeTypeManager = $nodeTypeManager;
         $this->declaringNodeType = $node->getAttribute('declaringNodeType');
         $this->name = $node->getAttribute('name');
@@ -37,7 +39,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      * @return \PHPCR\NodeType\NodeTypeInterface a NodeType object.
      */
 
-    public function getDeclaringNodeType() {
+    public function getDeclaringNodeType()
+    {
         return $this->nodeTypeManager->getNodeType($this->declaringNodeType);
     }
 
@@ -54,7 +57,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      *
      * @return string a String denoting the name or "*".
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -80,7 +84,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      *
      * @return boolean a boolean.
      */
-    public function isAutoCreated() {
+    public function isAutoCreated()
+    {
         return $this->isAutoCreated;
     }
 
@@ -104,7 +109,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      *
      * @return boolean a boolean
      */
-    public function isMandatory() {
+    public function isMandatory()
+    {
         return $this->isMandatory;
     }
 
@@ -126,7 +132,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      *
      * @return integer a int constant member of OnParentVersionAction.
      */
-    public function getOnParentVersion() {
+    public function getOnParentVersion()
+    {
         return $this->onParentVersion;
     }
 
@@ -147,7 +154,8 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface {
      *
      * @return booleana boolean.
      */
-    public function isProtected() {
+    public function isProtected()
+    {
         return $this->isProtected;
     }
 }

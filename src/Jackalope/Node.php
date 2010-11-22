@@ -6,8 +6,8 @@ use ArrayIterator;
 /**
  * The Node interface represents a node in a workspace.
  */
-class Node extends Item implements \PHPCR\NodeInterface {
-
+class Node extends Item implements \PHPCR\NodeInterface
+{
     protected $index = 1;
     /** @var string */
     protected $primaryType;
@@ -27,7 +27,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
     /**
      * TODO: document! especially the parameters.
      */
-    public function __construct($rawData, $path, $session, $objectManager, $new = false) {
+    public function __construct($rawData, $path, $session, $objectManager, $new = false)
+    {
         parent::__construct($rawData, $path, $session, $objectManager, $new);
         $this->isNode = true;
 
@@ -112,7 +113,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If the last element of relPath has an index or if another error occurs.
      * @api
      */
-    public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL) {
+    public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL)
+    {
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
         // are we not the immediate parent?
@@ -206,7 +208,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function orderBefore($srcChildRelPath, $destChildRelPath) {
+    public function orderBefore($srcChildRelPath, $destChildRelPath)
+    {
         if ($srcChildRelPath == $destChildRelPath) return; //nothing to move
         $oldpos = array_search($srcChildRelPath, $this->nodes);
         if ($oldpos === false)
@@ -280,7 +283,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setProperty($name, $value, $type = NULL) {
+    public function setProperty($name, $value, $type = NULL)
+    {
         if (is_null($type)) {
             $type = Helper::determineType($value);
             $data = $value;
@@ -326,7 +330,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getNode($relPath) {
+    public function getNode($relPath)
+    {
         $node = null;
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
@@ -384,7 +389,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getNodes($filter = NULL) {
+    public function getNodes($filter = NULL)
+    {
         $names = self::filterNames($filter, $this->nodes);
         $result = array();
         foreach($names as $name) {
@@ -404,7 +410,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getProperty($relPath) {
+    public function getProperty($relPath)
+    {
         if (false === strpos($relPath, '/')) {
             if (isset($this->properties[$relPath])) {
                 return $this->properties[$relPath];
@@ -430,7 +437,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getPropertyValue($name, $type=null) {
+    public function getPropertyValue($name, $type=null)
+    {
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
             $val = Helper::convertType($val, $type);
@@ -485,7 +493,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getProperties($filter = NULL) {
+    public function getProperties($filter = NULL)
+    {
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
@@ -505,7 +514,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getPropertiesValues($filter=null) {
+    public function getPropertiesValues($filter=null)
+    {
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         foreach($names as $name) {
@@ -531,7 +541,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getPrimaryItem() {
+    public function getPrimaryItem()
+    {
         throw new NotImplementedException();
     }
 
@@ -543,7 +554,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
-    public function getIdentifier() {
+    public function getIdentifier()
+    {
         return $this->uuid;
     }
 
@@ -559,7 +571,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getIndex() {
+    public function getIndex()
+    {
         return $this->index;
     }
 
@@ -587,7 +600,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getReferences($name = NULL) {
+    public function getReferences($name = NULL)
+    {
         throw new NotImplementedException();
     }
 
@@ -615,7 +629,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getWeakReferences($name = NULL) {
+    public function getWeakReferences($name = NULL)
+    {
         throw new NotImplementedException();
     }
 
@@ -629,7 +644,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function hasNode($relPath) {
+    public function hasNode($relPath)
+    {
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         } else {
@@ -646,7 +662,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function hasProperty($relPath) {
+    public function hasProperty($relPath)
+    {
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
          } else {
@@ -662,7 +679,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function hasNodes() {
+    public function hasNodes()
+    {
         return (! empty($this->nodes));
     }
 
@@ -674,7 +692,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function hasProperties() {
+    public function hasProperties()
+    {
         return (! empty($this->properties));
     }
 
@@ -687,7 +706,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getPrimaryNodeType() {
+    public function getPrimaryNodeType()
+    {
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
         return $ntm->getNodeType($this->primaryType);
     }
@@ -704,7 +724,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getMixinNodeTypes() {
+    public function getMixinNodeTypes()
+    {
         throw new NotImplementedException();
     }
 
@@ -718,7 +739,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
-    public function isNodeType($nodeTypeName) {
+    public function isNodeType($nodeTypeName)
+    {
         throw new NotImplementedException();
     }
 
@@ -740,7 +762,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setPrimaryType($nodeTypeName) {
+    public function setPrimaryType($nodeTypeName)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -774,7 +797,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function addMixin($mixinName) {
+    public function addMixin($mixinName)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -793,7 +817,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function removeMixin($mixinName) {
+    public function removeMixin($mixinName)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -817,7 +842,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function canAddMixin($mixinName) {
+    public function canAddMixin($mixinName)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -836,7 +862,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getDefinition() {
+    public function getDefinition()
+    {
         throw new NotImplementedException();
     }
 
@@ -863,7 +890,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function update($srcWorkspace) {
+    public function update($srcWorkspace)
+    {
         if ($this->isNew()) return; //no node in workspace
 
         throw new NotImplementedException('Write');
@@ -881,7 +909,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getCorrespondingNodePath($workspaceName) {
+    public function getCorrespondingNodePath($workspaceName)
+    {
         throw new NotImplementedException();
     }
 
@@ -893,7 +922,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getSharedSet() {
+    public function getSharedSet()
+    {
         throw new NotImplementedException();
     }
 
@@ -916,7 +946,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @see SessionInterface::removeItem
      * @api
      */
-    public function removeSharedSet() {
+    public function removeSharedSet()
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -934,7 +965,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @see SessionInterface::removeItem
      * @api
      */
-    public function removeShare() {
+    public function removeShare()
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -950,7 +982,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isCheckedOut() {
+    public function isCheckedOut()
+    {
         throw new NotImplementedException();
     }
 
@@ -964,7 +997,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isLocked() {
+    public function isLocked()
+    {
         throw new NotImplementedException();
     }
 
@@ -984,7 +1018,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function followLifecycleTransition($transition) {
+    public function followLifecycleTransition($transition)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -996,7 +1031,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getAllowedLifecycleTransitions() {
+    public function getAllowedLifecycleTransitions()
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -1005,7 +1041,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
      * @param array $names list of names to filter
      * @return the names in $names that match a filter
      */
-    protected static function filterNames($filter, $names) {
+    protected static function filterNames($filter, $names)
+    {
         if (is_string($filter)) {
             $filter = explode('|', $filter);
         }

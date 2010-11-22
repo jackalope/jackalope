@@ -7,7 +7,8 @@ use \DOMElement, \DOMXPath;
 /**
  * A property definition. Used in node type definitions.
  */
-class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\PropertyDefinitionInterface {
+class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\PropertyDefinitionInterface
+{
     protected $requiredType;
     protected $valueConstraints = array();
     protected $defaultValues = array();
@@ -16,7 +17,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager) {
+    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    {
         parent::__construct($node, $nodeTypeManager);
         $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
@@ -64,7 +66,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return integer an int constant member of PropertyType.
      */
-    public function getRequiredType() {
+    public function getRequiredType()
+    {
         return $this->requiredType;
     }
 
@@ -193,7 +196,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return array a String array.
      */
-    public function getValueConstraints() {
+    public function getValueConstraints()
+    {
         return $this->valueConstraints;
     }
 
@@ -225,7 +229,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return array an array of php values.
      */
-    public function getDefaultValues() {
+    public function getDefaultValues()
+    {
         return $this->defaultValues;
     }
 
@@ -243,7 +248,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return boolean a boolean
      */
-    public function isMultiple() {
+    public function isMultiple()
+    {
         return $this->isMultiple;
     }
 
@@ -272,7 +278,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return array a string array
      */
-    public function getAvailableQueryOperators() {
+    public function getAvailableQueryOperators()
+    {
         return $this->availableQueryOperators;
     }
 
@@ -286,7 +293,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return boolean a boolean
      */
-    public function isFullTextSearchable() {
+    public function isFullTextSearchable()
+    {
         return $this->isFullTextSearchable;
     }
 
@@ -300,7 +308,8 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      *
      * @return boolean a boolean
      */
-    public function isQueryOrderable() {
+    public function isQueryOrderable()
+    {
         return $this->isQueryOrderable;
     }
 }

@@ -6,8 +6,8 @@ namespace Jackalope;
  * This class implements methods for both types.
  * It should not be instantiated directly.
  */
-class Item implements \PHPCR\ItemInterface {
-
+class Item implements \PHPCR\ItemInterface
+{
     /** session this node belongs to */
     protected $session;
     /** object manager to get nodes from */
@@ -33,7 +33,8 @@ class Item implements \PHPCR\ItemInterface {
      * @param boolean $new can be set to true to tell the object that it has been created locally
      */
     public function __construct($rawData, $path,  Session $session,
-                                ObjectManager $objectManager, $new = false) {
+                                ObjectManager $objectManager, $new = false)
+    {
         $this->path = $path;
         $this->session = $session;
         $this->objectManager = $objectManager;
@@ -52,7 +53,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getPath() {
+    public function getPath()
+    {
         return $this->path;
     }
 
@@ -64,7 +66,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -89,7 +92,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getAncestor($depth) {
+    public function getAncestor($depth)
+    {
         if ($depth < 0 || $depth > $this->depth) {
             throw new \PHPCR\ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
@@ -109,7 +113,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getParent() {
+    public function getParent()
+    {
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
@@ -125,7 +130,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getDepth() {
+    public function getDepth()
+    {
         return $this->depth;
     }
 
@@ -136,7 +142,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getSession() {
+    public function getSession()
+    {
         return $this->session;
     }
 
@@ -147,7 +154,8 @@ class Item implements \PHPCR\ItemInterface {
      * @return boolean TRUE if this Item is a Node, FALSE if it is a Property.
      * @api
      */
-    public function isNode() {
+    public function isNode()
+    {
         return $this->isNode;
     }
 
@@ -167,7 +175,8 @@ class Item implements \PHPCR\ItemInterface {
      * @return boolean TRUE if this item is new; FALSE otherwise.
      * @api
      */
-    public function isNew() {
+    public function isNew()
+    {
         return $this->new;
     }
 
@@ -186,7 +195,8 @@ class Item implements \PHPCR\ItemInterface {
      * @return boolean TRUE if this item is modified; FALSE otherwise.
      * @api
      */
-    public function isModified() {
+    public function isModified()
+    {
         return $this->modified;
     }
 
@@ -220,7 +230,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isSame(\PHPCR\ItemInterface $otherItem) {
+    public function isSame(\PHPCR\ItemInterface $otherItem)
+    {
         if ($this === $otherItem) { // trivial case
             return true;
         }
@@ -250,7 +261,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function accept(\PHPCR\ItemVisitorInterface $visitor) {
+    public function accept(\PHPCR\ItemVisitorInterface $visitor)
+    {
         throw new NotImplementedException();
     }
 
@@ -274,7 +286,8 @@ class Item implements \PHPCR\ItemInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function refresh($keepChanges) {
+    public function refresh($keepChanges)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -299,7 +312,8 @@ class Item implements \PHPCR\ItemInterface {
      * @see SessionInterface::removeItem(String)
      * @api
      */
-    public function remove() {
+    public function remove()
+    {
         // sanity checks
         if ($this->getDepth() == 0) {
             throw new \PHPCR\RepositoryException('Cannot remove root node');
@@ -316,7 +330,8 @@ class Item implements \PHPCR\ItemInterface {
      * Tell this item that it has been modified.
      * Used when deleting a node to tell the parent node about modification.
      */
-    public function setModified() {
+    public function setModified()
+    {
         $this->modified = true;
     }
 
@@ -324,7 +339,8 @@ class Item implements \PHPCR\ItemInterface {
      * notify this item that it has been saved into the backend.
      * allowing it to clear the modified / new flags
      */
-    public function confirmSaved() {
+    public function confirmSaved()
+    {
         $this->new = false;
         $this->modified = false;
     }

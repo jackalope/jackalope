@@ -27,8 +27,8 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-class Locate extends \Jackalope\Transport\DavexClient\Requests\Base {
-
+class Locate extends \Jackalope\Transport\DavexClient\Requests\Base
+{
     /**
      * Identifier of the used XML namespace
      * @var array
@@ -47,8 +47,8 @@ class Locate extends \Jackalope\Transport\DavexClient\Requests\Base {
      *
      * @throws \InvalidArgumentException
      */
-    public function build() {
-
+    public function build()
+    {
         if (empty($this->arguments['uuid'])) {
             throw new \InvalidArgumentException('Missing UUID in argument list.');
         }

@@ -4,7 +4,8 @@ namespace Jackalope;
 
 class ObjectManagerTest extends TestCase
 {
-    public function testGetNodeByPath() {
+    public function testGetNodeByPath()
+    {
         $path = '/jcr:root';
         $om = new \jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
@@ -15,7 +16,8 @@ class ObjectManagerTest extends TestCase
         $this->assertSame($node, $om->getNode($path));
     }
 
-    public function testGetNodeTypes() {
+    public function testGetNodeTypes()
+    {
         $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
         $this->assertType('DOMDocument', $nodetypes);
@@ -23,7 +25,8 @@ class ObjectManagerTest extends TestCase
         $this->assertType('DOMDocument', $nodetypes);
     }
 
-    public function testIsUUID() {
+    public function testIsUUID()
+    {
         $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertFalse($om->isUUID(''));
         $this->assertFalse($om->isUUID('/'));
@@ -38,7 +41,8 @@ class ObjectManagerTest extends TestCase
         $this->assertTrue($om->isUUID('842E61C0-09AB-A42a-87c0-308ccc90e6f4'));
     }
 
-    public function testNormalizePathUUID() {
+    public function testNormalizePathUUID()
+    {
         $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
         $path = '/jcr:root/uuid/to/path';
 
@@ -57,12 +61,14 @@ class ObjectManagerTest extends TestCase
      * @covers \Jackalope\ObjectManager::absolutePath
      * @covers \Jackalope\ObjectManager::normalizePath
      */
-    public function testAbsolutePath($inputRoot, $inputRelPath, $output) {
+    public function testAbsolutePath($inputRoot, $inputRelPath, $output)
+    {
         $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 
-    public static function dataproviderAbsolutePath() {
+    public static function dataproviderAbsolutePath()
+    {
         return array(
             array('/',      'foo',  '/foo'),
             array('/',      '/foo', '/foo'),
@@ -83,7 +89,8 @@ class ObjectManagerTest extends TestCase
         );
     }
 
-    public function testVerifyAbsolutePath() {
+    public function testVerifyAbsolutePath()
+    {
         $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
 
         $om->verifyAbsolutePath('/jcr:root');
@@ -103,15 +110,18 @@ class ObjectManagerTest extends TestCase
 
 class ObjectManagerMock extends ObjectManager
 {
-    public function isUUID($i) {
+    public function isUUID($i)
+    {
         return parent::isUUID($i);
     }
 
-    public function verifyAbsolutePath($path) {
+    public function verifyAbsolutePath($path)
+    {
         parent::verifyAbsolutePath($path);
     }
 
-    public function getObjectsByUuid() {
+    public function getObjectsByUuid()
+    {
         return $this->objectsByUuid;
     }
 }

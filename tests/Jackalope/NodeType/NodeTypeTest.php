@@ -11,7 +11,8 @@ use Jackalope\TestCase;
  */
 class NodeTypeTest extends TestCase
 {
-    public function testNodeTypeMethods() {
+    public function testNodeTypeMethods()
+    {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
         $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
@@ -62,7 +63,8 @@ class NodeTypeTest extends TestCase
         }
     }
 
-    public function testGetDefinedChildNodesAndNodeDefinitions() {
+    public function testGetDefinedChildNodesAndNodeDefinitions()
+    {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
@@ -99,7 +101,8 @@ class NodeTypeTest extends TestCase
         $this->assertTrue($node->allowsSameNameSiblings());
     }
 
-    public function testGetDefinedPropertysAndPropertyDefinition() {
+    public function testGetDefinedPropertysAndPropertyDefinition()
+    {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();

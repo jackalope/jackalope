@@ -27,8 +27,8 @@ namespace Tests\Framework;
  * @subpackage Unittests
  *
  */
-class ProxyObject {
-
+class ProxyObject
+{
     /**
      * Wraps the class identified by its classname to expose invisible methods and attributes.
      *

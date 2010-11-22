@@ -2,8 +2,8 @@
 
 namespace Jackalope;
 
-class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
-
+class NamespaceManagerTest extends \PHPUnit_Framework_TestCase
+{
     /*************************************************************************/
     /* Fixtures
     /*************************************************************************/
@@ -13,7 +13,8 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
      *
      * @return array Set of namespaces.
      */
-    public function getDefaultNamespacesFixture() {
+    public function getDefaultNamespacesFixture()
+    {
         return array(
             "jcr" => "http://www.jcp.org/jcr/1.0",
             "nt"  => "http://www.jcp.org/jcr/nt/1.0",
@@ -30,7 +31,8 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers \Jackalope\NamespaceManager::checkPrefix
      */
-    public function testCheckPrefix() {
+    public function testCheckPrefix()
+    {
         $prefix = 'beastie';
         $ns = new NamespaceManagerProxy($this->getDefaultNamespacesFixture());
 
@@ -42,7 +44,8 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
      * @covers \Jackalope\NamespaceManager::checkPrefix
      * @expectedException \PHPCR\NamespaceException
      */
-    public function testCheckPrefixExpexctingNamespaceException($prefix) {
+    public function testCheckPrefixExpexctingNamespaceException($prefix)
+    {
         $ns = new NamespaceManagerProxy($this->getDefaultNamespacesFixture());
         $ns->checkPrefix($prefix);
     }
@@ -52,7 +55,8 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
     /* Dataprovider
     /*************************************************************************/
 
-    public static function checkPrefixDataprovider() {
+    public static function checkPrefixDataprovider()
+    {
         return array(
             'XML as prefix' => array('xml'),
             'prefix in list of default namespaces' => array('jcr'),
@@ -61,9 +65,10 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase {
     }
 }
 
-class NamespaceManagerProxy extends \Jackalope\NamespaceManager {
-
-    public function checkPrefix($prefix) {
+class NamespaceManagerProxy extends \Jackalope\NamespaceManager
+{
+    public function checkPrefix($prefix)
+    {
         return parent::checkPrefix($prefix);
     }
 }

@@ -8,8 +8,8 @@
  *
  * load a class named $class
  */
-function jackalope_autoloader($class) {
-
+function jackalope_autoloader($class)
+{
     if (false !== ($pos = strripos($class, '\\'))) {
         $relpath = false;
         $jackPos = strpos($class, 'Jackalope');

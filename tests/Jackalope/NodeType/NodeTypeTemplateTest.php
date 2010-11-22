@@ -9,7 +9,8 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers Jackalope\NodeType\NodeTypeTemplate
      */
-    public function testCreateNodeTypeTemplateEmpty() {
+    public function testCreateNodeTypeTemplateEmpty()
+    {
         $ntm = $this->getNodeTypeManager();
 
         $ntt = $ntm->createNodeTypeTemplate();

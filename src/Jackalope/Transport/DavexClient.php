@@ -31,8 +31,8 @@ use \DOMDocument;
  * @package jackalope
  * @subpackage transport
  */
-class DavexClient implements TransportInterface {
-
+class DavexClient implements TransportInterface
+{
     /**
      * Name of the user agent to be exposed to a client.
      * @var string
@@ -157,7 +157,8 @@ class DavexClient implements TransportInterface {
      *
      * @param serverUri location of the server
      */
-    public function __construct($serverUri) {
+    public function __construct($serverUri)
+    {
         // append a slash if not there
         if ('/' !== substr($serverUri, -1, 1)) {
             $serverUri .= '/';
@@ -168,7 +169,8 @@ class DavexClient implements TransportInterface {
     /**
      * Tidies up the current cUrl connection.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->closeConnection();
     }
 
@@ -177,8 +179,8 @@ class DavexClient implements TransportInterface {
      *
      * @return null|false False in case there is already an open connection, else null;
      */
-    protected function initConnection() {
-
+    protected function initConnection()
+    {
         if (!is_null($this->curl)) {
             return false;
         }
@@ -192,7 +194,8 @@ class DavexClient implements TransportInterface {
      *
      * @return null|false False in case there is no open connection, else null;
      */
-    protected function closeConnection() {
+    protected function closeConnection()
+    {
         if (is_null($this->curl)) {
             return false;
         }
@@ -214,7 +217,8 @@ class DavexClient implements TransportInterface {
      * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName) {
+    public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
+    {
         if ($this->credentials !== false) {
             throw new \PHPCR\RepositoryException(
                 'Do not call login twice. Rather instantiate a new Transport object '.
@@ -253,8 +257,8 @@ class DavexClient implements TransportInterface {
      * @return Array with name => Value for the descriptors
      * @throws \PHPCR\RepositoryException if error occurs
      */
-     public function getRepositoryDescriptors() {
-
+     public function getRepositoryDescriptors()
+     {
          $dom = $this->getDomFromBackend(
             self::REPORT, $this->server,
             self::buildReportRequest('dcr:repositorydescriptors')
@@ -288,7 +292,8 @@ class DavexClient implements TransportInterface {
      *
      * @return array Set of workspaces to work on.
      */
-    public function getAccessibleWorkspaceNames() {
+    public function getAccessibleWorkspaceNames()
+    {
         $dom = $this->getDomFromBackend(
             self::PROPFIND,
             $this->server,
@@ -314,7 +319,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getItem($path) {
+    public function getItem($path)
+    {
         $this->ensureAbsolutePath($path);
         $this->checkLogin();
         return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
@@ -326,7 +332,8 @@ class DavexClient implements TransportInterface {
      * @param path to check
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    protected function ensureAbsolutePath($path) {
+    protected function ensureAbsolutePath($path)
+    {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
             throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
@@ -341,7 +348,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteItem($path) {
+    public function deleteItem($path)
+    {
         $this->ensureAbsolutePath($path);
         $this->checkLogin();
 
@@ -358,7 +366,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteProperty($path) {
+    public function deleteProperty($path)
+    {
         return $this->deleteItem($path);
     }
 
@@ -373,7 +382,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeItem($path, $properties, $children) {
+    public function storeItem($path, $properties, $children)
+    {
         // it has to be an absolute path!
         $this->ensureAbsolutePath($path);
         $this->checkLogin();
@@ -387,7 +397,8 @@ class DavexClient implements TransportInterface {
         return true;
     }
 
-    protected function createNodeMarkup($path, $properties, $children) {
+    protected function createNodeMarkup($path, $properties, $children)
+    {
         $body = '<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" sv:name="'.basename($path).'">';
 
         foreach ($properties as $name => $property) {
@@ -413,7 +424,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeProperty($path, \PHPCR\PropertyInterface $property) {
+    public function storeProperty($path, \PHPCR\PropertyInterface $property)
+    {
         // it has to be an absolute path!
         $this->ensureAbsolutePath($path);
         $this->checkLogin();
@@ -426,7 +438,8 @@ class DavexClient implements TransportInterface {
         return true;
     }
 
-    protected function propertyToXmlString($property, $type) {
+    protected function propertyToXmlString($property, $type)
+    {
         $value = $property->getNativeValue();
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_DATE:
@@ -437,7 +450,8 @@ class DavexClient implements TransportInterface {
         return $value;
     }
 
-    protected function propertyToRawString($property, $type) {
+    protected function propertyToRawString($property, $type)
+    {
         // skip binary encoding for raw strings
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_BINARY:
@@ -455,7 +469,8 @@ class DavexClient implements TransportInterface {
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNodePathForIdentifier($uuid) {
+    public function getNodePathForIdentifier($uuid)
+    {
         $this->checkLogin();
 
         $dom = $this->getDomFromBackend(
@@ -493,7 +508,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNamespaces() {
+    public function getNamespaces()
+    {
         $this->checkLogin();
 
         $dom = $this->getDomFromBackend(
@@ -520,7 +536,8 @@ class DavexClient implements TransportInterface {
      * @return dom with the definitions
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNodeTypes($nodeTypes = array()) {
+    public function getNodeTypes($nodeTypes = array())
+    {
         $this->checkLogin();
 
         $dom = $this->getDomFromBackend(
@@ -538,7 +555,8 @@ class DavexClient implements TransportInterface {
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    protected function checkLogin() {
+    protected function checkLogin()
+    {
         if (empty($this->workspaceUri)) {
             throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
         }
@@ -550,7 +568,8 @@ class DavexClient implements TransportInterface {
      * @param array $nodesType The list of nodetypes you want to request for.
      * @return string XML with the request information.
      */
-    protected static function buildNodeTypesRequest(Array $nodeTypes) {
+    protected static function buildNodeTypesRequest(Array $nodeTypes)
+    {
         $xmlStr = '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
         if (empty($nodeTypes)) {
             $xmlStr .= '<jcr:all-nodetypes/>';
@@ -574,7 +593,8 @@ class DavexClient implements TransportInterface {
      * @param array $properties names of the properties to search for
      * @return string XML to post in the body
      */
-    protected static function buildPropfindRequest($properties) {
+    protected static function buildPropfindRequest($properties)
+    {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'.
             '<D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
         if (!is_array($properties)) {
@@ -597,7 +617,8 @@ class DavexClient implements TransportInterface {
      * @param string $name Name of the resource to be requested.
      * @return string XML string representing the head of the request.
      */
-    protected static function buildReportRequest($name) {
+    protected static function buildReportRequest($name)
+    {
         return '<?xml version="1.0" encoding="UTF-8"?><' .
                 $name .
                ' xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
@@ -613,7 +634,8 @@ class DavexClient implements TransportInterface {
      * @param string $uuid Unique identifier of the node to be asked for.
      * @return string XML sring representing the content of the request.
      */
-    protected static function buildLocateRequest($uuid) {
+    protected static function buildLocateRequest($uuid)
+    {
         return '<?xml version="1.0" encoding="UTF-8"?>'.
                '<dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
                '<D:href xmlns:D="DAV:">' .
@@ -640,8 +662,8 @@ class DavexClient implements TransportInterface {
      *
      * @uses curl::setopt()
      */
-    protected function prepareRequest($type, $uri, $body = '', $depth = 0, $contentType = 'text/xml; charset=utf-8') {
-
+    protected function prepareRequest($type, $uri, $body = '', $depth = 0, $contentType = 'text/xml; charset=utf-8')
+    {
         // make sure we have a curl handle
         $this->initConnection();
 
@@ -675,8 +697,8 @@ class DavexClient implements TransportInterface {
      * @uses curl::errno()
      * @uses curl::exec()
      */
-    protected function getRawFromBackend() {
-
+    protected function getRawFromBackend()
+    {
         $data = $this->curl->exec();
 
         $responseCode = $this->curl->getinfo(CURLINFO_HTTP_CODE);
@@ -718,8 +740,8 @@ class DavexClient implements TransportInterface {
      *
      * @uses curl::getInfo()
      */
-    protected function getDomFromBackend($type, $uri, $body='', $depth=0) {
-
+    protected function getDomFromBackend($type, $uri, $body='', $depth=0)
+    {
         // request information from the server via HTTP
         $this->prepareRequest($type, $uri, $body, $depth);
         $xml = $this->getRawFromBackend();
@@ -772,8 +794,8 @@ class DavexClient implements TransportInterface {
      *
      * @uses curl::getInfo()
      */
-    protected function getJsonFromBackend($type, $uri, $body='', $depth=0) {
-
+    protected function getJsonFromBackend($type, $uri, $body='', $depth=0)
+    {
         //@todo: OPTIMIZE: re-use connection. JACK-7
         //@todo: prepareRequest only returns XML never json. It has a fixed content-type.
         $this->prepareRequest($type, $uri, $body, $depth);

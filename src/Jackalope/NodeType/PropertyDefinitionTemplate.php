@@ -11,9 +11,10 @@ namespace Jackalope\NodeType;
  * the default values assumed when a new empty PropertyDefinitionTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\NodeType\PropertyDefinitionTemplateInterface {
-
-    public function __construct(NodeTypeManager $nodeTypeManager) {
+class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\NodeType\PropertyDefinitionTemplateInterface
+{
+    public function __construct(NodeTypeManager $nodeTypeManager)
+    {
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
@@ -38,7 +39,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
@@ -49,7 +51,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setAutoCreated($autoCreated) {
+    public function setAutoCreated($autoCreated)
+    {
         $this->isAutoCreated = $autoCreated;
     }
 
@@ -60,7 +63,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setMandatory($mandatory) {
+    public function setMandatory($mandatory)
+    {
         $this->isMandatory = $mandatory;
     }
 
@@ -71,7 +75,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setOnParentVersion($opv) {
+    public function setOnParentVersion($opv)
+    {
         $this->onParentVersion = $opv;
     }
 
@@ -82,7 +87,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setProtected($protectedStatus) {
+    public function setProtected($protectedStatus)
+    {
         $this->isProtected;
     }
 
@@ -93,7 +99,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setRequiredType($type) {
+    public function setRequiredType($type)
+    {
         $this->requiredType = $type;
     }
 
@@ -104,7 +111,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setValueConstraints(array $constraints) {
+    public function setValueConstraints(array $constraints)
+    {
         $this->valueConstraints = $constraints;
     }
 
@@ -117,7 +125,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setDefaultValues(array $defaultValues) {
+    public function setDefaultValues(array $defaultValues)
+    {
         $this->defaultValues = $defaultValues;
     }
 
@@ -128,7 +137,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setMultiple($multiple) {
+    public function setMultiple($multiple)
+    {
         $this->isMultiple = $multiple;
     }
 
@@ -139,7 +149,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setAvailableQueryOperators(array $operators) {
+    public function setAvailableQueryOperators(array $operators)
+    {
         $this->availableQueryOperators = $operators;
     }
 
@@ -150,7 +161,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setFullTextSearchable($fullTextSearchable) {
+    public function setFullTextSearchable($fullTextSearchable)
+    {
         $this->isFullTextSearchable = $fullTextSearchable;
     }
 
@@ -161,7 +173,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
      * @return void
      * @api
      */
-    public function setQueryOrderable($queryOrderable) {
+    public function setQueryOrderable($queryOrderable)
+    {
         $this->isQueryOrderable = $queryOrderable;
     }
 

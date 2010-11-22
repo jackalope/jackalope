@@ -13,7 +13,8 @@ class NamespaceRegistryTest extends TestCase
      *
      * @return TransportDummy
      */
-    public function getTransportMockFixture() {
+    public function getTransportMockFixture()
+    {
         $transport = $this->getMock('Jackalope\TransportDummy');
         return $transport;
     }
@@ -23,7 +24,8 @@ class NamespaceRegistryTest extends TestCase
      *
      * @param array $namespaces
      */
-    public function getNamespaceRegistryFixture($namespaces) {
+    public function getNamespaceRegistryFixture($namespaces)
+    {
         $transport = $this->getTransportMockFixture();
         $transport
             ->expects($this->once())
@@ -40,7 +42,8 @@ class NamespaceRegistryTest extends TestCase
      * @dataProvider constructorDataprovider
      * @covers Jackalope\NamespaceRegistry::__construct
      */
-    public function testConstruct($expected, $namespaces) {
+    public function testConstruct($expected, $namespaces)
+    {
         $nsr = $this->getNamespaceRegistryFixture($namespaces);
 
         $this->assertAttributeInstanceOf('Jackalope\NamespaceManager', 'namespaceManager', $nsr);
@@ -51,7 +54,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getDefaultNamespaces
      */
-    public function testGetDefaultNamespaces() {
+    public function testGetDefaultNamespaces()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -72,7 +76,8 @@ class NamespaceRegistryTest extends TestCase
      * @covers \Jackalope\NamespaceRegistry::registerNamespace
      * @expectedException NotImplementedException
      */
-    public function testRegisterNamespace() {
+    public function testRegisterNamespace()
+    {
         $this->markTestIncomplete('Write operations are currently not supported.');
     }
 
@@ -80,14 +85,16 @@ class NamespaceRegistryTest extends TestCase
      * @covers \Jackalope\NamespaceRegistry::unregisterNamespace
      * @expectedException NotImplementedException
      */
-    public function testUnregisterNamespace() {
+    public function testUnregisterNamespace()
+    {
         $this->markTestIncomplete('Write operations are currently not supported.');
     }
 
     /**
      * @covers \Jackalope\NamespaceRegistry::getPrefixes
      */
-    public function testGetPrefixes() {
+    public function testGetPrefixes()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -101,7 +108,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getPrefix
      */
-    public function testGetPrefixFromDefaultNamespace() {
+    public function testGetPrefixFromDefaultNamespace()
+    {
         $nsr = $this->getNamespaceRegistryFixture(array());
         $this->assertEquals("xml", $nsr->getPrefix("http://www.w3.org/XML/1998/namespace"));
     }
@@ -109,7 +117,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getPrefix
      */
-    public function testGetPrefixFromUserNamespace() {
+    public function testGetPrefixFromUserNamespace()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -121,7 +130,8 @@ class NamespaceRegistryTest extends TestCase
      * @covers \Jackalope\NamespaceRegistry::getPrefix
      * @expectedException \PHPCR\NamespaceException
      */
-    public function testGetPrefixExpectingNamespaceException() {
+    public function testGetPrefixExpectingNamespaceException()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -132,7 +142,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getURIs
      */
-    public function testGetUris() {
+    public function testGetUris()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -152,7 +163,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getURI
      */
-    public function testGetUriFromDefaultNamespace() {
+    public function testGetUriFromDefaultNamespace()
+    {
         $nsr = $this->getNamespaceRegistryFixture(array());
         $this->assertEquals("http://www.w3.org/XML/1998/namespace", $nsr->getURI("xml"));
     }
@@ -160,7 +172,8 @@ class NamespaceRegistryTest extends TestCase
     /**
      * @covers \Jackalope\NamespaceRegistry::getURI
      */
-    public function testGetUriFromUserNamespace() {
+    public function testGetUriFromUserNamespace()
+    {
         $namespaces = array(
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
@@ -173,7 +186,8 @@ class NamespaceRegistryTest extends TestCase
      * @covers \Jackalope\NamespaceRegistry::getURI
      * @expectedException \PHPCR\NamespaceException
      */
-    public function testGetUriExpectingNamespaceException() {
+    public function testGetUriExpectingNamespaceException()
+    {
         $nsr = $this->getNamespaceRegistryFixture(array());
         $nsr->getURI('beastie');
     }
@@ -182,7 +196,8 @@ class NamespaceRegistryTest extends TestCase
     /* Dataproivder
     /*************************************************************************/
 
-    public static function constructorDataprovider() {
+    public static function constructorDataprovider()
+    {
         return array(
             'prefix not in default namespaces' => array(
                 array('beastie' => 'http://beastie.lo/beastie/1.0'),
@@ -200,8 +215,8 @@ class NamespaceRegistryTest extends TestCase
  * Dummy implementation of the transport interface to be able to mock it.
  *
  */
-class TransportDummy implements TransportInterface {
-
+class TransportDummy implements TransportInterface
+{
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName){}
 
     public function getRepositoryDescriptors(){}

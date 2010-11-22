@@ -4,7 +4,8 @@ namespace Jackalope;
 
 class SessionTest extends TestCase
 {
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $repository = $this->getMock('Jackalope\Repository', array(), array(), '', false);
         $workspaceName = 'asdfads';
         $userID = 'abcd';
@@ -20,7 +21,8 @@ class SessionTest extends TestCase
         $this->assertSame('value', $s->getAttribute('other'));
     }
 
-    public function testLogout() {
+    public function testLogout()
+    {
         $this->markTestSkipped();
         //TODO: test flush object manager with the help of mock objects
     }

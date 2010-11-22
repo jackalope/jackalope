@@ -8,7 +8,8 @@ use ArrayIterator;
 /**
  * A NodeType object represents a "live" node type that is registered in the repository.
  */
-class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInterface {
+class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInterface
+{
     protected $declaredSupertypes = null;
     protected $superTypeNames = null;
     protected $superTypes = null;
@@ -23,7 +24,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return array of \PHPCR\NodeType\NodeType objects.
      */
-    public function getSupertypes() {
+    public function getSupertypes()
+    {
         if (null === $this->superTypes) {
             $this->superTypes = array();
             foreach ($this->getDeclaredSupertypes() as $superType) {
@@ -39,7 +41,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return array of strings with names of the supertypes
      */
-     protected function getSupertypeNames() {
+     protected function getSupertypeNames()
+     {
          if (null === $this->superTypeNames) {
              $this->superTypeNames = array();
              foreach ($this->getSupertypes() as $superType) {
@@ -58,7 +61,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return array of \PHPCR\NodeType\NodeType objects.
      */
-    public function getDeclaredSupertypes() {
+    public function getDeclaredSupertypes()
+    {
         if (null === $this->declaredSupertypes) {
             $this->declaredSupertypes = array();
             foreach ($this->declaredSuperTypeNames as $declaredSuperTypeName) {
@@ -76,7 +80,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return \PHPCR\NodeType\NodeTypeIteratorInterface a NodeTypeIterator.
      */
-    public function getSubtypes() {
+    public function getSubtypes()
+    {
         $ret = array();
         foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
@@ -93,7 +98,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return \PHPCR\NodeType\NodeTypeIteratorInterface a NodeTypeIterator.
      */
-    public function getDeclaredSubtypes() {
+    public function getDeclaredSubtypes()
+    {
         $ret = array();
         foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
             array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
@@ -108,7 +114,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param string $nodeTypeName the name of a node type.
      * @return boolean
      */
-    public function isNodeType($nodeTypeName) {
+    public function isNodeType($nodeTypeName)
+    {
         return $this->getName() == $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
     }
 
@@ -119,7 +126,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return array of \PHPCR\NodeType\PropertyDefinition containing the property definitions.
      */
-    public function getPropertyDefinitions() {
+    public function getPropertyDefinitions()
+    {
         if (null === $this->propertyDefinitions) {
             $this->propertyDefinitions = $this->getDeclaredPropertyDefinitions();
             foreach ($this->getSupertypes() as $nodeType) {
@@ -136,7 +144,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      *
      * @return array an array of \PHPCR\NodeType\NodeDefinition containing the child node definitions.
      */
-    public function getChildNodeDefinitions() {
+    public function getChildNodeDefinitions()
+    {
         if (null === $this->childNodeDefinitions) {
             $this->childNodeDefinitions = $this->getDeclaredChildNodeDefinitions();
             foreach ($this->getSupertypes() as $nodeType) {
@@ -154,7 +163,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param mixed $value A variable or an array of variables
      * @return boolean
      */
-    public function canSetProperty($propertyName, $value) {
+    public function canSetProperty($propertyName, $value)
+    {
         throw new NotImplementedException();
     }
 
@@ -171,7 +181,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param string $nodeTypeName The name of the node type of the child node.
      * @return boolean
      */
-    public function canAddChildNode($childNodeName, $nodeTypeName = NULL) {
+    public function canAddChildNode($childNodeName, $nodeTypeName = NULL)
+    {
         throw new NotImplementedException();
     }
 
@@ -182,7 +193,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param string $nodeName The name of the child node
      * @return boolean
      */
-    public function canRemoveNode($nodeName) {
+    public function canRemoveNode($nodeName)
+    {
         throw new NotImplementedException();
     }
 
@@ -193,7 +205,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param string $propertyName The name of the property
      * @return boolean
      */
-    public function canRemoveProperty($propertyName) {
+    public function canRemoveProperty($propertyName)
+    {
         throw new NotImplementedException();
     }
 }

@@ -27,8 +27,8 @@ namespace Jackalope\Transport\DavexClient;
  * @package jackalope
  * @subpackage transport
  */
-class Request {
-
+class Request
+{
     /**
      * DOM representation of the request.
      * @var DOMDocument
@@ -58,7 +58,8 @@ class Request {
      *
      * @param string $type Name of the request to be handled.
      */
-    public function __construct($type, array $arguments) {
+    public function __construct($type, array $arguments)
+    {
         $this->type = $type;
         $this->arguments = $arguments;
     }
@@ -67,7 +68,8 @@ class Request {
      * Wrapper to expose the request specific build method via the request object.
      * @return null
      */
-    public function build() {
+    public function build()
+    {
         $this->getTypeObject()->build();
     }
 
@@ -80,7 +82,8 @@ class Request {
      *
      * @return DOMDocument
      */
-    protected function getDomObject() {
+    protected function getDomObject()
+    {
         if ($this->dom === NULL) {
             $this->dom = new \DOMDocument('1.0', 'UTF-8');
         }
@@ -93,7 +96,8 @@ class Request {
      * @return Jackalope\Interfaces\DavexClient\Request
      * @throws \InvalidArgumentException
      */
-    protected function getTypeObject() {
+    protected function getTypeObject()
+    {
         if (is_null($this->typeObject)) {
             switch($this->type) {
                 case 'NodeTypes':
@@ -120,7 +124,8 @@ class Request {
      *
      * @param \Jackalope\Interfaces\DavexClient\Request $request
      */
-    public function setTypeObject(\Jackalope\Interfaces\DavexClient\Request $request) {
+    public function setTypeObject(\Jackalope\Interfaces\DavexClient\Request $request)
+    {
         $this->typeObject = $request;
     }
 
@@ -133,7 +138,8 @@ class Request {
      *
      * @return string XML representation of the request.
      */
-    public function __toString() {
+    public function __toString()
+    {
         return strval($this->getTypeObject());
     }
 }

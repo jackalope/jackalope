@@ -9,7 +9,8 @@ class PropertyDefinitionTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\PropertyDefinitionTemplate::__construct
      */
-    public function testCreatePropertyDefinitionTemplateEmpty() {
+    public function testCreatePropertyDefinitionTemplateEmpty()
+    {
         $ntm = $this->getNodeTypeManager();
 
         $ndt = $ntm->createPropertyDefinitionTemplate();

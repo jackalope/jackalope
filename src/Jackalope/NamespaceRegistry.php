@@ -4,8 +4,8 @@ namespace Jackalope;
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
-
+class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface
+{
     /**
      * Instance of an implementation of the TransportInterface
      * @var TransportInterface
@@ -42,7 +42,8 @@ class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
      *
      * @param TransportInterface $transport
      */
-    public function __construct(TransportInterface $transport) {
+    public function __construct(TransportInterface $transport)
+    {
         $this->transport = $transport;
         $this->namespaceManager = Factory::get('NamespaceManager', array($this->defaultNamespaces));
 
@@ -85,7 +86,8 @@ class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface {
      * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to register the namespace.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function registerNamespace($prefix, $uri) {
+    public function registerNamespace($prefix, $uri)
+    {
 
         throw new NotImplementedException('Write');
 
@@ -191,7 +193,8 @@ Server: Jetty(6.1.x)
      * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to unregister the namespace.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function unregisterNamespace($prefix) {
+    public function unregisterNamespace($prefix)
+    {
         $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
@@ -205,7 +208,8 @@ Server: Jetty(6.1.x)
      *
      * @return array a string array
      */
-    public function getPrefixes() {
+    public function getPrefixes()
+    {
         return array_merge(
             array_keys($this->defaultNamespaces),
             array_keys($this->userNamespaces)
@@ -219,7 +223,8 @@ Server: Jetty(6.1.x)
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getURIs() {
+    public function getURIs()
+    {
         return array_merge(
             array_values($this->defaultNamespaces),
             array_values($this->userNamespaces)
@@ -234,7 +239,8 @@ Server: Jetty(6.1.x)
      *
      * @throws \PHPCR\NamespaceException if a mapping with the specified prefix does not exist.
      */
-    public function getURI($prefix) {
+    public function getURI($prefix)
+    {
         if (isset($this->defaultNamespaces[$prefix])) {
             return $this->defaultNamespaces[$prefix];
         } else if (isset($this->userNamespaces[$prefix])) {
@@ -252,7 +258,8 @@ Server: Jetty(6.1.x)
      * @throws \PHPCR\NamespaceException if a mapping with the specified uri does not exist.
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function getPrefix($uri) {
+    public function getPrefix($uri)
+    {
         $prefix = array_search($uri, $this->defaultNamespaces);
         if ($prefix === false) {
             $prefix = array_search($uri, $this->userNamespaces);
@@ -268,7 +275,8 @@ Server: Jetty(6.1.x)
      *
      * @return array
      */
-    public function getDefaultNamespaces() {
+    public function getDefaultNamespaces()
+    {
         return $this->defaultNamespaces;
     }
 }

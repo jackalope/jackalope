@@ -10,9 +10,10 @@ namespace Jackalope\NodeType;
  * default values assumed when a new empty NodeDefinitionTemplate is created (as
  * opposed to one extracted from an existing NodeType).
  */
-class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\NodeDefinitionTemplateInterface {
-
-    public function __construct(NodeTypeManager $nodeTypeManager) {
+class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\NodeDefinitionTemplateInterface
+{
+    public function __construct(NodeTypeManager $nodeTypeManager)
+    {
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
@@ -33,7 +34,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
@@ -44,7 +46,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setAutoCreated($autoCreated) {
+    public function setAutoCreated($autoCreated)
+    {
         $this->isAutoCreated = $autoCreated;
     }
 
@@ -55,7 +58,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setMandatory($mandatory) {
+    public function setMandatory($mandatory)
+    {
         $this->isMandatory = $mandatory;
     }
 
@@ -66,7 +70,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setOnParentVersion($opv) {
+    public function setOnParentVersion($opv)
+    {
         $this->onParentVersion = $opv;
     }
 
@@ -77,7 +82,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setProtected($protectedStatus) {
+    public function setProtected($protectedStatus)
+    {
         $this->isProtected = $protectedStatus;
     }
 
@@ -88,7 +94,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames) {
+    public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames)
+    {
         $this->requiredPrimaryTypeNames = $requiredPrimaryTypeNames;
     }
 
@@ -99,7 +106,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setDefaultPrimaryTypeName($defaultPrimaryTypeName) {
+    public function setDefaultPrimaryTypeName($defaultPrimaryTypeName)
+    {
         $this->defaultPrimaryTypeName = $defaultPrimaryTypeName;
     }
 
@@ -110,7 +118,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
      * @return void
      * @api
      */
-    public function setSameNameSiblings($allowSameNameSiblings) {
+    public function setSameNameSiblings($allowSameNameSiblings)
+    {
         $this->allowsSameNameSiblings = $allowSameNameSiblings;
     }
 

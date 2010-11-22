@@ -8,13 +8,15 @@ namespace Jackalope;
  * associated one-to-one with a Session object. The Workspace object can be
  * acquired by calling Session.getWorkspace() on the associated Session object.
  */
-class Workspace implements \PHPCR\WorkspaceInterface {
+class Workspace implements \PHPCR\WorkspaceInterface
+{
     protected $session;
     protected $nodeTypeManager;
     protected $name;
     protected $namespaceRegistry;
 
-    public function __construct(Session $session, ObjectManager $objectManager, $name) {
+    public function __construct(Session $session, ObjectManager $objectManager, $name)
+    {
         $this->session = $session;
         $this->nodeTypeManager = Factory::get('NodeType\NodeTypeManager', array($objectManager));
         $this->name = $name;
@@ -26,7 +28,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @return \PHPCR\SessionInterface a Session object.
      * @api
      */
-    public function getSession() {
+    public function getSession()
+    {
         return $this->session;
     }
 
@@ -37,14 +40,16 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @return string the name of this workspace.
      * @api
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
     /**
      * not implemented
      */
-    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL) {
+    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -52,14 +57,16 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * not implemented
      */
      //clone is a reserved keyword in php and may not be used as a function name.
-    public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting) {
+    public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    {
         throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
-    public function move($srcAbsPath, $destAbsPath) {
+    public function move($srcAbsPath, $destAbsPath)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -71,7 +78,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getLockManager() {
+    public function getLockManager()
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -82,7 +90,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getQueryManager() {
+    public function getQueryManager()
+    {
         return Factory::get('Query\QueryManager', array($this->session->getObjectManager()));
     }
 
@@ -94,7 +103,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getNamespaceRegistry() {
+    public function getNamespaceRegistry()
+    {
         if ($this->namespaceRegistry == false) {
             $this->namespaceRegistry = Factory::get('NamespaceRegistry', array($this->session->getTransport()));
         }
@@ -112,7 +122,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getNodeTypeManager() {
+    public function getNodeTypeManager()
+    {
         return $this->nodeTypeManager;
     }
 
@@ -124,7 +135,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getObservationManager() {
+    public function getObservationManager()
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -136,7 +148,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getVersionManager() {
+    public function getVersionManager()
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -152,21 +165,24 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getAccessibleWorkspaceNames() {
+    public function getAccessibleWorkspaceNames()
+    {
         return $this->session->getTransport()->getAccessibleWorkspaceNames();
     }
 
     /**
      * not implemented
      */
-    public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
+    public function getImportContentHandler($parentAbsPath, $uuidBehavior)
+    {
         throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
-    public function importXML($parentAbsPath, $in, $uuidBehavior) {
+    public function importXML($parentAbsPath, $in, $uuidBehavior)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -193,7 +209,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createWorkspace($name, $srcWorkspace = NULL) {
+    public function createWorkspace($name, $srcWorkspace = NULL)
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -209,7 +226,8 @@ class Workspace implements \PHPCR\WorkspaceInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function deleteWorkspace($name) {
+    public function deleteWorkspace($name)
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 

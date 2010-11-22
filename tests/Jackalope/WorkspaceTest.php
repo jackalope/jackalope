@@ -4,7 +4,8 @@ namespace Jackalope;
 
 class WorkspaceTest extends TestCase
 {
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $session = $this->getMock('Jackalope\Session', array(), array(), '', false);
         $transport = $this->getMock('Jackalope\Transport\DavexClient', array(), array('http://example.com'));
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($session, $transport, 'a3lkjas'), '', false);
@@ -14,7 +15,8 @@ class WorkspaceTest extends TestCase
         $this->assertSame($name, $w->getName());
     }
 
-    public function testGetNodeTypeManager() {
+    public function testGetNodeTypeManager()
+    {
         $session = $this->getMock('Jackalope\Session', array(), array(), '', false);
         $transport = $this->getMock('Jackalope\Transport\DavexClient', array(), array('http://example.com'));
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($session, $transport, 'a3lkjas'), '', false);

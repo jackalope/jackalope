@@ -7,10 +7,12 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * This interface encapsulates methods for the management of search queries.
  * Provides methods for the creation and retrieval of search queries.
  */
-class QueryManager implements \PHPCR\Query\QueryManagerInterface {
+class QueryManager implements \PHPCR\Query\QueryManagerInterface
+{
     protected $objectmanager;
 
-    public function __construct(ObjectManager $objectmanager) {
+    public function __construct(ObjectManager $objectmanager)
+    {
         $this->objectmanager = $objectmanager;
     }
     /**
@@ -25,7 +27,8 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function createQuery($statement, $language) {
+    public function createQuery($statement, $language)
+    {
         switch($language) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
                 return new SqlQuery($statement, $this->objectmanager);
@@ -43,7 +46,8 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface {
      * @return \PHPCR\Query\QOM\QueryObjectModelFactoryInterface a QueryObjectModelFactory object
      * @api
      */
-    public function getQOMFactory() {
+    public function getQOMFactory()
+    {
         throw new NotImplementedException();
     }
 
@@ -56,7 +60,8 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getQuery($node) {
+    public function getQuery($node)
+    {
         throw new NotImplementedException();
     }
 
@@ -67,7 +72,8 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getSupportedQueryLanguages() {
+    public function getSupportedQueryLanguages()
+    {
         return array(\PHPCR\Query\QueryInterface::JCR_SQL2, \PHPCR\Query\QueryInterface::JCR_JQOM);
     }
 }

@@ -12,7 +12,8 @@ namespace Jackalope;
  *
  * The result will be an object from jackalope with the given named params.
  */
-class Factory {
+class Factory
+{
     /**
      * Factory
      *
@@ -20,7 +21,8 @@ class Factory {
      * @param $params array: Parameters in order of their appearance in the constructor.
      * @return object
      */
-    public static function get($name, $params = array()) {
+    public static function get($name, $params = array())
+    {
         if (class_exists('Jackalope\\' . $name)) {
             $name = 'Jackalope\\' . $name;
         }

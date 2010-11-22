@@ -15,8 +15,8 @@ namespace Jackalope;
  * @package jackalope
  *
  */
-class NamespaceManager {
-
+class NamespaceManager
+{
     /**
      * List of predefined namespaces.
      * @var array
@@ -28,7 +28,8 @@ class NamespaceManager {
      *
      * @param array $defaultNamespaces Set of predefined namespaces.
      */
-    public function __construct($defaultNamespaces) {
+    public function __construct($defaultNamespaces)
+    {
         $this->defaultNamespaces = $defaultNamespaces;
     }
 
@@ -43,7 +44,8 @@ class NamespaceManager {
      *
      * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
      */
-    protected function checkPrefix($prefix) {
+    protected function checkPrefix($prefix)
+    {
         if (! strncasecmp('xml', $prefix, 3)) {
             throw new \PHPCR\NamespaceException('Do not use xml in prefixes for namespace changes');
         }

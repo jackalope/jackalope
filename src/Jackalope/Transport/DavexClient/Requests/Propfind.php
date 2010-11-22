@@ -27,8 +27,8 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base {
-
+class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base
+{
     /**
      * Identifier of the used XML namespace
      * @var array
@@ -47,8 +47,8 @@ class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base {
      *
      * @throws \InvalidArgumentException
      */
-    public function build() {
-
+    public function build()
+    {
         if (empty($this->arguments['properties'])) {
             throw new \InvalidArgumentException('Missing Properties.');
         }

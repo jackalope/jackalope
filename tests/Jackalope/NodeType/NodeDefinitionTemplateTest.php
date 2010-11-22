@@ -9,7 +9,8 @@ class NodeDefinitionTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeDefinitionTemplate::__construct
      */
-    public function testCreateNodeDefinitionTemplateEmpty() {
+    public function testCreateNodeDefinitionTemplateEmpty()
+    {
         $ntm = $this->getNodeTypeManager();
 
         $ndt = $ntm->createNodeDefinitionTemplate();

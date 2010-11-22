@@ -8,14 +8,16 @@ class NodeTypeManagerTest extends TestCase
 {
     protected $ntm;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->ntm = $this->getNodeTypeManager();
     }
 
     /**
      * @covers \Jackalope\NodeType\NodeTypeManager::getNodeType
      */
-    public function testGetNodeType() {
+    public function testGetNodeType()
+    {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertType('jackalope\NodeType\NodeType', $nt);
         $this->assertSame('nt:file', $nt->getName());
@@ -30,7 +32,8 @@ class NodeTypeManagerTest extends TestCase
      * @covers \Jackalope\NodeType\NodeTypeManager::getDeclaredSubtypes
      * @covers \Jackalope\NodeType\NodeTypeManager::getSubtypes
      */
-    public function testTypeHierarchies() {
+    public function testTypeHierarchies()
+    {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertSame(array('nt:hierarchyNode'), $nt->getDeclaredSupertypeNames());
         $this->assertSame(array(), $this->ntm->getDeclaredSubtypes('nt:file'));
@@ -42,12 +45,14 @@ class NodeTypeManagerTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeTypeManager::hasNodeType
      */
-    public function testHasNodeType() {
+    public function testHasNodeType()
+    {
         $this->assertTrue($this->ntm->hasNodeType('nt:folder'), 'manager claimed to not know about nt:folder');
         $this->assertFalse($this->ntm->hasNodeType('nonode'), 'manager claimed to know about nonode');
     }
 
-    public function testCountTypeClasses() {
+    public function testCountTypeClasses()
+    {
         $allNodes = $this->ntm->getAllNodeTypes();
         $this->assertType('Iterator', $allNodes);
         $this->assertSame(52, count($allNodes));
@@ -65,7 +70,8 @@ class NodeTypeManagerTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeTypeManager::createNodeTypeTemplate
      */
-    public function testCreateNodeTypeTemplate() {
+    public function testCreateNodeTypeTemplate()
+    {
         $ntm = $this->getNodeTypeManager();
 
         $nt = $ntm->getNodeType('nt:file');

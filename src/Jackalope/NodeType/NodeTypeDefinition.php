@@ -16,7 +16,8 @@ use \DOMElement, \DOMXPath;
  * registration, only objects implementing the subinterface NodeType will
  * be encountered.
  */
-class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface {
+class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
+{
     const NAME_NT_BASE = 'nt:base';
 
     protected $nodeTypeManager;
@@ -39,7 +40,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      * Initializes the NodeTypeDefinition from an optional source
      * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
      */
-    public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null) {
+    public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null)
+    {
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
@@ -55,7 +57,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      * Copies properties from a NodeType\NodeTypeDefinition
      * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
      */
-    protected function fromNodeTypeDefinition(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd) {
+    protected function fromNodeTypeDefinition(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd)
+    {
         $this->name = $ntd->getName();
         $this->isAbstract = $ntd->isAbstract();
         $this->isMixin = $ntd->isMixin();
@@ -71,7 +74,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      * Reads properties from XML
      * @param   DOMElement  $node   The dom to parse properties from
      */
-    protected function fromXml(DOMElement $node) {
+    protected function fromXml(DOMElement $node)
+    {
         $this->name = $node->getAttribute('name');
         $this->isAbstract = Helper::getBoolAttribute($node, 'isAbstract');
         $this->isMixin = Helper::getBoolAttribute($node, 'isMixin');
@@ -117,7 +121,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return string a String
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -130,7 +135,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return array an array of Strings
      */
-    public function getDeclaredSupertypeNames() {
+    public function getDeclaredSupertypeNames()
+    {
         if (is_null($this->declaredSuperTypeNames)) {
             return array(self::NAME_NT_BASE);
         }
@@ -149,7 +155,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return boolean a boolean
      */
-    public function isAbstract() {
+    public function isAbstract()
+    {
         return $this->isAbstract;
     }
 
@@ -161,7 +168,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return boolean a boolean
      */
-    public function isMixin() {
+    public function isMixin()
+    {
         return $this->isMixin;
     }
 
@@ -179,7 +187,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return boolean a boolean
      */
-    public function hasOrderableChildNodes() {
+    public function hasOrderableChildNodes()
+    {
         return $this->hasOrderableChildNodes;
     }
 
@@ -196,7 +205,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return boolean a boolean
      */
-    public function isQueryable() {
+    public function isQueryable()
+    {
         return $this->isQueryable;
     }
 
@@ -210,7 +220,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return string a String
      */
-    public function getPrimaryItemName() {
+    public function getPrimaryItemName()
+    {
         return $this->primaryItemName;
     }
 
@@ -223,7 +234,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return array an array of PropertyDefinitions
      */
-    public function getDeclaredPropertyDefinitions() {
+    public function getDeclaredPropertyDefinitions()
+    {
         return $this->declaredPropertyDefinitions;
     }
 
@@ -236,7 +248,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface 
      *
      * @return array an array of NodeDefinitions
      */
-    public function getDeclaredChildNodeDefinitions() {
+    public function getDeclaredChildNodeDefinitions()
+    {
         return $this->declaredNodeDefinitions;
     }
 

@@ -14,7 +14,8 @@ namespace Jackalope;
  * Workspace object represents a "view" of an actual repository workspace
  * entity as seen through the authorization settings of its associated Session.
  */
-class Session implements \PHPCR\SessionInterface {
+class Session implements \PHPCR\SessionInterface
+{
     protected $repository;
     protected $workspace;
     protected $objectManager;
@@ -22,7 +23,8 @@ class Session implements \PHPCR\SessionInterface {
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport) {
+    public function __construct(Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
+    {
         $this->repository = $repository;
         $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
         $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
@@ -35,7 +37,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return \PHPCR\RepositoryInterface a Repository object.
      * @api
      */
-    public function getRepository() {
+    public function getRepository()
+    {
         return $this->repository;
     }
 
@@ -48,7 +51,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return string The user id associated with this Session.
      * @api
      */
-    public function getUserID() {
+    public function getUserID()
+    {
         return $this->credentials->getUserID(); //TODO: what if its not simple credentials? what about anonymous login?
     }
 
@@ -62,7 +66,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return array A string array containing the names of all attributes passed in the credentials used to acquire this session.
      * @api
      */
-    public function getAttributeNames() {
+    public function getAttributeNames()
+    {
         return $this->credentials->getAttributeNames();
     }
 
@@ -74,7 +79,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return object The value of the attribute or null if no attribute of the given name exists.
      * @api
      */
-    public function getAttribute($name) {
+    public function getAttribute($name)
+    {
         return $this->credentials->getAttribute($name);
     }
 
@@ -84,7 +90,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return \PHPCR\WorkspaceInterface a Workspace object.
      * @api
      */
-    public function getWorkspace() {
+    public function getWorkspace()
+    {
         return $this->workspace;
     }
 
@@ -96,7 +103,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws RepositoryException if an error occurs.
      * @api
      */
-    public function getRootNode() {
+    public function getRootNode()
+    {
         return $this->getNode('/');
     }
 
@@ -116,7 +124,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function impersonate(\PHPCR\CredentialsInterface $credentials) {
+    public function impersonate(\PHPCR\CredentialsInterface $credentials)
+    {
         throw new \PHPCR\LoginException('Not supported');
     }
 
@@ -130,7 +139,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getNodeByIdentifier($id) {
+    public function getNodeByIdentifier($id)
+    {
         return $this->objectManager->getNode($id);
     }
 
@@ -151,7 +161,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getItem($absPath) {
+    public function getItem($absPath)
+    {
 
         if(strpos($absPath,'/') !== 0) {
             throw new \PHPCR\PathNotFoundException('It is forbidden to call getItem on session with a relative path');
@@ -173,7 +184,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getNode($absPath) {
+    public function getNode($absPath)
+    {
         try {
             return $this->objectManager->getNodeByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
@@ -190,7 +202,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getProperty($absPath) {
+    public function getProperty($absPath)
+    {
         try {
             return $this->objectManager->getPropertyByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
@@ -207,7 +220,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
-    public function itemExists($absPath) {
+    public function itemExists($absPath)
+    {
         if ($absPath == '/') return true;
         return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
@@ -221,7 +235,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
-    public function nodeExists($absPath) {
+    public function nodeExists($absPath)
+    {
         if ($absPath == '/') return true;
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
@@ -247,7 +262,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if absPath is not a well-formed absolute path.
      * @api
      */
-    public function propertyExists($absPath) {
+    public function propertyExists($absPath)
+    {
         // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
@@ -304,7 +320,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if the last element of destAbsPath has an index or if another error occurs.
      * @api
      */
-    public function move($srcAbsPath, $destAbsPath) {
+    public function move($srcAbsPath, $destAbsPath)
+    {
         $this->objectManager->moveItem($srcAbsPath, $destAbsPath);
     }
 
@@ -330,7 +347,8 @@ class Session implements \PHPCR\SessionInterface {
      * @see \PHPCR\ItemInterface::remove()
      * @api
      */
-    public function removeItem($absPath) {
+    public function removeItem($absPath)
+    {
         $this->objectManager->removeItem($absPath);
     }
 
@@ -361,7 +379,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function save() {
+    public function save()
+    {
         $this->objectManager->save();
     }
 
@@ -380,7 +399,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function refresh($keepChanges) {
+    public function refresh($keepChanges)
+    {
         throw new NotImplementedException('Write');
 
         //TODO: is clearing out object manager cache enough?
@@ -395,7 +415,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function hasPendingChanges() {
+    public function hasPendingChanges()
+    {
         return $this->objectManager->hasPendingChanges();
     }
 
@@ -408,7 +429,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getValueFactory() {
+    public function getValueFactory()
+    {
         return Factory::get(
                             'ValueFactory',
                             array());
@@ -425,7 +447,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function hasPermission($absPath, $actions) {
+    public function hasPermission($absPath, $actions)
+    {
         if ($actions == self::ACTION_READ) {
             throw new NotImplementedException('TODO: check read permission');
            /*
@@ -451,7 +474,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function checkPermission($absPath, $actions) {
+    public function checkPermission($absPath, $actions)
+    {
         if (! $this->hasPermission($absPath, $actions)) {
             throw new \PHPCR\Security\AccessControlException($absPath);
         }
@@ -467,7 +491,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function hasCapability($methodName, $target, array $arguments) {
+    public function hasCapability($methodName, $target, array $arguments)
+    {
         //we never determine wether operation can be performed as it is optional ;-)
         //TODO: could implement some
         return true;
@@ -476,14 +501,16 @@ class Session implements \PHPCR\SessionInterface {
     /**
      * not implemented
      */
-    public function getImportContentHandler($parentAbsPath, $uuidBehavior) {
+    public function getImportContentHandler($parentAbsPath, $uuidBehavior)
+    {
         throw new NotImplementedException('Write');
     }
 
     /**
      * not implemented
      */
-    public function importXML($parentAbsPath, $in, $uuidBehavior) {
+    public function importXML($parentAbsPath, $in, $uuidBehavior)
+    {
         throw new NotImplementedException('Write');
     }
 
@@ -527,7 +554,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function exportSystemView($absPath, $out, $skipBinary, $noRecurse) {
+    public function exportSystemView($absPath, $out, $skipBinary, $noRecurse)
+    {
         throw new NotImplementedException();
     }
 
@@ -568,7 +596,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function exportDocumentView($absPath, $out, $skipBinary, $noRecurse) {
+    public function exportDocumentView($absPath, $out, $skipBinary, $noRecurse)
+    {
         throw new NotImplementedException();
     }
 
@@ -591,7 +620,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setNamespacePrefix($prefix, $uri) {
+    public function setNamespacePrefix($prefix, $uri)
+    {
         throw new NotImplementedException();
     }
 
@@ -602,7 +632,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getNamespacePrefixes() {
+    public function getNamespacePrefixes()
+    {
         throw new NotImplementedException();
     }
 
@@ -616,7 +647,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
-    public function getNamespaceURI($prefix) {
+    public function getNamespaceURI($prefix)
+    {
         throw new NotImplementedException();
     }
 
@@ -630,7 +662,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException - if another error occurs
      * @api
      */
-    public function getNamespacePrefix($uri) {
+    public function getNamespacePrefix($uri)
+    {
         throw new NotImplementedException();
     }
 
@@ -641,7 +674,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return void
      * @api
      */
-    public function logout() {
+    public function logout()
+    {
         //TODO anything to do on logout?
         //OPTIMIZATION: flush object manager
         $this->logout = true;
@@ -656,7 +690,8 @@ class Session implements \PHPCR\SessionInterface {
      * @return boolean true if this Session is usable, false otherwise.
      * @api
      */
-    public function isLive() {
+    public function isLive()
+    {
         return ! $this->logout;
     }
 
@@ -668,7 +703,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getAccessControlManager() {
+    public function getAccessControlManager()
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -680,7 +716,8 @@ class Session implements \PHPCR\SessionInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getRetentionManager() {
+    public function getRetentionManager()
+    {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -688,14 +725,16 @@ class Session implements \PHPCR\SessionInterface {
      * Implementation specific: The object manager is also used by other components, i.e. the QueryManager.
      * DO NOT USE if you are a consumer of the api
      */
-    public function getObjectManager() {
+    public function getObjectManager()
+    {
         return $this->objectManager;
     }
 
     /**
      * Implementation specific: The transport implementation is also used by other components, i.e. the NamespaceRegistry
      */
-    public function getTransport() {
+    public function getTransport()
+    {
         return $this->objectManager->getTransport();
     }
 }

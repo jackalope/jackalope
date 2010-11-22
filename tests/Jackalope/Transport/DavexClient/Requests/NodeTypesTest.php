@@ -2,8 +2,8 @@
 
 namespace Jackalope\Transport\DavexClient\Requests;
 
-class NodeTypesTest extends \PHPUnit_Framework_TestCase {
-
+class NodeTypesTest extends \PHPUnit_Framework_TestCase
+{
     /*************************************************************************/
     /* Fixtures
     /*************************************************************************/
@@ -14,7 +14,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
      * @param string $filename Name of the file the path shall be generated for.
      * @return string The location of the file.
      */
-    public function getFixtureFile($filename) {
+    public function getFixtureFile($filename)
+    {
         $path = __DIR__.'/../../../../fixtures/Requests/';
         return $path.$filename;
     }
@@ -25,7 +26,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
      * @param array $arguments List of arguments to be processed.
      * @return \Jackalope\Transport\DavexClient\Requests\NodeTypes
      */
-    public function getNodeTypesObject($arguments) {
+    public function getNodeTypesObject($arguments)
+    {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
         return new \Jackalope\Transport\DavexClient\Requests\NodeTypes($dom, $arguments);
@@ -39,7 +41,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
      * @dataProvider buildDataprovider
      * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::build
      */
-    public function testBuildWithNodetypes($arguments, $fixtureFilename) {
+    public function testBuildWithNodetypes($arguments, $fixtureFilename)
+    {
         $nt = $this->getNodeTypesObject($arguments);
         $nt->build();
 
@@ -53,7 +56,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
      * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::build
      * @expectedException \InvalidArgumentException
      */
-    public function testBuildExpectingInvalidArgumentException() {
+    public function testBuildExpectingInvalidArgumentException()
+    {
         $nt = $this->getNodeTypesObject(array());
         $nt->build();
     }
@@ -62,7 +66,8 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
     /* Dataprovider
     /*************************************************************************/
 
-    public static function buildDataprovider() {
+    public static function buildDataprovider()
+    {
         return array(
             'Multiple Nodetypes' => array(
                 array('nodetypes' => array('Beastie', 'Puffy')),

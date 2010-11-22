@@ -21,7 +21,8 @@ namespace Jackalope;
  * @package jackalope
  * @subpackage transport
  */
-interface TransportInterface {
+interface TransportInterface
+{
     /**
      * Set this transport to a specific credential and a workspace.
      *

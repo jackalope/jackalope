@@ -27,8 +27,8 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-class Report extends \Jackalope\Transport\DavexClient\Requests\Base {
-
+class Report extends \Jackalope\Transport\DavexClient\Requests\Base
+{
     /**
      * Identifier of the used XML namespace
      * @var string
@@ -51,7 +51,8 @@ class Report extends \Jackalope\Transport\DavexClient\Requests\Base {
      *
      * @throws \InvalidArgumentException
      */
-    public function build() {
+    public function build()
+    {
         if(empty($this->arguments['name'])) {
             throw new \InvalidArgumentException('Missing report name.');
         }

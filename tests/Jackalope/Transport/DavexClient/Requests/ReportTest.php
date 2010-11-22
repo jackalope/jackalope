@@ -2,8 +2,8 @@
 
 namespace Jackalope\Transport\DavexClient\Requests;
 
-class ReportTest extends \PHPUnit_Framework_TestCase {
-
+class ReportTest extends \PHPUnit_Framework_TestCase
+{
     /*************************************************************************/
     /* Fixtures
     /*************************************************************************/
@@ -14,7 +14,8 @@ class ReportTest extends \PHPUnit_Framework_TestCase {
      * @param string $filename Name of the file the path shall be generated for.
      * @return string The location of the file.
      */
-    public function getFixtureFile($filename) {
+    public function getFixtureFile($filename)
+    {
         $path = __DIR__.'/../../../../fixtures/Requests/';
         return $path.$filename;
     }
@@ -25,7 +26,8 @@ class ReportTest extends \PHPUnit_Framework_TestCase {
      * @param array $arguments List of arguments to be processed.
      * @return \Jackalope\Transport\DavexClient\Requests\Report
      */
-    public function getReportObject($arguments) {
+    public function getReportObject($arguments)
+    {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
         return new \Jackalope\Transport\DavexClient\Requests\Report($dom, $arguments);
@@ -38,7 +40,8 @@ class ReportTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Report::build
      */
-    public function testBuild() {
+    public function testBuild()
+    {
         $arguments = array('name' => 'registerednamespaces');
         $request = $this->getReportObject($arguments);
         $request->build();
@@ -53,7 +56,8 @@ class ReportTest extends \PHPUnit_Framework_TestCase {
      * @covers \Jackalope\Transport\DavexClient\Requests\Report::build
      * @expectedException \InvalidArgumentException
      */
-    public function testBuildExpectingInvalidArgumentException() {
+    public function testBuildExpectingInvalidArgumentException()
+    {
         $nt = $this->getReportObject(array());
         $nt->build();
     }

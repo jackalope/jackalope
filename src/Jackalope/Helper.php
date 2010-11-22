@@ -6,14 +6,16 @@ use \DOMElement;
 /** Implementation Class:
  *  static helper functions to do some commonly used dom and path operations
  */
-class Helper {
+class Helper
+{
     /**
      * Returns an attribute casted to boolean
      * @param DOMElement node to fetch from
      * @param string attribute to fetch
      * @return bool the value converted to bool
      */
-    public static function getBoolAttribute(DOMElement $node, $attribute) {
+    public static function getBoolAttribute(DOMElement $node, $attribute)
+    {
         if ('false' === $node->getAttribute($attribute)) {
             return false;
         } else {
@@ -27,7 +29,8 @@ class Helper {
      * @param   string  $path   The path to check
      * @return  bool    TRUE if path is absolute otherwise FALSE
      */
-    public static function isAbsolutePath($path) {
+    public static function isAbsolutePath($path)
+    {
         return $path && $path[0] == '/';
     }
 
@@ -41,7 +44,8 @@ class Helper {
      * @param   string  $path   THe path to validate
      * @return  bool    TRUE if valid otherwise FALSE
      */
-    public static function isValidPath($path) {
+    public static function isValidPath($path)
+    {
         return (strpos($path, '//') === false && preg_match('/^[\w{}\/#:^+~*\[\]\.-]*$/i', $path));
     }
 
@@ -59,7 +63,8 @@ class Helper {
      * @return One of the \PHPCR\PropertyType constants
      * @api
      */
-    public static function determineType($value, $weak = false) {
+    public static function determineType($value, $weak = false)
+    {
         //determine type from variable type of value.
         //this is mainly needed to create a new property
         if (is_string($value)) {
@@ -86,6 +91,7 @@ class Helper {
         }
         return $type;
     }
+
     /**
      * Attempt to convert $values into the proper format for $type.
      *
@@ -102,7 +108,8 @@ class Helper {
      * @throws \PHPCR\RepositoryException if the specified Node is not referenceable, the current Session is no longer active, or another error occurs.
      * @throws IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      */
-    public static function convertType($values, $type) {
+    public static function convertType($values, $type)
+    {
         $isArray = is_array($values);
         if (!$isArray) {
             $values = array($values);

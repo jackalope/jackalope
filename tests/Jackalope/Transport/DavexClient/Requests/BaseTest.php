@@ -1,8 +1,8 @@
 <?php
 namespace Jackalope\Transport\DavexClient\Requests;
 
-class BaseTest extends \PHPUnit_Framework_TestCase {
-
+class BaseTest extends \PHPUnit_Framework_TestCase
+{
     /*************************************************************************/
     /* Fixtures
     /*************************************************************************/
@@ -13,7 +13,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param string $filename Name of the file the path shall be generated for.
      * @return string The location of the file.
      */
-    public function getFixtureFile($filename) {
+    public function getFixtureFile($filename)
+    {
         $path = __DIR__.'/../../../../fixtures/Requests/';
         return $path.$filename;
     }
@@ -27,7 +28,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
      * @param array $arguments List of arguments to be processed.
      * @return \Jackalope\Transport\DavexClient\Requests\DummyBase
      */
-    public function getBaseObject(array $arguments) {
+    public function getBaseObject(array $arguments)
+    {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
         return new \Jackalope\Transport\DavexClient\Requests\DummyBase($dom, $arguments);
@@ -38,7 +40,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
      *
      * @param \Jackalope\Transport\DavexClient\Requests\Base $request
      */
-    public function createDOMDocumentStructureFixture($request) {
+    public function createDOMDocumentStructureFixture($request)
+    {
         $doc = $request->dom->createElement('linux', 'test XML');
         $request->dom->appendChild($doc);
     }
@@ -50,7 +53,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Base::__construct
      */
-    public function testConstruct() {
+    public function testConstruct()
+    {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
@@ -63,7 +67,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Base::__toString
      */
-    public function testToString() {
+    public function testToString()
+    {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
         $request = $this->getBaseObject($arguments);
         $this->createDOMDocumentStructureFixture($request);
@@ -74,7 +79,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers \Jackalope\Transport\DavexClient\Requests\Base::getXml
      */
-    public function testGetXml() {
+    public function testGetXml()
+    {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
         $request = $this->getBaseObject($arguments);
         $this->createDOMDocumentStructureFixture($request);
@@ -83,8 +89,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
     }
 }
 
-class DummyBase extends \Jackalope\Transport\DavexClient\Requests\Base {
-
+class DummyBase extends \Jackalope\Transport\DavexClient\Requests\Base
+{
     /**
      * $dom needs to be exposed due to be able to create a custom DOMDocument.
      *

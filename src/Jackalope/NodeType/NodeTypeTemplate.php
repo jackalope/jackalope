@@ -16,9 +16,8 @@ namespace Jackalope\NodeType;
  * for the default values assumed when a new empty NodeTypeTemplate is created
  * (as opposed to one extracted from an existing NodeType).
  */
-class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeTemplateInterface {
-
-
+class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeTemplateInterface
+{
     /**
      * Sets the name of the node type.
      *
@@ -26,7 +25,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
@@ -37,7 +37,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setDeclaredSuperTypeNames(array $names) {
+    public function setDeclaredSuperTypeNames(array $names)
+    {
         $this->declaredSuperTypeNames = $names;
     }
 
@@ -48,7 +49,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setAbstract($abstractStatus) {
+    public function setAbstract($abstractStatus)
+    {
         $this->isAbstract = $abstractStatus;
     }
 
@@ -59,7 +61,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setMixin($mixin) {
+    public function setMixin($mixin)
+    {
         $this->isMixin = $mixin;
     }
 
@@ -70,7 +73,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setOrderableChildNodes($orderable) {
+    public function setOrderableChildNodes($orderable)
+    {
         $this->hasOrderableChildNodes = $orderable;
     }
 
@@ -81,7 +85,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setPrimaryItemName($name) {
+    public function setPrimaryItemName($name)
+    {
         $this->primaryItemName = $name;
     }
 
@@ -92,7 +97,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return void
      * @api
      */
-    public function setQueryable($queryable) {
+    public function setQueryable($queryable)
+    {
         $this->isQueryable = $queryable;
     }
 
@@ -104,7 +110,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return array a mutable List of PropertyDefinitionTemplate objects.
      * @api
      */
-    public function getPropertyDefinitionTemplates() {
+    public function getPropertyDefinitionTemplates()
+    {
         return $this->declaredPropertyDefinitions;
     }
 
@@ -116,7 +123,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return array a mutable List of NodeDefinitionTemplate objects.
      * @api
      */
-    public function getNodeDefinitionTemplates() {
+    public function getNodeDefinitionTemplates()
+    {
         return $this->declaredNodeDefinitions;
     }
 

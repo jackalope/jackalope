@@ -28,8 +28,8 @@ namespace Jackalope\Transport\DavexClient\Requests;
  * @package jackalope
  * @subpackage transport
  */
-class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base {
-
+class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base
+{
     /**
      * Identifier of the used XML namespace
      * @var string
@@ -47,8 +47,8 @@ class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base {
      *
      * @throws \InvalidArgumentException
      */
-    public function build() {
-
+    public function build()
+    {
         if (!isset($this->arguments['nodetypes'])) {
             throw new \InvalidArgumentException('Missing NodeTypes.');
         }

@@ -18,8 +18,8 @@ namespace Jackalope;
  *
  * @package jackalope
  */
-class ObjectManager {
-
+class ObjectManager
+{
     /**
      * Instance of an implementation of the \PHPCR\SessionInterface.
      * @var \PHPCR\SessionInterface
@@ -84,7 +84,8 @@ class ObjectManager {
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
-    public function __construct(TransportInterface $transport, \PHPCR\SessionInterface $session) {
+    public function __construct(TransportInterface $transport, \PHPCR\SessionInterface $session)
+    {
         $this->transport = $transport;
         $this->session = $session;
     }
@@ -103,7 +104,8 @@ class ObjectManager {
      *
      * @uses Factory::get()
      */
-    public function getNodeByPath($absPath) {
+    public function getNodeByPath($absPath)
+    {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
 
@@ -134,7 +136,8 @@ class ObjectManager {
      * @param string $absPath The absolute path of the property to create.
      * @return \PHPCR\Property
      */
-    public function getPropertyByPath($absPath) {
+    public function getPropertyByPath($absPath)
+    {
         $absPath = $this->normalizePath($absPath);
 
         $this->verifyAbsolutePath($absPath);
@@ -165,7 +168,8 @@ class ObjectManager {
      * @param string $path The path to normalize.
      * @return string The normalized path.
      */
-    public function normalizePath($path) {
+    public function normalizePath($path)
+    {
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (preg_match('/^\[([[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12})\]$/', $path, $matches)) {
             $uuid = $matches[1];
@@ -209,8 +213,8 @@ class ObjectManager {
      * @param string Relative path
      * @return string Absolute and normalized path
      */
-    public function absolutePath($root, $relPath) {
-
+    public function absolutePath($root, $relPath)
+    {
         $root = trim($root, '/');
         $concat = $root;
         if (strlen($root)) {
@@ -236,7 +240,8 @@ class ObjectManager {
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function getNode($identifier, $root = '/'){
+    public function getNode($identifier, $root = '/')
+    {
         if ($this->isUUID($identifier)) {
             if (empty($this->objectsByUuid[$identifier])) {
                 $path = $this->transport->getNodePathForIdentifier($identifier);
@@ -258,7 +263,8 @@ class ObjectManager {
      * @param array $nodeTypes Empty for all or selected node types by name
      * @return DOMDoocument containing the nodetype information
      */
-    public function getNodeTypes($nodeTypes = array()) {
+    public function getNodeTypes($nodeTypes = array())
+    {
         return $this->transport->getNodeTypes($nodeTypes);
     }
 
@@ -270,7 +276,8 @@ class ObjectManager {
      *
      * @see getNodeTypes()
      */
-    public function getNodeType($nodeType) {
+    public function getNodeType($nodeType)
+    {
         return $this->getNodeTypes(array($nodeType));
     }
 
@@ -282,7 +289,8 @@ class ObjectManager {
      *
      * @throws \PHPCR\RepositoryException if the path is not absolute or well-formed
      */
-    public function verifyAbsolutePath($path) {
+    public function verifyAbsolutePath($path)
+    {
         if (!Helper::isAbsolutePath($path)) {
             throw new \PHPCR\RepositoryException('Path is not absolute: ' . $path);
         }
@@ -298,7 +306,8 @@ class ObjectManager {
      * @param string $id Possible uuid
      * @return boolean True if the test was passed, else false.
      */
-    protected function isUUID($id) {
+    protected function isUUID($id)
+    {
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (1 === preg_match('/^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/', $id)) {
             return true;
@@ -318,7 +327,8 @@ class ObjectManager {
      *
      * @return void
      */
-    public function save() {
+    public function save()
+    {
 
         // TODO: start transaction
 
@@ -396,7 +406,8 @@ class ObjectManager {
      *
      * @return boolean False
      */
-    public function hasPendingChanges() {
+    public function hasPendingChanges()
+    {
         if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMove) || count($this->nodesRemove)) return true;
         foreach($this->objectsByPath as $item) {
             if ($item->isModified()) return true;
@@ -413,7 +424,8 @@ class ObjectManager {
      *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
-    public function removeItem($absPath) {
+    public function removeItem($absPath)
+    {
         if (! isset($this->objectsByPath[$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: nothing at $absPath");
         }
@@ -438,7 +450,8 @@ class ObjectManager {
      *
      * @throws NotImplementedException
      */
-    public function moveItem($srcAbsPath, $destAbsPath) {
+    public function moveItem($srcAbsPath, $destAbsPath)
+    {
         $this->nodeMove[$srcAbsPath] = $destAbsPath;
         $this->unsaved = true;
 
@@ -457,7 +470,8 @@ class ObjectManager {
      *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
-    public function addItem($absPath, \PHPCR\ItemInterface $item) {
+    public function addItem($absPath, \PHPCR\ItemInterface $item)
+    {
         if (isset($this->objectsByPath[$absPath])) {
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
@@ -474,7 +488,8 @@ class ObjectManager {
      *
      * @return TransportInterface
      */
-    public function getTransport() {
+    public function getTransport()
+    {
         return $this->transport;
     }
 }

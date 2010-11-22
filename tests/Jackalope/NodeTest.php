@@ -6,7 +6,8 @@ class NodeTest extends TestCase
 {
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $session = $this->getMock('Jackalope\Session', array(), array(), '', false);
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array(), '', false);
         $node = new Node(json_decode($this->JSON), '/jcr:node', $session, $objectManager);
@@ -19,7 +20,8 @@ class NodeTest extends TestCase
         $this->assertSame(2, count($children));
     }
 
-    public function testFilterNames() {
+    public function testFilterNames()
+    {
         $filter = 'test';
         $names = array('test', 'toast');
         $filtered = NodeMock::filterNames($filter, $names);
@@ -83,8 +85,10 @@ class NodeTest extends TestCase
     }
 }
 
-class NodeMock extends Node {
-    public static function filterNames($filter,$names) {
+class NodeMock extends Node
+{
+    public static function filterNames($filter,$names)
+    {
         return parent::filterNames($filter,$names);
     }
 }

@@ -28,8 +28,8 @@ namespace Jackalope\Transport;
  * @package jackalope
  * @subpackage transport
  */
-class curl {
-
+class curl
+{
     /**
      * Contains a connection resource to a curl session.
      * @var resource
@@ -43,7 +43,8 @@ class curl {
      *
      * @see curl_init
      */
-    public function __construct($url = null) {
+    public function __construct($url = null)
+    {
         $this->curl = curl_init($url);
     }
 
@@ -55,7 +56,8 @@ class curl {
      *
      * @see curl_setopt
      */
-    public function setopt($option, $value) {
+    public function setopt($option, $value)
+    {
         return curl_setopt($this->curl, $option, $value);
     }
 
@@ -66,7 +68,8 @@ class curl {
      *
      * @see curl_setopt_array
      */
-    public function setopt_array($options) {
+    public function setopt_array($options)
+    {
         return curl_setopt_array($this->curl, $options);
     }
 
@@ -77,7 +80,8 @@ class curl {
      *
      * @see curl_exec
      */
-    public function exec() {
+    public function exec()
+    {
         return curl_exec($this->curl);
     }
 
@@ -88,7 +92,8 @@ class curl {
      *
      * @see curl_error
      */
-    public function error() {
+    public function error()
+    {
         return curl_error($this->curl);
     }
 
@@ -99,7 +104,8 @@ class curl {
      *
      * @see curl_errno
      */
-    public function errno() {
+    public function errno()
+    {
         return curl_errno($this->curl);
     }
 
@@ -111,7 +117,8 @@ class curl {
      *
      * @see curl_getinfo
      */
-    public function getinfo($option = null) {
+    public function getinfo($option = null)
+    {
         return curl_getinfo($this->curl, $option);
     }
 
@@ -122,7 +129,8 @@ class curl {
      *
      * @see curl_close
      */
-    public function close() {
+    public function close()
+    {
         return curl_close($this->curl);
     }
 }

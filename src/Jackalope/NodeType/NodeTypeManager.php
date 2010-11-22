@@ -11,7 +11,8 @@ use ArrayIterator;
  * Implementation:
  * We try to do lazy fetching of node types.
  */
-class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
+class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface
+{
     protected $objectManager;
 
     protected $primaryTypes;
@@ -27,7 +28,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      */
     protected $fetchedAllFromBackend = false;
 
-    public function __construct(ObjectManager $objectManager) {
+    public function __construct(ObjectManager $objectManager)
+    {
         $this->objectManager = $objectManager;
     }
 
@@ -42,7 +44,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @param namelist string type name to fetch. defaults to null which will fetch all nodes.
      * @return void
      */
-    protected function fetchNodeTypes($name = null) {
+    protected function fetchNodeTypes($name = null)
+    {
         if ($this->fetchedAllFromBackend) return;
 
         if (! is_null($name)) {
@@ -76,7 +79,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      *
      * @param   \PHPCR\NodeType\NodeTypeInterface  $nodetype   The nodetype to add
      */
-    protected function addNodeType(\PHPCR\NodeType\NodeTypeInterface $nodetype) {
+    protected function addNodeType(\PHPCR\NodeType\NodeTypeInterface $nodetype)
+    {
         if ($nodetype->isMixin()) {
             $this->mixinTypes[$nodetype->getName()] = $nodetype;
         } else {
@@ -90,7 +94,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @param string Nodename
      * @return array of strings with the names of the subnodes
      */
-    public function getDeclaredSubtypes($nodeTypeName) {
+    public function getDeclaredSubtypes($nodeTypeName)
+    {
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
@@ -102,7 +107,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @param string Nodename
      * @return array of strings with the names of the subnodes
      */
-    public function getSubtypes($nodeTypeName) {
+    public function getSubtypes($nodeTypeName)
+    {
         $ret = array();
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
@@ -118,7 +124,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * Adds a node to the tree to get the subnodes later on
      * @param NodeType the nodetype to add
      */
-    protected function addToNodeTree($nodetype) {
+    protected function addToNodeTree($nodetype)
+    {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
                 $this->nodeTree[$declaredSupertypeName] = array_merge($this->nodeTree[$declaredSupertypeName], array($nodetype->getName()));
@@ -136,7 +143,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no node type by the given name exists.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function getNodeType($nodeTypeName) {
+    public function getNodeType($nodeTypeName)
+    {
         $this->fetchNodeTypes($nodeTypeName);
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
@@ -157,7 +165,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @return boolean a boolean
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
-    public function hasNodeType($name) {
+    public function hasNodeType($name)
+    {
         $this->fetchNodeTypes($name);
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
@@ -168,7 +177,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
-    public function getAllNodeTypes() {
+    public function getAllNodeTypes()
+    {
         $this->fetchNodeTypes();
         return new ArrayIterator(array_values(array_merge($this->primaryTypes, $this->mixinTypes)));
     }
@@ -179,7 +189,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
-    public function getPrimaryNodeTypes() {
+    public function getPrimaryNodeTypes()
+    {
         $this->fetchNodeTypes();
         return new ArrayIterator(array_values($this->primaryTypes));
     }
@@ -191,7 +202,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
      * @throws \PHPCR\RepositoryException if an error occurs.
      */
-    public function getMixinNodeTypes() {
+    public function getMixinNodeTypes()
+    {
         $this->fetchNodeTypes();
         return new ArrayIterator(array_values($this->mixinTypes));
     }
@@ -209,7 +221,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createNodeTypeTemplate($ntd = NULL) {
+    public function createNodeTypeTemplate($ntd = NULL)
+    {
        return Factory::get('NodeType\NodeTypeTemplate', array($this, $ntd));
     }
 
@@ -221,7 +234,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createNodeDefinitionTemplate() {
+    public function createNodeDefinitionTemplate()
+    {
        return Factory::get('NodeType\NodeDefinitionTemplate', array($this));
     }
 
@@ -233,7 +247,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createPropertyDefinitionTemplate() {
+    public function createPropertyDefinitionTemplate()
+    {
        return Factory::get('NodeType\PropertyDefinitionTemplate', array($this));
     }
 
@@ -252,7 +267,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+    public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    {
         $nt = $this->createNodeType($ntd, $allowUpdate);
         $this->addNodeType($nt);
         return $nt;
@@ -265,7 +281,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @param   bool    $allowUpdate    Whether an existing note type can be updated
      * @throws \PHPCR\NodeType\NodeTypeExistsException   If the node type is already existing and allowUpdate is false
      */
-    protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate) {
+    protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    {
         if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
             throw new \PHPCR\NodeType\NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
@@ -287,7 +304,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function registerNodeTypes(array $definitions, $allowUpdate) {
+    public function registerNodeTypes(array $definitions, $allowUpdate)
+    {
         $nts = array();
         // prepare them first (all or nothing)
         foreach ($definitions as $definition) {
@@ -308,7 +326,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no registered node type exists with the specified name.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function unregisterNodeType($name) {
+    public function unregisterNodeType($name)
+    {
         if (!empty($this->primaryTypes[$name])) {
             unset($this->primaryTypes[$name]);
         } elseif (!empty($this->mixinTypes[$name])) {
@@ -330,7 +349,8 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface {
      * @throws \PHPCR\NodeType\NoSuchNodeTypeException if one of the names listed is not a registered node type.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function unregisterNodeTypes(array $names) {
+    public function unregisterNodeTypes(array $names)
+    {
         foreach ($names as $name) {
             $this->unregisterNodeType($name);
         }
