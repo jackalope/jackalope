@@ -104,7 +104,7 @@ class Property extends Item implements \PHPCR\PropertyInterface {
             throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
 
         if (is_null($type)) {
-            $type = Helper::determineType((is_array($value)) ? $value[0] : $value, $weak);
+            $type = Helper::determineType(is_array($value) ? reset($value) : $value, $weak);
         }
         if ($value instanceof \PHPCR\NodeInterface) {
             if ($this->type == \PHPCR\PropertyType::REFERENCE ||

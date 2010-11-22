@@ -58,6 +58,24 @@ class DavexClient implements TransportInterface {
     const GET = 'GET';
 
     /**
+     * Identifier of the 'PUT' http request method.
+     * @var string
+     */
+    const PUT = 'PUT';
+
+    /**
+     * Identifier of the 'MKCOL' http request method.
+     * @var string
+     */
+    const MKCOL = 'MKCOL';
+
+    /**
+     * Identifier of the 'DELETE' http request method.
+     * @var string
+     */
+    const DELETE = 'DELETE';
+
+    /**
      * Identifier of the 'REPORT' http request method.
      * @var string
      */
@@ -279,7 +297,7 @@ class DavexClient implements TransportInterface {
         );
         $workspaces = array();
         foreach ($dom->getElementsByTagNameNS(self::NS_DAV, 'workspace') as $value) {
-            if (! empty($value->nodeValue)) {
+            if (!empty($value->nodeValue)) {
                 $workspaces[] = substr(trim($value->nodeValue), strlen($this->server), -1);
             }
         }
@@ -294,17 +312,138 @@ class DavexClient implements TransportInterface {
      * @param string $path Absolute path to identify a special item.
      * @return array for the node (decoded from json)
      *
-     * @throws \PHPCR\RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getItem($path) {
+        $this->ensureAbsolutePath($path);
+        $this->checkLogin();
+        return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
+    }
 
-        // it has to be an absolute path!
+    /**
+     * checks if the path is absolute, throws an exception if it is not
+     *
+     * @param path to check
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    protected function ensureAbsolutePath($path) {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
             throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
         }
+    }
+
+    /**
+     * Deletes a node
+     *
+     * @param string $path Absolute path to identify a special item.
+     * @return bool true on success
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function deleteItem($path) {
+        $this->ensureAbsolutePath($path);
         $this->checkLogin();
-        return $this->getJsonFromBackend(self::GET, $this->workspaceUriRoot . $path . '.0.json');
+
+        $this->prepareRequest(self::DELETE, $this->workspaceUriRoot . $path);
+        $this->getRawFromBackend();
+        return true;
+    }
+
+    /**
+     * Deletes a property
+     *
+     * @param string $path Absolute path to identify a special item.
+     * @return bool true on success
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function deleteProperty($path) {
+        return $this->deleteItem($path);
+    }
+
+    /**
+     * Stores an item to the given absolute path
+     *
+     * @param string $path Absolute path to identify a special item.
+     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType
+     * @param \Traversable $properties array of \PHPCR\PropertyInterface objects
+     * @param \Traversable $children array of \PHPCR\NodeInterface objects
+     * @return bool true on success
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function storeItem($path, $properties, $children) {
+        // it has to be an absolute path!
+        $this->ensureAbsolutePath($path);
+        $this->checkLogin();
+
+        $body = '<?xml version="1.0" encoding="UTF-8"?>';
+        $body .= $this->createNodeMarkup($path, $properties, $children);
+
+        $this->prepareRequest(self::MKCOL, $this->workspaceUriRoot . $path, $body);
+        $this->getRawFromBackend();
+
+        return true;
+    }
+
+    protected function createNodeMarkup($path, $properties, $children) {
+        $body = '<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" sv:name="'.basename($path).'">';
+
+        foreach ($properties as $name => $property) {
+            $type = \PHPCR\PropertyType::nameFromValue($property->getType());
+            $body .= '<sv:property sv:name="'.$name.'" sv:type="'.$type.'">'.
+                    '<sv:value>'.$this->propertyToXmlString($property, $type).'</sv:value>'.
+                '</sv:property>';
+        }
+
+        foreach ($children as $name => $node) {
+            $body .= $this->createNodeMarkup($path.'/'.$name, $node->getProperties(), $node->getNodes());
+        }
+
+        return $body . '</sv:node>';
+    }
+
+    /**
+     * Stores a property to the given absolute path
+     *
+     * @param string $path Absolute path to identify a specific property.
+     * @param \PHPCR\PropertyInterface
+     * @return bool true on success
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function storeProperty($path, \PHPCR\PropertyInterface $property) {
+        // it has to be an absolute path!
+        $this->ensureAbsolutePath($path);
+        $this->checkLogin();
+
+        $type = \PHPCR\PropertyType::nameFromValue($property->getType());
+        $contentType = 'jcr-value/'.strtolower($type);
+        $this->prepareRequest(self::PUT, $this->workspaceUriRoot . $path, $this->propertyToRawString($property, $type), 0, $contentType);
+        $this->getRawFromBackend();
+
+        return true;
+    }
+
+    protected function propertyToXmlString($property, $type) {
+        $value = $property->getNativeValue();
+        switch ($type) {
+        case \PHPCR\PropertyType::TYPENAME_DATE:
+            return $value->format('Y-m-d\TH:i:s.000P');
+        case \PHPCR\PropertyType::TYPENAME_BINARY:
+            return base64_encode($value);
+        }
+        return $value;
+    }
+
+    protected function propertyToRawString($property, $type) {
+        // skip binary encoding for raw strings
+        switch ($type) {
+        case \PHPCR\PropertyType::TYPENAME_BINARY:
+            return $property->getNativeValue();
+        }
+        return $this->propertyToXmlString($property, $type);
     }
 
     /**
@@ -314,7 +453,7 @@ class DavexClient implements TransportInterface {
      * @return string Absolute path to the node
      *
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
-     * @throws \PHPCR\RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodePathForIdentifier($uuid) {
         $this->checkLogin();
@@ -352,7 +491,7 @@ class DavexClient implements TransportInterface {
      *
      * @return array Associative array of prefix => uri
      *
-     * @throws \PHPCR\RepositoryException if now logged in
+     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNamespaces() {
         $this->checkLogin();
@@ -379,7 +518,7 @@ class DavexClient implements TransportInterface {
      * Returns node types
      * @param array nodetypes to request
      * @return dom with the definitions
-     * @throws \PHPCR\RepositoryException if not logged in.
+     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodeTypes($nodeTypes = array()) {
         $this->checkLogin();
@@ -497,10 +636,11 @@ class DavexClient implements TransportInterface {
      * @param string $uri The uri of the node to request from the server.
      * @param string $body The body to send as post, default is empty.
      * @param integer $depth How far the request should go, default is 0 (setting the Depth HTTP header)
+     * @param string $contentType value for the Content-Type header
      *
      * @uses curl::setopt()
      */
-    protected function prepareRequest($type, $uri, $body = '', $depth = 0) {
+    protected function prepareRequest($type, $uri, $body = '', $depth = 0, $contentType = 'text/xml; charset=utf-8') {
 
         // make sure we have a curl handle
         $this->initConnection();
@@ -511,7 +651,7 @@ class DavexClient implements TransportInterface {
 
         $headers = array(
             'Depth: ' . $depth,
-            'Content-Type: text/xml; charset=UTF-8',
+            'Content-Type: '.$contentType,
             'User-Agent: '.self::USER_AGENT
         );
 
@@ -539,17 +679,21 @@ class DavexClient implements TransportInterface {
 
         $data = $this->curl->exec();
 
-        if (NULL === $data || empty($data)) {
-            switch($this->curl->errno()) {
-                case CURLE_COULDNT_RESOLVE_HOST:
-                case CURLE_COULDNT_CONNECT:
-                    throw new \PHPCR\NoSuchWorkspaceException($this->curl->error());
-                default:
-                    $curlError = $this->curl->error();
-                    $msg = 'No data returned by server: ';
-                    $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
-                    throw new \PHPCR\RepositoryException($msg);
-            }
+        $responseCode = $this->curl->getinfo(CURLINFO_HTTP_CODE);
+        if ($responseCode >= 200 && $responseCode < 300) {
+            return $data;
+        }
+
+        switch($this->curl->errno()) {
+            case CURLE_COULDNT_RESOLVE_HOST:
+            case CURLE_COULDNT_CONNECT:
+                throw new \PHPCR\NoSuchWorkspaceException($this->curl->error());
+            default:
+                $curlError = $this->curl->error();
+                $msg = 'HTTP '.$responseCode.': ';
+                $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
+                $msg .= PHP_EOL . 'Response: '.$data;
+                throw new \PHPCR\RepositoryException($msg);
         }
 
         return $data;

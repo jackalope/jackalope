@@ -67,10 +67,10 @@ class ObjectManager {
     protected $nodesRemove = array();
 
     /**
-     * Contains a list of node to be updated on the workspace.
+     * Contains a list of node to be moved in the workspace.
      * @var array
      */
-    protected $nodesUpdate = array();
+    protected $nodesMove = array();
 
     /**
      * identifier to determine if the current objectManager is in an unsaved state.
@@ -319,25 +319,74 @@ class ObjectManager {
      * @return void
      */
     public function save() {
-        throw NotImplementedException(); //TODO
 
+        // TODO: start transaction
+
+
+        // remove nodes/properties
         foreach($this->nodesRemove as $path => $dummy) {
-            //TODO: have a davex client method to push a remove of a path
+            $this->transport->deleteItem($path);
         }
+
+        // move nodes/properties
         foreach($this->nodesMove as $src => $dst) {
-            //TODO: have a davex client method to push a remove of a path
+            //TODO: have a davex client method to move a path
         }
-        foreach($this->nodesAdd as $path => $dummy) {
-            //TODO: have a davex client method to save a new node
+
+        // filter out sub-nodes and sub-properties since the top-most nodes that are
+        // added will create all sub-nodes and sub-properties at once
+        $nodesToCreate = $this->nodesAdd;
+        foreach ($nodesToCreate as $path => $dummy) {
+            foreach ($nodesToCreate as $path2 => $dummy) {
+                if (strpos($path2, $path.'/') === 0) {
+                    unset($nodesToCreate[$path2]);
+                }
+            }
         }
+        // create new nodes
+        // TODO: handle properties here, check if getNodeByPath returns a Property if you call it with a property's path
+        foreach($nodesToCreate as $path => $dummy) {
+            $node = $this->getNodeByPath($path);
+            $this->transport->storeItem($path, $node->getProperties(), $node->getNodes());
+        }
+
         //loop through cached nodes and commit all dirty and set them to clean.
-        foreach($this->objectsByPath as $item) {
+        foreach($this->objectsByPath as $path => $item) {
             if ($item->isModified()) {
-                //TODO: determine changes and have a davex client method to save them (same as for new nodes or different?)
+                if ($item instanceof \PHPCR\NodeInterface) {
+                    foreach ($item->getProperties() as $propertyName => $property) {
+                        $this->transport->storeProperty($path.'/'.$propertyName, $property);
+                    }
+                } elseif ($item instanceof \PHPCR\PropertyInterface) {
+                    if ($item->getNativeValue() === null) {
+                        $this->transport->deleteProperty($path);
+                    } else {
+                        $this->transport->storeProperty($path, $item);
+                    }
+                } else {
+                    throw new \UnexpectedValueException('Unknown type '.get_class($item));
+                }
             }
         }
 
-        //TODO: have a davex client method to commit transaction
+        // TODO: have a davex client method to commit transaction
+
+        // commit changes to the local state
+        foreach($this->nodesRemove as $path => $dummy) {
+            unset($this->objectsByPath[$path]);
+        }
+        foreach($this->nodesMove as $src => $dst) {
+            $this->objectsByPath[$dst] = $this->objectsByPath[$src];
+            unset($this->objectsByPath[$src]);
+        }
+        foreach($this->nodesAdd as $path => $dummy) {
+            $node->confirmSaved();
+        }
+        foreach($this->objectsByPath as $path => $item) {
+            if ($item->isModified()) {
+                $item->confirmSaved();
+            }
+        }
 
         $this->unsaved = false;
     }
@@ -348,7 +397,7 @@ class ObjectManager {
      * @return boolean False
      */
     public function hasPendingChanges() {
-        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMoved) || count($this->nodesRemove)) return true;
+        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMove) || count($this->nodesRemove)) return true;
         foreach($this->objectsByPath as $item) {
             if ($item->isModified()) return true;
         }

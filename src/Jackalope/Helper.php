@@ -87,29 +87,29 @@ class Helper {
         return $type;
     }
     /**
-     * Attempt to convert $value into the proper format for $type.
+     * Attempt to convert $values into the proper format for $type.
      *
      * This is the other half of ValueFactory that is still needed.
      *
      * Note that for converting to boolean, we follow the PHP convention of
      * treating any non-empty string as true, not just the word "true".
      *
-     * @param $value The value or value array to check and convert
-     * @param $type One of the type constants in \PHPCR\PropertyType
+     * @param mixed $values The value or value array to check and convert
+     * @param int $type One of the type constants in \PHPCR\PropertyType
      * @return the value typecasted into the proper format (throws an exception if conversion is not possible)
      *
      * @throws \PHPCR\ValueFormatException is thrown if the specified value cannot be converted to the specified type.
      * @throws \PHPCR\RepositoryException if the specified Node is not referenceable, the current Session is no longer active, or another error occurs.
      * @throws IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      */
-    public static function convertType($value, $type) {
-        $array = is_array($value);
-        if (! $array) {
-            $value = array($value);
+    public static function convertType($values, $type) {
+        $isArray = is_array($values);
+        if (!$isArray) {
+            $values = array($values);
         }
         switch($type) {
             case \PHPCR\PropertyType::STRING:
-                foreach($value as $v) {
+                foreach($values as $v) {
                     if (is_bool($v)) {
                         $ret[] = $v ? 'true' : 'false';
                     } else {
@@ -118,7 +118,6 @@ class Helper {
                     }
                 }
                 break;
-            //TODO: what about binary?
             case \PHPCR\PropertyType::LONG:
                 $typename = 'integer';
                 break;
@@ -134,26 +133,24 @@ class Helper {
                  * PHP usually treats everything not null|0|false as true. The PHPCR API
                  * follows the JCR specification here in order to be consistent.
                  */
-                foreach($value as $v) {
+                foreach($values as $v) {
                     $ret[] = $v === true || is_string($v) && strcasecmp('true', $v) == 0;
                 }
                 break;
             case \PHPCR\PropertyType::DATE:
-                //FIXME: need datetime object, not date strings
-                foreach($value as $v) {
-                    if (is_int($v)) {
-                        $ret[] = date('c', $v); //convert to ISO 8601
-                    } elseif (is_string($v)) {
-                        //TODO: if it is a string, parse it
+                foreach($values as $v) {
+                    if ($v instanceof \DateTime) {
                         $ret[] = $v;
+                    } elseif (is_int($v) || is_string($v)) {
+                        $ret[] = new \DateTime($v);
                     } else {
-                        throw new \PHPCR\ValueFormatException("Can not convert '$v' into a date"); //TODO other cases?
+                        throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a date');
                     }
                 }
                 break;
             case \PHPCR\PropertyType::REFERENCE:
             case \PHPCR\PropertyType::WEAKREFERENCE:
-                foreach($value as $v) {
+                foreach($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
                         $id = $v->getIdentifier();
                         //TODO: we should check the type if node is referencable, not rely on getting no identifier
@@ -171,22 +168,31 @@ class Helper {
                 }
                 break;
             case \PHPCR\PropertyType::BINARY:
-                throw new NotImplementedException('Binaries');
+                foreach($values as $v) {
+                    if (is_string($v)) {
+                        $ret[] = $v;
+                    } else {
+                        // TODO handle file handles?
+                        throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a binary string');
+                    }
+                }
             default:
                 //FIXME: handle other types somehow
-                foreach($value as $v) $ret[] = $v;
+                foreach($values as $v) $ret[] = $v;
                 break;
             //TODO: more type checks or casts? name, path, uri, decimal. but the backend can handle the checks.
         }
         if (isset($typename)) {
-            foreach($value as $v) {
+            foreach($values as $v) {
                 if (! settype($v, $typename)) {
                     throw new \PHPCR\ValueFormatException;
                 }
                 $ret[] = $v;
             }
         }
-        if (! $array) $ret = $ret[0];
+        if (!$isArray) {
+            $ret = $ret[0];
+        }
         return $ret;
     }
 }

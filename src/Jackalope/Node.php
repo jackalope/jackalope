@@ -27,8 +27,8 @@ class Node extends Item implements \PHPCR\NodeInterface {
     /**
      * TODO: document! especially the parameters.
      */
-    public function __construct($rawData, $path,  $session, $objectManager, $new = false) {
-        parent::__construct($rawData, $path,  $session, $objectManager, $new);
+    public function __construct($rawData, $path, $session, $objectManager, $new = false) {
+        parent::__construct($rawData, $path, $session, $objectManager, $new);
         $this->isNode = true;
 
         //TODO: determine the index if != 1
@@ -386,9 +386,10 @@ class Node extends Item implements \PHPCR\NodeInterface {
      */
     public function getNodes($filter = NULL) {
         $names = self::filterNames($filter, $this->nodes);
+        $result = array();
         foreach($names as $name) {
             //OPTIMIZE: batch get nodes
-            $result[] = $this->getNode($name);
+            $result[$name] = $this->getNode($name);
         }
         return new ArrayIterator($result);
     }
@@ -487,8 +488,9 @@ class Node extends Item implements \PHPCR\NodeInterface {
     public function getProperties($filter = NULL) {
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
+        $result = array();
         foreach($names as $name) {
-            $result[] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
+            $result[$name] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
         return new \ArrayIterator($result);
     }
