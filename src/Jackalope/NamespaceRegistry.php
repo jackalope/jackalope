@@ -208,7 +208,8 @@ Server: Jetty(6.1.x)
     public function getPrefixes() {
         return array_merge(
             array_keys($this->defaultNamespaces),
-            array_keys($this->userNamespaces));
+            array_keys($this->userNamespaces)
+        );
     }
 
     /**
@@ -221,7 +222,8 @@ Server: Jetty(6.1.x)
     public function getURIs() {
         return array_merge(
             array_values($this->defaultNamespaces),
-            array_values($this->userNamespaces));
+            array_values($this->userNamespaces)
+        );
     }
 
     /**
