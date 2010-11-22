@@ -11,8 +11,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
     /**
      * Provides a proxy of the \Jackalope\Transport\DavexClient\Request class.
      *
-     * @param array $methods
-     * @param array $arguments
+     * @param array $methods List of methods to be proxied.
+     * @param array $arguments List of arguments to be processed.
      *
      * @return \Jackalope\Transport\DavexClient\Request Proxy instance exposing invisible methods.
      */
