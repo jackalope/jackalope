@@ -91,7 +91,7 @@ class Request {
      * Instantiates a type specific request object.
      *
      * @return Jackalope\Interfaces\DavexClient\Request
-     * @throws \
+     * @throws \InvalidArgumentException
      */
     protected function getTypeObject() {
         if (is_null($this->typeObject)) {
