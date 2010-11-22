@@ -70,6 +70,20 @@ class PropfindTest extends \PHPUnit_Framework_TestCase {
         $nt->build();
     }
 
+    /**
+     * @covers \Jackalope\Transport\DavexClient\Requests\Propfind::getXml
+     */
+    public function testGetXml() {
+        $arguments = array('properties' => array('D:workspace', 'dcr:workspaceName'));
+        $request = $this->getPropfindObject($arguments);
+        $request->build();
+
+        $this->assertXmlStringEqualsXmlFile(
+            $this->getFixtureFile('PropfindBuildWithMultipleProperties.xml'),
+            $request->getXml()
+        );
+    }
+
     /*************************************************************************/
     /* Dataprovider
     /*************************************************************************/

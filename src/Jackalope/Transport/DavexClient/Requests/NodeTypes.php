@@ -89,6 +89,15 @@ class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
         $this->dom->appendChild($doc);
     }
 
+    /**
+     * Generate the XML string from the created DOMDocument.
+     *
+     * @return string The XML string representation of the recent generated DOMDocument.
+     */
+    public function getXml() {
+        return strval($this);
+    }
+
     /*************************************************************************/
     /* Magic methods
     /*************************************************************************/

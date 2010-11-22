@@ -70,6 +70,18 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase {
         $nt->build();
     }
 
+    /**
+     * @covers \Jackalope\Transport\DavexClient\Requests\NodeTypes::getXml
+     */
+    public function testGetXml() {
+        $nt = $this->getNodeTypesObject(array('nodetypes' => array('Beastie', 'Puffy')));
+        $nt->build();
+        $this->assertXmlStringEqualsXmlFile(
+            $this->getFixtureFile('NodeTypesBuildWithMultipleNodetypes.xml'),
+            $nt->getXml()
+        );
+    }
+
     /*************************************************************************/
     /* Dataprovider
     /*************************************************************************/

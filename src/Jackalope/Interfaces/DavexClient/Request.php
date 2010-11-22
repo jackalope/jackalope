@@ -40,5 +40,12 @@ interface Request {
      *
      * @return string
      */
+    public function getXML();
+
+    /**
+     * Generates the XML string representing the request.
+     *
+     * @return string
+     */
     public function __toString();
 }
