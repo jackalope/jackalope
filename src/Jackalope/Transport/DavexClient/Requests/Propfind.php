@@ -21,6 +21,12 @@
 
 namespace Jackalope\Transport\DavexClient\Requests;
 
+/**
+ * Class to handle a PROPFIND request.
+ *
+ * @package jackalope
+ * @subpackage transport
+ */
 class Propfind implements \Jackalope\Interfaces\DavexClient\Request {
 
     /**

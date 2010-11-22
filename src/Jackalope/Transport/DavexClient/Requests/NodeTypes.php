@@ -21,6 +21,13 @@
 
 namespace Jackalope\Transport\DavexClient\Requests;
 
+
+/**
+ * Class to handle a NodeTypes request.
+ *
+ * @package jackalope
+ * @subpackage transport
+ */
 class NodeTypes implements \Jackalope\Interfaces\DavexClient\Request {
 
     /**
