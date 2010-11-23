@@ -356,8 +356,14 @@ class ObjectManager
         // create new nodes
         // TODO: handle properties here, check if getNodeByPath returns a Property if you call it with a property's path
         foreach($nodesToCreate as $path => $dummy) {
-            $node = $this->getNodeByPath($path);
-            $this->transport->storeItem($path, $node->getProperties(), $node->getNodes());
+            $item = $this->getNodeByPath($path);
+            if ($item instanceof \PHPCR\NodeInterface) {
+                $this->transport->storeItem($path, $item->getProperties(), $item->getNodes());
+            } elseif ($item instanceof \PHPCR\PropertyInterface) {
+                $this->transport->storeProperty($path, $item);
+            } else {
+                throw new \UnexpectedValueException('Unknown type '.get_class($item));
+            }
         }
 
         //loop through cached nodes and commit all dirty and set them to clean.
@@ -390,7 +396,8 @@ class ObjectManager
             unset($this->objectsByPath[$src]);
         }
         foreach($this->nodesAdd as $path => $dummy) {
-            $node->confirmSaved();
+            $item = $this->getNodeByPath($path);
+            $item->confirmSaved();
         }
         foreach($this->objectsByPath as $path => $item) {
             if ($item->isModified()) {
