@@ -439,7 +439,7 @@ class Node extends Item implements \PHPCR\NodeInterface
      */
     public function getPropertyValue($name, $type=null)
     {
-        $val = $this->getProperty($name)->getValue();
+        $val = $this->getProperty($name)->getNativeValue();
         if (! is_null($type)) {
             $val = Helper::convertType($val, $type);
         }
