@@ -40,10 +40,9 @@ class Item implements \PHPCR\ItemInterface
         $this->objectManager = $objectManager;
         $this->new = $new;
 
-        $path = explode('/', $path);
-        $this->depth = count($path) - 1;
-        $this->name = array_pop($path);
-        $this->parentPath = implode('/', $path);
+        $this->depth = $path === '/' ? 0 : substr_count($path, '/');
+        $this->name = basename($path);
+        $this->parentPath = strtr(dirname($path), '\\', '/');
     }
 
     /**

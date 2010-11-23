@@ -49,7 +49,7 @@ class Node extends Item implements \PHPCR\NodeInterface
                             'Property',
                             array(
                                 array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
-                                $this->getPath() . '/jcr:primaryType',
+                                $this->getChildPath('jcr:primaryType'),
                                 $this->session,
                                 $this->objectManager,
                             )
@@ -68,7 +68,7 @@ class Node extends Item implements \PHPCR\NodeInterface
                             'Property',
                             array(
                                 array('type' => $type, 'value' => $value),
-                                $this->getPath() . '/'. $key,
+                                $this->getChildPath($key),
                                 $this->session,
                                 $this->objectManager,
                             )
@@ -125,7 +125,7 @@ class Node extends Item implements \PHPCR\NodeInterface
             } catch(\PHPCR\ItemNotFoundException $e) {
                 try {
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
-                    $prop = $this->objectManager->getPropertyByPath($this->path . '/' . dirname($relPath));
+                    $prop = $this->objectManager->getPropertyByPath($this->getChildPath(dirname($relPath)));
                     if (! is_null($prop)) {
                         throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node below a property');
                     }
@@ -169,7 +169,7 @@ class Node extends Item implements \PHPCR\NodeInterface
         if (! is_null($identifier)) {
             $data['jcr:uuid'] = $identifier;
         }
-        $path = $this->path.'/'.$relPath;
+        $path = $this->getChildPath($relPath);
         $node = Factory::get('Node', array($data, $path,
                 $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
@@ -293,7 +293,7 @@ class Node extends Item implements \PHPCR\NodeInterface
         }
 
         if (! isset($this->properties[$name])) {
-            $path = $this->path . "/$name";
+            $path = $this->getChildPath($name);
             $property = Factory::get(
                             'Property',
                             array(array('value'=>$data, 'type'=>$type), $path,
@@ -419,7 +419,7 @@ class Node extends Item implements \PHPCR\NodeInterface
                 throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
             }
         } else {
-            $this->session->getProperty($this->path . '/.' . $relPath);
+            $this->session->getProperty($this->getChildPath($relPath));
         }
     }
 
@@ -649,7 +649,7 @@ class Node extends Item implements \PHPCR\NodeInterface
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         } else {
-            return $this->session->nodeExists($this->path . '/'. $relPath);
+            return $this->session->nodeExists($this->getChildPath($relPath));
         }
     }
 
@@ -667,7 +667,7 @@ class Node extends Item implements \PHPCR\NodeInterface
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
          } else {
-            $this->session->propertyExists($this->path . '/'. $relPath);
+            $this->session->propertyExists($this->getChildPath($relPath));
          }
     }
 
@@ -1034,6 +1034,12 @@ class Node extends Item implements \PHPCR\NodeInterface
     public function getAllowedLifecycleTransitions()
     {
         throw new NotImplementedException('Write');
+    }
+
+    protected function getChildPath($name)
+    {
+        $path = $this->path === '/' ? '/' : $this->path.'/';
+        return $path . $name;
     }
 
     /** filter the list of names according to the filter expression / array
