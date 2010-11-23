@@ -319,9 +319,12 @@ class Item implements \PHPCR\ItemInterface
         }
 
         //TODO: add sanity checks to all other write methods to avoid modification after deleting?
-        //FIXME: property remove different or same call on objectmanager?
         // TODO same-name siblings reindexing
-        $this->objectManager->removeItem($this->path);
+        if ($this instanceof \PHPCR\PropertyInterface) {
+            $this->objectManager->removeItem($this->parentPath, $this->name);
+        } else {
+            $this->objectManager->removeItem($this->path);
+        }
         $this->getParent()->setModified();
     }
 

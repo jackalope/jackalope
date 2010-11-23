@@ -426,25 +426,30 @@ class ObjectManager
      * WRITE: add a node at the specified path
      *
      * @param string $absPath the path to the node, including the node identifier
-     * @param \PHPCR\Node $node the node to add
+     * @param string $propertyName optional, property name to delete from the given node's path
      *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
-    public function removeItem($absPath)
+    public function removeItem($absPath, $propertyName = null)
     {
         if (! isset($this->objectsByPath[$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: nothing at $absPath");
         }
 
         //FIXME: same-name-siblings...
-        $id = $this->objectsByPath[$absPath]->getIdentifier();
-        unset($this->objectsByPath[$absPath]);
-        unset($this->objectsByUuid[$id]);
-        if (isset($this->nodeAdd[$absPath])) {
-            //this is a new unsaved node
-            unset($this->nodeAdd[$absPath]);
+
+        if ($propertyName) {
+            $absPath .= $propertyName;
         } else {
-            $this->nodeRemove[$absPath] = 1;
+            $id = $this->objectsByPath[$absPath]->getIdentifier();
+            unset($this->objectsByUuid[$id]);
+        }
+        unset($this->objectsByPath[$absPath]);
+        if (isset($this->nodesAdd[$absPath])) {
+            //this is a new unsaved node
+            unset($this->nodesAdd[$absPath]);
+        } else {
+            $this->nodesRemove[$absPath] = 1;
         }
     }
 
