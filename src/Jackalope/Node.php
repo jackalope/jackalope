@@ -285,6 +285,7 @@ class Node extends Item implements \PHPCR\NodeInterface
      */
     public function setProperty($name, $value, $type = NULL)
     {
+        $givenType = $type;
         if (is_null($type)) {
             $type = Helper::determineType($value);
             $data = $value;
@@ -303,7 +304,8 @@ class Node extends Item implements \PHPCR\NodeInterface
             $this->properties[$name] = $property;
             //validity check will be done by backend on commit, which is allowed by spec
         } else {
-            if (! is_null($type) && $this->properties[$name]->getType() != $type) {
+            // TODO maybe check if $this->properties[$name]->getType() === NodeType::UNDEFINED, in which case we can just overwrite with anything?
+            if (!is_null($givenType) && $this->properties[$name]->getType() != $givenType) {
                 throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
             }
             $this->properties[$name]->setValue($value);
