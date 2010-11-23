@@ -367,7 +367,9 @@ class ObjectManager
             if ($item->isModified()) {
                 if ($item instanceof \PHPCR\NodeInterface) {
                     foreach ($item->getProperties() as $propertyName => $property) {
-                        $this->transport->storeProperty($path.'/'.$propertyName, $property);
+                        if ($property->isModified()) {
+                            $this->transport->storeProperty($property->getPath(), $property);
+                        }
                     }
                 } elseif ($item instanceof \PHPCR\PropertyInterface) {
                     if ($item->getNativeValue() === null) {
