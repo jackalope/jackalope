@@ -29,24 +29,13 @@ namespace Jackalope\Transport\DavexClient\Requests;
  */
 class Report extends \Jackalope\Transport\DavexClient\Requests\Base
 {
-    /**
-     * Identifier of the used XML namespace
-     * @var string
-     */
-    protected $nsPrefix = 'dcr';
 
     /**
-     * URI of the used XML namespace
-     * @var string
-     */
-    protected $nsUri = 'http://www.day.com/jcr/webdav/1.0';
-
-    /**
-     * Generates the DOMDocument representing the request to be send.
+     * Generates the XML representing the request to be send.
      *
-     * Avaiable names:
-     *  - repositorydescriptors
-     *  - registerednamespaces
+     * Available names:
+     *  - dcr:repositorydescriptors
+     *  - dcr:registerednamespaces
      *  - …
      *
      * @throws \InvalidArgumentException
@@ -57,7 +46,7 @@ class Report extends \Jackalope\Transport\DavexClient\Requests\Base
             throw new \InvalidArgumentException('Missing report name.');
         }
 
-        $doc = $this->dom->createElementNS($this->nsUri, $this->nsPrefix.':'.$this->arguments['name']);
-        $this->dom->appendChild($doc);
+        $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $this->xml .= sprintf('<%s xmlns:dcr="http://www.day.com/jcr/webdav/1.0" />', $this->arguments['name']);
     }
 }

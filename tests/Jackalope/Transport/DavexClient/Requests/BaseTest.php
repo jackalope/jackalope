@@ -30,20 +30,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      */
     public function getBaseObject(array $arguments)
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        return new \Jackalope\Transport\DavexClient\Requests\DummyBase($dom, $arguments);
-    }
-
-    /**
-     * Creates a document structure in the DOMDocument.
-     *
-     * @param \Jackalope\Transport\DavexClient\Requests\Base $request
-     */
-    public function createDOMDocumentStructureFixture($request)
-    {
-        $doc = $request->dom->createElement('linux', 'test XML');
-        $request->dom->appendChild($doc);
+        return new \Jackalope\Transport\DavexClient\Requests\DummyBase($arguments);
     }
 
     /*************************************************************************/
@@ -56,12 +43,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     public function testConstruct()
     {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        $request = new \Jackalope\Transport\DavexClient\Requests\DummyBase($dom, $arguments);
+        $request = new \Jackalope\Transport\DavexClient\Requests\DummyBase($arguments);
 
         $this->assertAttributeEquals($arguments, 'arguments', $request);
-        $this->assertAttributeInstanceOf('DOMDocument', 'dom', $request);
     }
 
     /**
@@ -71,8 +55,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
         $request = $this->getBaseObject($arguments);
-        $this->createDOMDocumentStructureFixture($request);
-        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<linux>test XML</linux>";
+        $request->build();
+        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><os><Beastie /><Puffy /></os>";
         $this->assertXmlStringEqualsXmlString($expected, strval($request));
     }
 
@@ -83,20 +67,21 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         $arguments = array('OS' => array('Beastie', 'Puffy'));
         $request = $this->getBaseObject($arguments);
-        $this->createDOMDocumentStructureFixture($request);
-        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<linux>test XML</linux>";
+        $request->build();
+        $expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><os><Beastie /><Puffy /></os>";
         $this->assertXmlStringEqualsXmlString($expected, $request->getXML());
     }
 }
 
 class DummyBase extends \Jackalope\Transport\DavexClient\Requests\Base
 {
-    /**
-     * $dom needs to be exposed due to be able to create a custom DOMDocument.
-     *
-     * @var DOMDocument
-     */
-    public $dom = null;
-
-    public function build() {}
+    public function build()
+    {
+        $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $this->xml .= '<os>';
+        foreach ($this->arguments['OS'] as $elem) {
+            $this->xml .= '<'.$elem.' />';
+        }
+        $this->xml .= '</os>';
+    }
 }

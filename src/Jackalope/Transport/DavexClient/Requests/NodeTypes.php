@@ -30,20 +30,9 @@ namespace Jackalope\Transport\DavexClient\Requests;
  */
 class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base
 {
-    /**
-     * Identifier of the used XML namespace
-     * @var string
-     */
-    protected $nsPrefix = 'jcr';
 
     /**
-     * URI of the used XML namespace
-     * @var string
-     */
-    protected $nsUri = 'http://www.day.com/jcr/webdav/1.0';
-
-    /**
-     * Generates the DOMDocument representing the request to be send.
+     * Generates the XML representing the request to be send.
      *
      * @throws \InvalidArgumentException
      */
@@ -53,23 +42,17 @@ class NodeTypes extends \Jackalope\Transport\DavexClient\Requests\Base
             throw new \InvalidArgumentException('Missing NodeTypes.');
         }
 
-        // root element
-        //<jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">
-        $doc = $this->dom->createElementNS($this->nsUri, $this->nsPrefix.':nodetypes');
+        $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $this->xml .= '<jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
+
 
         if (empty($this->arguments['nodetypes'])) {
-            // <jcr:all-nodetypes/>
-            $nType = $this->dom->createElement('jcr:all-nodetypes');
-            $doc->appendChild($nType);
+            $this->xml .= '<jcr:all-nodetypes />';
         } else {
-            foreach ($this->arguments['nodetypes'] as $nodetype) {
-                // '<jcr:nodetype><jcr:nodetypename>'.$nodetype.'</jcr:nodetypename></jcr:nodetype>';
-                $nType = $this->dom->createElement('jcr:nodetype');
-                $nTypeName = $this->dom->createElement('jcr:nodetypename', $nodetype);
-                $nType->appendChild($nTypeName);
-                $doc->appendChild($nType);
+            foreach ($this->arguments['nodetypes'] as $nodeType) {
+                $this->xml .= sprintf('<jcr:nodetype><jcr:nodetypename>%s</jcr:nodetypename></jcr:nodetype>', $nodeType);
             }
         }
-        $this->dom->appendChild($doc);
+        $this->xml .= '</jcr:nodetypes>';
     }
 }

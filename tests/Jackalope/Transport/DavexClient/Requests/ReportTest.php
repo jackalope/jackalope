@@ -28,9 +28,7 @@ class ReportTest extends \PHPUnit_Framework_TestCase
      */
     public function getReportObject($arguments)
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        return new \Jackalope\Transport\DavexClient\Requests\Report($dom, $arguments);
+        return new \Jackalope\Transport\DavexClient\Requests\Report($arguments);
     }
 
     /*************************************************************************/
@@ -42,7 +40,7 @@ class ReportTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuild()
     {
-        $arguments = array('name' => 'registerednamespaces');
+        $arguments = array('name' => 'dcr:registerednamespaces');
         $request = $this->getReportObject($arguments);
         $request->build();
 

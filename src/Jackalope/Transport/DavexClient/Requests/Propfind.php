@@ -29,17 +29,9 @@ namespace Jackalope\Transport\DavexClient\Requests;
  */
 class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base
 {
-    /**
-     * Identifier of the used XML namespace
-     * @var array
-     */
-    protected $nsInformation = array(
-        'D'   => 'DAV:',
-        'dcr' => 'http://www.day.com/jcr/webdav/1.0'
-    );
 
     /**
-     * Generates the DOMDocument representing the request to be send.
+     * Generates the XML representing the request to be send.
      *
      * Available properties:
      *  - D:workspace
@@ -52,27 +44,17 @@ class Propfind extends \Jackalope\Transport\DavexClient\Requests\Base
         if (empty($this->arguments['properties'])) {
             throw new \InvalidArgumentException('Missing Properties.');
         }
-
-        // root element
-        // <D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
-        $doc = $this->dom->createElementNS($this->nsInformation['D'], 'D:propfind');
-
-        // set 2nd namspace to root element.
-        $doc->setAttributeNS('http://www.w3.org/2000/xmlns/' , 'xmlns:dcr', $this->nsInformation['dcr']);
-
-        // elemente
-        $prop = $this->dom->createElement('D:prop');
-
         if (!is_array($this->arguments['properties'])) {
             $this->arguments['properties'] = array($this->arguments['properties']);
         }
 
+        $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $this->xml .= '<D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0">';
+        $this->xml .= '<D:prop>';
         foreach($this->arguments['properties'] as $property) {
-            $propElement = $this->dom->createElement($property);
-            $prop->appendChild($propElement);
+            $this->xml .= sprintf('<%s />', $property);
         }
-
-        $doc->appendChild($prop);
-        $this->dom->appendChild($doc);
+        $this->xml .= '</D:prop>';
+        $this->xml .= '</D:propfind>';
     }
 }

@@ -28,9 +28,7 @@ class NodeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function getNodeTypesObject($arguments)
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        return new \Jackalope\Transport\DavexClient\Requests\NodeTypes($dom, $arguments);
+        return new \Jackalope\Transport\DavexClient\Requests\NodeTypes($arguments);
     }
 
     /*************************************************************************/

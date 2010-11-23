@@ -29,21 +29,9 @@ namespace Jackalope\Transport\DavexClient\Requests;
  */
 class Locate extends \Jackalope\Transport\DavexClient\Requests\Base
 {
-    /**
-     * Identifier of the used XML namespace
-     * @var array
-     */
-    protected $nsInformation = array(
-        'D'   => 'DAV:',
-        'dcr' => 'http://www.day.com/jcr/webdav/1.0'
-    );
 
     /**
-     * Generates the DOMDocument representing the request to be send.
-     *
-     * Available properties:
-     *  - D:workspace
-     *  - dcr:workspaceName
+     * Generates the XML representing the request to be send.
      *
      * @throws \InvalidArgumentException
      */
@@ -52,10 +40,9 @@ class Locate extends \Jackalope\Transport\DavexClient\Requests\Base
         if (empty($this->arguments['uuid'])) {
             throw new \InvalidArgumentException('Missing UUID in argument list.');
         }
-
-        $doc = $this->dom->createElementNS($this->nsInformation['dcr'], 'dcr:locate-by-uuid');
-        $href = $this->dom->createElementNS($this->nsInformation['D'], 'D:href', $this->arguments['uuid']);
-        $doc->appendChild($href);
-        $this->dom->appendChild($doc);
+        $this->xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $this->xml .= '<dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0" xmlns:D="DAV:">';
+        $this->xml .= sprintf('<D:href xmlns:D="DAV:">%s</D:href>', $this->arguments['uuid']);
+        $this->xml .= '</dcr:locate-by-uuid>';
     }
 }
