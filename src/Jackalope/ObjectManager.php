@@ -464,7 +464,7 @@ class ObjectManager
      */
     public function moveItem($srcAbsPath, $destAbsPath)
     {
-        $this->nodeMove[$srcAbsPath] = $destAbsPath;
+        $this->nodesMove[$srcAbsPath] = $destAbsPath;
         $this->unsaved = true;
 
         throw new NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
