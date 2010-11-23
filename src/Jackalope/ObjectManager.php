@@ -111,7 +111,7 @@ class ObjectManager
 
         if (empty($this->objectsByPath[$absPath])) {
             if (isset($this->nodesRemove[$absPath])) {
-                throw new  \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $uri);
+                throw new \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $uri);
             }
             $node = Factory::get(
                 'Node',
@@ -198,7 +198,7 @@ class ObjectManager
             }
             $finalPath = implode('/', $finalParts);
             if ($abs) {
-              $finalPath = '/'.$finalPath;
+                $finalPath = '/'.$finalPath;
             }
         }
         return $finalPath;
@@ -216,7 +216,6 @@ class ObjectManager
     public function absolutePath($root, $relPath)
     {
         $root = trim($root, '/');
-        $concat = $root;
         if (strlen($root)) {
             $concat = "/$root/";
         } else {
@@ -329,9 +328,7 @@ class ObjectManager
      */
     public function save()
     {
-
         // TODO: start transaction
-
 
         // remove nodes/properties
         foreach($this->nodesRemove as $path => $dummy) {
@@ -415,7 +412,9 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMove) || count($this->nodesRemove)) return true;
+        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMove) || count($this->nodesRemove)) {
+            return true;
+        }
         foreach($this->objectsByPath as $item) {
             if ($item->isModified()) return true;
         }
