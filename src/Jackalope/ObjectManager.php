@@ -351,7 +351,6 @@ class ObjectManager
             }
         }
         // create new nodes
-        // TODO: handle properties here, check if getNodeByPath returns a Property if you call it with a property's path
         foreach($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
