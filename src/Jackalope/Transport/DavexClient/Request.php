@@ -36,19 +36,19 @@ class Request
     protected $dom = null;
 
     /**
-     * Name of the request type to be used.
+     * Name of the request method to be used.
      * @var string
      */
-    protected $type = '';
+    protected $method = '';
 
     /**
      * Instance of an implementation of the \Jackalope\Interfaces\DavexClient\Request.
      * @var \Jackalope\Interfaces\DavexClient\Request
      */
-    protected $typeObject = null;
+    protected $methodObject = null;
 
     /**
-     * List of arguments to be passed to the request type object.
+     * List of arguments to be passed to the request method object.
      * @var array
      */
     protected $arguments = array();
@@ -56,11 +56,11 @@ class Request
     /**
      * Constructor of the class.
      *
-     * @param string $type Name of the request to be handled.
+     * @param string $method Name of the request to be handled.
      */
-    public function __construct($type, array $arguments)
+    public function __construct($method, array $arguments)
     {
-        $this->type = $type;
+        $this->method = $method;
         $this->arguments = $arguments;
     }
 
@@ -91,7 +91,7 @@ class Request
     }
 
     /**
-     * Instantiates a type specific request object.
+     * Instantiates a method specific request object.
      *
      * @return Jackalope\Interfaces\DavexClient\Request
      * @throws \InvalidArgumentException
@@ -101,22 +101,22 @@ class Request
         if (is_null($this->typeObject)) {
             switch($this->type) {
                 case 'NodeTypes':
-                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\NodeTypes(
+                    $this->methodObject = new \Jackalope\Transport\DavexClient\Requests\NodeTypes(
                         $this->getDomObject(),
                         $this->arguments
                     );
                     break;
                 case 'Propfind':
-                    $this->typeObject = new \Jackalope\Transport\DavexClient\Requests\Propfind(
+                    $this->methodObject = new \Jackalope\Transport\DavexClient\Requests\Propfind(
                         $this->getDomObject(),
                         $this->arguments
                     );
                     break;
                 default:
-                    throw new \InvalidArgumentException('Invalid request type ('.$this->type.').');
+                    throw new \InvalidArgumentException('Invalid request method ('.$this->method.').');
             }
         }
-        return $this->typeObject;
+        return $this->methodObject;
     }
 
     /**

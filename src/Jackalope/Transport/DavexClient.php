@@ -474,7 +474,8 @@ class DavexClient implements TransportInterface
         $this->checkLogin();
 
         $dom = $this->getDomFromBackend(
-            self::REPORT, $this->workspaceUri,
+            self::REPORT,
+            $this->workspaceUri,
             self::buildLocateRequest($uuid)
         );
         /* answer looks like
@@ -540,8 +541,12 @@ class DavexClient implements TransportInterface
     {
         $this->checkLogin();
 
+//        $request = \Jackalope\Transport\DavexClient\Requests\NodeType($uri, $curl);
+//        return $request->getResponseDOM();
+
         $dom = $this->getDomFromBackend(
-            self::REPORT, $this->workspaceUri . '/jcr:root',
+            self::REPORT,
+            $this->workspaceUri . '/jcr:root',
             self::buildNodeTypesRequest($nodeTypes)
         );
         if ($dom->firstChild->localName != 'nodeTypes') {
@@ -710,15 +715,20 @@ class DavexClient implements TransportInterface
             case CURLE_COULDNT_RESOLVE_HOST:
             case CURLE_COULDNT_CONNECT:
                 throw new \PHPCR\NoSuchWorkspaceException($this->curl->error());
-            default:
-                $curlError = $this->curl->error();
-                $msg = 'HTTP '.$responseCode.': ';
-                $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
-                $msg .= PHP_EOL . 'Response: '.$data;
-                throw new \PHPCR\RepositoryException($msg);
         }
 
-        return $data;
+        if (404 === $responseCode) {
+            throw new \PHPCR\ItemNotFoundException('Path not found: ' . $uri);
+        } elseif (500 <= $responseCode) {
+            throw new \PHPCR\RepositoryException("Error from backend for '$type' '$uri'\n$jsonstring");
+        }
+
+        $curlError = $this->curl->error();
+        $msg = 'HTTP '.$responseCode.': ';
+        $msg .= empty($curlError) ? 'No reason given by curl.' : $curlError;
+        $msg .= PHP_EOL . 'Response: '.$data;
+
+        throw new \PHPCR\RepositoryException($msg);
     }
 
     /**
@@ -802,6 +812,7 @@ class DavexClient implements TransportInterface
         $jsonstring = $this->getRawFromBackend();
 
         $json = json_decode($jsonstring);
+
         if (! is_object($json)) {
             $status = $this->curl->getinfo(CURLINFO_HTTP_CODE);
             if (404 === $status) {

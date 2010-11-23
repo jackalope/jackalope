@@ -36,8 +36,8 @@ class DavexClientTest extends TestCase
             $curl
                 ->expects($this->any())
                 ->method('getinfo')
-                ->with($this->equalTo('2097154')) // content of CURLINFO_HTTP_CODE
-                ->will($this->returnValue(200));
+                ->with($this->equalTo(CURLINFO_HTTP_CODE))
+                ->will($this->returnValue($HTTPResponseCode));
         }
 
         if (isset($errno)) {
@@ -229,11 +229,11 @@ class DavexClientTest extends TestCase
     public function testGetJsonFromBackendItemNotFound()
     {
         $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
-        $t->curl->expects($this->any())
-            ->method('getinfo')
-            ->with(CURLINFO_HTTP_CODE)
-            ->will($this->returnValue(404));
+        $t->curl = $this->getCurlFixture('fixtures/empty.xml', null, 404);
+//        $t->curl->expects($this->any())
+//            ->method('getinfo')
+//            ->with(CURLINFO_HTTP_CODE)
+//            ->will($this->returnValue(404));
         $t->expects($this->once())
             ->method('prepareRequest')
             ->with('POST', 'hulla', '', 0);
