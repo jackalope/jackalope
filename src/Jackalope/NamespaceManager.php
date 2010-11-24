@@ -44,7 +44,7 @@ class NamespaceManager
      *
      * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
      */
-    protected function checkPrefix($prefix)
+    public function checkPrefix($prefix)
     {
         if (! strncasecmp('xml', $prefix, 3)) {
             throw new \PHPCR\NamespaceException('Do not use xml in prefixes for namespace changes');

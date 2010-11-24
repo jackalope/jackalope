@@ -195,7 +195,7 @@ Server: Jetty(6.1.x)
      */
     public function unregisterNamespace($prefix)
     {
-        $this->checkPrefix($prefix);
+        $this->namespaceManager->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
             throw new \PHPCR\NamespaceException("Prefix $prefix is not currently registered");
