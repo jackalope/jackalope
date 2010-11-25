@@ -111,7 +111,7 @@ class ObjectManager
 
         if (empty($this->objectsByPath[$absPath])) {
             if (isset($this->nodesRemove[$absPath])) {
-                throw new \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $uri);
+                throw new \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
             $node = Factory::get(
                 'Node',
