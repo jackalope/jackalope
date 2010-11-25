@@ -230,7 +230,7 @@ class Request
         }
 
         $curlError = $this->curl->error();
-        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse: \n{$this->method} {$this->uri} \n\n$response";
+        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): \n{$this->method} {$this->uri} \n\n$response";
         throw new \PHPCR\RepositoryException($msg);
     }
 
