@@ -19,7 +19,7 @@ class RepositoryTest extends TestCase
 
         $repo = new \Jackalope\Repository(null, $transport);
         $session = $repo->login($credentials, $workspaceName);
-        $this->assertType('\jackalope\Session', $session);
+        $this->assertType('Jackalope\Session', $session);
 
         $this->assertSame(array('bla'), $repo->getDescriptorKeys());
         $this->assertSame('bli', $repo->getDescriptor('bla'));
