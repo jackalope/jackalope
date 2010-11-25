@@ -273,7 +273,7 @@ class Client implements TransportInterface
     {
         $this->ensureAbsolutePath($path);
 
-        $path = $this->workspaceUriRoot.$path.'.0.json';
+        $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
         return $request->executeJson();
