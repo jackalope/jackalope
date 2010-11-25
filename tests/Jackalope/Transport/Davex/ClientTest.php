@@ -12,7 +12,7 @@ class ClientTest extends TestCase
     public function getTransportMock($args = 'testuri', $changeMethods = array())
     {
         //Array XOR
-        $defaultMockMethods = array('getDomFromBackend', 'getJsonFromBackend', 'checkLogin', 'initConnection', '__destruct', '__construct');
+        $defaultMockMethods = array('getRequest', '__destruct', '__construct');
         $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
         return $this->getMock(
             __NAMESPACE__.'\ClientMock',
@@ -21,32 +21,28 @@ class ClientTest extends TestCase
         );
     }
 
-    public function getCurlFixture($fixture = null, $errno = null)
+    public function getRequestMock($response = '', $changeMethods = array(), $args = array(null, null, null))
     {
-        $curl =  $this->getMock('Jackalope\Transport\curl');
-        if (isset($fixture)) {
-            if (is_file($fixture)) {
-                $fixture = file_get_contents($fixture);
-            }
-            $curl
-                ->expects($this->any())
-                ->method('exec')
-                ->will($this->returnValue($fixture));
+        $defaultMockMethods = array('execute', 'executeDom', 'executeJson');
+        $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
+        $request = $this->getMock('Jackalope\Transport\Davex\Request', $mockMethods, $args);
 
-            $curl
-                ->expects($this->any())
-                ->method('getinfo')
-                ->with($this->equalTo(CURLINFO_HTTP_CODE))
-                ->will($this->returnValue($HTTPResponseCode));
-        }
+        $request
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->returnValue($response));
 
-        if (isset($errno)) {
-            $curl
-                ->expects($this->any())
-                ->method('errno')
-                ->will($this->returnValue($errno));
-        }
-        return $curl;
+        $request
+            ->expects($this->any())
+            ->method('executeDom')
+            ->will($this->returnValue($response));
+
+        $request
+            ->expects($this->any())
+            ->method('executeJson')
+            ->will($this->returnValue($response));
+
+        return $request;
     }
 
     /**
@@ -69,262 +65,14 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::initConnection
+     * @covers \Jackalope\Transport\Davex\Client::getRequest
      */
-    public function testInitConnectionAlreadInitialized()
+    public function testGetRequestDoesntReinitCurl()
     {
-        $t = $this->getMock(
-            __NAMESPACE__.'\ClientMock',
-            array('__destruct', '__construct'),
-            array('testuri')
-        );
+        $t = $this->getTransportMock();
         $t->curl = 'test';
-        $this->assertFalse($t->initConnection());
+        $t->getRequestMock('GET', '/foo');
         $this->assertSame('test', $t->curl);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::initConnection
-     */
-    public function testInitConnection()
-    {
-        $t = $this->getMock(
-            __NAMESPACE__.'\ClientMock',
-            array('__destruct', '__construct'),
-            array('testuri')
-        );
-        $t->initConnection();
-        $this->assertType('Jackalope\Transport\curl', $t->curl);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::closeConnection
-     */
-    public function testCloseConnectionAlreadyClosed()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = null;
-        $this->assertFalse($t->closeConnection());
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::closeConnection
-     */
-    public function testCloseConnection()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getCurlFixture();
-        $t->curl->expects($this->once())
-            ->method('close');
-        $t->closeConnection();
-        $this->assertSame(null, $t->curl);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::prepareRequest
-     */
-    public function testPrepareRequest()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getMock('Jackalope\Transport\curl', array());
-        $t->curl->expects($this->at(0))
-            ->method('setopt')
-            ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
-        $t->curl->expects($this->at(1))
-            ->method('setopt')
-            ->with(CURLOPT_URL, 'testuri');
-        $t->curl->expects($this->at(2))
-            ->method('setopt')
-            ->with(CURLOPT_HTTPHEADER, array(
-                'Depth: 3',
-                'Content-Type: text/xml; charset=utf-8',
-                'User-Agent: '. \Jackalope\Transport\Davex\Request::USER_AGENT
-            ));
-        $t->curl->expects($this->at(3))
-            ->method('setopt')
-            ->with(CURLOPT_POSTFIELDS, 'testbody');
-        $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::prepareRequest
-     */
-    public function testPrepareRequestWithCredentials()
-    {
-        $t = $this->getTransportMock();
-        $t->setCredentials(new \PHPCR\SimpleCredentials('foo', 'bar'));
-        $t->curl = $this->getMock('Jackalope\Transport\curl', array());
-        $t->curl->expects($this->at(0))
-            ->method('setopt')
-            ->with(CURLOPT_USERPWD, 'foo:bar');
-        $t->curl->expects($this->at(1))
-            ->method('setopt')
-            ->with(CURLOPT_CUSTOMREQUEST, 'testmethod');
-        $t->prepareRequest('testmethod', 'testuri', 'testbody', 3);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getRawFromBackend
-     */
-    public function testGetRawFromBackend()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getCurlFixture('hulla hulla');
-        $this->assertSame('hulla hulla', $t->getRawFromBackend());
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getRawFromBackend
-     * @expectedException \PHPCR\NoSuchWorkspaceException
-     */
-    public function testGetRawFromBackendNoHost()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_RESOLVE_HOST);
-        $t->getRawFromBackend();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getRawFromBackend
-     * @expectedException \PHPCR\NoSuchWorkspaceException
-     */
-    public function testGetRawFromBackendNoConnect()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getCurlFixture(null, CURLE_COULDNT_CONNECT);
-        $t->getRawFromBackend();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getRawFromBackend
-     * @expectedException \PHPCR\RepositoryException
-     */
-    public function testGetRawFromBackendNoData()
-    {
-        $t = $this->getTransportMock();
-        $t->curl = $this->getCurlFixture(null);
-        $t->getRawFromBackend();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getJsonFromBackend
-     */
-    public function testGetJsonFromBackend()
-    {
-        $fixture = json_decode(file_get_contents('fixtures/empty.json'));
-
-        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/empty.json');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('GET', 'foo', 'bar', 1);
-        $json = $t->getJsonFromBackend('GET', 'foo', 'bar', 1);
-        $this->assertEquals($fixture, $json);
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getJsonFromBackend
-     * @expectedException \PHPCR\ItemNotFoundException
-     */
-    public function testGetJsonFromBackendItemNotFound()
-    {
-        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/empty.xml', null, 404);
-//        $t->curl->expects($this->any())
-//            ->method('getinfo')
-//            ->with(CURLINFO_HTTP_CODE)
-//            ->will($this->returnValue(404));
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('POST', 'hulla', '', 0);
-        $t->getJsonFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getJsonFromBackend
-     * @expectedException \PHPCR\RepositoryException
-     */
-    public function testGetJsonFromBackendRepositoryException()
-    {
-        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
-        $t->curl->expects($this->any())
-            ->method('getinfo')
-            ->will($this->returnValue(array('http_code' => 500)));
-        $t->getJsonFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getJsonFromBackend
-     * @expectedException \PHPCR\RepositoryException
-     */
-    public function testGetJsonFromBackendInvalidJson()
-    {
-        $t = $this->getTransportMock('testuri', array('getJsonFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('invalid json');
-        $t->getJsonFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getDomFromBackend
-     */
-    public function testGetDomFromBackend()
-    {
-        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/empty.xml');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('GET', 'foo', 'bar', 1);
-        $dom = $t->getDomFromBackend('GET', 'foo', 'bar', 1);
-        $this->assertXmlStringEqualsXmlFile('fixtures/empty.xml', $dom->saveXML());
-    }
-
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getDomFromBackend
-     * @expectedException \PHPCR\NoSuchWorkspaceException
-     */
-    public function testGetDomFromBackendNoWorkspace()
-    {
-        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/exceptionNoWorkspace.xml');
-        $t->expects($this->once())
-            ->method('prepareRequest')
-            ->with('POST', 'hulla', '', 0);
-        $t->getDomFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getDomFromBackend
-     * @expectedException \PHPCR\NodeType\NoSuchNodeTypeException
-     */
-    public function testGetDomFromBackendNoSuchNodeType()
-    {
-        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/exceptionNoSuchNodeType.xml');
-        $t->getDomFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getDomFromBackend
-     * @expectedException \PHPCR\ItemNotFoundException
-     */
-    public function testGetDomFromBackendItemNotFoundException()
-    {
-        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/exceptionItemNotFound.xml');
-        $t->getDomFromBackend('POST', 'hulla');
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::getDomFromBackend
-     * @expectedException \PHPCR\RepositoryException
-     */
-    public function testGetDomFromBackendRepositoryException()
-    {
-        $t = $this->getTransportMock('testuri', array('getDomFromBackend', 'prepareRequest'));
-        $t->curl = $this->getCurlFixture('fixtures/exceptionRepository.xml');
-        $t->getDomFromBackend('POST', 'hulla');
     }
 
     /**
@@ -334,7 +82,7 @@ class ClientTest extends TestCase
     {
         $this->assertSame(
             '<?xml version="1.0" encoding="UTF-8"?><foo xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>',
-            ClientMock::buildReportRequestMock('foo')
+            $this->getTransportMock()->buildReportRequestMock('foo')
         );
     }
 
@@ -347,9 +95,10 @@ class ClientTest extends TestCase
         $dom = new DOMDocument();
         $dom->load('fixtures/empty.xml');
         $t = $this->getTransportMock();
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->will($this->returnValue($request));
         $desc = $t->getRepositoryDescriptors();
     }
 
@@ -358,14 +107,18 @@ class ClientTest extends TestCase
      */
     public function testGetRepositoryDescriptors()
     {
-        $reportRequest = ClientMock::buildReportRequestMock('dcr:repositorydescriptors');
+        $reportRequest = $this->getTransportMock()->buildReportRequestMock('dcr:repositorydescriptors');
         $dom = new DOMDocument();
         $dom->load('fixtures/repositoryDescriptors.xml');
         $t = $this->getTransportMock();
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(ClientMock::REPORT, 'testuri/', $reportRequest)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::REPORT, 'testuri/')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($reportRequest);
 
         $desc = $t->getRepositoryDescriptors();
         $this->assertType('array', $desc);
@@ -377,23 +130,13 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::checkLogin
+     * @covers \Jackalope\Transport\Davex\Client::getRequest
      * @expectedException \PHPCR\RepositoryException
      */
-    public function testCheckLoginFail()
+    public function testExceptionIfNotLoggedIn()
     {
         $t = new ClientMock('http://localhost:1/server');
         $t->getNodeTypes();
-    }
-
-    /**
-     * @covers \Jackalope\Transport\Davex\Client::checkLogin
-     */
-    public function testCheckLogin()
-    {
-        $t = new ClientMock('http://localhost:1/server');
-        $t->workspaceUri = 'testuri';
-        $t->checkLogin();
     }
 
     /**
@@ -414,7 +157,7 @@ class ClientTest extends TestCase
         $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
         $xmlStr .= '<foo/>';
         $xmlStr .= '</D:prop></D:propfind>';
-        $this->assertSame($xmlStr, ClientMock::buildPropfindRequestMock('foo'));
+        $this->assertSame($xmlStr, $this->getTransportMock()->buildPropfindRequestMock('foo'));
     }
 
     /**
@@ -425,7 +168,7 @@ class ClientTest extends TestCase
         $xmlStr = '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:" xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:prop>';
         $xmlStr .= '<foo/><bar/>';
         $xmlStr .= '</D:prop></D:propfind>';
-        $this->assertSame($xmlStr, ClientMock::buildPropfindRequestMock(array('foo', 'bar')));
+        $this->assertSame($xmlStr, $this->getTransportMock()->buildPropfindRequestMock(array('foo', 'bar')));
     }
 
     /**
@@ -458,9 +201,10 @@ class ClientTest extends TestCase
         $dom = new DOMDocument();
         $dom->load('fixtures/empty.xml');
         $t = $this->getTransportMock();
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->will($this->returnValue($request));
         $t->login($this->credentials, $this->config['workspace']);
     }
 
@@ -473,9 +217,10 @@ class ClientTest extends TestCase
         $dom = new DOMDocument();
         $dom->load('fixtures/wrongWorkspace.xml');
         $t = $this->getTransportMock();
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->will($this->returnValue($request));
         $t->login($this->credentials, $this->config['workspace']);
     }
 
@@ -484,19 +229,25 @@ class ClientTest extends TestCase
      */
     public function testLogin()
     {
-        $propfindRequest = ClientMock::buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
+        $propfindRequest = $this->getTransportMock()->buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
         $dom = new DOMDocument();
         $dom->load('fixtures/loginResponse.xml');
         $t = $this->getTransportMock();
+
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::PROPFIND, 'testuri/tests', $propfindRequest)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::PROPFIND, 'testuri/tests')
+            ->will($this->returnValue($request));
+
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($propfindRequest);
 
         $x = $t->login($this->credentials, 'tests');
         $this->assertTrue($x);
         $this->assertSame('tests', $t->workspace);
-        $this->assertSame('testuri/tests/jcr%3aroot', $t->workspaceUriRoot);
+        $this->assertSame('testuri/tests/jcr:root', $t->workspaceUriRoot);
 
     }
 
@@ -536,9 +287,12 @@ class ClientTest extends TestCase
     public function testGetItem()
     {
         $t = $this->getTransportMock($this->config['url']);
+
+        $request = $this->getRequestMock();
         $t->expects($this->once())
-            ->method('getJsonFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::GET, 'testWorkspaceUriRoot/foobar.0.json');
+            ->method('getRequest')
+            ->with(Request::GET, '/foobar.0.json')
+            ->will($this->returnValue($request));
 
         $json = $t->getItem('/foobar');
     }
@@ -549,7 +303,7 @@ class ClientTest extends TestCase
     public function testBuildLocateRequestMock()
     {
         $xmlstr = '<?xml version="1.0" encoding="UTF-8"?><dcr:locate-by-uuid xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><D:href xmlns:D="DAV:">test</D:href></dcr:locate-by-uuid>';
-        $this->assertSame($xmlstr, ClientMock::buildLocateRequestMock('test'));
+        $this->assertSame($xmlstr, $this->getTransportMock()->buildLocateRequestMock('test'));
     }
 
     /**
@@ -562,9 +316,10 @@ class ClientTest extends TestCase
         $dom->load('fixtures/empty.xml');
 
         $t = $this->getTransportMock('testuri');
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->will($this->returnValue($request));
         $t->getNodePathForIdentifier('test');
     }
 
@@ -574,15 +329,19 @@ class ClientTest extends TestCase
      */
     public function testGetNodePathForIdentifierWrongWorkspace()
     {
-        $locateRequest = ClientMock::buildLocateRequestMock('test');
+        $locateRequest = $this->getTransportMock()->buildLocateRequestMock('test');
         $dom = new DOMDocument();
         $dom->load('fixtures/locateRequest.xml');
 
         $t = $this->getTransportMock('testuri');
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::REPORT, 'testWorkspaceUri', $locateRequest)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::REPORT, 'testWorkspaceUri')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($locateRequest);
         $t->getNodePathForIdentifier('test');
     }
 
@@ -591,15 +350,19 @@ class ClientTest extends TestCase
      */
     public function testGetNodePathForIdentifier()
     {
-        $locateRequest = ClientMock::buildLocateRequestMock('test');
+        $locateRequest = $this->getTransportMock()->buildLocateRequestMock('test');
         $dom = new DOMDocument();
         $dom->load('fixtures/locateRequestTests.xml');
 
         $t = $this->getTransportMock('testuri');
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::REPORT, 'testWorkspaceUri', $locateRequest)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::REPORT, 'testWorkspaceUri')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($locateRequest);
         $this->assertSame('/tests_level1_access_base/idExample', $t->getNodePathForIdentifier('test'));
     }
 
@@ -613,9 +376,10 @@ class ClientTest extends TestCase
         $dom->load('fixtures/empty.xml');
 
         $t = $this->getTransportMock($this->config['url']);
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->will($this->returnValue($request));
 
         $ns = $t->getNamespaces();
     }
@@ -625,15 +389,19 @@ class ClientTest extends TestCase
      */
     public function testGetNamespaces()
     {
-        $reportRequest = ClientMock::buildReportRequestMock('dcr:registerednamespaces');
+        $reportRequest = $this->getTransportMock()->buildReportRequestMock('dcr:registerednamespaces');
         $dom = new DOMDocument();
         $dom->load('fixtures/registeredNamespaces.xml');
 
         $t = $this->getTransportMock($this->config['url']);
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::REPORT, 'testWorkspaceUri', $reportRequest)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::REPORT, 'testWorkspaceUri')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($reportRequest);
 
         $ns = $t->getNamespaces();
         $this->assertType('array', $ns);
@@ -649,13 +417,17 @@ class ClientTest extends TestCase
         $dom = new DOMDocument();
         $dom->load($fixture);
 
-        $requestStr = ClientMock::buildNodeTypesRequestMock($params);
+        $requestStr = $this->getTransportMock()->buildNodeTypesRequestMock($params);
 
         $t = $this->getTransportMock();
+        $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with(\Jackalope\Transport\Davex\Client::REPORT, 'testWorkspaceUri/jcr:root', $requestStr)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::REPORT, 'testWorkspaceUriRoot')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($requestStr);
         return $t;
     }
 
@@ -665,7 +437,7 @@ class ClientTest extends TestCase
     public function testGetAllNodeTypesRequest()
     {
         $xmlStr = '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0"><jcr:all-nodetypes/></jcr:nodetypes>';
-        $this->assertSame($xmlStr, ClientMock::buildNodeTypesRequestMock(array()));
+        $this->assertSame($xmlStr, $this->getTransportMock()->buildNodeTypesRequestMock(array()));
     }
 
     /**
@@ -674,7 +446,7 @@ class ClientTest extends TestCase
     public function testSpecificNodeTypesRequest()
     {
         $xmlStr= '<?xml version="1.0" encoding="utf-8" ?><jcr:nodetypes xmlns:jcr="http://www.day.com/jcr/webdav/1.0"><jcr:nodetype><jcr:nodetypename>foo</jcr:nodetypename></jcr:nodetype><jcr:nodetype><jcr:nodetypename>bar</jcr:nodetypename></jcr:nodetype><jcr:nodetype><jcr:nodetypename>foobar</jcr:nodetypename></jcr:nodetype></jcr:nodetypes>';
-        $this->assertSame($xmlStr, ClientMock::buildNodeTypesRequestMock(array('foo', 'bar', 'foobar')));
+        $this->assertSame($xmlStr, $this->getTransportMock()->buildNodeTypesRequestMock(array('foo', 'bar', 'foobar')));
     }
 
     /**
@@ -727,10 +499,17 @@ class ClientTest extends TestCase
         $dom->load('fixtures/accessibleWorkspaces.xml');
 
         $t = $this->getTransportMock('testuri');
+        $request = $this->getRequestMock($dom, array('setBody', 'setDepth'));
         $t->expects($this->once())
-            ->method('getDomFromBackend')
-            ->with('PROPFIND', 'testuri/', ClientMock::buildPropfindRequestMock(array('D:workspace')), 1)
-            ->will($this->returnValue($dom));
+            ->method('getRequest')
+            ->with(Request::PROPFIND, 'testuri/')
+            ->will($this->returnValue($request));
+        $request->expects($this->once())
+            ->method('setBody')
+            ->with($this->getTransportMock()->buildPropfindRequestMock(array('D:workspace')));
+        $request->expects($this->once())
+            ->method('setDepth')
+            ->with(1);
 
         $names = $t->getAccessibleWorkspaceNames();
         $this->assertSame(array('default', 'tests', 'security'), $names);
@@ -749,39 +528,24 @@ class ClientMock extends Client
     public $workspaceUri = 'testWorkspaceUri';
     public $workspaceUriRoot = 'testWorkspaceUriRoot';
 
-    static public function buildNodeTypesRequestMock(Array $params)
+    public function buildNodeTypesRequestMock(Array $params)
     {
-        return self::buildNodeTypesRequest($params);
+        return $this->buildNodeTypesRequest($params);
     }
 
-    static public function buildReportRequestMock($name = '')
+    public function buildReportRequestMock($name = '')
     {
-        return self::buildReportRequest($name);
+        return $this->buildReportRequest($name);
     }
 
-    static public function buildPropfindRequestMock($args = array())
+    public function buildPropfindRequestMock($args = array())
     {
-        return self::buildPropfindRequest($args);
+        return $this->buildPropfindRequest($args);
     }
 
-    static public function buildLocateRequestMock($arg = '')
+    public function buildLocateRequestMock($arg = '')
     {
-        return self::buildLocateRequest($arg);
-    }
-
-    public function initConnection()
-    {
-        return parent::initConnection();
-    }
-
-    public function closeConnection()
-    {
-        return parent::closeConnection();
-    }
-
-    public function prepareRequest($type, $uri, $body = '', $depth = 0, $contentType = 'text/xml; charset=utf-8')
-    {
-        return parent::prepareRequest($type, $uri, $body, $depth, $contentType);
+        return $this->buildLocateRequest($arg);
     }
 
     public function setCredentials($credentials)
@@ -789,23 +553,8 @@ class ClientMock extends Client
         $this->credentials = $credentials;
     }
 
-    public function checkLogin()
+    public function getRequestMock($method, $uri)
     {
-        parent::checkLogin();
-    }
-
-    public function getRawFromBackend()
-    {
-        return parent::getRawFromBackend();
-    }
-
-    public function getDomFromBackend($type, $uri, $body='', $depth=0)
-    {
-        return parent::getDomFromBackend($type, $uri, $body, $depth);
-    }
-
-    public function getJsonFromBackend($type, $uri, $body='', $depth=0)
-    {
-        return parent::getJsonFromBackend($type, $uri, $body, $depth);
+        return $this->getRequest($method, $uri);
     }
 }

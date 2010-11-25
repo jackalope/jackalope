@@ -20,7 +20,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function getTransportStub($path)
     {
-        $transport = $this->getMock('Jackalope\Transport\DavexClient', array('getItem', 'getNodeTypes', 'getNodePathForIdentifier'), array('http://example.com'));
+        $transport = $this->getMock('\Jackalope\Transport\Davex\Client', array('getItem', 'getNodeTypes', 'getNodePathForIdentifier'), array('http://example.com'));
 
         $transport->expects($this->any())
             ->method('getItem')
@@ -41,14 +41,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function getSessionMock()
     {
-        return $this->getMock('Jackalope\Session', array(), array(), '', false);
+        return $this->getMock('\Jackalope\Session', array(), array(), '', false);
     }
 
     protected function getNodeTypeManager()
     {
         $dom = new \DOMDocument();
         $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
-        $om = $this->getMock('Jackalope\ObjectManager', array('getNodeTypes'), array($this->getTransportStub('/jcr:root'), $this->getSessionMock()));
+        $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($this->getTransportStub('/jcr:root'), $this->getSessionMock()));
         $om->expects($this->any())
             ->method('getNodeTypes')
             ->will($this->returnValue($dom));
