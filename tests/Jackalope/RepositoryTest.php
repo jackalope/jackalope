@@ -8,7 +8,7 @@ class RepositoryTest extends TestCase
     {
         $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMock('Jackalope\Transport\DavexClient', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
+        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))

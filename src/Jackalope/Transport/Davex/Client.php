@@ -20,10 +20,9 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport;
-use Jackalope\Factory;
+namespace Jackalope\Transport\Davex;
+use Jackalope\Transport\curl;
 use Jackalope\TransportInterface;
-use Jackalope\Transport\DavexClient\Requests\Base as Request;
 use DOMDocument;
 
 /**
@@ -34,7 +33,7 @@ use DOMDocument;
  * @package jackalope
  * @subpackage transport
  */
-class DavexClient implements TransportInterface
+class Client implements TransportInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.

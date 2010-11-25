@@ -23,7 +23,7 @@ class Repository implements \PHPCR\RepositoryInterface {
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = Factory::get('Transport\DavexClient', array($uri)); //default if not specified
+            $transport = Factory::get('Transport\Davex\Client', array($uri)); //default if not specified
         }
         $this->transport = $transport;
         $this->descriptors = $transport->getRepositoryDescriptors();

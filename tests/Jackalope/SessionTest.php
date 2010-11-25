@@ -12,7 +12,7 @@ class SessionTest extends TestCase
         $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = new Transport\DavexClient('http://example.com');
+        $transport = new Transport\Davex\Client('http://example.com');
         $s = new Session($repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());
         $this->assertSame($userID, $s->getUserID());

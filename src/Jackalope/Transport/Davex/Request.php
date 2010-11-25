@@ -19,9 +19,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport\DavexClient\Requests;
-
-use Jackalope\Transport\DavexClient;
+namespace Jackalope\Transport\Davex;
 
 /**
  * Request class for the Davex protocol
@@ -29,7 +27,7 @@ use Jackalope\Transport\DavexClient;
  * @package jackalope
  * @subpackage transport
  */
-class Base
+class Request
 {
     /**
      * Name of the user agent to be exposed to a client.
@@ -204,11 +202,11 @@ class Base
         if (substr($response, 0, 1) === '<') {
             $dom = new \DOMDocument();
             $dom->loadXML($response);
-            $err = $dom->getElementsByTagNameNS(DavexClient::NS_DCR, 'exception');
+            $err = $dom->getElementsByTagNameNS(Client::NS_DCR, 'exception');
             if ($err->length > 0) {
                 $err = $err->item(0);
-                $errClass = $err->getElementsByTagNameNS(DavexClient::NS_DCR, 'class')->item(0)->textContent;
-                $errMsg = $err->getElementsByTagNameNS(DavexClient::NS_DCR, 'message')->item(0)->textContent;
+                $errClass = $err->getElementsByTagNameNS(Client::NS_DCR, 'class')->item(0)->textContent;
+                $errMsg = $err->getElementsByTagNameNS(Client::NS_DCR, 'message')->item(0)->textContent;
 
                 switch($errClass) {
                     case 'javax.jcr.NoSuchWorkspaceException':
