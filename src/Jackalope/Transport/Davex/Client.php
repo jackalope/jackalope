@@ -114,7 +114,7 @@ class Client implements TransportInterface
     public function __construct($serverUri)
     {
         // append a slash if not there
-        if ('/' !== substr($serverUri, -1, 1)) {
+        if ('/' !== substr($serverUri, -1)) {
             $serverUri .= '/';
         }
         $this->server = $serverUri;
