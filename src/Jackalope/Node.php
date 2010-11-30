@@ -930,6 +930,30 @@ class Node extends Item implements \PHPCR\NodeInterface
     }
 
     /**
+     * overwrites the remove from {@link Item::remove}
+     * This is necessary to remove the internal reference in $this->nodes 
+     *
+     * @return void
+     **/
+    public function remove() {
+        parent::remove();
+        $this->getParent()->removeChildNode($this->name);
+    }
+
+    /**
+     * Removes the reference in the internal node storage
+     * @throws \PHPCR\ItemNotFoundException
+     * @return void
+     **/
+    public function removeChildNode($name) {
+        $key = array_search($name, $this->nodes);
+        if ($key === false) {
+            throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
+        }
+        unset($this->nodes[$key]);
+    }
+
+    /**
      * Removes this node and every other node in the shared set of this node.
      *
      * This removal must be done atomically, i.e., if one of the nodes cannot be
