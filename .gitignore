@@ -3,3 +3,4 @@ test-reports
 .project
 .buildpath
 .settings/
+cscope.out
