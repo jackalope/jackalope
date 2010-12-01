@@ -153,7 +153,7 @@ class Request
     /**
      * Requests the data to be identified by a formerly prepared request.
      *
-     * Takes a curl handle prepared by prepareRequest, executes it and checks
+     * Prepares the curl object, executes it and checks
      * for transport level errors, throwing the appropriate exceptions.
      *
      * @return string XML representation of the response.
