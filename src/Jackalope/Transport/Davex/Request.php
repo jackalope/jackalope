@@ -208,17 +208,31 @@ class Request
                 $errClass = $err->getElementsByTagNameNS(Client::NS_DCR, 'class')->item(0)->textContent;
                 $errMsg = $err->getElementsByTagNameNS(Client::NS_DCR, 'message')->item(0)->textContent;
 
+                $exceptionMsg = 'HTTP ' . $httpCode . ': ' . $errMsg;
                 switch($errClass) {
                     case 'javax.jcr.NoSuchWorkspaceException':
-                        throw new \PHPCR\NoSuchWorkspaceException('HTTP '.$httpCode . ": $errMsg");
+                        throw new \PHPCR\NoSuchWorkspaceException($exceptionMsg);
                     case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                        throw new \PHPCR\NodeType\NoSuchNodeTypeException('HTTP '.$httpCode . ": $errMsg");
+                        throw new \PHPCR\NodeType\NoSuchNodeTypeException($exceptionMsg);
                     case 'javax.jcr.ItemNotFoundException':
-                        throw new \PHPCR\ItemNotFoundException('HTTP '.$httpCode . ": $errMsg");
+                        throw new \PHPCR\ItemNotFoundException($exceptionMsg);
+                    case 'javax.jcr.nodetype.ConstraintViolationException':
+                        throw new \PHPCR\NodeType\ConstraintViolationException($exceptionMsg);
 
                     //TODO: map more errors here?
                     default:
-                        throw new \PHPCR\RepositoryException('HTTP '.$httpCode . ": $errMsg ($errClass)");
+
+                        // try generic
+                        $class = substr($errClass, strlen('javax.jcr.'));
+                        $class = explode('.', $class);
+                        array_walk($class, function(&$ns) { $ns = ucfirst(str_replace('nodetype', 'NodeType', $ns)); });
+                        $class = '\\PHPCR\\'.implode('\\', $class);
+
+                        if (class_exists($class)) {
+                            throw new $class($exceptionMsg);
+                        } else {
+                            throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
+                        }
                 }
             }
         }
