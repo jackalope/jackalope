@@ -54,7 +54,7 @@ class RequestTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::prepareRequest
+     * @covers \Jackalope\Transport\Davex\Request::execute
      */
     public function testPrepareRequestWithCredentials()
     {

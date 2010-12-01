@@ -7,13 +7,16 @@
         <var name="jcr.workspace" value="tests" />
         <var name="jcr.transport" value="davex" />
     </php>
-    
+
     <testsuites>
         <testsuite name="Jackalope Unit Tests">
             <directory>.</directory>
         </testsuite>
     </testsuites>
     <filter>
+        <whitelist>
+            <directory>../src</directory>
+        </whitelist>
         <blacklist>
             <directory>.</directory>
             <directory>../lib</directory>
