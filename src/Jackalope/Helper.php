@@ -119,6 +119,8 @@ class Helper
                 foreach($values as $v) {
                     if (is_bool($v)) {
                         $ret[] = $v ? 'true' : 'false';
+                    } else if ($v instanceof \DateTime ) {
+                        $ret[] = $v->format('Y-m-d\TH:i:s.000P');
                     } else {
                         settype($v, 'string');
                         $ret[] = $v;
@@ -148,7 +150,11 @@ class Helper
                 foreach($values as $v) {
                     if ($v instanceof \DateTime) {
                         $ret[] = $v;
-                    } elseif (is_int($v) || is_string($v)) {
+                    } elseif (is_int($v)) {
+                        $datetime = new \DateTime();
+                        $datetime->setTimestamp($v);
+                        $ret[] = $datetime;
+                    } elseif (is_string($v)) {
                         $ret[] = new \DateTime($v);
                     } else {
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a date');
