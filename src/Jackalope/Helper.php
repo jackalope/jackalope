@@ -8,6 +8,12 @@ use \DOMElement;
  */
 class Helper
 {
+
+    /**
+     * The expected date format to be used with {@link \DateTime} 
+     */
+    const DATETIME_FORMAT = 'Y-m-d\TH:i:s.000P';
+
     /**
      * Returns an attribute casted to boolean
      * @param DOMElement node to fetch from
@@ -119,8 +125,8 @@ class Helper
                 foreach($values as $v) {
                     if (is_bool($v)) {
                         $ret[] = $v ? 'true' : 'false';
-                    } else if ($v instanceof \DateTime ) {
-                        $ret[] = $v->format('Y-m-d\TH:i:s.000P');
+                    } elseif ($v instanceof \DateTime) {
+                        $ret[] = $v->format(self::DATETIME_FORMAT);
                     } else {
                         settype($v, 'string');
                         $ret[] = $v;

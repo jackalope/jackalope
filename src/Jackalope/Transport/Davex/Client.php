@@ -394,7 +394,7 @@ class Client implements TransportInterface
         $value = $property->getNativeValue();
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_DATE:
-            return $value->format('Y-m-d\TH:i:s.000P');
+            return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
         case \PHPCR\PropertyType::TYPENAME_BINARY:
             return base64_encode($value);
         }
