@@ -75,8 +75,6 @@ class Helper
         //this is mainly needed to create a new property
         if (is_string($value)) {
             $type = \PHPCR\PropertyType::STRING;
-        //TODO: binary!
-        //TODO: datetime type
         } elseif (is_int($value)) {
             $type = \PHPCR\PropertyType::LONG;
         } elseif (is_float($value)) {
@@ -93,6 +91,7 @@ class Helper
                     \PHPCR\PropertyType::REFERENCE;
             $value = $value->getIdentifier();
         } else {
+            throw new \PHPCR\ValueFormatException('Can not determine type of property with value "'.var_export($value, true).'"');
             $type = \PHPCR\PropertyType::UNDEFINED;
         }
         return $type;
