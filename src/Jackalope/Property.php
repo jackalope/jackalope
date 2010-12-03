@@ -9,7 +9,7 @@ namespace Jackalope;
  *
  * @api
  */
-class Property extends Item implements \PHPCR\PropertyInterface
+class Property extends Item implements \PHPCR\PropertyInterface, \IteratorAggregate
 {
     protected $value;
     protected $isMultiple = false;
@@ -453,4 +453,17 @@ class Property extends Item implements \PHPCR\PropertyInterface
             throw new \PHPCR\ValueFormatException();
         }
     }
+
+    /**
+     * Provide Traversable interface: redirect to getNodes with no filter
+     *
+     * @return Iterator over all child nodes
+     */
+    public function getIterator()
+    {
+        $value = $this->getNativeValue();
+        if (! is_array($value)) $value = array($value);
+        return new \ArrayIterator($value);
+    }
+
 }

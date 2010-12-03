@@ -4,7 +4,7 @@ namespace Jackalope;
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface
+class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface, \IteratorAggregate
 {
     /**
      * Instance of an implementation of the TransportInterface
@@ -278,5 +278,15 @@ Server: Jetty(6.1.x)
     public function getDefaultNamespaces()
     {
         return $this->defaultNamespaces;
+    }
+
+    /**
+     * Provide Traversable interface: iterator over all namespaces
+     *
+     * @return Iterator over all namespaces, with prefix as key and url as value
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
     }
 }

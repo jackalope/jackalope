@@ -6,7 +6,7 @@ use ArrayIterator;
 /**
  * The Node interface represents a node in a workspace.
  */
-class Node extends Item implements \PHPCR\NodeInterface
+class Node extends Item implements \PHPCR\NodeInterface, \IteratorAggregate
 {
     protected $index = 1;
     /** @var string */
@@ -935,7 +935,7 @@ class Node extends Item implements \PHPCR\NodeInterface
 
     /**
      * overwrites the remove from {@link Item::remove}
-     * This is necessary to remove the internal reference in $this->nodes 
+     * This is necessary to remove the internal reference in $this->nodes
      *
      * @return void
      **/
@@ -1108,5 +1108,15 @@ class Node extends Item implements \PHPCR\NodeInterface
             $filtered = $names;
         }
         return $filtered;
+    }
+
+    /**
+     * Provide Traversable interface: redirect to getNodes with no filter
+     *
+     * @return Iterator over all child nodes
+     */
+    public function getIterator()
+    {
+        return $this->getNodes();
     }
 }

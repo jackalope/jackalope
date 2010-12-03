@@ -11,7 +11,7 @@ use ArrayIterator;
  * Implementation:
  * We try to do lazy fetching of node types.
  */
-class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface
+class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface, \IteratorAggregate
 {
     protected $objectManager;
 
@@ -354,5 +354,14 @@ class NodeTypeManager implements \PHPCR\NodeType\NodeTypeManagerInterface
         foreach ($names as $name) {
             $this->unregisterNodeType($name);
         }
+    }
+
+    /**
+     * Provide Traversable interface: redirect to getAllNodeTypes
+     *
+     * @return Iterator over all node types
+     */
+    public function getIterator() {
+        return $this->getAllNodeTypes();
     }
 }
