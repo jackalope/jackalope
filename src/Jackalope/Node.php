@@ -63,7 +63,8 @@ class Node extends Item implements \PHPCR\NodeInterface
                     //OPTIMIZE: do not instantiate properties unless needed
                     default:
                         //TODO: if we create node locally, $rawData might be a plain array. So far this is not triggered, but its a bit flaky
-                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : 'undefined';
+                        // parsing of types done according to: http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
+                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = Factory::get(
                             'Property',
                             array(
@@ -287,7 +288,7 @@ class Node extends Item implements \PHPCR\NodeInterface
     {
         $givenType = $type;
         if (is_null($type)) {
-            $type = Helper::determineType($value);
+            $type = Helper::determineType(is_array($value) ? reset($value) : $value);
             $data = $value;
         } else {
             $data = Helper::convertType($value, $type);
