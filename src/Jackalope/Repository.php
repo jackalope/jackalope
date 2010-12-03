@@ -6,7 +6,8 @@ namespace Jackalope;
  * usually acquired through the RepositoryFactory.
  *
  */
-class Repository implements \PHPCR\RepositoryInterface {
+class Repository implements \PHPCR\RepositoryInterface
+{
     protected $transport;
     /** Array of descriptors. Each is either a string or an array of strings. */
     protected $descriptors;
@@ -18,15 +19,18 @@ class Repository implements \PHPCR\RepositoryInterface {
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct($uri=null, TransportInterface $transport=null) {
-        if ($transport==null) {
+    public function __construct($uri = null, TransportInterface $transport = null)
+    {
+        if ($transport == null) {
+            if ($uri === null) {
+                throw new \PHPCR\RepositoryException('You have to pass either a uri or a transport argument');
+            }
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
             $transport = Factory::get('Transport\Davex\Client', array($uri)); //default if not specified
         }
         $this->transport = $transport;
-        $this->descriptors = $transport->getRepositoryDescriptors();
     }
 
     /**
@@ -53,13 +57,13 @@ class Repository implements \PHPCR\RepositoryInterface {
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login($credentials = NULL, $workspaceName = NULL) {
+    public function login($credentials = NULL, $workspaceName = NULL)
+    {
         if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
         $session = Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
-
         return $session;
     }
 
@@ -73,7 +77,11 @@ class Repository implements \PHPCR\RepositoryInterface {
      * @return array a string array holding all descriptor keys
      * @api
      */
-    public function getDescriptorKeys() {
+    public function getDescriptorKeys()
+    {
+        if (null === $this->descriptors) {
+            $this->loadDescriptors();
+        }
         return array_keys($this->descriptors);
     }
 
@@ -86,7 +94,8 @@ class Repository implements \PHPCR\RepositoryInterface {
      * @return boolan whether $key is a standard descriptor.
      * @api
      */
-    public function isStandardDescriptor($key) {
+    public function isStandardDescriptor($key)
+    {
         $ref = new ReflectionClass('\PHPCR\RepositoryInterface');
         $consts = $ref->getConstantcs();
         return in_array($key, $consts);
@@ -99,9 +108,17 @@ class Repository implements \PHPCR\RepositoryInterface {
      * @return mixed a descriptor value in string form or an array of strings for multivalue descriptors
      * @api
      */
-    public function getDescriptor($key) {
+    public function getDescriptor($key)
+    {
+        if (null === $this->descriptors) {
+            $this->loadDescriptors();
+        }
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
         //TODO: is this the proper behaviour? Or what should happen on inexisting key?
     }
 
+    protected function loadDescriptors()
+    {
+        $this->descriptors = $transport->getRepositoryDescriptors();
+    }
 }
