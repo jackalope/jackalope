@@ -102,6 +102,7 @@ class Property extends Item implements \PHPCR\PropertyInterface
      */
     public function setValue($value, $type = NULL, $weak = false)
     {
+        $previousValue = $this->value;
         if (is_array($value) && ! $this->isMultiple)
             throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
 
@@ -122,7 +123,9 @@ class Property extends Item implements \PHPCR\PropertyInterface
         } else {
             $this->value = Helper::convertType($value, $this->type);
         }
-        $this->setModified(); //OPTIMIZE: should we detect setting to the same value and in that case not do anything?
+        if ($this->value !== $previousValue) {
+            $this->setModified();
+        }
     }
 
     /**
