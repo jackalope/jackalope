@@ -110,7 +110,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return array a mutable List of PropertyDefinitionTemplate objects.
      * @api
      */
-    public function getPropertyDefinitionTemplates()
+    public function &getPropertyDefinitionTemplates()
     {
         return $this->declaredPropertyDefinitions;
     }
@@ -123,7 +123,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * @return array a mutable List of NodeDefinitionTemplate objects.
      * @api
      */
-    public function getNodeDefinitionTemplates()
+    public function &getNodeDefinitionTemplates()
     {
         return $this->declaredNodeDefinitions;
     }
