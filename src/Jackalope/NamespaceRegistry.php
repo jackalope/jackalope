@@ -4,7 +4,7 @@ namespace Jackalope;
 /**
  * Mirrors namespaces with jackarabbit backend
  */
-class NamespaceRegistry implements \PHPCR\NamespaceRegistryInterface, \IteratorAggregate
+class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryInterface
 {
     /**
      * Instance of an implementation of the TransportInterface
