@@ -166,9 +166,10 @@ class Helper
                             $datetime = false;
                         }
                     }
-                    if ($datetime === false)
+                    if ($datetime === false) {
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a date');
                     }
+                    $ret[] = $datetime;
                 }
                 break;
             case \PHPCR\PropertyType::REFERENCE:
