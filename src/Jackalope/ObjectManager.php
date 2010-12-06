@@ -440,7 +440,7 @@ class ObjectManager
         //FIXME: same-name-siblings...
 
         if ($propertyName) {
-            $absPath .= $propertyName;
+            $absPath = $this->absolutePath($absPath, $propertyName);
         } else {
             $id = $this->objectsByPath[$absPath]->getIdentifier();
             unset($this->objectsByUuid[$id]);

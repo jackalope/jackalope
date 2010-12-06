@@ -15,10 +15,13 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * mapping of property name to property objects. all properties are loaded in constructor
      * OPTIMIZE: lazy instantiate property objects, just have local array
+     * @var array   [ name => \PHPCR\PropertyInterface, .. ]
      */
     protected $properties = array();
+
     /**
-     * list of children names
+     * list of children nodes
+     * @var array   [ name, .. ]
      */
     protected $nodes = array();
 
@@ -934,14 +937,15 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
-     * overwrites the remove from {@link Item::remove}
-     * This is necessary to remove the internal reference in $this->nodes
+     * This is necessary to remove the internal reference in the parent node
      *
      * @return void
+     * @uses \Jackalope\Node::unsetChildNode
+     * @api
      **/
     public function remove() {
         parent::remove();
-        $this->getParent()->removeChildNode($this->name);
+        $this->getParent()->unsetChildNode($this->name);
     }
 
     /**
@@ -949,12 +953,24 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\ItemNotFoundException
      * @return void
      **/
-    public function removeChildNode($name) {
+    public function unsetChildNode($name) {
         $key = array_search($name, $this->nodes);
         if ($key === false) {
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
         }
         unset($this->nodes[$key]);
+    }
+
+    /**
+     * Removes the reference in the internal node storage
+     * @throws \PHPCR\ItemNotFoundException
+     * @return void
+     **/
+    public function unsetProperty($name) {
+        if (!array_key_exists($name, $this->properties)) {
+            throw new \PHPCR\ItemNotFoundException('Could not remove property from node because it is already gone');
+        }
+        unset($this->properties[$name]);
     }
 
     /**

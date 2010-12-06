@@ -455,6 +455,18 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
+     * Also unsets internal reference in parent node
+     *
+     * @return void
+     * @uses \Jackalope\Node::unsetProperty
+     * @api
+     **/
+    public function remove() {
+        parent::remove();
+        $this->getParent()->unsetProperty($this->name);
+    }
+
+    /**
      * Provide Traversable interface: redirect to getNodes with no filter
      *
      * @return Iterator over all child nodes
