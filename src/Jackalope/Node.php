@@ -6,7 +6,7 @@ use ArrayIterator;
 /**
  * The Node interface represents a node in a workspace.
  */
-class Node extends Item implements \PHPCR\NodeInterface, \IteratorAggregate
+class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 {
     protected $index = 1;
     /** @var string */

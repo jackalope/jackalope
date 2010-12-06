@@ -9,7 +9,7 @@ namespace Jackalope;
  *
  * @api
  */
-class Property extends Item implements \PHPCR\PropertyInterface, \IteratorAggregate
+class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
     protected $value;
     protected $isMultiple = false;
