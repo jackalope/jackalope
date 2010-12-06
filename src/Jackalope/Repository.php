@@ -119,6 +119,6 @@ class Repository implements \PHPCR\RepositoryInterface
 
     protected function loadDescriptors()
     {
-        $this->descriptors = $transport->getRepositoryDescriptors();
+        $this->descriptors = $this->transport->getRepositoryDescriptors();
     }
 }
