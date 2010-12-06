@@ -349,8 +349,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function removeItem($absPath)
     {
-        $node = $this->getNode($absPath);
-        $node->remove();
+        $item = $this->getItem($absPath);
+        $item->remove();
     }
 
     /**
