@@ -279,7 +279,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @param string $name The name of a property of this node
      * @param mixed $value The value to be assigned
      * @param integer $type The type to set for the property
-     * @return \PHPCR\PropertyInterface The updated Property object
+     * @return \PHPCR\PropertyInterface The updated Property object or NULL if property was removed
      * @throws \PHPCR\ValueFormatException if the specified property is a DATE but the value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format or if value cannot be converted to the type of the specified property or if the property already exists and is multi-valued.
      * @throws \PHPCR\Version\VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
      * @throws \PHPCR\Lock\LockException  if a lock prevents the setting of the property and this implementation performs this validation immediately instead of waiting until save.
@@ -289,6 +289,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setProperty($name, $value, $type = NULL)
     {
+        if (is_null($value)) {
+            $this->properties[$name]->remove();
+            return null;
+        }
+
         $givenType = $type;
         if (is_null($type)) {
             $type = Helper::determineType(is_array($value) ? reset($value) : $value);
@@ -298,6 +303,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
 
         if (! isset($this->properties[$name])) {
+            // add property
             $path = $this->getChildPath($name);
             $property = Factory::get(
                             'Property',
@@ -308,6 +314,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $this->properties[$name] = $property;
             //validity check will be done by backend on commit, which is allowed by spec
         } else {
+            // update property
             // TODO maybe check if $this->properties[$name]->getType() === NodeType::UNDEFINED, in which case we can just overwrite with anything?
             if (!is_null($givenType) && $this->properties[$name]->getType() != $givenType) {
                 throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
