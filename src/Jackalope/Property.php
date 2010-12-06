@@ -65,11 +65,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * This method is a session-write and therefore requires a <code>save</code>
      * to dispatch the change.
      *
-     * If no type is given, the value is stored as is, i.e. it's type is
+     * If no type is given, the value is stored as is, i.e. its type is
      * preserved. Exceptions are:
-     * * if the given $value is a Node object, it's Identifier is fetched and
+     * * if the given $value is a Node object, its Identifier is fetched and
      *   the type of this property is set to REFERENCE
-     * * if the given $value is a Node object, it's Identifier is fetched and
+     * * if the given $value is a Node object, its Identifier is fetched and
      *   the type of this property is set to WEAKREFERENCE if $weak is set to
      *   TRUE
      * * if the given $value is a DateTime object, the property type will be
@@ -458,7 +458,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * Also unsets internal reference in parent node
      *
      * @return void
-     * @uses \Jackalope\Node::unsetProperty
+     * @uses Node::unsetProperty
      * @api
      **/
     public function remove() {
