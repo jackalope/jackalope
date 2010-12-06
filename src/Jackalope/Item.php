@@ -325,7 +325,7 @@ class Item implements \PHPCR\ItemInterface
         } else {
             $this->objectManager->removeItem($this->path);
         }
-        $this->getParent()->setModified();
+        $this->getParent()->setModified(); //TODO: why do we set parent modified? is this in the spec?
     }
 
     /**

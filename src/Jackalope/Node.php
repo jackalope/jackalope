@@ -178,6 +178,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
+        //by definition, adding a node sets the parent to modified
         $this->setModified();
 
         return $node;
