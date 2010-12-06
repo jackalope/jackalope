@@ -153,15 +153,20 @@ class Helper
                 break;
             case \PHPCR\PropertyType::DATE:
                 foreach($values as $v) {
+                    $datetime = false;
                     if ($v instanceof \DateTime) {
-                        $ret[] = $v;
+                        $datetime = $v;
                     } elseif (is_int($v)) {
                         $datetime = new \DateTime();
-                        $datetime->setTimestamp($v);
-                        $ret[] = $datetime;
+                        $datetime = $datetime->setTimestamp($v);
                     } elseif (is_string($v)) {
-                        $ret[] = new \DateTime($v);
-                    } else {
+                        try {
+                            $datetime = new \DateTime($v);
+                        } catch (\Exception $e) {
+                            $datetime = false;
+                        }
+                    }
+                    if ($datetime === false)
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a date');
                     }
                 }
