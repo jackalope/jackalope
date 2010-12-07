@@ -110,7 +110,7 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            if (isset($this->nodesRemove[$absPath])) {
+            if (isset($this->itemsRemove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
             $node = Factory::get(
