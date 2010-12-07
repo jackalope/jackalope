@@ -2,7 +2,7 @@
 namespace Jackalope\NodeType;
 
 use Jackalope\Helper, Jackalope\Factory;
-use \DOMElement, \DOMXPath;
+use \DOMElement, \DOMXPath, \ArrayObject;
 
 /**
  * The NodeTypeDefinition interface provides methods for discovering the
@@ -31,14 +31,15 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
 
     /** @var array */
     protected $declaredSuperTypeNames = null;
-    /** @var array */
+    /** @var ArrayObject */
     protected $declaredPropertyDefinitions = null;
-    /** @var array */
+    /** @var ArrayObject */
     protected $declaredNodeDefinitions = null;
 
     /**
      * Initializes the NodeTypeDefinition from an optional source
      * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
+     * @throws  \InvalidArgumentException   If $nodetype cannot be copied from
      */
     public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
@@ -49,12 +50,12 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         } elseif ($nodetype instanceof \PHPCR\NodeType\NodeTypeDefinitionInterface) {
             $this->fromNodeTypeDefinition($nodetype); // copy constructor
         } elseif (!is_null($nodetype)) {
-            throw new InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
+            throw new \InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
         }
     }
 
     /**
-     * Copies properties from a NodeType\NodeTypeDefinition
+     * Copies properties from a NodeTypeDefinition
      * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
      */
     protected function fromNodeTypeDefinition(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd)
@@ -66,8 +67,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
         $this->primaryItemName = $ntd->getPrimaryItemName();
         $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
-        $this->declaredPropertyDefinitions = $ntd->getDeclaredPropertyDefinitions();
-        $this->declaredNodeDefinitions = $ntd->getDeclaredChildNodeDefinitions();
+        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions());
+        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions());
     }
 
     /**
@@ -91,25 +92,25 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $xp = new DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
-            array_push($this->declaredSuperTypeNames, $supertype->nodeValue);
+            $this->declaredSuperTypeNames[] = $supertype->nodeValue;
         }
 
-        $this->declaredPropertyDefinitions = array();
+        $this->declaredPropertyDefinitions = new ArrayObject();
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
-            array_push($this->declaredPropertyDefinitions, Factory::get(
+            $this->declaredPropertyDefinitions[] = Factory::get(
                 'NodeType\PropertyDefinition',
                 array($property, $this->nodeTypeManager)
-            ));
+            );
         }
 
-        $this->declaredNodeDefinitions = array();
+        $this->declaredNodeDefinitions = new ArrayObject();
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
-            array_push($this->declaredNodeDefinitions, Factory::get(
+            $this->declaredNodeDefinitions[] = Factory::get(
                 'NodeType\NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
-            ));
+            );
         }
     }
 
@@ -236,7 +237,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
      */
     public function getDeclaredPropertyDefinitions()
     {
-        return $this->declaredPropertyDefinitions;
+        return is_null($this->declaredPropertyDefinitions) ? null : $this->declaredPropertyDefinitions->getArrayCopy();
     }
 
     /**
@@ -250,7 +251,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
      */
     public function getDeclaredChildNodeDefinitions()
     {
-        return $this->declaredNodeDefinitions;
+        return is_null($this->declaredNodeDefinitions) ? null : $this->declaredNodeDefinitions->getArrayCopy();
     }
 
 }

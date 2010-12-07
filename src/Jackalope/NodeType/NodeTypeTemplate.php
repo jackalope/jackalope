@@ -1,5 +1,6 @@
 <?php
 namespace Jackalope\NodeType;
+use \ArrayObject;
 
 /**
  * The NodeTypeTemplate interface represents a simple container structure used
@@ -107,11 +108,14 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * new NodeTypeTemplate or change an existing one, PropertyDefinitionTemplate
      * objects can be added to or removed from this List.
      *
-     * @return array a mutable List of PropertyDefinitionTemplate objects.
+     * @return Object A mutable List (implementing \Traversable, \ArrayAccess, and \Countable) of PropertyDefinitionTemplate objects
      * @api
      */
-    public function &getPropertyDefinitionTemplates()
+    public function getPropertyDefinitionTemplates()
     {
+        if (is_null($this->declaredPropertyDefinitions)) {
+            $this->declaredPropertyDefinitions = new ArrayObject();
+        }
         return $this->declaredPropertyDefinitions;
     }
 
@@ -120,11 +124,14 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
      * NodeTypeTemplate or change an existing one, NodeDefinitionTemplate objects
      * can be added to or removed from this List.
      *
-     * @return array a mutable List of NodeDefinitionTemplate objects.
+     * @return Object A mutable List (implementing \Traversable, \ArrayAccess, and \Countable) of NodeDefinitionTemplate objects
      * @api
      */
-    public function &getNodeDefinitionTemplates()
+    public function getNodeDefinitionTemplates()
     {
+        if (is_null($this->declaredNodeDefinitions)) {
+            $this->declaredNodeDefinitions = new ArrayObject();
+        }
         return $this->declaredNodeDefinitions;
     }
 

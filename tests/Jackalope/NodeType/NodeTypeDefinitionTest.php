@@ -6,9 +6,13 @@ use Jackalope\TestCase;
 
 class NodeTypeDefinitionTest extends TestCase
 {
-    public function testDummy()
+
+    /**
+     * @expectedException   \InvalidArgumentException
+     */
+    public function testCtorInvalidNodeTypeDefinition()
     {
-        $this->markTestSkipped('No tests for this class yet');
+        $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdclass);
     }
 
 }

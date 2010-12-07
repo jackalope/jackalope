@@ -67,22 +67,5 @@ class NodeTypeManagerTest extends TestCase
         $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 
-    /**
-     * @covers \Jackalope\NodeType\NodeTypeManager::createNodeTypeTemplate
-     */
-    public function testCreateNodeTypeTemplate()
-    {
-        $ntm = $this->getNodeTypeManager();
-
-        $nt = $ntm->getNodeType('nt:file');
-        $ntt = $ntm->createNodeTypeTemplate($nt);
-
-        $this->assertThat($ntt, $this->isInstanceOf('\jackalope\NodeType\NodeTypeDefinition'));
-        $this->assertType('jackalope\NodeType\NodeTypeTemplate', $ntt);
-        $this->assertSame('nt:file', $ntt->getName());
-
-        $ntt->setName('nt:file-ext');
-        $this->assertSame('nt:file-ext', $ntt->getName());
-    }
 
 }
