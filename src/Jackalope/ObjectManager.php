@@ -55,16 +55,16 @@ class ObjectManager
      */
 
     /**
-     * Contains a list of node to be added to the workspace.
+     * Contains a list of items to be added to the workspace.
      * @var array
      */
-    protected $nodesAdd = array();
+    protected $itemsAdd = array();
 
     /**
-     * Contains a list of node to be removed from the workspace.
+     * Contains a list of items to be removed from the workspace.
      * @var array
      */
-    protected $nodesRemove = array();
+    protected $itemsRemove = array();
 
     /**
      * Contains a list of node to be moved in the workspace.
@@ -110,7 +110,7 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            if (isset($this->nodesRemove[$absPath])) {
+            if (isset($this->itemsRemove[$absPath])) {
                 throw new \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
             $node = Factory::get(
@@ -331,7 +331,7 @@ class ObjectManager
         // TODO: start transaction
 
         // remove nodes/properties
-        foreach($this->nodesRemove as $path => $dummy) {
+        foreach($this->itemsRemove as $path => $dummy) {
             $this->transport->deleteItem($path);
         }
 
@@ -342,7 +342,7 @@ class ObjectManager
 
         // filter out sub-nodes and sub-properties since the top-most nodes that are
         // added will create all sub-nodes and sub-properties at once
-        $nodesToCreate = $this->nodesAdd;
+        $nodesToCreate = $this->itemsAdd;
         foreach ($nodesToCreate as $path => $dummy) {
             foreach ($nodesToCreate as $path2 => $dummy) {
                 if (strpos($path2, $path.'/') === 0) {
@@ -386,14 +386,14 @@ class ObjectManager
         // TODO: have a davex client method to commit transaction
 
         // commit changes to the local state
-        foreach($this->nodesRemove as $path => $dummy) {
+        foreach($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath[$path]);
         }
         foreach($this->nodesMove as $src => $dst) {
             $this->objectsByPath[$dst] = $this->objectsByPath[$src];
             unset($this->objectsByPath[$src]);
         }
-        foreach($this->nodesAdd as $path => $dummy) {
+        foreach($this->itemsAdd as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
         }
@@ -413,7 +413,7 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if ($this->unsaved || count($this->nodesAdd) || count($this->nodesMove) || count($this->nodesRemove)) {
+        if ($this->unsaved || count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
             return true;
         }
         foreach($this->objectsByPath as $item) {
@@ -433,24 +433,26 @@ class ObjectManager
      */
     public function removeItem($absPath, $propertyName = null)
     {
+
         if (! isset($this->objectsByPath[$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: nothing at $absPath");
+        }
+        if ($propertyName) {
+            $absPath = $this->absolutePath($absPath, $propertyName);
         }
 
         //FIXME: same-name-siblings...
 
-        if ($propertyName) {
-            $absPath = $this->absolutePath($absPath, $propertyName);
-        } else {
+        if (!$propertyName) { // Node, get also rid of UUID reference
             $id = $this->objectsByPath[$absPath]->getIdentifier();
             unset($this->objectsByUuid[$id]);
         }
         unset($this->objectsByPath[$absPath]);
-        if (isset($this->nodesAdd[$absPath])) {
+        if (isset($this->itemsAdd[$absPath])) {
             //this is a new unsaved node
-            unset($this->nodesAdd[$absPath]);
+            unset($this->itemsAdd[$absPath]);
         } else {
-            $this->nodesRemove[$absPath] = 1;
+            $this->itemsRemove[$absPath] = 1;
         }
     }
 
@@ -492,7 +494,7 @@ class ObjectManager
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
         }
-        $this->nodesAdd[$absPath] = 1;
+        $this->itemsAdd[$absPath] = 1;
     }
 
     /**
