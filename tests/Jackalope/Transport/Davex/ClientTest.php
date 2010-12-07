@@ -514,6 +514,20 @@ class ClientTest extends TestCase
         $names = $t->getAccessibleWorkspaceNames();
         $this->assertSame(array('default', 'tests', 'security'), $names);
     }
+
+    /**
+     * @covers \Jackalope\Transport\Davex\Client::normalizeUri
+     */
+    public function testNormalizeUri()
+    {
+        $transport = new ClientMock('');
+
+        $this->assertEquals('foo/bar', $transport->normalizeUriMock('foo/bar'), 'Relative uri was prepended with workspaceUriRoot');
+        $this->assertEquals('testWorkspaceUriRoot/foo/bar', $transport->normalizeUriMock('/foo/bar'), 'Absolute uri was not prepended with workspaceUriRoot');
+        $this->assertEquals('foo', $transport->normalizeUriMock('foo'), 'Relative uri was prepended with workspaceUriRoot');
+        $this->assertEquals('testWorkspaceUriRoot/foo', $transport->normalizeUriMock('/foo'), 'Absolute uri was not prepended with workspaceUriRoot');
+    }
+
 }
 
 class falseCredentialsMock implements \PHPCR\CredentialsInterface
@@ -556,5 +570,10 @@ class ClientMock extends Client
     public function getRequestMock($method, $uri)
     {
         return $this->getRequest($method, $uri);
+    }
+
+    public function normalizeUriMock($uri)
+    {
+        return $this->normalizeUri($uri);
     }
 }

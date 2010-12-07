@@ -78,6 +78,16 @@ class Request
     const PROPPATCH = 'PROPPATCH';
 
     /**
+     * Identifier of the 'COPY' http request method.
+     * @var string
+     */
+    const COPY = 'COPY';
+
+
+    /** @var string     Possible argument for {@link setDepth()} */
+    const INFINITY = 'infinity';
+
+    /**
      * @var \Jackalope\Transport\curl
      */
     protected $curl;
@@ -118,6 +128,9 @@ class Request
      */
     protected $body = '';
 
+    /** @var array[]string  A list of additional HTTP headers to be sent */
+    protected $additionalHeaders = array();
+
     /**
      * Initiaties the NodeTypes request object.
      *
@@ -140,14 +153,22 @@ class Request
         $this->contentType = (string) $contentType;
     }
 
+    /**
+     * @param   int|string  $depth
+     */
     public function setDepth($depth)
     {
-        $this->depth = (int) $depth;
+        $this->depth = $depth;
     }
 
     public function setBody($body)
     {
         $this->body = (string) $body;
+    }
+
+    public function addHeader($header)
+    {
+        $this->additionalHeaders[] = $header;
     }
 
     /**
@@ -178,6 +199,7 @@ class Request
             'Content-Type: '.$this->contentType,
             'User-Agent: '.self::USER_AGENT
         );
+        $headers = array_merge($headers, $this->additionalHeaders);
 
         $this->curl->setopt(CURLOPT_RETURNTRANSFER, true);
         $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
@@ -197,6 +219,8 @@ class Request
         case CURLE_COULDNT_CONNECT:
             throw new \PHPCR\NoSuchWorkspaceException($this->curl->error());
         }
+
+        // TODO extract HTTP status string from response, more descriptive about error
 
         // use XML error response if it's there
         if (substr($response, 0, 1) === '<') {
@@ -238,13 +262,13 @@ class Request
         }
 
         if (404 === $httpCode) {
-            throw new \PHPCR\ItemNotFoundException('Path not found: ' . $this->uri);
+            throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} {$this->uri}");
         } elseif ($httpCode >= 500) {
-            throw new \PHPCR\RepositoryException("Error from backend on: \n{$this->method} {$this->uri} \n\n$response");
+            throw new \PHPCR\RepositoryException("HTTP $httpCode Error from backend on: {$this->method} {$this->uri} \n\n$response");
         }
 
         $curlError = $this->curl->error();
-        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): \n{$this->method} {$this->uri} \n\n$response";
+        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} {$this->uri} \n\n$response";
         throw new \PHPCR\RepositoryException($msg);
     }
 

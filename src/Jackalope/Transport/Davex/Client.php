@@ -142,13 +142,7 @@ class Client implements TransportInterface
             $this->curl = new curl();
         }
 
-        // auto prepend the workspace root uri to requests that just contain an absolute path
-        if (substr($uri, 0, 1) === '/') {
-            if (empty($this->workspaceUri)) {
-                throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
-            }
-            $uri = $this->workspaceUriRoot . $uri;
-        }
+        $uri = $this->normalizeUri($uri);
 
         $request = new Request($this->curl, $method, $uri);
         $request->setCredentials($this->credentials);
@@ -294,6 +288,24 @@ class Client implements TransportInterface
     }
 
     /**
+     * Prepends the workspace root to the uris that contain an absolute path
+     *
+     * @param   string  $uri    The URI to normalize
+     * @return  string  The normalized URI
+     * @throws \PHPCR\RepositoryException   If workspaceUri is missing
+     */
+    protected function normalizeUri($uri)
+    {
+        if (substr($uri, 0, 1) === '/') {
+            if (empty($this->workspaceUri)) {
+                throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
+            }
+            $uri = $this->workspaceUriRoot . $uri;
+        }
+        return $uri;
+    }
+
+    /**
      * Deletes a node
      *
      * @param string $path Absolute path to identify a special item.
@@ -322,6 +334,33 @@ class Client implements TransportInterface
     {
         return $this->deleteItem($path);
     }
+
+    /**
+     * Copies a Node from src to dst
+     *
+     * @param   string  $srcAbsPath     Absolute source path to the node
+     * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
+     * @param   string  $srcWorkspace   The source workspace where the node can be found or NULL for current
+     * @return void
+     *
+     * @link http://www.ietf.org/rfc/rfc2518.txt
+     * @see \Jackalope\Workspace::copy
+     */
+    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
+    {
+        $this->ensureAbsolutePath($srcAbsPath);
+        $this->ensureAbsolutePath($dstAbsPath);
+
+        if ($srcWorkspace) {
+            $srcAbsPath = $this->server . $srcAbsPath;
+        }
+
+        $request = $this->getRequest(Request::COPY, $srcAbsPath);
+        $request->setDepth(Request::INFINITY);
+        $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
+        $request->execute();
+    }
+
 
     /**
      * Stores an item to the given absolute path
@@ -562,4 +601,6 @@ class Client implements TransportInterface
                 $uuid .
                '</D:href></dcr:locate-by-uuid>';
     }
+
+
 }
