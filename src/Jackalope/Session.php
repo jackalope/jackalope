@@ -189,7 +189,7 @@ class Session implements \PHPCR\SessionInterface
         try {
             return $this->objectManager->getNodeByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException($e);
+            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -207,7 +207,7 @@ class Session implements \PHPCR\SessionInterface
         try {
             return $this->objectManager->getPropertyByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException($e);
+            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 

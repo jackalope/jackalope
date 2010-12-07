@@ -110,8 +110,8 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
 
         if (empty($this->objectsByPath[$absPath])) {
-            if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\PathNotFoundException('Path not found (deleted in current session): ' . $absPath);
+            if (isset($this->nodesRemove[$absPath])) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
             $node = Factory::get(
                 'Node',
@@ -424,12 +424,10 @@ class ObjectManager
     }
 
     /**
-     * WRITE: add a node at the specified path
-     *
      * @param string $absPath the path to the node, including the node identifier
      * @param string $propertyName optional, property name to delete from the given node's path
      *
-     * @throws \PHPCR\ItemExistsException if a node already exists at that path
+     * @throws \PHPCR\RepositoryException If node cannot be found at given path
      */
     public function removeItem($absPath, $propertyName = null)
     {

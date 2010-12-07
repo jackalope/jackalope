@@ -182,6 +182,7 @@ class Request
      * @throws \PHPCR\NoSuchWorkspaceException if it was not possible to reach the server (resolve host or connect)
      * @throws \PHPCR\ItemNotFoundException if the object was not found
      * @throws \PHPCR\RepositoryExceptions if on any other error.
+     * @throws \PHPCR\PathNotFoundException if the path was not found (server returned 404 without xml response)
      *
      * @uses curl::errno()
      * @uses curl::exec()

@@ -457,6 +457,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * Also unsets internal reference in parent node
      *
+     * {@inheritDoc}
+     *
      * @return void
      * @uses Node::unsetProperty
      * @api

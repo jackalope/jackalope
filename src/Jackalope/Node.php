@@ -947,6 +947,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * This is necessary to remove the internal reference in the parent node
      *
+     * {@inheritDoc}
+     *
      * @return void
      * @uses \Jackalope\Node::unsetChildNode
      * @api
@@ -958,7 +960,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
     /**
      * Removes the reference in the internal node storage
-     * @throws \PHPCR\ItemNotFoundException
+     *
+     * @throws \PHPCR\ItemNotFoundException If child not found
      * @return void
      **/
     public function unsetChildNode($name) {
@@ -971,7 +974,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
     /**
      * Removes the reference in the internal node storage
-     * @throws \PHPCR\ItemNotFoundException
+     * @throws \PHPCR\ItemNotFoundException If property not found
      * @return void
      **/
     public function unsetProperty($name) {
