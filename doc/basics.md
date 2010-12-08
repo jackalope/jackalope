@@ -2,7 +2,7 @@ Basics
 ======
 
 Node
-____
+----
 
 ### addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL)
 
