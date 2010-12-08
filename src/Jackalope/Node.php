@@ -151,16 +151,20 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
             }
         } else {
-            $type = $ntm->getNodeType($this->primaryType);
-            $nodeDefinitions = $type->getChildNodeDefinitions();
-            foreach ($nodeDefinitions as $def) {
-                if (!is_null($def->getDefaultPrimaryType())) {
-                    $primaryNodeTypeName = $def->getDefaultPrimaryType();
-                    break;
+            if ($this->primaryType === 'rep:root') {
+                $primaryNodeTypeName = 'nt:unstructured';
+            } else {
+                $type = $ntm->getNodeType($this->primaryType);
+                $nodeDefinitions = $type->getChildNodeDefinitions();
+                foreach ($nodeDefinitions as $def) {
+                    if (!is_null($def->getDefaultPrimaryType())) {
+                        $primaryNodeTypeName = $def->getDefaultPrimaryTypeName();
+                        break;
+                    }
                 }
-            }
-            if (is_null($primaryNodeTypeName)) {
-                throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
+                if (is_null($primaryNodeTypeName)) {
+                    throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
+                }
             }
         }
 
