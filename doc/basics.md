@@ -162,25 +162,33 @@ Returns the Value of a Property identified by it’s name
 
 ### getProperties($filter = NULL)
 
-### getDefinition()
+Returns an iterator of properties identified by $filter. If no matching property was found an empty iterator is returned. 
+A glob may be a full name or a partial name with one or more wildcard characters ("*"). For example: <br />
+N->getProperties(array("jcr:*", "myapp:report", "my doc"))<br />
+would return a PropertyIterator holding all accessible properties of N that are either called 'myapp:report', begin with the prefix 'jcr:' or are called 'my doc'. <br />
+Note that unlike in the case of getProperties(<string>) leading and trailing whitespace around a glob is not ignored.
 
-### update($srcWorkspace)
+<table>
+    <tbody>
+        <tr>
+            <td>$filter</td>
+            <td>string or array representing one or a set of name patterns</td>
+        </tr>
+    </tbody>
+</table>
 
-### getCorrespondingNodePath($workspaceName)
+### getPropertiesValues()
 
-### getSharedSet()
+Returns an iterator of values of properties identified by one or a set of name patterns.
 
-### removeSharedSet()
-
-### removeShare()
-
-### isCheckedOut()
-
-### isLocked()
-
-### followLifecycleTransition($transition)
-
-### getAllowedLifecycleTransitions()
+<table>
+    <tbody>
+        <tr>
+            <td>$filter</td>
+            <td>string or array representing one or a set of name patterns</td>
+        </tr>
+    </tbody>
+</table>
 
 Property
 --------
