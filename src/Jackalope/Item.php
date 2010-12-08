@@ -8,21 +8,31 @@ namespace Jackalope;
  */
 class Item implements \PHPCR\ItemInterface
 {
-    /** session this node belongs to */
+    /** @var Session    The session this node belongs to */
     protected $session;
-    /** object manager to get nodes from */
+
+    /** @var ObjectManager  The object manager to get nodes from */
     protected $objectManager;
 
-    /** false if node is read from backend, true if node is created locally in this session */
+    /** @var bool   false if node is read from backend, true if node is created locally in this session */
     protected $new;
+
+    /** @var bool   True if modified otherwise false */
     protected $modified = false;
 
+    /** @var string */
     protected $name;
-    /** Normalized and absolute path to this item. */
+
+    /** @var string     Normalized and absolute path to this item. */
     protected $path;
-    /** Normalized and absolute path to the parent item. */
+
+    /** @var string     Normalized and absolute path to the parent item. */
     protected $parentPath;
+
+    /** @var int    Depth in the workspace graph */
     protected $depth;
+
+    /** @var bool   Whether this item is a node  */
     protected $isNode = false;
 
     /**

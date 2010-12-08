@@ -56,5 +56,19 @@ interface TransportInterface
      * @throws \PHPCR\RepositoryException if now logged in
      */
     public function getNamespaces();
+
+
+    /**
+     * Copies a Node from src to dst
+     *
+     * @param   string  $srcAbsPath     Absolute source path to the node
+     * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
+     * @param   string  $srcWorkspace   The source workspace where the node can be found or NULL for current
+     * @return void
+     *
+     * @link http://www.ietf.org/rfc/rfc2518.txt
+     * @see \Jackalope\Workspace::copy
+     */
+    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
 }
 
