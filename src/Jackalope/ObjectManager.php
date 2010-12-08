@@ -403,6 +403,10 @@ class ObjectManager
             }
         }
 
+        $this->itemsRemove = array();
+        $this->nodesMove = array();
+        $this->itemsAdd = array();
+
         $this->unsaved = false;
     }
 
