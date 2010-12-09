@@ -980,6 +980,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
     /**
      * Adds child node to this node (only internal reference)
+     *
+     * @param   string  $name   The name of the child node
      */
     protected function addChildNode($name)
     {
