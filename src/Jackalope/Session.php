@@ -322,7 +322,11 @@ class Session implements \PHPCR\SessionInterface
      */
     public function move($srcAbsPath, $destAbsPath)
     {
-        $this->objectManager->moveItem($srcAbsPath, $destAbsPath);
+        if ($this->itemExists($destAbsPath)) {
+            // TODO same-name siblings
+            throw new \PHPCR\ItemExistsException('Target item already exists at '.$destAbsPath);
+        }
+        $this->objectManager->moveNode($srcAbsPath, $destAbsPath);
     }
 
     /**

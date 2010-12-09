@@ -83,6 +83,12 @@ class Request
      */
     const COPY = 'COPY';
 
+    /**
+     * Identifier of the 'MOVE' http request method.
+     * @var string
+     */
+    const MOVE = 'MOVE';
+
 
     /** @var string     Possible argument for {@link setDepth()} */
     const INFINITY = 'infinity';

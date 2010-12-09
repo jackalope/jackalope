@@ -37,7 +37,7 @@ class ObjectManager
      *
      * There is no notion of order here. The order is defined by order in Node::nodes array.
      *
-     * @var array
+     * @var array   [ absPath => \PHPCR\ItemInterface ]
      */
     protected $objectsByPath = array();
 
@@ -55,28 +55,22 @@ class ObjectManager
      */
 
     /**
-     * Contains a list of items to be added to the workspace.
-     * @var array
+     * Contains a list of items to be added to the workspace upon save
+     * @var array   [ absPath => 1 ]
      */
     protected $itemsAdd = array();
 
     /**
-     * Contains a list of items to be removed from the workspace.
-     * @var array
+     * Contains a list of items to be removed from the workspace upon save
+     * @var array   [ absPath => 1 ]
      */
     protected $itemsRemove = array();
 
     /**
-     * Contains a list of node to be moved in the workspace.
-     * @var array
+     * Contains a list of node to be moved in the workspace upon save
+     * @var array   [ srcAbsPath => dstAbsPath, .. ]
      */
     protected $nodesMove = array();
-
-    /**
-     * identifier to determine if the current objectManager is in an unsaved state.
-     * @var boolean
-     */
-    protected $unsaved = false;
 
     /**
      * Registers the provided parameters as attribute to the instance.
@@ -88,6 +82,26 @@ class ObjectManager
     {
         $this->transport = $transport;
         $this->session = $session;
+    }
+
+    /**
+     * Resolves the real path where the item initially was before moving
+     *
+     * Checks moved nodes whether any parents (or the node itself) was moved and goes back
+     * continuing with the translated path as there can be several moves of the same node.
+     *
+     * @param   string  $path   The initial path we try to access a node from
+     * @return  string  The resolved path
+     */
+    protected function resolveBackendPath($path)
+    {
+        // any current or parent moved?
+        foreach (array_reverse($this->nodesMove) as $src=>$dst) {
+            if (strpos($path, $dst) === 0) {
+                $path = substr_replace($path, $src, 0, strlen($dst));
+            }
+        }
+        return $path;
     }
 
     /**
@@ -113,10 +127,26 @@ class ObjectManager
             if (isset($this->itemsRemove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
+            // check whether a parent node was removed
+            foreach ($this->itemsRemove as $path=>$dummy) {
+                if (strpos($absPath, $path) === 0) {
+                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+                }
+            }
+
+            $fetchPath = $absPath;
+            if (isset($this->nodesMove[$absPath])) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+            } else {
+                // The path was the destination of a previous move which isn't yet dispatched to the backend.
+                // I guess an exception would be fine but we can also just fetch the node from the previous path
+                $fetchPath = $this->resolveBackendPath($fetchPath);
+            }
+
             $node = Factory::get(
                 'Node',
                 array(
-                    $this->transport->getItem($absPath),
+                    $this->transport->getItem($fetchPath),
                     $absPath,
                     $this->session,
                     $this
@@ -181,7 +211,6 @@ class ObjectManager
             }
         } else {
             $finalParts= array();
-            $abs = ($path && $path[0] == '/');
             $parts = explode('/', $path);
             foreach ($parts as $pathPart) {
                 switch ($pathPart) {
@@ -197,7 +226,7 @@ class ObjectManager
                 }
             }
             $finalPath = implode('/', $finalParts);
-            if ($abs) {
+            if ($path[0] == '/') {
                 $finalPath = '/'.$finalPath;
             }
         }
@@ -230,7 +259,7 @@ class ObjectManager
     /**
      * Get the node idenfied by an uuid or path or root path and relative path.
      *
-     * If you have an absolute path use getNodeByPath.
+     * If you have an absolute path use {@link getNodeByPath()}.
      *
      * @param string uuid or relative path
      * @param string optional root if you are in a node context - not used if $identifier is an uuid
@@ -337,7 +366,7 @@ class ObjectManager
 
         // move nodes/properties
         foreach($this->nodesMove as $src => $dst) {
-            //TODO: have a davex client method to move a path
+            $this->transport->moveNode($src, $dst);
         }
 
         // filter out sub-nodes and sub-properties since the top-most nodes that are
@@ -389,10 +418,12 @@ class ObjectManager
         foreach($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath[$path]);
         }
+        /* local state is already updated in moveNode
         foreach($this->nodesMove as $src => $dst) {
             $this->objectsByPath[$dst] = $this->objectsByPath[$src];
             unset($this->objectsByPath[$src]);
         }
+         */
         foreach($this->itemsAdd as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
@@ -406,8 +437,6 @@ class ObjectManager
         $this->itemsRemove = array();
         $this->nodesMove = array();
         $this->itemsAdd = array();
-
-        $this->unsaved = false;
     }
 
     /**
@@ -417,7 +446,7 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if ($this->unsaved || count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
+        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
             return true;
         }
         foreach($this->objectsByPath as $item) {
@@ -435,27 +464,101 @@ class ObjectManager
      */
     public function removeItem($absPath, $propertyName = null)
     {
-
+        // the object is always cached as invocation flow goes through Item::remove() without excemption
         if (! isset($this->objectsByPath[$absPath])) {
-            throw new \PHPCR\RepositoryException("Internal error: nothing at $absPath");
+            throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
-        if ($propertyName) {
-            $absPath = $this->absolutePath($absPath, $propertyName);
+
+        // was any parent moved?
+        foreach ($this->nodesMove as $src=>$dst) {
+            if (strpos($dst, $absPath) === 0) {
+                // this is MOVE, then DELETE but we dispatch DELETE before MOVE
+                // TODO we might could just remove the MOVE and put a DELETE on the previous node :)
+                throw new \PHPCR\RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
+            }
         }
 
         //FIXME: same-name-siblings...
 
-        if (!$propertyName) { // Node, get also rid of UUID reference
+        if ($propertyName) {
+            $absPath = $this->absolutePath($absPath, $propertyName);
+        } else {
             $id = $this->objectsByPath[$absPath]->getIdentifier();
             unset($this->objectsByUuid[$id]);
         }
+
         unset($this->objectsByPath[$absPath]);
+
         if (isset($this->itemsAdd[$absPath])) {
             //this is a new unsaved node
             unset($this->itemsAdd[$absPath]);
         } else {
             $this->itemsRemove[$absPath] = 1;
         }
+
+    }
+
+    /**
+     * Rewrites the path of an item while also updating all children
+     *
+     * Does some magic detection if for example you ADD a node and then rewrite (MOVE)
+     * that exact node then it skips the MOVE and just ADDs to the new place. The return
+     * value denotes whether a MOVE must still be dispatched to the backend.
+     *
+     * @param   string  $curPath    Absolute path of the node to rewrite
+     * @param   string  $newPath    The new absolute path
+     * @return  bool    Whether dispatching the move to the backend is still required (otherwise we replaced the move with another operation)
+     */
+    public function rewriteItemPaths($curPath, $newPath)
+    {
+        $moveRequired = true;
+
+        // update internal references in parent
+        $parentCurPath = dirname($curPath);
+        $parentNewPath = dirname($newPath);
+        if (isset($this->objectsByPath[$parentCurPath])) {
+            $obj = $this->objectsByPath[$parentCurPath];
+
+            $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetChildNode');
+            $meth->setAccessible(true);
+            $meth->invokeArgs($obj, array(basename($curPath)));
+        }
+        if (isset($this->objectsByPath[$parentNewPath])) {
+            $obj = $this->objectsByPath[$parentNewPath];
+
+            $meth = new \ReflectionMethod('\Jackalope\Node', 'addChildNode');
+            $meth->setAccessible(true);
+            $meth->invokeArgs($obj, array(basename($newPath)));
+        }
+
+        // propagate to current and children items of $curPath, updating internal path
+        foreach ($this->objectsByPath as $path=>$item) {
+            // is it current or child?
+            if (strpos($path, $curPath) === 0) {
+                // curPath = /foo
+                // newPath = /mo
+                // path    = /foo/bar
+                // newItemPath= /mo/bar
+                $newItemPath = substr_replace($path, $newPath, 0, strlen($curPath));
+                if (isset($this->itemsAdd[$path])) {
+                    $this->itemsAdd[$newItemPath] = 1;
+                    unset($this->itemsAdd[$path]);
+                    if ($path === $curPath) {
+                        $moveRequired = false;
+                    }
+                }
+                if (isset($this->objectsByPath[$path])) {
+                    $item = $this->objectsByPath[$path];
+                    $this->objectsByPath[$newItemPath] = $item;
+                    unset($this->objectsByPath[$path]);
+
+                    $meth = new \ReflectionMethod('\Jackalope\Item', 'setPath');
+                    $meth->setAccessible(true);
+                    $meth->invokeArgs($this->objectsByPath[$newItemPath], array($newItemPath));
+                }
+            }
+        }
+        return $moveRequired;
     }
 
     /**
@@ -464,19 +567,16 @@ class ObjectManager
      * @param string $srcAbsPath Absolute path to the source node.
      * @param string $destAbsPath Absolute path to the destination where the node shall be moved to.
      *
-     * @throws NotImplementedException
+     * @throws \PHPCR\RepositoryException If node cannot be found at given path
      */
-    public function moveItem($srcAbsPath, $destAbsPath)
+    public function moveNode($srcAbsPath, $destAbsPath)
     {
-        $this->nodesMove[$srcAbsPath] = $destAbsPath;
-        $this->unsaved = true;
+        if ($this->rewriteItemPaths($srcAbsPath, $destAbsPath)) {
+            $this->nodesMove[$srcAbsPath] = $destAbsPath;
+        }
 
-        throw new NotImplementedException('TODO: either push to backend and flush cache or update all relevant nodes and rewrite paths from now on.');
-        /*
-        FIXME: dispatch everything to backend immediatly (without saving) on move so the backend cares about translating all requests to the new path? how do we know if things are modified after that operation?
-        otherwise we have to update all cached objects, tell this item its new path and make it dirty.
-        */
     }
+
 
     /**
      * WRITE: add an item at the specified path.

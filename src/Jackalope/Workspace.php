@@ -148,11 +148,54 @@ class Workspace implements \PHPCR\WorkspaceInterface
     }
 
     /**
-     * not implemented
+     * Moves the node at srcAbsPath (and its entire subgraph) to the new location at destAbsPath.
+     *
+     * If successful, the change is persisted immediately, there is no need to
+     * call save. Note that this is in contrast to
+     * Session->move($srcAbsPath, $destAbsPath) which operates within the transient
+     * space and hence requires a save.
+     *
+     * The identifiers of referenceable nodes must not be changed by a move. The
+     * identifiers of non-referenceable nodes may change.
+     *
+     * The destAbsPath provided must not have an index on its final element. If
+     * it does then a RepositoryException is thrown. Strictly speaking, the
+     * destAbsPath parameter is actually an absolute path to the parent node of
+     * the new location, appended with the new name desired for the moved node.
+     * It does not specify a position within the child node ordering. If ordering
+     * is supported by the node type of the parent node of the new location, then
+     * the newly moved node is appended to the end of the child node list.
+     *
+     * This method cannot be used to move just an individual property by itself.
+     * It moves an entire node and its subgraph (including, of course, any
+     * properties contained therein).
+     *
+     * The identifiers of referenceable nodes must not be changed by a move. The
+     * identifiers of non-referenceable nodes may change.
+     *
+     * @param string $srcAbsPath the path of the node to be moved.
+     * @param string $destAbsPath the location to which the node at srcAbsPath is to be moved.
+     * @return void
+     *
+     * @throws \PHPCR\ConstraintViolationException if the operation would violate a node-type or other
+     *                                             implementation-specific constraint
+     * @throws \PHPCR\Version\VersionException if the parent node of destAbsPath is read-only due to a checked-in node.
+     * @throws \PHPCR\AccessDeniedException if the current session (i.e. the session that was used to acquire this
+     *                                      Workspace object) does not have sufficient access rights to complete the
+     *                                      operation.
+     * @throws \PHPCR\PathNotFoundException if the node at srcAbsPath or the parent of destAbsPath does not exist.
+     * @throws \PHPCR\ItemExistsException if a node already exists at destAbsPath and same-name siblings are not allowed.
+     * @throws \PHPCR\Lock\LockException if a lock prevents the move.
+     * @throws \PHPCR\RepositoryException if the last element of destAbsPath has an index or if another error occurs.
+     * @api
      */
     public function move($srcAbsPath, $destAbsPath)
     {
-        throw new NotImplementedException('Write');
+        if (!Helper::isAbsolutePath($srcAbsPath) || !Helper::isAbsolutePath($destAbsPath)) {
+            throw new \PHPCR\RepositoryException('Source and destination paths must be absolute');
+        }
+        $this->session->getObjectManager()->getTransport()->moveNode($srcAbsPath, $destAbsPath);
+        $this->session->getObjectManager()->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
     }
 
     /**

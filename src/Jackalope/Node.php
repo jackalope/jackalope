@@ -954,10 +954,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * {@inheritDoc}
      *
      * @return void
-     * @uses \Jackalope\Node::unsetChildNode
+     * @uses unsetChildNode()
      * @api
      **/
-    public function remove() {
+    public function remove()
+    {
         parent::remove();
         $this->getParent()->unsetChildNode($this->name);
     }
@@ -968,7 +969,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\ItemNotFoundException If child not found
      * @return void
      **/
-    public function unsetChildNode($name) {
+    protected function unsetChildNode($name) {
         $key = array_search($name, $this->nodes);
         if ($key === false) {
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
@@ -976,14 +977,24 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         unset($this->nodes[$key]);
     }
 
+
+    /**
+     * Adds child node to this node (only internal reference)
+     */
+    protected function addChildNode($name)
+    {
+        $this->nodes[] = $name;
+    }
+
+
     /**
      * Removes the reference in the internal node storage
      * @throws \PHPCR\ItemNotFoundException If property not found
      * @return void
      **/
-    public function unsetProperty($name) {
+    protected function unsetProperty($name) {
         if (!array_key_exists($name, $this->properties)) {
-            throw new \PHPCR\ItemNotFoundException('Could not remove property from node because it is already gone');
+            throw new \PHPCR\ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
         unset($this->properties[$name]);
     }

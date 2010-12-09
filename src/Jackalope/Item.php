@@ -45,11 +45,15 @@ class Item implements \PHPCR\ItemInterface
     public function __construct($rawData, $path,  Session $session,
                                 ObjectManager $objectManager, $new = false)
     {
-        $this->path = $path;
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->new = $new;
 
+        $this->setPath($path);
+    }
+
+    protected function setPath($path) {
+        $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
         $this->name = basename($path);
         $this->parentPath = strtr(dirname($path), '\\', '/');

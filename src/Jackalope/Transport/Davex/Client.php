@@ -277,7 +277,7 @@ class Client implements TransportInterface
      * checks if the path is absolute, throws an exception if it is not
      *
      * @param path to check
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException If path is not absolute
      */
     protected function ensureAbsolutePath($path)
     {
@@ -306,7 +306,7 @@ class Client implements TransportInterface
     }
 
     /**
-     * Deletes a node
+     * Deletes a node and its subnodes
      *
      * @param string $path Absolute path to identify a special item.
      * @return bool true on success
@@ -356,6 +356,27 @@ class Client implements TransportInterface
         }
 
         $request = $this->getRequest(Request::COPY, $srcAbsPath);
+        $request->setDepth(Request::INFINITY);
+        $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
+        $request->execute();
+    }
+
+
+    /**
+     * Moves a node from src to dst
+     *
+     * @param   string  $srcAbsPath     Absolute source path to the node
+     * @param   string  $dstAbsPath     Absolute destination path (must NOT include the new node name)
+     * @return void
+     *
+     * @link http://www.ietf.org/rfc/rfc2518.txt
+     */
+    public function moveNode($srcAbsPath, $dstAbsPath)
+    {
+        $this->ensureAbsolutePath($srcAbsPath);
+        $this->ensureAbsolutePath($dstAbsPath);
+
+        $request = $this->getRequest(Request::MOVE, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
         $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
         $request->execute();

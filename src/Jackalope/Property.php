@@ -460,12 +460,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * {@inheritDoc}
      *
      * @return void
-     * @uses Node::unsetProperty
+     * @uses Node::unsetProperty()
      * @api
      **/
     public function remove() {
         parent::remove();
-        $this->getParent()->unsetProperty($this->name);
+
+        $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
+        $meth->setAccessible(true);
+        $meth->invokeArgs($this->getParent(), array($this->name));
     }
 
     /**
