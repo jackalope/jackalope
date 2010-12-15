@@ -471,6 +471,9 @@ class Client implements TransportInterface
         // skip binary encoding for raw strings
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_BINARY:
+        case \PHPCR\PropertyType::UNDEFINED:
+        case \PHPCR\PropertyType::STRING:
+        case \PHPCR\PropertyType::URI:
             return $property->getNativeValue();
         }
         return $this->propertyToXmlString($property, $type);
