@@ -457,6 +457,11 @@ class Client implements TransportInterface
             return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
         case \PHPCR\PropertyType::TYPENAME_BINARY:
             return base64_encode($value);
+        case \PHPCR\PropertyType::UNDEFINED:
+        case \PHPCR\PropertyType::STRING:
+        case \PHPCR\PropertyType::URI:
+            $value = str_replace(']]>',']]]]><![CDATA[>',$value);
+            return '<![CDATA['.$value.']]>';
         }
         return $value;
     }
