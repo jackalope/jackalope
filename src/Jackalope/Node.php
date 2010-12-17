@@ -58,6 +58,17 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                             )
                         );
                         break;
+                    case 'jcr:mixinTypes':
+                        $this->properties[$key] = Factory::get(
+                            'Property',
+                            array(
+                                array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
+                                $this->getChildPath($key),
+                                $this->session,
+                                $this->objectManager,
+                            )
+                        );
+                        break;
                     case 'jcr:uuid':
                         $this->uuid = $value;
                         break;
@@ -820,7 +831,16 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function addMixin($mixinName)
     {
-        throw new NotImplementedException('Write');
+        // TODO handle LockException & VersionException cases
+        if ($this->hasProperty('jcr:mixinTypes')) {
+            $values = $this->properties['jcr:mixinTypes']->getNativeValue();
+            $values[] = $mixinName;
+            $values = array_unique($values);
+            $this->properties['jcr:mixinTypes']->setValue($values);
+        } else {
+            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::NAME);
+        }
+        $this->setModified();
     }
 
     /**
