@@ -136,6 +136,21 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
+     * Appends a value to a multi-value property
+     *
+     * @param mixed value
+     * @throws \PHPCR\ValueFormatException if the property is not multi-value
+     */
+    public function addValue($value)
+    {
+        if (!$this->isMultiple()) {
+            throw new \PHPCR\ValueFormatException('You can not add values to non-multiple properties');
+        }
+        $this->value[] = $value;
+        $this->setModified();
+    }
+
+    /**
      * Get the value in format default for the PropertyType of this property.
      *
      * PHPCR Note: This is an additional method not found in JSR-283
