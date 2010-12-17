@@ -310,16 +310,16 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             return null;
         }
 
-        $givenType = $type;
-        if (is_null($type)) {
-            $type = Helper::determineType(is_array($value) ? reset($value) : $value);
-            $data = $value;
-        } else {
+        if (null !== $type) {
             $data = Helper::convertType($value, $type);
         }
 
         if (! isset($this->properties[$name])) {
             // add property
+            if (null === $type) {
+                $type = Helper::determineType(is_array($value) ? reset($value) : $value);
+                $data = $value;
+            }
             $path = $this->getChildPath($name);
             $property = Factory::get(
                             'Property',
@@ -332,7 +332,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         } else {
             // update property
             // TODO maybe check if $this->properties[$name]->getType() === NodeType::UNDEFINED, in which case we can just overwrite with anything?
-            if (!is_null($givenType) && $this->properties[$name]->getType() != $givenType) {
+            if (null !== $type && $this->properties[$name]->getType() != $type) {
                 throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
             }
             $this->properties[$name]->setValue($value);

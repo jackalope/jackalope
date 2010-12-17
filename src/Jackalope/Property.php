@@ -106,9 +106,14 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (is_array($value) && ! $this->isMultiple)
             throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
 
-        if (is_null($type)) {
-            $type = Helper::determineType(is_array($value) ? reset($value) : $value, $weak);
+        if (null === $type) {
+            if (null !== $this->type) {
+                $type = $this->type;
+            } else {
+                $type = Helper::determineType(is_array($value) ? reset($value) : $value, $weak);
+            }
         }
+
         if ($value instanceof \PHPCR\NodeInterface) {
             if ($this->type == \PHPCR\PropertyType::REFERENCE ||
                 $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
