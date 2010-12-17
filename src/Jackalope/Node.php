@@ -758,7 +758,15 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getMixinNodeTypes()
     {
-        throw new NotImplementedException();
+        if (!isset($this->properties['jcr:mixinTypes'])) {
+            return array();
+        }
+        $res = array();
+        $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+        foreach ($this->properties['jcr:mixinTypes']->getNativeValue() as $type) {
+            $res[] = $ntm->getNodeType($type);
+        }
+        return $res;
     }
 
     /**
