@@ -414,9 +414,16 @@ class Client implements TransportInterface
 
         foreach ($properties as $name => $property) {
             $type = \PHPCR\PropertyType::nameFromValue($property->getType());
-            $body .= '<sv:property sv:name="'.$name.'" sv:type="'.$type.'">'.
-                    '<sv:value>'.$this->propertyToXmlString($property, $type).'</sv:value>'.
-                '</sv:property>';
+            $body .= '<sv:property sv:name="'.$name.'" sv:type="'.$type.'">';
+            $nativeValue = $property->getNativeValue();
+            if (is_array($nativeValue)) {
+                foreach ($nativeValue as $value) {
+                    $body .= '<sv:value>'.$this->propertyToXmlString($value, $type).'</sv:value>';
+                }
+            } else {
+                $body .= '<sv:value>'.$this->propertyToXmlString($nativeValue, $type).'</sv:value>';
+            }
+            $body .= '</sv:property>';
         }
 
         foreach ($children as $name => $node) {
@@ -442,16 +449,42 @@ class Client implements TransportInterface
         $type = \PHPCR\PropertyType::nameFromValue($property->getType());
 
         $request = $this->getRequest(Request::PUT, $path);
-        $request->setBody($this->propertyToRawString($property, $type));
-        $request->setContentType('jcr-value/'.strtolower($type));
+        $nativeValue = $property->getNativeValue();
+        if ($property->getName() === 'jcr:mixinTypes') {
+            $uri = $this->normalizeUri(dirname($path) === '\\' ? '/' : dirname($path));
+            $request->setUri($uri);
+            $request->setMethod(Request::PROPPATCH);
+            $body = '<?xml version="1.0" encoding="UTF-8"?>'.
+                '<D:propertyupdate xmlns:D="DAV:">'.
+                '<D:set>'.
+                '<D:prop>'.
+                '<dcr:mixinnodetypes xmlns:dcr="http://www.day.com/jcr/webdav/1.0">';
+            foreach ($nativeValue as $value) {
+                $body .= '<dcr:nodetype><dcr:nodetypename>'.$value.'</dcr:nodetypename></dcr:nodetype>';
+            }
+            $body .= '</dcr:mixinnodetypes>'.
+                '</D:prop>'.
+                '</D:set>'.
+                '</D:propertyupdate>';
+        } elseif (is_array($nativeValue)) {
+            $body = '<?xml version="1.0" encoding="UTF-8"?>'.
+                '<jcr:values xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
+            foreach ($nativeValue as $value) {
+                $body .= '<jcr:value type="'.$type.'">'.$this->propertyToXmlString($value, $type).'</jcr:value>';
+            }
+            $body .= '</jcr:values>';
+        } else {
+            $body = $this->propertyToRawString($nativeValue, $type);
+            $request->setContentType('jcr-value/'.strtolower($type));
+        }
+        $request->setBody($body);
         $request->execute();
 
         return true;
     }
 
-    protected function propertyToXmlString($property, $type)
+    protected function propertyToXmlString($value, $type)
     {
-        $value = $property->getNativeValue();
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_DATE:
             return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
@@ -466,7 +499,7 @@ class Client implements TransportInterface
         return $value;
     }
 
-    protected function propertyToRawString($property, $type)
+    protected function propertyToRawString($value, $type)
     {
         // skip binary encoding for raw strings
         switch ($type) {
@@ -474,9 +507,9 @@ class Client implements TransportInterface
         case \PHPCR\PropertyType::UNDEFINED:
         case \PHPCR\PropertyType::STRING:
         case \PHPCR\PropertyType::URI:
-            return $property->getNativeValue();
+            return $value;
         }
-        return $this->propertyToXmlString($property, $type);
+        return $this->propertyToXmlString($value, $type);
     }
 
     /**
