@@ -994,6 +994,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
+     * This method is implementation specific and not part of the PHPCR API
+     *
      * @throws \PHPCR\ItemNotFoundException If child not found
      * @return void
      **/
@@ -1019,6 +1021,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
     /**
      * Removes the reference in the internal node storage
+     *
+     * This method is implementation specific and not part of the PHPCR API
+     *
      * @throws \PHPCR\ItemNotFoundException If property not found
      * @return void
      **/
