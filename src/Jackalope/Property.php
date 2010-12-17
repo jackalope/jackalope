@@ -35,7 +35,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $type = $data['type'];
         if (is_string($type)) {
             $type = \PHPCR\PropertyType::valueFromName($type);
-        } elseif (! is_numeric($type)) {
+        } elseif (!is_numeric($type)) {
             throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
         } else {
             //sanity check. this will throw InvalidArgumentException if $type is not a valid type
@@ -103,8 +103,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function setValue($value, $type = NULL, $weak = false)
     {
         $previousValue = $this->value;
-        if (is_array($value) && ! $this->isMultiple)
+        if (is_array($value) && !$this->isMultiple) {
             throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
+        }
 
         if (null === $type) {
             if (null !== $this->type) {
@@ -128,6 +129,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         } else {
             $this->value = Helper::convertType($value, $this->type);
         }
+
         if ($this->value !== $previousValue) {
             $this->setModified();
         }
@@ -484,7 +486,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getIterator()
     {
         $value = $this->getNativeValue();
-        if (! is_array($value)) $value = array($value);
+        if (!is_array($value)) $value = array($value);
         return new \ArrayIterator($value);
     }
 
