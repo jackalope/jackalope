@@ -172,6 +172,16 @@ class Request
         $this->body = (string) $body;
     }
 
+    public function setMethod($method)
+    {
+        $this->method = $method;
+    }
+
+    public function setUri($uri)
+    {
+        $this->uri = $uri;
+    }
+
     public function addHeader($header)
     {
         $this->additionalHeaders[] = $header;
