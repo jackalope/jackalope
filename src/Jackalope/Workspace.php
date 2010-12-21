@@ -285,7 +285,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getVersionManager()
     {
-        throw new \PHPCR\UnsupportedRepositoryOperationException();
+        return Factory::get('Version\VersionManager', array($this->session->getObjectManager()));
     }
 
     /**

@@ -280,6 +280,37 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::GET, $path);
         return $request->executeJson();
     }
+    
+    public function checkinItem($path) 
+    {
+        try {
+            $request = $this->getRequest(Request::CHECKIN, $path);
+            return $request->execute();
+        } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
+            if ($e->getCode() == 405) {
+                throw new \PHPCR\UnsupportedRepositoryOperationException();
+            } else {
+                throw new \PHPCR\RepositoryException();
+            }
+        }
+    }
+    
+    public function checkoutItem($path) 
+    {
+        $this->ensureAbsolutePath($path);
+        try {
+            $request = $this->getRequest(Request::CHECKOUT, $path);
+            $request->execute();
+        } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
+            if ($e->getCode() == 405) {
+                throw new \PHPCR\UnsupportedRepositoryOperationException();
+            } else {
+                throw new \PHPCR\RepositoryException();
+            }
+        }
+        return;
+    }
+    
 
     /**
      * checks if the path is absolute, throws an exception if it is not

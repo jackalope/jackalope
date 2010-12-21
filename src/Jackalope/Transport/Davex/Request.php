@@ -89,7 +89,18 @@ class Request
      */
     const MOVE = 'MOVE';
 
-
+    /**
+     * Identifier of the 'CHECKIN' http request method.
+     * @var string
+     */
+    const CHECKIN = 'CHECKIN';
+    
+    /**
+     * Identifier of the 'CHECKOUT' http request method.
+     * @var string
+     */
+    const CHECKOUT = 'CHECKOUT';
+    
     /** @var string     Possible argument for {@link setDepth()} */
     const INFINITY = 'infinity';
 
@@ -281,11 +292,15 @@ class Request
 
         if (404 === $httpCode) {
             throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} {$this->uri}");
+        } elseif (405 == $httpCode) {
+            throw new \Jackalope\Transport\Davex\HTTPErrorException("HTTP 405 Method Not Allowed: {$this->method} {$this->uri}", 405);
         } elseif ($httpCode >= 500) {
             throw new \PHPCR\RepositoryException("HTTP $httpCode Error from backend on: {$this->method} {$this->uri} \n\n$response");
         }
 
         $curlError = $this->curl->error();
+        
+        
         $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} {$this->uri} \n\n$response";
         throw new \PHPCR\RepositoryException($msg);
     }
