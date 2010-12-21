@@ -35,6 +35,13 @@ class curl
      * @var resource
      */
     protected $curl;
+    
+    /**
+     * Contains header of a response, if needed
+     * @var array
+     */
+    
+    protected $headers = array();
 
     /**
      * Handles the initialization of a curl session.
@@ -133,4 +140,35 @@ class curl
     {
         return curl_close($this->curl);
     }
+    
+    public function readHeader($ch, $header)
+    {
+        if (strpos($header,":") !== false) {
+            list($key,$value) = explode(":",$header,2);
+            $this->headers[$key] = trim($value);
+        }
+        return strlen($header);
+    }
+    
+    public function getHeaders() 
+    {
+        return $this->headers;
+    }
+    
+    public function getHeader($key) 
+    {
+        if (isset($this->headers[$key])) {
+            return $this->headers[$key];
+        } else {
+            return null;
+        }
+    }
+    
+    public function parseResponseHeaders()
+    {
+        $this->setopt(CURLOPT_HEADER, false);
+        $this->setopt(CURLOPT_HEADERFUNCTION, array(&$this,'readHeader'));
+    }
+
+      
 }

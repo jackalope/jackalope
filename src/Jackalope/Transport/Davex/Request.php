@@ -215,7 +215,7 @@ class Request
      * @uses curl::errno()
      * @uses curl::exec()
      */
-    public function execute()
+    public function execute($getCurlObject = false)
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
@@ -235,12 +235,20 @@ class Request
         $this->curl->setopt(CURLOPT_URL, $this->uri);
         $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $this->curl->setopt(CURLOPT_POSTFIELDS, $this->body);
+        if ($getCurlObject) {
+            $this->curl->parseResponseHeaders();
+        }
+
 
         $response = $this->curl->exec();
 
         $httpCode = $this->curl->getinfo(CURLINFO_HTTP_CODE);
         if ($httpCode >= 200 && $httpCode < 300) {
-            return $response;
+            if ($getCurlObject) {
+                return $this->curl;
+            } else {
+                return $response;
+            }
         }
 
         switch ($this->curl->errno()) {
