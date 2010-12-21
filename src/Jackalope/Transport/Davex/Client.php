@@ -703,5 +703,9 @@ class Client implements TransportInterface
                '</D:href></dcr:locate-by-uuid>';
     }
 
+    public function cleanUriFromWebserverRoot($uri) 
+    {
+        return str_replace($this->workspaceUriRoot,"",$uri);
+    }
 
 }
