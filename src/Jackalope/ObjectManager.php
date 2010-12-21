@@ -124,7 +124,7 @@ class ObjectManager
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
-    public function getNodeByPath($absPath)
+    public function getNodeByPath($absPath, $class = 'Node')
     {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
@@ -151,6 +151,7 @@ class ObjectManager
 
             $node = $this->factory->get(
                 'Node',
+                $class,
                 array(
                     $this->transport->getItem($fetchPath),
                     $absPath,
