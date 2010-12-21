@@ -4,7 +4,6 @@ declare(ENCODING = 'utf-8');
 
 namespace Jackalope\Version;
 
-
 use Jackalope\ObjectManager, Jackalope\NotImplementedException;
 
 class VersionManager implements \PHPCR\Version\VersionManagerInterface {
@@ -59,7 +58,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
      
      // TODO @return \PHPCR\Version\VersionInterface the created version.
-     public function checkin($absPath) {
+     public function checkin($absPath) 
+     {
          return $this->objectmanager->getTransport()->checkinItem($absPath);
      }
 
@@ -88,7 +88,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-     public function checkout($absPath) {
+     public function checkout($absPath) 
+     {
          $this->objectmanager->getTransport()->checkoutItem($absPath);
 
      }
@@ -110,7 +111,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function checkpoint($absPath) {
+    public function checkpoint($absPath) 
+    {
         throw new NotImplementedException();
     }
 
@@ -129,7 +131,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isCheckedOut($absPath) {
+    public function isCheckedOut($absPath) 
+    {
         throw new NotImplementedException();
     }
 
@@ -143,7 +146,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getVersionHistory($absPath) {
+    public function getVersionHistory($absPath) 
+    {
         throw new NotImplementedException();
     }
 
@@ -156,7 +160,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getBaseVersion($absPath) {
+    public function getBaseVersion($absPath) 
+    {
         throw new NotImplementedException();
     }
 
@@ -243,7 +248,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function restore($removeExisting, $version, $absPath = NULL) {
+    public function restore($removeExisting, $version, $absPath = NULL) 
+    {
         throw new NotImplementedException();
     }
 
@@ -284,7 +290,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function restoreByLabel($absPath, $versionLabel, $removeExisting) {
+    public function restoreByLabel($absPath, $versionLabel, $removeExisting) 
+    {
         throw new NotImplementedException();
     }
 
@@ -367,7 +374,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function merge($source, $srcWorkspace = NULL, $bestEffort = NULL, $isShallow = FALSE) {
+    public function merge($source, $srcWorkspace = NULL, $bestEffort = NULL, $isShallow = FALSE) 
+    {
         throw new NotImplementedException();
     }
 
@@ -437,7 +445,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function doneMerge($absPath, \PHPCR\Version\VersionInterface $version) {
+    public function doneMerge($absPath, \PHPCR\Version\VersionInterface $version) 
+    {
         throw new NotImplementedException();
     }
 
@@ -463,7 +472,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function cancelMerge($absPath, \PHPCR\Version\VersionInterface $version) {
+    public function cancelMerge($absPath, \PHPCR\Version\VersionInterface $version) 
+    {
         throw new NotImplementedException();
     }
 
@@ -489,7 +499,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createConfiguration($absPath, \PHPCR\Version\VersionInterface $baseline) {
+    public function createConfiguration($absPath, \PHPCR\Version\VersionInterface $baseline) 
+    {
         throw new NotImplementedException();
     }
 
@@ -506,7 +517,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setActivity(\PHPCR\NodeInterface $activity) {
+    public function setActivity(\PHPCR\NodeInterface $activity) 
+    {
         throw new NotImplementedException();
     }
 
@@ -519,7 +531,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getActivity() {
+    public function getActivity() 
+    {
         throw new NotImplementedException();
     }
 
@@ -538,7 +551,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createActivity($title) {
+    public function createActivity($title) 
+    {
         throw new NotImplementedException();
     }
 
@@ -553,7 +567,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function removeActivity(\PHPCR\NodeInterface $activityNode) {
+    public function removeActivity(\PHPCR\NodeInterface $activityNode) 
+    {
         throw new NotImplementedException();
     }
 
