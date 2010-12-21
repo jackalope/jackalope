@@ -285,7 +285,13 @@ class Client implements TransportInterface
     {
         try {
             $request = $this->getRequest(Request::CHECKIN, $path);
-            return $request->execute();
+            $curl = $request->execute(true);
+            if ($curl->getHeader("Location")) {
+                return $this->cleanUriFromWebserverRoot(urldecode($curl->getHeader("Location")));
+            } else {
+                // not sure
+                throw new \PHPCR\RepositoryException();
+            }
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();

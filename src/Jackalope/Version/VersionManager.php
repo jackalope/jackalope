@@ -60,7 +60,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      // TODO @return \PHPCR\Version\VersionInterface the created version.
      public function checkin($absPath) 
      {
-         return $this->objectmanager->getTransport()->checkinItem($absPath);
+         $path = $this->objectmanager->getTransport()->checkinItem($absPath);
+         return $this->objectmanager->getNodeByPath($path, "Version\Version");
      }
 
     /**
