@@ -23,6 +23,7 @@ class VersionHistory extends \Jackalope\Node {
 
     protected $objectmanager;
     protected $path;
+    protected $versions = null;
 
     public function __construct(ObjectManager $objectmanager,$absPath)
     {
@@ -105,13 +106,15 @@ class VersionHistory extends \Jackalope\Node {
      */
     public function getAllVersions()
     {
-        $uuid = $this->objectmanager->getTransport()->getVersionHistory($this->path);
-        $node = $this->objectmanager->getNode($uuid, '/');
-        $results = array();
-        $rootNode = $node->getNode('jcr:rootVersion', 'Version\Version');
-        $results[] = $rootNode;
-        $results = array_merge($results,$this->getSuccessors($rootNode));
-        return new \ArrayIterator($results);
+        if (!$this->versions) {
+            $uuid = $this->objectmanager->getTransport()->getVersionHistory($this->path);
+            $node = $this->objectmanager->getNode($uuid, '/');
+            $results = array();
+            $rootNode = $node->getNode('jcr:rootVersion', 'Version\Version');
+            $results[$rootNode->getName()] = $rootNode;
+            $this->versions = array_merge($results,$this->getSuccessors($rootNode));
+        }
+        return new \ArrayIterator($this->versions);
 
         
     }
@@ -121,7 +124,7 @@ class VersionHistory extends \Jackalope\Node {
         $successors = $node->getSuccessors();
         $results = array();
         foreach($successors as $successor) {
-            $results[] = $successor;
+            $results[$successor->getName()] = $successor;
             $results = array_merge($results,$this->getSuccessors($successor));
         }
         return $results;
@@ -169,7 +172,7 @@ class VersionHistory extends \Jackalope\Node {
      * Retrieves a particular version from this version history by version name.
      *
      * @param string $versionName a version name
-     * @return \PHPCR\Version\VersionInterface a Version object.
+     * @return \Jackalope\Version\VersionInterface a Version object.
      *
      * @throws \PHPCR\Version\VersionException if the specified version is not in this version history.
      * @throws \PHPCR\RepositoryException if an error occurs.
@@ -177,7 +180,12 @@ class VersionHistory extends \Jackalope\Node {
      */
     public function getVersion($versionName)
     {
-        throw new NotImplementedException();
+        $this->getAllVersions();
+        if (isset($this->versions[$versionName])) {
+            return $this->versions[$versionName];
+        }
+
+        throw new \PHPCR\Version\VersionException();
     }
 
 

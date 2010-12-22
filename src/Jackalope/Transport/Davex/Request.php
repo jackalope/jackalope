@@ -100,6 +100,12 @@ class Request
      * @var string
      */
     const CHECKOUT = 'CHECKOUT';
+
+    /**
+     * Identifier of the 'UPDATE' http request method.
+     * @var string
+     */
+    const UPDATE = 'UPDATE';
     
     /** @var string     Possible argument for {@link setDepth()} */
     const INFINITY = 'infinity';

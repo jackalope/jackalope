@@ -300,7 +300,7 @@ class Client implements TransportInterface
             }
         }
     }
-    
+
     public function checkoutItem($path) 
     {
         $this->ensureAbsolutePath($path);
@@ -315,6 +315,24 @@ class Client implements TransportInterface
             }
         }
         return;
+    }
+
+    public function restoreItem($removeExisting, $versionPath, $path) {
+        $this->ensureAbsolutePath($path);
+
+        $body ='<D:update xmlns:D="DAV:">
+	<D:version>
+		<D:href>'.$this->normalizeUri($versionPath).'</D:href>
+	</D:version>';
+        if ($removeExisting) {
+            $body .= '<dcr:removeexisting xmlns:dcr="http://www.day.com/jcr/webdav/1.0" />';
+        }
+        $body .= '</D:update>';
+
+          $request = $this->getRequest(Request::UPDATE, $path);
+          $request->setBody($body);
+          var_dump($request->execute());
+
     }
 
     public function getVersionHistory($path)
