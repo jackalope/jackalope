@@ -368,11 +368,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getNode($relPath)
+    public function getNode($relPath, $class = 'Node')
     {
         $node = null;
         try {
-            $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
+            $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath), $class);
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
