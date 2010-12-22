@@ -16,7 +16,8 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getContainingHistory() {
+    public function getContainingHistory()
+    {
        throw new NotImplementedException();
     }
 
