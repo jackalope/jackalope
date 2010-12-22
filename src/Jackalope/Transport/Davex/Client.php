@@ -590,10 +590,7 @@ class Client implements TransportInterface
                 $this->workspaceUriRoot
             );
         }
-        return substr(
-            substr($fullPath, 0, -1), //cut trailing slash /
-            strlen($this->workspaceUriRoot) //remove uri, workspace and root node
-        );
+        return $this->cleanUriFromWebserverRoot(substr(\urldecode($fullPath),0,-1));
     }
 
     /**
@@ -711,7 +708,7 @@ class Client implements TransportInterface
 
     public function cleanUriFromWebserverRoot($uri) 
     {
-        return str_replace($this->workspaceUriRoot,"",$uri);
+        return substr($uri,strlen($this->workspaceUriRoot));
     }
 
 }
