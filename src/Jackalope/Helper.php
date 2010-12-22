@@ -118,6 +118,7 @@ class Helper
      */
     public static function convertType($values, $type)
     {
+        $ret = null;
         $isArray = is_array($values);
         if (!$isArray) {
             $values = array($values);
