@@ -43,7 +43,7 @@ class ObjectManager
      *
      * There is no notion of order here. The order is defined by order in Node::nodes array.
      *
-     * @var array   [ absPath => \PHPCR\ItemInterface ]
+     * @var array   [ class => String][ absPath => \PHPCR\ItemInterface ]
      */
     protected $objectsByPath = array();
 
@@ -128,8 +128,10 @@ class ObjectManager
     {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
-
-        if (empty($this->objectsByPath[$absPath])) {
+        if (!isset($this->objectsByPath[$class])) {
+            $this->objectsByPath[$class] = array();
+        }
+        if (empty($this->objectsByPath[$class][$absPath])) {
             if (isset($this->itemsRemove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (deleted in current session): ' . $absPath);
             }
@@ -160,10 +162,10 @@ class ObjectManager
                 )
             );
             $this->objectsByUuid[$node->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
-            $this->objectsByPath[$absPath] = $node;
+            $this->objectsByPath[$class][$absPath] = $node;
         }
 
-        return $this->objectsByPath[$absPath];
+        return $this->objectsByPath[$class][$absPath];
     }
 
     /**
@@ -275,20 +277,20 @@ class ObjectManager
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function getNode($identifier, $root = '/')
+    public function getNode($identifier, $root = '/', $class = 'Node')
     {
         if ($this->isUUID($identifier)) {
             if (empty($this->objectsByUuid[$identifier])) {
                 $path = $this->transport->getNodePathForIdentifier($identifier);
-                $node = $this->getNodeByPath($path);
+                $node = $this->getNodeByPath($path, $class);
                 $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
                 return $node;
             } else {
-                return $this->getNodeByPath($this->objectsByUuid[$identifier]);
+                return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
             }
         } else {
             $path = $this->absolutePath($root, $identifier);
-            return $this->getNodeByPath($path);
+            return $this->getNodeByPath($path, $class);
         }
     }
 
@@ -399,7 +401,7 @@ class ObjectManager
         }
 
         //loop through cached nodes and commit all dirty and set them to clean.
-        foreach($this->objectsByPath as $path => $item) {
+        foreach($this->objectsByPath['Node'] as $path => $item) {
             if ($item->isModified()) {
                 if ($item instanceof \PHPCR\NodeInterface) {
                     foreach ($item->getProperties() as $propertyName => $property) {
@@ -423,7 +425,7 @@ class ObjectManager
 
         // commit changes to the local state
         foreach($this->itemsRemove as $path => $dummy) {
-            unset($this->objectsByPath[$path]);
+            unset($this->objectsByPath['Node'][$path]);
         }
         /* local state is already updated in moveNode
         foreach($this->nodesMove as $src => $dst) {
@@ -435,7 +437,7 @@ class ObjectManager
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
         }
-        foreach($this->objectsByPath as $path => $item) {
+        foreach($this->objectsByPath['Node'] as $path => $item) {
             if ($item->isModified()) {
                 $item->confirmSaved();
             }
@@ -456,7 +458,7 @@ class ObjectManager
         if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
             return true;
         }
-        foreach($this->objectsByPath as $item) {
+        foreach($this->objectsByPath['Node'] as $item) {
             if ($item->isModified()) return true;
         }
 
@@ -472,7 +474,7 @@ class ObjectManager
     public function removeItem($absPath, $propertyName = null)
     {
         // the object is always cached as invocation flow goes through Item::remove() without excemption
-        if (! isset($this->objectsByPath[$absPath])) {
+        if (! isset($this->objectsByPath['Node'][$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
 
@@ -490,11 +492,11 @@ class ObjectManager
         if ($propertyName) {
             $absPath = $this->absolutePath($absPath, $propertyName);
         } else {
-            $id = $this->objectsByPath[$absPath]->getIdentifier();
+            $id = $this->objectsByPath['Node'][$absPath]->getIdentifier();
             unset($this->objectsByUuid[$id]);
         }
 
-        unset($this->objectsByPath[$absPath]);
+        unset($this->objectsByPath['Node'][$absPath]);
 
         if (isset($this->itemsAdd[$absPath])) {
             //this is a new unsaved node
@@ -523,15 +525,15 @@ class ObjectManager
         // update internal references in parent
         $parentCurPath = dirname($curPath);
         $parentNewPath = dirname($newPath);
-        if (isset($this->objectsByPath[$parentCurPath])) {
-            $obj = $this->objectsByPath[$parentCurPath];
+        if (isset($this->objectsByPath['Node'][$parentCurPath])) {
+            $obj = $this->objectsByPath['Node'][$parentCurPath];
 
             $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetChildNode');
             $meth->setAccessible(true);
             $meth->invokeArgs($obj, array(basename($curPath)));
         }
-        if (isset($this->objectsByPath[$parentNewPath])) {
-            $obj = $this->objectsByPath[$parentNewPath];
+        if (isset($this->objectsByPath['Node'][$parentNewPath])) {
+            $obj = $this->objectsByPath['Node'][$parentNewPath];
 
             $meth = new \ReflectionMethod('\Jackalope\Node', 'addChildNode');
             $meth->setAccessible(true);
@@ -539,7 +541,7 @@ class ObjectManager
         }
 
         // propagate to current and children items of $curPath, updating internal path
-        foreach ($this->objectsByPath as $path=>$item) {
+        foreach ($this->objectsByPath['Node'] as $path=>$item) {
             // is it current or child?
             if (strpos($path, $curPath) === 0) {
                 // curPath = /foo
@@ -554,14 +556,14 @@ class ObjectManager
                         $moveRequired = false;
                     }
                 }
-                if (isset($this->objectsByPath[$path])) {
-                    $item = $this->objectsByPath[$path];
-                    $this->objectsByPath[$newItemPath] = $item;
-                    unset($this->objectsByPath[$path]);
+                if (isset($this->objectsByPath['Node'][$path])) {
+                    $item = $this->objectsByPath['Node'][$path];
+                    $this->objectsByPath['Node'][$newItemPath] = $item;
+                    unset($this->objectsByPath['Node'][$path]);
 
                     $meth = new \ReflectionMethod('\Jackalope\Item', 'setPath');
                     $meth->setAccessible(true);
-                    $meth->invokeArgs($this->objectsByPath[$newItemPath], array($newItemPath));
+                    $meth->invokeArgs($this->objectsByPath['Node'][$newItemPath], array($newItemPath));
                 }
             }
         }
@@ -595,10 +597,10 @@ class ObjectManager
      */
     public function addItem($absPath, \PHPCR\ItemInterface $item)
     {
-        if (isset($this->objectsByPath[$absPath])) {
+        if (isset($this->objectsByPath['Node'][$absPath])) {
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
-        $this->objectsByPath[$absPath] = $item;
+        $this->objectsByPath['Node'][$absPath] = $item;
         if($item instanceof \PHPCR\NodeInterface) {
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
