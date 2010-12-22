@@ -329,9 +329,8 @@ class Client implements TransportInterface
         }
         $body .= '</D:update>';
 
-          $request = $this->getRequest(Request::UPDATE, $path);
-          $request->setBody($body);
-          var_dump($request->execute());
+        $request = $this->getRequest(Request::UPDATE, $path);
+        $request->setBody($body);
 
     }
 
