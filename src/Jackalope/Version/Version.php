@@ -9,6 +9,12 @@ use Jackalope\Node;
 
 class Version extends Node implements \PHPCR\Version\VersionInterface {
 
+    protected $objectmanager;
+
+    public function  __construct($rawData, $path, $session, $objectManager, $new = false) {
+        $this->objectmanager = $objectManager;
+        parent::__construct($rawData, $path, $session, $objectManager, $new);
+    }
     /**
      * Returns the VersionHistory that contains this Version
      *
@@ -66,7 +72,16 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getSuccessors()
     {
-         throw new NotImplementedException();
+        $successors = $this->getProperty("jcr:successors");
+        $results = array();
+        if ($successors) {
+            foreach ($successors as $uuid) {
+                $n = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+                $results[] = $n;
+            }
+        }
+        return $results;
+
     }
 
 

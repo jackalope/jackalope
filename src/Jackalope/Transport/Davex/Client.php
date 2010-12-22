@@ -316,7 +316,14 @@ class Client implements TransportInterface
         }
         return;
     }
-    
+
+    public function getVersionHistory($path)
+    {
+        $this->ensureAbsolutePath($path);
+        $request = $this->getRequest(Request::GET,$path."/jcr:versionHistory");
+        $resp = $request->execute();
+        return $resp;
+    }
 
     /**
      * checks if the path is absolute, throws an exception if it is not

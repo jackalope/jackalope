@@ -149,7 +149,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function getVersionHistory($absPath) 
     {
-        throw new NotImplementedException();
+        return \Jackalope\Factory::get('Version\VersionHistory', array($this->objectmanager,$absPath));
     }
 
     /**
