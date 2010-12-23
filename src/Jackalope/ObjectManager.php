@@ -436,7 +436,6 @@ class ObjectManager
         foreach($this->itemsAdd as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
-            $this->objectsByPath['Node'][$path]->CACHEDIRTY = true;
             unset($this->objectsByPath['Node'][$path]);
 
         }
