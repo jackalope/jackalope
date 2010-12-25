@@ -222,4 +222,6 @@ class TransportDummy implements TransportInterface
     public function getRepositoryDescriptors(){}
 
     public function getNamespaces(){}
+
+    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null) {}
 }
