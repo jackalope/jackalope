@@ -3,14 +3,16 @@ namespace Jackalope;
 
 use \DOMElement;
 
-/** Implementation Class:
- *  static helper functions to do some commonly used dom and path operations
+/**
+ * static helper functions to do some commonly used dom and path operations
+ *
+ * Not part of the API, implementation specific
  */
 class Helper
 {
 
     /**
-     * The expected date format to be used with {@link \DateTime} 
+     * The expected date format to be used with {@link \DateTime}
      */
     const DATETIME_FORMAT = 'Y-m-d\TH:i:s.000P';
 
@@ -58,7 +60,7 @@ class Helper
     /**
      * Determine PropertyType from on variable type.
      *
-     * This is half of ValueFactory that is still needed.
+     * This is most of the remainder of ValueFactory that is still needed.
      *
      * * if the given $value is a Node object, type will be REFERENCE, unless
      *    $weak is set to true which results in WEAKREFERENCE
@@ -100,7 +102,8 @@ class Helper
     /**
      * Attempt to convert $values into the proper format for $type.
      *
-     * This is the other half of ValueFactory that is still needed.
+     * This is the other remaining part of ValueFactory functionality that is
+     * still needed.
      *
      * Note that for converting to boolean, we follow the PHP convention of
      * treating any non-empty string as true, not just the word "true".

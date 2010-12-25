@@ -26,9 +26,10 @@ class NamespaceManager
     /**
      * Initializes the object to be instantiated.
      *
+     * @param object $factory Ignored for now, as this class does not create objects
      * @param array $defaultNamespaces Set of predefined namespaces.
      */
-    public function __construct($defaultNamespaces)
+    public function __construct($factory, $defaultNamespaces)
     {
         $this->defaultNamespaces = $defaultNamespaces;
     }

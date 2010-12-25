@@ -1,7 +1,7 @@
 <?php
 namespace Jackalope\NodeType;
 
-use Jackalope\Factory, Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use Jackalope\ObjectManager, Jackalope\NotImplementedException;
 use ArrayIterator;
 
 /**
@@ -13,6 +13,12 @@ use ArrayIterator;
  */
 class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeManagerInterface
 {
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $objectManager;
 
     protected $primaryTypes;
@@ -28,8 +34,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     protected $fetchedAllFromBackend = false;
 
-    public function __construct(ObjectManager $objectManager)
+    public function __construct($factory, ObjectManager $objectManager)
     {
+        $this->factory = $factory;
         $this->objectManager = $objectManager;
     }
 
@@ -64,7 +71,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         $xp = new \DOMXpath($dom);
         $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
-            $nodetype = Factory::get('NodeType\NodeType', array($this, $nodetype));
+            $nodetype = $this->factory->get('NodeType\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();
             //do not overwrite existing types. maybe they where changed locally
             if (empty($this->primaryTypes[$name]) &&
@@ -223,7 +230,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createNodeTypeTemplate($ntd = NULL)
     {
-       return Factory::get('NodeType\NodeTypeTemplate', array($this, $ntd));
+       return $this->factory->get('NodeType\NodeTypeTemplate', array($this, $ntd));
     }
 
     /**
@@ -236,7 +243,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createNodeDefinitionTemplate()
     {
-       return Factory::get('NodeType\NodeDefinitionTemplate', array($this));
+       return $this->factory->get('NodeType\NodeDefinitionTemplate', array($this));
     }
 
     /**
@@ -249,7 +256,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createPropertyDefinitionTemplate()
     {
-       return Factory::get('NodeType\PropertyDefinitionTemplate', array($this));
+       return $this->factory->get('NodeType\PropertyDefinitionTemplate', array($this));
     }
 
     /**
@@ -286,7 +293,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
             throw new \PHPCR\NodeType\NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
-        return Factory::get('NodeType\NodeType', array($this, $ntd));
+        return $this->factory->get('NodeType\NodeType', array($this, $ntd));
     }
     /**
      * Registers or updates the specified array of NodeTypeDefinition objects.

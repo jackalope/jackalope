@@ -9,6 +9,12 @@ use \DOMElement;
  */
 class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
 {
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $nodeTypeManager;
 
     protected $declaringNodeType;
@@ -18,8 +24,13 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
     protected $isProtected;
     protected $onParentVersion;
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    /**
+     *
+     * @param object $factory Ignored for now, as this class does not create objects
+     */
+    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
     {
+        $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
         $this->declaringNodeType = $node->getAttribute('declaringNodeType');
         $this->name = $node->getAttribute('name');

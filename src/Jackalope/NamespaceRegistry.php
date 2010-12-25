@@ -13,6 +13,12 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     protected $transport;
 
     /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
+    /**
      * List of predefined namespaces.
      * @var array
      */
@@ -40,12 +46,14 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     /**
      * Initializes the created object.
      *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
      * @param TransportInterface $transport
      */
-    public function __construct(TransportInterface $transport)
+    public function __construct($factory, TransportInterface $transport)
     {
+        $this->factory = $factory;
         $this->transport = $transport;
-        $this->namespaceManager = Factory::get('NamespaceManager', array($this->defaultNamespaces));
+        $this->namespaceManager = $this->factory->get('NamespaceManager', array($this->defaultNamespaces));
 
         $namespaces = $transport->getNamespaces();
         foreach($namespaces as $prefix => $uri) {

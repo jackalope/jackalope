@@ -6,8 +6,9 @@ class ObjectManagerTest extends TestCase
 {
     public function testGetNodeByPath()
     {
+        $factory = new \Jackalope\Factory;
         $path = '/jcr:root';
-        $om = new \jackalope\ObjectManager($this->getTransportStub($path), $this->getSessionMock());
+        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
         $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
@@ -18,7 +19,8 @@ class ObjectManagerTest extends TestCase
 
     public function testGetNodeTypes()
     {
-        $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new \Jackalope\Factory;
+        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
         $this->assertType('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
@@ -27,7 +29,8 @@ class ObjectManagerTest extends TestCase
 
     public function testIsUUID()
     {
-        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new \Jackalope\Factory;
+        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertFalse($om->isUUID(''));
         $this->assertFalse($om->isUUID('/'));
         $this->assertFalse($om->isUUID('/foo'));
@@ -46,7 +49,8 @@ class ObjectManagerTest extends TestCase
         $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
         $path = '/jcr:root/uuid/to/path';
 
-        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new \Jackalope\Factory;
+        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
         // also verify it was cached
         $objectsByUuid = $om->getObjectsByUuid();
@@ -63,7 +67,8 @@ class ObjectManagerTest extends TestCase
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output)
     {
-        $om = new \jackalope\ObjectManager($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new \Jackalope\Factory;
+        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 
@@ -91,7 +96,8 @@ class ObjectManagerTest extends TestCase
 
     public function testVerifyAbsolutePath()
     {
-        $om = new ObjectManagerMock($this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new \Jackalope\Factory;
+        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
 
         $om->verifyAbsolutePath('/jcr:root');
         $om->verifyAbsolutePath('/jcr:foo_/b-a/0^.txt');

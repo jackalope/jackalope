@@ -8,6 +8,13 @@ namespace Jackalope;
  */
 class Repository implements \PHPCR\RepositoryInterface
 {
+
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $transport;
     /** Array of descriptors. Each is either a string or an array of strings. */
     protected $descriptors;
@@ -16,11 +23,15 @@ class Repository implements \PHPCR\RepositoryInterface
      * Create repository, either with uri or transport
      * Typical uri for a local jackrabbit server is http://localhost:8080/server
      *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
+     *                If this is null, the \jackalope\Factory is instantiated
+     *                Note that the repository is the only class accepting null as factory
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct($uri = null, TransportInterface $transport = null)
+    public function __construct($factory, $uri = null, TransportInterface $transport = null)
     {
+        $this->factory = is_null($factory) ? new Factory : $factory;
         if ($transport == null) {
             if ($uri === null) {
                 throw new \PHPCR\RepositoryException('You have to pass either a uri or a transport argument');
@@ -28,7 +39,7 @@ class Repository implements \PHPCR\RepositoryInterface
             if ('/' !== substr($uri, -1, 1)) {
                 $uri .= '/';
             }
-            $transport = Factory::get('Transport\Davex\Client', array($uri)); //default if not specified
+            $transport = $this->factory->get('Transport\Davex\Client', array($uri)); //default if not specified
         }
         $this->transport = $transport;
     }
@@ -63,7 +74,7 @@ class Repository implements \PHPCR\RepositoryInterface
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
-        $session = Factory::get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
         return $session;
     }
 

@@ -16,6 +16,13 @@ namespace Jackalope;
  */
 class Session implements \PHPCR\SessionInterface
 {
+
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $repository;
     protected $workspace;
     protected $objectManager;
@@ -23,11 +30,12 @@ class Session implements \PHPCR\SessionInterface
     protected $logout = false;
 
     /** creates the corresponding workspace */
-    public function __construct(Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
+    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
     {
+        $this->factory = $factory;
         $this->repository = $repository;
-        $this->objectManager = Factory::get('ObjectManager', array($transport, $this));
-        $this->workspace = Factory::get('Workspace', array($this, $this->objectManager, $workspaceName));
+        $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
+        $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
     }
 
@@ -423,22 +431,6 @@ class Session implements \PHPCR\SessionInterface
     public function hasPendingChanges()
     {
         return $this->objectManager->hasPendingChanges();
-    }
-
-    /**
-     * This method returns a ValueFactory that is used to create Value objects
-     * for use when setting repository properties.
-     *
-     * @return \PHPCR\ValueFactoryInterface
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if writing to the repository is not supported.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
-    public function getValueFactory()
-    {
-        return Factory::get(
-                            'ValueFactory',
-                            array());
     }
 
     /**

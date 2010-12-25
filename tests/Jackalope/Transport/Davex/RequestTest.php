@@ -40,12 +40,14 @@ class RequestTest extends TestCase
 
     public function getRequest($fixture = null, $httpCode = 200, $errno = null)
     {
-        return new RequestMock($this->getCurlFixture($fixture, $httpCode, $errno), 'GET', 'http://foo/');
+        $factory = new \Jackalope\Factory;
+        return new RequestMock($factory, $this->getCurlFixture($fixture, $httpCode, $errno), 'GET', 'http://foo/');
     }
 
     public function testExecuteDom()
     {
-        $request = $this->getMock('Jackalope\Transport\Davex\Request', array('execute'), array(null,null,null));
+        $factory = new \Jackalope\Factory;
+        $request = $this->getMock('Jackalope\Transport\Davex\Request', array('execute'), array($factory, null,null,null));
         $request->expects($this->once())
             ->method('execute')
             ->will($this->returnValue('<xml/>'));

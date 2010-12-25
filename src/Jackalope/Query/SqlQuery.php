@@ -8,17 +8,25 @@ use Jackalope\ObjectManager;
  */
 class SqlQuery implements \PHPCR\Query\QueryInterface
 {
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $statement;
     protected $objectmanager;
     protected $path;
 
     /**
-     * @param statement The SQL statement for this query
-     * @param objectmanager Object manager to execute query against
-     * @param path If this query is loaded from workspace with QueryManager->getQuery, path has to be stored here
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param TODO:string? $statement The SQL statement for this query
+     * @param ObjectManager $objectmanager Object manager to execute query against
+     * @param string $path If this query is loaded from workspace with QueryManager->getQuery, path has to be stored here
      */
-    public function __construct($statement, ObjectManager $objectmanager, $path = null)
+    public function __construct($factory, $statement, ObjectManager $objectmanager, $path = null)
     {
+        $this->factory = $factory;
         $this->statement = $statement;
         $this->objectmanager = $objectmanager;
         $this->path = $path;

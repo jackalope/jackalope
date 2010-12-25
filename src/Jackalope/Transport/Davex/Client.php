@@ -58,6 +58,12 @@ class Client implements TransportInterface
         '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
 
     /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
+    /**
      * Server url including protocol.
      *
      * i.e http://localhost:8080/server/
@@ -109,10 +115,12 @@ class Client implements TransportInterface
     /**
      * Create a transport pointing to a server url.
      *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
      * @param serverUri location of the server
      */
-    public function __construct($serverUri)
+    public function __construct($factory, $serverUri)
     {
+        $this->factory = $factory;
         // append a slash if not there
         if ('/' !== substr($serverUri, -1)) {
             $serverUri .= '/';
@@ -144,7 +152,7 @@ class Client implements TransportInterface
 
         $uri = $this->normalizeUri($uri);
 
-        $request = new Request($this->curl, $method, $uri);
+        $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
 
         return $request;

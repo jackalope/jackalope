@@ -8,9 +8,10 @@ class NodeTest extends TestCase
 
     public function testConstructor()
     {
-        $session = $this->getMock('Jackalope\Session', array(), array(), '', false);
-        $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array(), '', false);
-        $node = new Node(json_decode($this->JSON), '/jcr:node', $session, $objectManager);
+        $factory = new \Jackalope\Factory;
+        $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
+        $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
+        $node = new Node($factory, json_decode($this->JSON), '/jcr:node', $session, $objectManager);
         $this->assertSame($session, $node->getSession());
         $this->assertType('jackalope\Node', $node);
         //TODO: Activate this…

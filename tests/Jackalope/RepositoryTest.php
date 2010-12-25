@@ -6,9 +6,10 @@ class RepositoryTest extends TestCase
 {
     public function testConstructor()
     {
+        $factory = new \Jackalope\Factory;
         $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors'), array('http://example.com'));
+        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors'), array($factory, 'http://example.com'));
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))
@@ -17,7 +18,7 @@ class RepositoryTest extends TestCase
             ->method('getRepositoryDescriptors')
             ->will($this->returnValue(array('bla'=>'bli')));
 
-        $repo = new \Jackalope\Repository(null, $transport);
+        $repo = new \Jackalope\Repository($factory, null, $transport);
         $session = $repo->login($credentials, $workspaceName);
         $this->assertType('Jackalope\Session', $session);
 

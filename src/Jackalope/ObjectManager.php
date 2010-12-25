@@ -21,6 +21,12 @@ namespace Jackalope;
 class ObjectManager
 {
     /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
+    /**
      * Instance of an implementation of the \PHPCR\SessionInterface.
      * @var \PHPCR\SessionInterface
      */
@@ -75,11 +81,13 @@ class ObjectManager
     /**
      * Registers the provided parameters as attribute to the instance.
      *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
-    public function __construct(TransportInterface $transport, \PHPCR\SessionInterface $session)
+    public function __construct($factory, TransportInterface $transport, \PHPCR\SessionInterface $session)
     {
+        $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
     }
@@ -115,8 +123,6 @@ class ObjectManager
      *
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
-     *
-     * @uses Factory::get()
      */
     public function getNodeByPath($absPath)
     {
@@ -143,7 +149,7 @@ class ObjectManager
                 $fetchPath = $this->resolveBackendPath($fetchPath);
             }
 
-            $node = Factory::get(
+            $node = $this->factory->get(
                 'Node',
                 array(
                     $this->transport->getItem($fetchPath),

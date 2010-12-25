@@ -13,8 +13,9 @@ namespace Jackalope\NodeType;
  */
 class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\NodeType\PropertyDefinitionTemplateInterface
 {
-    public function __construct(NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, NodeTypeManager $nodeTypeManager)
     {
+        $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values

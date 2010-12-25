@@ -140,9 +140,10 @@ class Request
     /**
      * Initiaties the NodeTypes request object.
      *
-     * @param array $arguments
+     * @param object $factory Ignored for now, as this class does not create objects
+     * TODO: document other parameters
      */
-    public function __construct($curl, $method, $uri)
+    public function __construct($factory, $curl, $method, $uri)
     {
         $this->curl = $curl;
         $this->method = $method;
@@ -263,7 +264,7 @@ class Request
                     //TODO: map more errors here?
                     default:
 
-                        // try generic
+                        // try to generically "guess" the right exception class name
                         $class = substr($errClass, strlen('javax.jcr.'));
                         $class = explode('.', $class);
                         array_walk($class, function(&$ns) { $ns = ucfirst(str_replace('nodetype', 'NodeType', $ns)); });

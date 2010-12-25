@@ -17,20 +17,23 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     protected $definition;
 
     /**
-     * create a property, either from server data or locally
-     * to indicate this has been created locally, make sure to pass true for the $new parameter
+     * Create a property, either from server data or locally
      *
+     * To indicate a property has newly been created locally, make sure to pass
+     * true for the $new parameter.
+     *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
      * @param array $data array with fields
      *                    type (integer or string from PropertyType)
-     *                    and value (data for creating value object)
+     *                    and value (data for creating value object - array for multivalue property)
      * @param string $path the absolute path of this item
      * @param Session the session instance
      * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
      */
-    public function __construct(array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
+    public function __construct($factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
-        parent::__construct(null, $path, $session, $objectManager, $new);
+        parent::__construct($factory, $path, $session, $objectManager, $new);
 
         $type = $data['type'];
         if (is_string($type)) {

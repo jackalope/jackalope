@@ -1,7 +1,7 @@
 <?php
 namespace Jackalope\NodeType;
 
-use Jackalope\Factory, Jackalope\Helper;
+use Jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
 /**
@@ -17,9 +17,9 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
     {
-        parent::__construct($node, $nodeTypeManager);
+        parent::__construct($factory, $node, $nodeTypeManager);
         $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');

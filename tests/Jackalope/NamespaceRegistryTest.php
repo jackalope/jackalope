@@ -26,12 +26,13 @@ class NamespaceRegistryTest extends TestCase
      */
     public function getNamespaceRegistryFixture($namespaces)
     {
+        $factory = new \Jackalope\Factory;
         $transport = $this->getTransportMockFixture();
         $transport
             ->expects($this->once())
             ->method('getNamespaces')
             ->will($this->returnValue($namespaces));
-        return new NamespaceRegistry($transport);
+        return new NamespaceRegistry($factory, $transport);
     }
 
     /*************************************************************************/

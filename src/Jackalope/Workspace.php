@@ -10,15 +10,22 @@ namespace Jackalope;
  */
 class Workspace implements \PHPCR\WorkspaceInterface
 {
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $session;
     protected $nodeTypeManager;
     protected $name;
     protected $namespaceRegistry;
 
-    public function __construct(Session $session, ObjectManager $objectManager, $name)
+    public function __construct($factory, Session $session, ObjectManager $objectManager, $name)
     {
+        $this->factory = $factory;
         $this->session = $session;
-        $this->nodeTypeManager = Factory::get('NodeType\NodeTypeManager', array($objectManager));
+        $this->nodeTypeManager = $this->factory->get('NodeType\NodeTypeManager', array($objectManager));
         $this->name = $name;
     }
 
@@ -220,7 +227,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getQueryManager()
     {
-        return Factory::get('Query\QueryManager', array($this->session->getObjectManager()));
+        return $this->factory->get('Query\QueryManager', array($this->session->getObjectManager()));
     }
 
     /**
@@ -234,7 +241,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
     public function getNamespaceRegistry()
     {
         if ($this->namespaceRegistry == false) {
-            $this->namespaceRegistry = Factory::get('NamespaceRegistry', array($this->session->getTransport()));
+            $this->namespaceRegistry = $this->factory->get('NamespaceRegistry', array($this->session->getTransport()));
         }
         return $this->namespaceRegistry;
     }

@@ -14,9 +14,9 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     protected $allowsSameNameSiblings;
 
 
-    public function __construct(DOMElement $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
     {
-        parent::__construct($node, $nodeTypeManager);
+        parent::__construct($factory, $node, $nodeTypeManager);
 
         $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');

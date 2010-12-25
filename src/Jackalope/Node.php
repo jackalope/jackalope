@@ -5,6 +5,8 @@ use ArrayIterator;
 
 /**
  * The Node interface represents a node in a workspace.
+ *
+ * @api
  */
 class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 {
@@ -28,11 +30,15 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     protected $uuid = null;
 
     /**
-     * TODO: document! especially the parameters.
+     * Create a new node item.
+     *
+     * Parameters are identical to \jackalope\Item
+     *
+     * @param array $rawData TODO: document the format of this
      */
-    public function __construct($rawData, $path, $session, $objectManager, $new = false)
+    public function __construct($factory, $rawData, $path, $session, $objectManager, $new = false)
     {
-        parent::__construct($rawData, $path, $session, $objectManager, $new);
+        parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;
 
         //TODO: determine the index if != 1
@@ -48,7 +54,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
-                        $this->properties[$key] = Factory::get(
+                        $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
                                 array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
@@ -59,7 +65,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         );
                         break;
                     case 'jcr:mixinTypes':
-                        $this->properties[$key] = Factory::get(
+                        $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
                                 array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
@@ -79,7 +85,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         //TODO: if we create node locally, $rawData might be a plain array. So far this is not triggered, but its a bit flaky
                         // parsing of types done according to: http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
-                        $this->properties[$key] = Factory::get(
+                        $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
                                 array('type' => $type, 'value' => $value),
@@ -189,7 +195,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $data['jcr:uuid'] = $identifier;
         }
         $path = $this->getChildPath($relPath);
-        $node = Factory::get('Node', array($data, $path,
+        $node = $this->factory->get('Node', array($data, $path,
                 $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
@@ -321,7 +327,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 $data = $value;
             }
             $path = $this->getChildPath($name);
-            $property = Factory::get(
+            $property = $this->factory->get(
                             'Property',
                             array(array('value'=>$data, 'type'=>$type), $path,
                                   $this->session, $this->objectManager,

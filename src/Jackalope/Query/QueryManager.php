@@ -9,10 +9,17 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  */
 class QueryManager implements \PHPCR\Query\QueryManagerInterface
 {
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
+
     protected $objectmanager;
 
-    public function __construct(ObjectManager $objectmanager)
+    public function __construct($factory, ObjectManager $objectmanager)
     {
+        $this->factory = $factory;
         $this->objectmanager = $objectmanager;
     }
     /**
@@ -31,7 +38,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
     {
         switch($language) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
-                return new SqlQuery($statement, $this->objectmanager);
+                $this->factory->get('Query\SqlQuery', array($statement, $this->objectmanager));
             case \PHPCR\Query\QueryInterface::JCR_JQOM:
                 throw new NotImplementedException();
             default:

@@ -1,7 +1,7 @@
 <?php
 namespace Jackalope\NodeType;
 
-use Jackalope\Helper, Jackalope\Factory;
+use Jackalope\Helper;
 use \DOMElement, \DOMXPath, \ArrayObject;
 
 /**
@@ -19,6 +19,12 @@ use \DOMElement, \DOMXPath, \ArrayObject;
 class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
 {
     const NAME_NT_BASE = 'nt:base';
+
+    /**
+     * The factory to instantiate objects
+     * @var Factory
+     */
+    protected $factory;
 
     protected $nodeTypeManager;
     protected $name = null;
@@ -38,11 +44,14 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
 
     /**
      * Initializes the NodeTypeDefinition from an optional source
+     *
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
      * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
      * @throws  \InvalidArgumentException   If $nodetype cannot be copied from
      */
-    public function __construct(NodeTypeManager $nodeTypeManager, $nodetype = null)
+    public function __construct($factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
+        $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
@@ -98,7 +107,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->declaredPropertyDefinitions = new ArrayObject();
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $property) {
-            $this->declaredPropertyDefinitions[] = Factory::get(
+            $this->declaredPropertyDefinitions[] = $this->factory->get(
                 'NodeType\PropertyDefinition',
                 array($property, $this->nodeTypeManager)
             );
@@ -107,7 +116,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->declaredNodeDefinitions = new ArrayObject();
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
-            $this->declaredNodeDefinitions[] = Factory::get(
+            $this->declaredNodeDefinitions[] = $this->factory->get(
                 'NodeType\NodeDefinition',
                 array($nodeDefinition, $this->nodeTypeManager)
             );

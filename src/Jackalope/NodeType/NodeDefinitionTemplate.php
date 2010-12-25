@@ -12,8 +12,9 @@ namespace Jackalope\NodeType;
  */
 class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\NodeDefinitionTemplateInterface
 {
-    public function __construct(NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, NodeTypeManager $nodeTypeManager)
     {
+        $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values

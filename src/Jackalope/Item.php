@@ -5,16 +5,21 @@ namespace Jackalope;
  * The Item is the base interface of Node and Property.
  * This class implements methods for both types.
  * It should not be instantiated directly.
+ *
+ * @api
  */
 class Item implements \PHPCR\ItemInterface
 {
-    /** @var Session    The session this node belongs to */
+    /** @var Factory   The jackalope object factory for this object */
+    protected $factory;
+
+    /** @var Session    The session this item belongs to */
     protected $session;
 
-    /** @var ObjectManager  The object manager to get nodes from */
+    /** @var ObjectManager  The object manager to get nodes and properties from */
     protected $objectManager;
 
-    /** @var bool   false if node is read from backend, true if node is created locally in this session */
+    /** @var bool   false if item is read from backend, true if created locally in this session */
     protected $new;
 
     /** @var bool   True if modified otherwise false */
@@ -36,15 +41,16 @@ class Item implements \PHPCR\ItemInterface
     protected $isNode = false;
 
     /**
-     * @param stdClass  $rawData
+     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
      * @param string    $path   The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager
      * @param boolean $new can be set to true to tell the object that it has been created locally
      */
-    public function __construct($rawData, $path,  Session $session,
+    public function __construct($factory, $path,  Session $session,
                                 ObjectManager $objectManager, $new = false)
     {
+        $this->factory = $factory;
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->new = $new;

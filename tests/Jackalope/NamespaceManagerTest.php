@@ -33,8 +33,9 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheckPrefix()
     {
+        $factory = new \Jackalope\Factory;
         $prefix = 'beastie';
-        $ns = new NamespaceManagerProxy($this->getDefaultNamespacesFixture());
+        $ns = new NamespaceManagerProxy($factory, $this->getDefaultNamespacesFixture());
 
         $this->assertNull($ns->checkPrefix($prefix));
     }
@@ -46,7 +47,8 @@ class NamespaceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCheckPrefixExpexctingNamespaceException($prefix)
     {
-        $ns = new NamespaceManagerProxy($this->getDefaultNamespacesFixture());
+        $factory = new \Jackalope\Factory;
+        $ns = new NamespaceManagerProxy($factory, $this->getDefaultNamespacesFixture());
         $ns->checkPrefix($prefix);
     }
 

@@ -6,14 +6,15 @@ class SessionTest extends TestCase
 {
     public function testConstructor()
     {
-        $repository = $this->getMock('Jackalope\Repository', array(), array(), '', false);
+        $factory = new \Jackalope\Factory;
+        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
         $workspaceName = 'asdfads';
         $userID = 'abcd';
         $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = new Transport\Davex\Client('http://example.com');
-        $s = new Session($repository, $workspaceName, $cred, $transport);
+        $transport = new Transport\Davex\Client($factory, 'http://example.com');
+        $s = new Session($factory, $repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());
         $this->assertSame($userID, $s->getUserID());
         $this->assertSame(array('test', 'other'), $s->getAttributeNames());

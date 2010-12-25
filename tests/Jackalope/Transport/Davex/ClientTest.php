@@ -11,18 +11,21 @@ class ClientTest extends TestCase
 {
     public function getTransportMock($args = 'testuri', $changeMethods = array())
     {
+        $factory = new \Jackalope\Factory;
         //Array XOR
         $defaultMockMethods = array('getRequest', '__destruct', '__construct');
         $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
         return $this->getMock(
             __NAMESPACE__.'\ClientMock',
             $mockMethods,
-            array($args)
+            array($factory, $args)
         );
     }
 
     public function getRequestMock($response = '', $changeMethods = array(), $args = array(null, null, null))
     {
+        $factory = new \Jackalope\Factory;
+        array_unshift($args, $factory);
         $defaultMockMethods = array('execute', 'executeDom', 'executeJson');
         $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
         $request = $this->getMock('Jackalope\Transport\Davex\Request', $mockMethods, $args);
@@ -50,7 +53,8 @@ class ClientTest extends TestCase
      */
     public function testConstructor()
     {
-        $transport = new ClientMock('testuri');
+        $factory = new \Jackalope\Factory;
+        $transport = new ClientMock($factory, 'testuri');
         $this->assertSame('testuri/', $transport->server);
     }
 
@@ -59,7 +63,8 @@ class ClientTest extends TestCase
      */
     public function testDestructor()
     {
-        $transport = new ClientMock('testuri');
+        $factory = new \Jackalope\Factory;
+        $transport = new ClientMock($factory, 'testuri');
         $transport->__destruct();
         $this->assertSame(null, $transport->curl);
     }
@@ -135,7 +140,8 @@ class ClientTest extends TestCase
      */
     public function testExceptionIfNotLoggedIn()
     {
-        $t = new ClientMock('http://localhost:1/server');
+        $factory = new \Jackalope\Factory;
+        $t = new ClientMock($factory, 'http://localhost:1/server');
         $t->getNodeTypes();
     }
 
@@ -145,7 +151,8 @@ class ClientTest extends TestCase
      */
     public function testGetRepositoryDescriptorsNoserver()
     {
-        $t = new \Jackalope\Transport\Davex\Client('http://localhost:1/server');
+        $factory = new \Jackalope\Factory;
+        $t = new \Jackalope\Transport\Davex\Client($factory, 'http://localhost:1/server');
         $d = $t->getRepositoryDescriptors();
     }
 
@@ -257,7 +264,8 @@ class ClientTest extends TestCase
      */
     public function testLoginNoServer()
     {
-        $t = new \Jackalope\Transport\Davex\Client('http://localhost:1/server');
+        $factory = new \Jackalope\Factory;
+        $t = new \Jackalope\Transport\Davex\Client($factory, 'http://localhost:1/server');
         $t->login($this->credentials, $this->config['workspace']);
     }
 
@@ -267,7 +275,8 @@ class ClientTest extends TestCase
      */
     public function testLoginNoSuchWorkspace()
     {
-        $t = new \Jackalope\Transport\Davex\Client($this->config['url']);
+        $factory = new \Jackalope\Factory;
+        $t = new \Jackalope\Transport\Davex\Client($factory, $this->config['url']);
         $t->login($this->credentials, 'not-an-existing-workspace');
     }
 
@@ -520,7 +529,8 @@ class ClientTest extends TestCase
      */
     public function testNormalizeUri()
     {
-        $transport = new ClientMock('');
+        $factory = new \Jackalope\Factory;
+        $transport = new ClientMock($factory, '');
 
         $this->assertEquals('foo/bar', $transport->normalizeUriMock('foo/bar'), 'Relative uri was prepended with workspaceUriRoot');
         $this->assertEquals('testWorkspaceUriRoot/foo/bar', $transport->normalizeUriMock('/foo/bar'), 'Absolute uri was not prepended with workspaceUriRoot');
