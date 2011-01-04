@@ -108,11 +108,11 @@ class VersionHistory extends \Jackalope\Node {
     {
         if (!$this->versions) {
             $uuid = $this->objectmanager->getTransport()->getVersionHistory($this->path);
-            $node = $this->objectmanager->getNode($uuid, '/');
+            $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
             $results = array();
             $rootNode = $node->getNode('jcr:rootVersion', 'Version\Version');
-            $results[$rootNode->getName()] = $rootNode;
-            $this->versions = array_merge($results,$this->getSuccessors($rootNode));
+            $results[$rootNode->getName()] = $rootNode; 
+            $this->versions = array_merge($results, $this->getSuccessors($rootNode));
         }
         return new \ArrayIterator($this->versions);
 

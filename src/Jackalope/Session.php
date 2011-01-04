@@ -195,7 +195,7 @@ class Session implements \PHPCR\SessionInterface
     public function getNode($absPath)
     {
         try {
-            return $this->objectManager->getNodeByPath($absPath);
+            return $this->objectManager->getNode($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
