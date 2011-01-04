@@ -25,7 +25,7 @@ class VersionHistory extends \Jackalope\Node {
     protected $path;
     protected $versions = null;
 
-    public function __construct(ObjectManager $objectmanager,$absPath)
+    public function __construct($factory, ObjectManager $objectmanager,$absPath)
     {
         $this->objectmanager = $objectmanager;
         $this->path = $absPath;

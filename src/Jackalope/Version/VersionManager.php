@@ -9,10 +9,12 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
 class VersionManager implements \PHPCR\Version\VersionManagerInterface {
 
     protected $objectmanager;
+    protected $factory;
 
-    public function __construct(ObjectManager $objectmanager)
+    public function __construct($factory, ObjectManager $objectmanager)
     {
         $this->objectmanager = $objectmanager;
+        $this->factory = $factory;
     }
     
     
@@ -149,7 +151,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function getVersionHistory($absPath) 
     {
-        return \Jackalope\Factory::get('Version\VersionHistory', array($this->objectmanager,$absPath));
+        return $this->factory->get('Version\VersionHistory', array($this->objectmanager,$absPath));
     }
 
     /**

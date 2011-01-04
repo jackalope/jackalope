@@ -285,7 +285,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getVersionManager()
     {
-        return Factory::get('Version\VersionManager', array($this->session->getObjectManager()));
+        return $this->factory->get('Version\VersionManager', array($this->session->getObjectManager()));
     }
 
     /**

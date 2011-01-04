@@ -11,9 +11,9 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
 
     protected $objectmanager;
 
-    public function  __construct($rawData, $path, $session, $objectManager, $new = false) {
+    public function  __construct($factory, $rawData, $path, $session, $objectManager, $new = false) {
         $this->objectmanager = $objectManager;
-        parent::__construct($rawData, $path, $session, $objectManager, $new);
+        parent::__construct($factory, $rawData, $path, $session, $objectManager, $new);
     }
     /**
      * Returns the VersionHistory that contains this Version
