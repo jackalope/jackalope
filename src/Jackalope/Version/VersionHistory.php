@@ -125,7 +125,7 @@ class VersionHistory extends \Jackalope\Node {
         $results = array();
         foreach($successors as $successor) {
             $results[$successor->getName()] = $successor;
-            $results = array_merge($results,$this->getSuccessors($successor));
+            $results = array_merge($results, $this->getSuccessors($successor));
         }
         return $results;
     }
