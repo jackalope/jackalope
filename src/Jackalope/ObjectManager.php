@@ -152,7 +152,6 @@ class ObjectManager
             }
 
             $node = $this->factory->get(
-                'Node',
                 $class,
                 array(
                     $this->transport->getItem($fetchPath),
