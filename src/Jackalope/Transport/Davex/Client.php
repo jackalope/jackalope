@@ -331,7 +331,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::UPDATE, $path);
         $request->setBody($body);
-
+        $request->execute();
     }
 
     public function getVersionHistory($path)
