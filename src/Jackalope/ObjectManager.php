@@ -449,6 +449,36 @@ class ObjectManager
         $this->nodesMove = array();
         $this->itemsAdd = array();
     }
+    
+    /**
+     * Removes the cache of the predecessor after the node has been checked in
+     */
+    public function checkin($absPath) {
+        $path = $this->getTransport()->checkinItem($absPath);
+        $node = $this->getNodeByPath($path, "Version\Version");
+        $predecessorUuids = $node->getProperty('jcr:predecessors')->getNativeValue();
+        if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
+            $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
+            unset($this->objectsByPath['Version\Version'][$dirtyPath]);
+            unset($this->objectsByPath['Node'][$dirtyPath]);
+            unset($this->objectsByUuid[$predecessorUuids[0]]);
+        }
+        return $node;
+    }
+    
+    /**
+     * Removes the node's cache after it has been restored.
+     */
+    public function restore ($removeExisting, $vpath, $absPath) {
+        if (null !== $absPath && 
+            (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
+        ) {
+            unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
+            unset($this->objectsByPath['Version\Version'][$absPath]);
+            unset($this->objectsByPath['Node'][$absPath]);
+        }
+        $this->getTransport()->restoreItem($removeExisting, $vpath, $absPath);
+    }
 
     /**
      * Determine if any object is modified
