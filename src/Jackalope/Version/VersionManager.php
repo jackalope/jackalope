@@ -62,8 +62,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      // TODO @return \PHPCR\Version\VersionInterface the created version.
      public function checkin($absPath) 
      {
-         $path = $this->objectmanager->getTransport()->checkinItem($absPath);
-         return $this->objectmanager->getNodeByPath($path, "Version\Version");
+         
+         return $this->objectmanager->checkin($absPath);
      }
 
     /**
@@ -256,8 +256,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
         $vh = $this->getVersionHistory($absPath);
         $version = $vh->getVersion($version);
         $vpath = $version->getPath();
-        
-        $this->objectmanager->getTransport()->restoreItem($removeExisting, $vpath, $absPath);
+        $this->objectmanager->restore($removeExisting, $vpath, $absPath);
         return;
     }
 
