@@ -16,6 +16,12 @@ david at liip.ch
 chregu at liip.ch
 
 
+**************
+Preconditions
+*************
+
+* libxml version >= 2.7.7 
+
 *****
 Setup
 *****
