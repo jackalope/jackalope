@@ -117,7 +117,15 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getPredecessors()
     {
-        throw new NotImplementedException();
+        $predecessors = $this->getProperty("jcr:predecessors");
+        $results = array();
+        if ($predecessors) {
+            foreach ($predecessors as $uuid) {
+                $n = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+                $results[] = $n;
+            }
+        }
+        return $results;        
     }
 
 
