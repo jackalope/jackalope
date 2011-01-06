@@ -20,7 +20,7 @@ chregu at liip.ch
 Preconditions
 *************
 
-* libxml version >= 2.7.7 
+* libxml version >= 2.7.0 (due to a bug in libxml http://bugs.php.net/bug.php?id=36501)
 
 *****
 Setup
