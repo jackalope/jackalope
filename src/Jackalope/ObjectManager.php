@@ -400,22 +400,24 @@ class ObjectManager
         }
 
         //loop through cached nodes and commit all dirty and set them to clean.
-        foreach($this->objectsByPath['Node'] as $path => $item) {
-            if ($item->isModified()) {
-                if ($item instanceof \PHPCR\NodeInterface) {
-                    foreach ($item->getProperties() as $propertyName => $property) {
-                        if ($property->isModified()) {
-                            $this->transport->storeProperty($property->getPath(), $property);
+        if (isset($this->objectsBypath['Node'])) {
+            foreach($this->objectsByPath['Node'] as $path => $item) {
+                if ($item->isModified()) {
+                    if ($item instanceof \PHPCR\NodeInterface) {
+                        foreach ($item->getProperties() as $propertyName => $property) {
+                            if ($property->isModified()) {
+                                $this->transport->storeProperty($property->getPath(), $property);
+                            }
                         }
-                    }
-                } elseif ($item instanceof \PHPCR\PropertyInterface) {
-                    if ($item->getNativeValue() === null) {
-                        $this->transport->deleteProperty($path);
+                    } elseif ($item instanceof \PHPCR\PropertyInterface) {
+                        if ($item->getNativeValue() === null) {
+                            $this->transport->deleteProperty($path);
+                        } else {
+                            $this->transport->storeProperty($path, $item);
+                        }
                     } else {
-                        $this->transport->storeProperty($path, $item);
+                        throw new \UnexpectedValueException('Unknown type '.get_class($item));
                     }
-                } else {
-                    throw new \UnexpectedValueException('Unknown type '.get_class($item));
                 }
             }
         }
@@ -438,10 +440,12 @@ class ObjectManager
             unset($this->objectsByPath['Node'][$path]);
 
         }
-        foreach($this->objectsByPath['Node'] as $path => $item) {
-            if ($item->isModified()) {
-                $item->confirmSaved();
-                unset($this->objectsByPath['Node'][$path]);
+        if (isset($this->objectsByPath['Node'])) {
+            foreach($this->objectsByPath['Node'] as $path => $item) {
+                if ($item->isModified()) {
+                    $item->confirmSaved();
+                    unset($this->objectsByPath['Node'][$path]);
+                }
             }
         }
 
