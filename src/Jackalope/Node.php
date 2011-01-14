@@ -312,7 +312,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function setProperty($name, $value, $type = NULL)
     {
         if (is_null($value)) {
-            $this->properties[$name]->remove();
+            if (isset($this->properties[$name])) {
+                $this->properties[$name]->remove();
+            }
             return null;
         }
 
