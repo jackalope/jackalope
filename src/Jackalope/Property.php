@@ -154,6 +154,16 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
+     * Tell this item that it has been modified.
+     * Used when deleting a node to tell the parent node about modification.
+     */
+    public function setModified()
+    {
+        parent::setModified();
+        $this->getParent()->setModified();
+    }
+
+    /**
      * Get the value in format default for the PropertyType of this property.
      *
      * PHPCR Note: This is an additional method not found in JSR-283
