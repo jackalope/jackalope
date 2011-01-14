@@ -344,9 +344,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
             }
             $this->properties[$name]->setValue($value);
-            if ($this->properties[$name]->isModified()) {
-                $this->setModified();
-            }
         }
         return $this->properties[$name];
     }
