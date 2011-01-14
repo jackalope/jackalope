@@ -643,6 +643,20 @@ class ObjectManager
     }
 
     /**
+     * Clears the state of the current session
+     *
+     * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
+     */
+    public function clear()
+    {
+        $this->objectsByPath = array();
+        $this->objectsByUuid = array();
+        $this->itemsAdd = array();
+        $this->itemsRemove = array();
+        $this->nodesMove = array();
+    }
+
+    /**
      * Implementation specific: Transport is used elsewhere, provide it here for Session
      *
      * @return TransportInterface

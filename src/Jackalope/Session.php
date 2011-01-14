@@ -421,6 +421,16 @@ class Session implements \PHPCR\SessionInterface
     }
 
     /**
+     * Clears the state of the current session
+     *
+     * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
+     */
+    public function clear()
+    {
+        $this->objectManager->clear();
+    }
+
+    /**
      * Returns true if this session holds pending (that is, unsaved) changes;
      * otherwise returns false.
      *
