@@ -437,14 +437,11 @@ class ObjectManager
         foreach ($this->itemsAdd as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
-            unset($this->objectsByPath['Node'][$path]);
-
         }
         if (isset($this->objectsByPath['Node'])) {
             foreach ($this->objectsByPath['Node'] as $path => $item) {
                 if ($item->isModified()) {
                     $item->confirmSaved();
-                    unset($this->objectsByPath['Node'][$path]);
                 }
             }
         }
