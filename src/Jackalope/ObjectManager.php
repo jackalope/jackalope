@@ -399,9 +399,9 @@ class ObjectManager
             }
         }
 
-        //loop through cached nodes and commit all dirty and set them to clean.
-        if (isset($this->objectsBypath['Node'])) {
-            foreach($this->objectsByPath['Node'] as $path => $item) {
+        // loop through cached nodes and commit all dirty and set them to clean.
+        if (isset($this->objectsByPath['Node'])) {
+            foreach ($this->objectsByPath['Node'] as $path => $item) {
                 if ($item->isModified()) {
                     if ($item instanceof \PHPCR\NodeInterface) {
                         foreach ($item->getProperties() as $propertyName => $property) {
