@@ -320,7 +320,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $data = Helper::convertType($value, $type);
         }
 
-        if (! isset($this->properties[$name])) {
+        if (!isset($this->properties[$name])) {
             // add property
             if (null === $type) {
                 $type = Helper::determineType(is_array($value) ? reset($value) : $value);
@@ -704,9 +704,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
-         } else {
-            $this->session->propertyExists($this->getChildPath($relPath));
-         }
+        } else {
+           $this->session->propertyExists($this->getChildPath($relPath));
+        }
     }
 
     /**
@@ -719,7 +719,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasNodes()
     {
-        return (! empty($this->nodes));
+        return !empty($this->nodes);
     }
 
     /**

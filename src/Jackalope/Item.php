@@ -338,14 +338,14 @@ class Item implements \PHPCR\ItemInterface
             throw new \PHPCR\RepositoryException('Cannot remove root node');
         }
 
-        //TODO: add sanity checks to all other write methods to avoid modification after deleting?
+        // TODO: add sanity checks to all other write methods to avoid modification after deleting?
         // TODO same-name siblings reindexing
         if ($this instanceof \PHPCR\PropertyInterface) {
             $this->objectManager->removeItem($this->parentPath, $this->name);
         } else {
             $this->objectManager->removeItem($this->path);
         }
-        $this->getParent()->setModified(); //TODO: why do we set parent modified? is this in the spec?
+        $this->getParent()->setModified();
     }
 
     /**

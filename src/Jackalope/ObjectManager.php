@@ -425,7 +425,7 @@ class ObjectManager
         // TODO: have a davex client method to commit transaction
 
         // commit changes to the local state
-        foreach($this->itemsRemove as $path => $dummy) {
+        foreach ($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
         }
         /* local state is already updated in moveNode
@@ -434,14 +434,14 @@ class ObjectManager
             unset($this->objectsByPath[$src]);
         }
          */
-        foreach($this->itemsAdd as $path => $dummy) {
+        foreach ($this->itemsAdd as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             $item->confirmSaved();
             unset($this->objectsByPath['Node'][$path]);
 
         }
         if (isset($this->objectsByPath['Node'])) {
-            foreach($this->objectsByPath['Node'] as $path => $item) {
+            foreach ($this->objectsByPath['Node'] as $path => $item) {
                 if ($item->isModified()) {
                     $item->confirmSaved();
                     unset($this->objectsByPath['Node'][$path]);
@@ -453,11 +453,12 @@ class ObjectManager
         $this->nodesMove = array();
         $this->itemsAdd = array();
     }
-    
+
     /**
      * Removes the cache of the predecessor after the node has been checked in
      */
-    public function checkin($absPath) {
+    public function checkin($absPath)
+    {
         $path = $this->getTransport()->checkinItem($absPath);
         $node = $this->getNodeByPath($path, "Version\Version");
         $predecessorUuids = $node->getProperty('jcr:predecessors')->getNativeValue();
@@ -469,12 +470,13 @@ class ObjectManager
         }
         return $node;
     }
-    
+
     /**
      * Removes the node's cache after it has been restored.
      */
-    public function restore ($removeExisting, $vpath, $absPath) {
-        if (null !== $absPath && 
+    public function restore($removeExisting, $vpath, $absPath)
+    {
+        if (null !== $absPath &&
             (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
         ) {
             unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
@@ -494,7 +496,7 @@ class ObjectManager
         if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
             return true;
         }
-        foreach($this->objectsByPath['Node'] as $item) {
+        foreach ($this->objectsByPath['Node'] as $item) {
             if ($item->isModified()) return true;
         }
 
@@ -509,8 +511,8 @@ class ObjectManager
      */
     public function removeItem($absPath, $propertyName = null)
     {
-        // the object is always cached as invocation flow goes through Item::remove() without excemption
-        if (! isset($this->objectsByPath['Node'][$absPath])) {
+        // the object is always cached as invocation flow goes through Item::remove() without exception
+        if (!isset($this->objectsByPath['Node'][$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
 
@@ -619,7 +621,6 @@ class ObjectManager
         if ($this->rewriteItemPaths($srcAbsPath, $destAbsPath)) {
             $this->nodesMove[$srcAbsPath] = $destAbsPath;
         }
-
     }
 
 
@@ -637,7 +638,7 @@ class ObjectManager
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
         $this->objectsByPath['Node'][$absPath] = $item;
-        if($item instanceof \PHPCR\NodeInterface) {
+        if ($item instanceof \PHPCR\NodeInterface) {
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
         }
