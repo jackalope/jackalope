@@ -122,6 +122,8 @@ class Helper
         $isArray = is_array($values);
         if (!$isArray) {
             $values = array($values);
+        } else {
+            $ret = array();
         }
         switch($type) {
             case \PHPCR\PropertyType::STRING:
