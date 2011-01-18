@@ -578,9 +578,9 @@ class Client implements TransportInterface
             return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
         case \PHPCR\PropertyType::TYPENAME_BINARY:
             return base64_encode($value);
-        case \PHPCR\PropertyType::UNDEFINED:
-        case \PHPCR\PropertyType::STRING:
-        case \PHPCR\PropertyType::URI:
+        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+        case \PHPCR\PropertyType::TYPENAME_STRING:
+        case \PHPCR\PropertyType::TYPENAME_URI:
             $value = str_replace(']]>',']]]]><![CDATA[>',$value);
             return '<![CDATA['.$value.']]>';
         }
@@ -592,9 +592,9 @@ class Client implements TransportInterface
         // skip binary encoding for raw strings
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_BINARY:
-        case \PHPCR\PropertyType::UNDEFINED:
-        case \PHPCR\PropertyType::STRING:
-        case \PHPCR\PropertyType::URI:
+        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+        case \PHPCR\PropertyType::TYPENAME_STRING:
+        case \PHPCR\PropertyType::TYPENAME_URI:
             return $value;
         }
         return $this->propertyToXmlString($value, $type);
