@@ -467,36 +467,55 @@ class Client implements TransportInterface
     {
         $this->ensureAbsolutePath($path);
 
+        $buffer = array();
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
-        $body .= $this->createNodeMarkup($path, $properties, $children);
+        $body .= $this->createNodeMarkup($path, $properties, $children, $buffer);
 
         $request = $this->getRequest(Request::MKCOL, $path);
         $request->setBody($body);
         $request->execute();
 
+        // store single-valued multivalue properties separately
+        foreach ($buffer as $path => $body) {
+            $request = $this->getRequest(Request::PUT, $path);
+            $request->setBody($body);
+            $request->execute();
+        }
+
         return true;
     }
 
-    protected function createNodeMarkup($path, $properties, $children)
+    protected function createNodeMarkup($path, $properties, $children, array &$buffer)
     {
         $body = '<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" sv:name="'.basename($path).'">';
 
         foreach ($properties as $name => $property) {
             $type = \PHPCR\PropertyType::nameFromValue($property->getType());
-            $body .= '<sv:property sv:name="'.$name.'" sv:type="'.$type.'">';
             $nativeValue = $property->getNativeValue();
+            $valueBody = '';
+            // handle multivalue properties
             if (is_array($nativeValue)) {
-                foreach ($nativeValue as $value) {
-                    $body .= '<sv:value>'.$this->propertyToXmlString($value, $type).'</sv:value>';
+                // multivalue properties with many rows can be inlined
+                if (count($nativeValue) > 1) {
+                    foreach ($nativeValue as $value) {
+                        $valueBody .= '<sv:value>'.$this->propertyToXmlString($value, $type).'</sv:value>';
+                    }
+                } else {
+                    // multivalue properties with just one value have to be saved separately
+                    $buffer[$path.'/'.$name] = '<?xml version="1.0" encoding="UTF-8"?><dcr:values xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
+                        '<dcr:value dcr:type="'.$type.'">'.$this->propertyToXmlString(reset($nativeValue), $type).'</dcr:value>'.
+                    '</dcr:values>';
+                    continue;
                 }
             } else {
-                $body .= '<sv:value>'.$this->propertyToXmlString($nativeValue, $type).'</sv:value>';
+                // handle single value properties
+                $valueBody = '<sv:value>'.$this->propertyToXmlString($nativeValue, $type).'</sv:value>';
             }
-            $body .= '</sv:property>';
+            $body .= '<sv:property sv:name="'.$name.'" sv:type="'.$type.'">'.$valueBody.'</sv:property>';
         }
 
         foreach ($children as $name => $node) {
-            $body .= $this->createNodeMarkup($path.'/'.$name, $node->getProperties(), $node->getNodes());
+            $body .= $this->createNodeMarkup($path.'/'.$name, $node->getProperties(), $node->getNodes(), $buffer);
         }
 
         return $body . '</sv:node>';
