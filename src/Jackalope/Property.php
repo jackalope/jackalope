@@ -107,7 +107,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         $previousValue = $this->value;
         if (is_array($value) && !$this->isMultiple) {
-            throw new \PHPCR\ValueFormatException('Can not set a single value property with an array of values');
+            throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
         }
 
         if (null === $type) {
