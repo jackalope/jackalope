@@ -558,7 +558,7 @@ class Client implements TransportInterface
             $body = '<?xml version="1.0" encoding="UTF-8"?>'.
                 '<jcr:values xmlns:jcr="http://www.day.com/jcr/webdav/1.0">';
             foreach ($nativeValue as $value) {
-                $body .= '<jcr:value type="'.$type.'">'.$this->propertyToXmlString($value, $type).'</jcr:value>';
+                $body .= '<jcr:value jcr:type="'.$type.'">'.$this->propertyToXmlString($value, $type).'</jcr:value>';
             }
             $body .= '</jcr:values>';
         } else {
