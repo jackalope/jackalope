@@ -496,7 +496,7 @@ class Client implements TransportInterface
             // handle multivalue properties
             if (is_array($nativeValue)) {
                 // multivalue properties with many rows can be inlined
-                if (count($nativeValue) > 1) {
+                if (count($nativeValue) > 1 || $name === 'jcr:mixinTypes') {
                     foreach ($nativeValue as $value) {
                         $valueBody .= '<sv:value>'.$this->propertyToXmlString($value, $type).'</sv:value>';
                     }
