@@ -280,8 +280,8 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::GET, $path);
         return $request->executeJson();
     }
-    
-    public function checkinItem($path) 
+
+    public function checkinItem($path)
     {
         try {
             $request = $this->getRequest(Request::CHECKIN, $path);
@@ -301,7 +301,7 @@ class Client implements TransportInterface
         }
     }
 
-    public function checkoutItem($path) 
+    public function checkoutItem($path)
     {
         $this->ensureAbsolutePath($path);
         try {
@@ -730,7 +730,7 @@ class Client implements TransportInterface
                '</D:href></dcr:locate-by-uuid>';
     }
 
-    public function cleanUriFromWebserverRoot($uri) 
+    public function cleanUriFromWebserverRoot($uri)
     {
         return substr($uri,strlen($this->workspaceUriRoot));
     }
