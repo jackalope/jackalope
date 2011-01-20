@@ -66,6 +66,12 @@ class Request
     const REPORT = 'REPORT';
 
     /**
+     * Identifier of the 'SEARCH' http request method.
+     * @var string
+     */
+    const SEARCH = 'SEARCH';
+
+    /**
      * Identifier of the 'PROPFIND' http request method.
      * @var string
      */
@@ -94,7 +100,7 @@ class Request
      * @var string
      */
     const CHECKIN = 'CHECKIN';
-    
+
     /**
      * Identifier of the 'CHECKOUT' http request method.
      * @var string
@@ -106,7 +112,7 @@ class Request
      * @var string
      */
     const UPDATE = 'UPDATE';
-    
+
     /** @var string     Possible argument for {@link setDepth()} */
     const INFINITY = 'infinity';
 
@@ -313,8 +319,8 @@ class Request
         }
 
         $curlError = $this->curl->error();
-        
-        
+
+
         $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} {$this->uri} \n\n$response";
         throw new \PHPCR\RepositoryException($msg);
     }

@@ -317,7 +317,8 @@ class Client implements TransportInterface
         return;
     }
 
-    public function restoreItem($removeExisting, $versionPath, $path) {
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
         $this->ensureAbsolutePath($path);
 
         $body ='<D:update xmlns:D="DAV:">
@@ -340,6 +341,15 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::GET,$path."/jcr:versionHistory");
         $resp = $request->execute();
         return $resp;
+    }
+
+    public function querySQL($query)
+    {
+        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2>'.$query.'</JCR-SQL2></D:searchrequest>';
+        $path = $this->normalizeUri('/');
+        $request = $this->getRequest(Request::SEARCH, $path);
+        $request->setBody($body);
+        return $request->execute();
     }
 
     /**

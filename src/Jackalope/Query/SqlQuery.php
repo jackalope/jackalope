@@ -56,7 +56,16 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function execute()
     {
-        throw new \PHPCR\RepositoryException('Not Implemented...');
+        $transport = $this->objectmanager->getTransport();
+        $rawData = $transport->querySQL($this->statement);
+        $queryResult = $this->factory->get(
+            'Query\QueryResult',
+            array(
+                $rawData,
+                $this->objectmanager,
+            )
+        );
+        return $queryResult;
     }
 
     /**
