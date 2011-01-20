@@ -27,28 +27,40 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
 
     protected $results;
 
-
     public function __construct($factory, $rawData, $objectmanager)
     {
-          $this->objectmanager = $objectmanager;
-          $this->position = 0;
-          $dom = new \DOMDocument();
-          $dom->loadXML($rawData);
-          $r = 0;
-          $resultArray = array();
-          foreach ($dom->getElementsByTagName('search-result-property') as $result) {
+        $this->objectmanager = $objectmanager;
+        $this->position = 0;
+        $this->factory = $factory;
+        $dom = new \DOMDocument();
+        $dom->loadXML($rawData);
+        $r = 0;
+        $resultArray = array();
+        foreach ($dom->getElementsByTagName('search-result-property') as $result) {
             // <search-result-property>
             foreach($result->childNodes as $column) {
             // <column>
+            $rowData = array();
+            $i = 0;
                 foreach($result->childNodes as $data) {
                     $key = $data->getElementsByTagName('name')->item(0)->nodeValue;
                     $value = $data->getElementsByTagName('value')->item(0)->nodeValue;
-                    $resultArray[$r][$key] = $value;
+                    $rowData[$i]['key'] = $key;
+                    $rowData[$i]['value'] = $value;
+                    $i++;
                 }
             }
+            $obj = $queryResult = $factory->get(
+                 'Query\Row',
+                 array(
+                     $rowData,
+                     $this->objectmanager,
+                 )
+            );
+            $resultArray[$r] = $obj;
             $r++;
-          }
-          $this->results = $resultArray;
+        }
+        $this->results = $resultArray;
     }
 
     /**
@@ -60,7 +72,11 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      * @api
      */
     public function getColumnNames() {
-
+     $array = array();
+        foreach ($this->results as $row) {
+             $array = array_merge($array, array_keys($row->getValues()));
+        }
+        return array_unique($array);
     }
 
     /**
@@ -93,7 +109,13 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      * @api
      */
     public function getNodes() {
-
+        return $obj = $queryResult = $this->factory->get(
+            'Query\NodeIterator',
+             array(
+                 $this->results,
+                 $this->objectmanager,
+            )
+        );
     }
 
     /**
@@ -107,8 +129,11 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getSelectorNames() {
-
+    public function getSelectorNames()
+    {
+        $selectors = array();
+        //TODO: Fill $selectors with the selectors
+        return $selectors;
     }
 
     public function rewind()
@@ -118,7 +143,7 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
 
     public function current()
     {
-        return $this->objectmanager->getNode($this->results[$this->position]['jcr:path']);
+        return $this->results[$this->position];
     }
 
     public function key()
@@ -133,9 +158,7 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
 
     public function valid()
     {
-        return isset($this->results[$this->position]['jcr:path']);
+        return isset($this->results[$this->position]);
     }
-
-
 
 }
