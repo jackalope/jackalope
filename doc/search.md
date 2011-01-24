@@ -32,11 +32,8 @@ Iterate over the Search Result
 Once you have your queryResult you can iterate over it using foreach.
 
     foreach ($queryResult as $key => $row) {
-        $row->getPath;
+        $row->getPath();
         $row->getNode();
-        $this->assertType('Jackalope\Query\Row', $row); // Test if the return element is an istance of row
-        $this->assertType('Jackalope\Node', $row->getNode()); //Test if we can get the node of a certain row
-        $this->assertEquals(3, count($row->getValues())); // test if we can get all the values of a row
 
         foreach ($row as $key => $value) { // Test if we can iterate over the columns inside a row
             $count++;
