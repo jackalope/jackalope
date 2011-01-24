@@ -7,42 +7,42 @@ Basic Search using a JRC-SQL2 Query
 ### Step by Step
 Queries are executed on the Query Manager, you can get the instance through the Jackalope Session:
 
-$queryManager = $session->getWorkspace()->getQueryManager();
+    $queryManager = $session->getWorkspace()->getQueryManager();
 
 
 To query the note simply call createQuery with the Query on the queryManager. It will return a query instance.
 
-$query = $queryManager->createQuery("SELECT * FROM [nt:unstructured]", 'JCR-SQL2');
+    $query = $queryManager->createQuery("SELECT * FROM [nt:unstructured]", 'JCR-SQL2');
 
 
 Then Execute on the query to recieve the queryResult instance.
 
-$queryResult = $this->query->execute();
+    $queryResult = $this->query->execute();
 
 
 ###All in one:
-{
-$queryManager = $session->getWorkspace()->getQueryManager();
-$query = $queryManager->createQuery("SELECT * FROM [nt:unstructured]", 'JCR-SQL2');
-$queryResult = $this->query->execute();
-}
+
+    $queryManager = $session->getWorkspace()->getQueryManager();
+    $query = $queryManager->createQuery("SELECT * FROM [nt:unstructured]", 'JCR-SQL2');
+    $queryResult = $this->query->execute();
+
 Iterate over the Search Result
 ----
 
 Once you have your queryResult you can iterate over it using foreach.
-{
-foreach ($queryResult as $key => $row) {
-    $row->getPath;
-    $row->getNode();
-    $this->assertType('Jackalope\Query\Row', $row); // Test if the return element is an istance of row
-    $this->assertType('Jackalope\Node', $row->getNode()); //Test if we can get the node of a certain row
-    $this->assertEquals(3, count($row->getValues())); // test if we can get all the values of a row
 
-    foreach ($row as $key => $value) { // Test if we can iterate over the columns inside a row
-        $count++;
+    foreach ($queryResult as $key => $row) {
+        $row->getPath;
+        $row->getNode();
+        $this->assertType('Jackalope\Query\Row', $row); // Test if the return element is an istance of row
+        $this->assertType('Jackalope\Node', $row->getNode()); //Test if we can get the node of a certain row
+        $this->assertEquals(3, count($row->getValues())); // test if we can get all the values of a row
+
+        foreach ($row as $key => $value) { // Test if we can iterate over the columns inside a row
+            $count++;
+        }
     }
-}
-}
+
 In each iteration you will get a new row object. On it you can call the following methods:
 
 <table>
@@ -71,23 +71,18 @@ In each iteration you will get a new row object. On it you can call the followin
 </table>
 
 Each row itself can be iterated aswell to go through all columns of the row:
-{
-foreach ($queryResult as $key => $row) {
-    foreach ($row as $columName => $value) {
-        echo $columName.':'.$value;
+
+    foreach ($queryResult as $key => $row) {
+        foreach ($row as $columName => $value) {
+            echo $columName.':'.$value;
+        }
     }
-}
-}
 
 Iterate directly over the Nodes
 ----
 
 As a shortcut you can directly iterate over the nodes of the queryResult
-{
-$nodes = $this->qr->getNodes();
-$count = 0;
 
-foreach ($queryResult->getNodes() as $node) {
-    $this->assertType('Jackalope\Node', $node);
-}
-}
+    foreach ($queryResult->getNodes() as $node) {
+        $this->assertType('Jackalope\Node', $node);
+    }
