@@ -345,7 +345,7 @@ class Client implements TransportInterface
 
     public function querySQL($query)
     {
-        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2>'.$query.'</JCR-SQL2></D:searchrequest>';
+        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$query.']]></JCR-SQL2></D:searchrequest>';
         $path = $this->normalizeUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
         $request->setBody($body);
