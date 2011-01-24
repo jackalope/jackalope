@@ -24,19 +24,19 @@ class NodeIterator implements \SeekableIterator, \Countable
 {
     protected $objectmanager;
 
-    protected $responses;
+    protected $rows;
 
     protected $position = 0;
 
-    public function __construct($objectmanager, $responses)
+    public function __construct($objectmanager, $rows)
     {
           $this->objectmanager = $objectmanager;
-          $this->responses = $responses;
+          $this->rows = $rows;
     }
 
     public function seek($nodeName)
     {
-        foreach ($this->responses[$this->position] as $position => $column) {
+        foreach ($this->rows[$this->position] as $position => $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 if ($column['dcr:value'] == $nodeName) {
                     $this->position = $position;
@@ -51,7 +51,7 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function count()
     {
-        return count($this->responses);
+        return count($this->rows);
     }
 
     public function rewind()
@@ -61,7 +61,7 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function current()
     {
-        foreach ($this->responses[$this->position] as $column) {
+        foreach ($this->rows[$this->position] as $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 $path = $column['dcr:value'];
             }
@@ -72,7 +72,7 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function key()
     {
-        foreach ($this->responses[$this->position] as $column) {
+        foreach ($this->rows[$this->position] as $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 $path = $column['dcr:value'];
             }
@@ -88,6 +88,6 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function valid()
     {
-        return isset($this->responses[$this->position]);
+        return isset($this->rows[$this->position]);
     }
 }

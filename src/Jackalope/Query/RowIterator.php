@@ -12,12 +12,12 @@ class RowIterator implements \SeekableIterator, \Countable
 
     protected $position = 0;
 
-    public function __construct($objectmanager, $responses)
+    public function __construct($objectmanager, $rows)
     {
         $this->objectmanager = $objectmanager;
 
-        foreach ($responses as $response) {
-            $this->rows[] = new Row($this->objectmanager, $response);
+        foreach ($rows as $row) {
+            $this->rows[] = new Row($this->objectmanager, $row);
         }
     }
 

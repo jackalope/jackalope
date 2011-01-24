@@ -25,7 +25,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
 
     protected $factory;
 
-    protected $responses = array();
+    protected $rows = array();
 
     public function __construct($factory, $rawData, $objectmanager)
     {
@@ -35,9 +35,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         $dom = new \DOMDocument();
         $dom->loadXML($rawData);
 
-        foreach($dom->getElementsByTagName('response') as $response) {
+        foreach($dom->getElementsByTagName('response') as $row) {
             $columns = array();
-            foreach ($response->getElementsByTagName('column') as $column) {
+            foreach ($row->getElementsByTagName('column') as $column) {
                 $sets = array();
                 foreach ($column->childNodes as $childNode) {
                     $sets[$childNode->tagName] = $childNode->nodeValue;
@@ -46,7 +46,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
                 $columns[] = $sets;
             }
 
-            $this->responses[] = $columns;
+            $this->rows[] = $columns;
         }
     }
 
@@ -67,8 +67,8 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     {
         $columnNames = array();
 
-        foreach ($this->responses as $response) {
-            foreach ($response as $columns) {
+        foreach ($this->rows as $row) {
+            foreach ($row as $columns) {
                 $columnNames[] = $columns['dcr:name'];
             }
         }
@@ -89,7 +89,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     */
     public function getRows()
     {
-        return new RowIterator($this->objectmanager, $this->responses);
+        return new RowIterator($this->objectmanager, $this->rows);
     }
 
     /**
@@ -107,7 +107,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
      */
     public function getNodes()
     {
-        return new NodeIterator($this->objectmanager, $this->responses);
+        return new NodeIterator($this->objectmanager, $this->rows);
     }
 
     /**
@@ -125,8 +125,8 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     {
         $selectorNames = array();
 
-        foreach ($this->responses as $response) {
-            foreach ($response as $column) {
+        foreach ($this->rows as $row) {
+            foreach ($row as $column) {
                 if (array_key_exists('dcr:selectorName', $column)) {
                     $selectorNames[] = $column['dcr:selectorName'];
                 }
