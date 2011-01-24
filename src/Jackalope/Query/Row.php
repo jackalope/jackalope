@@ -17,14 +17,16 @@ namespace Jackalope\Query;
  */
 class Row implements \Iterator, \PHPCR\Query\RowInterface
 {
+    protected $objectmanager;
 
-    protected $data = array();
+    protected $columns = array();
 
-    public function __construct($factory, $data, $objectmanager)
+    protected $position = 0;
+
+    public function __construct($objectmanager, $columns)
     {
           $this->objectmanager = $objectmanager;
-          $this->position = 0;
-          $this->data = $data;
+          $this->columns = $columns;
     }
 
     /**
@@ -38,11 +40,12 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getValues()
     {
-        $array = array();
-        foreach ($this->data as $row) {
-            $array[$row['key']] = $row['value'];
+        $values = array();
+        foreach ($this->columns as $column) {
+            $values[] = $column['dcr:value'];
         }
-        return $array;
+
+        return $values;
     }
 
     /**
@@ -57,11 +60,12 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getValue($columnName)
     {
-        foreach ($this->data as $key => $entry) {
-            if ($entry['key'] === $columnName) {
-                return $entry['value'];
+        foreach ($this->columns as $column) {
+            if ($column['dcr:name'] === $columnName) {
+                return $column['dcr:value'];
             }
         }
+
         throw new PHPCR\ItemNotFoundException("Column :$columnName not found");
     }
 
@@ -75,9 +79,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      *                                    another error occurs.
      * @api
      */
-    public function getNode($selectorName = NULL)
+    public function getNode($selectorName = null)
     {
+        //FIXME: implement $selectorName
         $path = $this->getValue('jcr:path');
+
         return $this->objectmanager->getNode($path);
     }
 
@@ -94,9 +100,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      *                                    if another error occurs.
      * @api
      */
-    public function getPath($selectorName = NULL)
+    public function getPath($selectorName = null)
     {
-        return $this->data['jcr:path'];
+        //FIXME: implement $selectorName
+
+        return $this->getValue('jcr:path');
     }
 
     /**
@@ -124,9 +132,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      *                                    or if another error occurs.
      * @api
      */
-    public function getScore($selectorName = NULL)
+    public function getScore($selectorName = null)
     {
-        $this->data['jcr:score'];
+        //FIXME: implement $selectorName
+
+        return $this->getValue('jcr:score');
     }
 
     public function rewind()
@@ -136,12 +146,12 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     public function current()
     {
-        return $this->data[$this->position]['value'];
+        return $this->columns[$this->position]['dcr:value'];
     }
 
     public function key()
     {
-        return $this->data[$this->position]['key'];
+        return $this->columns[$this->position]['dcr:name'];
     }
 
     public function next()
@@ -151,7 +161,6 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     public function valid()
     {
-        return isset($this->data[$this->position]);
+        return isset($this->columns[$this->position]);
     }
-
 }

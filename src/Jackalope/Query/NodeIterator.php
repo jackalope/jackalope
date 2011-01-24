@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\Query;
 
 use Jackalope\ObjectManager, Jackalope\NotImplementedException;
@@ -19,17 +20,38 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * @subpackage interfaces
  * @api
  */
-class NodeIterator implements \Iterator
+class NodeIterator implements \SeekableIterator, \Countable
 {
     protected $objectmanager;
 
-    protected $results = array();
+    protected $responses;
 
-    public function __construct($factory, $results, $objectmanager)
+    protected $position = 0;
+
+    public function __construct($objectmanager, $responses)
     {
           $this->objectmanager = $objectmanager;
-          $this->position = 0;
-          $this->results = $results;
+          $this->responses = $responses;
+    }
+
+    public function seek($nodeName)
+    {
+        foreach ($this->responses[$this->position] as $position => $column) {
+            if ($column['dcr:name'] == 'jcr:path') {
+                if ($column['dcr:value'] == $nodeName) {
+                    $this->position = $position;
+                }
+            }
+        }
+
+        if (!$this->valid()) {
+            throw new \OutOfBoundsException("invalid seek position ($position)");
+        }
+    }
+
+    public function count()
+    {
+        return count($this->responses);
     }
 
     public function rewind()
@@ -39,12 +61,24 @@ class NodeIterator implements \Iterator
 
     public function current()
     {
-        return $this->results[$this->position]->getNode();
+        foreach ($this->responses[$this->position] as $column) {
+            if ($column['dcr:name'] == 'jcr:path') {
+                $path = $column['dcr:value'];
+            }
+        }
+
+        return $this->objectmanager->getNode($path);
     }
 
     public function key()
     {
-        return $this->position;
+        foreach ($this->responses[$this->position] as $column) {
+            if ($column['dcr:name'] == 'jcr:path') {
+                $path = $column['dcr:value'];
+            }
+        }
+
+        return $path;
     }
 
     public function next()
@@ -54,7 +88,6 @@ class NodeIterator implements \Iterator
 
     public function valid()
     {
-        return isset($this->results[$this->position]);
+        return isset($this->responses[$this->position]);
     }
-
 }

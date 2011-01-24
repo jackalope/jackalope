@@ -19,48 +19,40 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * @subpackage interfaces
  * @api
  */
-class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
+class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterface
 {
     protected $objectmanager;
 
     protected $factory;
 
-    protected $results;
+    protected $responses = array();
 
     public function __construct($factory, $rawData, $objectmanager)
     {
         $this->objectmanager = $objectmanager;
-        $this->position = 0;
         $this->factory = $factory;
+
         $dom = new \DOMDocument();
         $dom->loadXML($rawData);
-        $r = 0;
-        $resultArray = array();
-        foreach ($dom->getElementsByTagName('search-result-property') as $result) {
-            // <search-result-property>
-            foreach($result->childNodes as $column) {
-            // <column>
-            $rowData = array();
-            $i = 0;
-                foreach($result->childNodes as $data) {
-                    $key = $data->getElementsByTagName('name')->item(0)->nodeValue;
-                    $value = $data->getElementsByTagName('value')->item(0)->nodeValue;
-                    $rowData[$i]['key'] = $key;
-                    $rowData[$i]['value'] = $value;
-                    $i++;
+
+        foreach($dom->getElementsByTagName('response') as $response) {
+            $columns = array();
+            foreach ($response->getElementsByTagName('column') as $column) {
+                $sets = array();
+                foreach ($column->childNodes as $childNode) {
+                    $sets[$childNode->tagName] = $childNode->nodeValue;
                 }
+
+                $columns[] = $sets;
             }
-            $obj = $queryResult = $factory->get(
-                 'Query\Row',
-                 array(
-                     $rowData,
-                     $this->objectmanager,
-                 )
-            );
-            $resultArray[$r] = $obj;
-            $r++;
+
+            $this->responses[] = $columns;
         }
-        $this->results = $resultArray;
+    }
+
+    public function getIterator()
+    {
+        return $this->getRows();
     }
 
     /**
@@ -71,12 +63,17 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function getColumnNames() {
-     $array = array();
-        foreach ($this->results as $row) {
-             $array = array_merge($array, array_keys($row->getValues()));
+    public function getColumnNames()
+    {
+        $columnNames = array();
+
+        foreach ($this->responses as $response) {
+            foreach ($response as $columns) {
+                $columnNames[] = $columns['dcr:name'];
+            }
         }
-        return array_unique($array);
+
+        return array_unique($columnNames);
     }
 
     /**
@@ -92,7 +89,7 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
     */
     public function getRows()
     {
-        return $this;
+        return new RowIterator($this->objectmanager, $this->responses);
     }
 
     /**
@@ -108,14 +105,9 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      *                                    same QueryResult object or if another error occurs.
      * @api
      */
-    public function getNodes() {
-        return $obj = $queryResult = $this->factory->get(
-            'Query\NodeIterator',
-             array(
-                 $this->results,
-                 $this->objectmanager,
-            )
-        );
+    public function getNodes()
+    {
+        return new NodeIterator($this->objectmanager, $this->responses);
     }
 
     /**
@@ -131,34 +123,16 @@ class QueryResult implements \Iterator, \PHPCR\Query\QueryResultInterface
      */
     public function getSelectorNames()
     {
-        $selectors = array();
-        //TODO: Fill $selectors with the selectors
-        return $selectors;
-    }
+        $selectorNames = array();
 
-    public function rewind()
-    {
-        $this->position = 0;
-    }
+        foreach ($this->responses as $response) {
+            foreach ($response as $column) {
+                if (array_key_exists('dcr:selectorName', $column)) {
+                    $selectorNames[] = $column['dcr:selectorName'];
+                }
+            }
+        }
 
-    public function current()
-    {
-        return $this->results[$this->position];
+        return array_unique($selectorNames);
     }
-
-    public function key()
-    {
-        return $this->position;
-    }
-
-    public function next()
-    {
-        ++$this->position;
-    }
-
-    public function valid()
-    {
-        return isset($this->results[$this->position]);
-    }
-
 }
