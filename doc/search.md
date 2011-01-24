@@ -21,15 +21,16 @@ $queryResult = $this->query->execute();
 
 
 ###All in one:
+{
 $queryManager = $session->getWorkspace()->getQueryManager();
 $query = $queryManager->createQuery("SELECT * FROM [nt:unstructured]", 'JCR-SQL2');
 $queryResult = $this->query->execute();
-
+}
 Iterate over the Search Result
 ----
 
 Once you have your queryResult you can iterate over it using foreach.
-
+{
 foreach ($queryResult as $key => $row) {
     $row->getPath;
     $row->getNode();
@@ -41,7 +42,7 @@ foreach ($queryResult as $key => $row) {
         $count++;
     }
 }
-
+}
 In each iteration you will get a new row object. On it you can call the following methods:
 
 <table>
@@ -70,22 +71,23 @@ In each iteration you will get a new row object. On it you can call the followin
 </table>
 
 Each row itself can be iterated aswell to go through all columns of the row:
-
+{
 foreach ($queryResult as $key => $row) {
     foreach ($row as $columName => $value) {
         echo $columName.':'.$value;
     }
 }
-
+}
 
 Iterate directly over the Nodes
 ----
 
 As a shortcut you can directly iterate over the nodes of the queryResult
-
+{
 $nodes = $this->qr->getNodes();
 $count = 0;
 
 foreach ($queryResult->getNodes() as $node) {
     $this->assertType('Jackalope\Node', $node);
+}
 }
