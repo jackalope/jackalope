@@ -8,16 +8,19 @@ class RowIterator implements \SeekableIterator, \Countable
 {
     protected $objectmanager;
 
+    protected $factory;
+
     protected $rows;
 
     protected $position = 0;
 
-    public function __construct($objectmanager, $rows)
+    public function __construct($factory, $objectmanager, $rows)
     {
         $this->objectmanager = $objectmanager;
+        $this->factory = $factory;
 
         foreach ($rows as $row) {
-            $this->rows[] = new Row($this->objectmanager, $row);
+            $this->rows[] = $this->factory->get('Query\Row', array($this->objectmanager, $row));
         }
     }
 

@@ -89,7 +89,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     */
     public function getRows()
     {
-        return new RowIterator($this->objectmanager, $this->rows);
+        return $this->factory->get('Query\RowIterator', array($this->objectmanager, $this->rows));
     }
 
     /**
@@ -107,7 +107,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
      */
     public function getNodes()
     {
-        return new NodeIterator($this->objectmanager, $this->rows);
+        return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
     }
 
     /**

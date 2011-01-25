@@ -5,33 +5,23 @@ namespace Jackalope\Query;
 use Jackalope\ObjectManager, Jackalope\NotImplementedException;
 
 /**
- * A QueryResult object. Returned by Query->execute().
- *
- * The \Traversable interface enables the implementation to be addressed with
- * <b>foreach</b>. QueryResults have to implement einther \RecursiveIterator or
- * \Iterator.
- * The iterator is equivalent to <b>getRows()</b> returning a list of the rows.
- * The iterator keys have no significant meaning.
- * Note: We use getRows and not getNodes as this is more generic. If you have a
- * single selector, you can either do foreach on getNodes or call getNode on the
- * rows.
- *
- * @package phpcr
- * @subpackage interfaces
- * @api
+ * A NodeIterator object. Returned by QueryResult->getNodes().
  */
 class NodeIterator implements \SeekableIterator, \Countable
 {
     protected $objectmanager;
 
+    protected $factory;
+
     protected $rows;
 
     protected $position = 0;
 
-    public function __construct($objectmanager, $rows)
+    public function __construct($factory, $objectmanager, $rows)
     {
-          $this->objectmanager = $objectmanager;
-          $this->rows = $rows;
+        $this->objectmanager = $objectmanager;
+        $this->factory = $factory;
+        $this->rows = $rows;
     }
 
     public function seek($nodeName)

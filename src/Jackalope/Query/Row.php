@@ -19,14 +19,17 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 {
     protected $objectmanager;
 
+    protected $factory;
+
     protected $columns = array();
 
     protected $position = 0;
 
-    public function __construct($objectmanager, $columns)
+    public function __construct($factory, $objectmanager, $columns)
     {
-          $this->objectmanager = $objectmanager;
-          $this->columns = $columns;
+        $this->objectmanager = $objectmanager;
+        $this->factory = $factory;
+        $this->columns = $columns;
     }
 
     /**
