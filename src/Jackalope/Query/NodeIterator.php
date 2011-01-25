@@ -26,15 +26,20 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function seek($nodeName)
     {
-        foreach ($this->rows[$this->position] as $position => $column) {
-            if ($column['dcr:name'] == 'jcr:path') {
-                if ($column['dcr:value'] == $nodeName) {
-                    $this->position = $position;
+        foreach ($this->rows as $position => $columns) {
+            foreach ($columns as $column) {
+                if ($column['dcr:name'] == 'jcr:path') {
+                    if ($column['dcr:value'] == $nodeName) {
+                        $foundPosition = $position;
+                    }
                 }
             }
         }
 
-        if (!$this->valid()) {
+        if (isset($foundPosition)) {
+            $this->position = $foundPosition;
+        }
+        else {
             throw new \OutOfBoundsException("invalid seek position ($position)");
         }
     }

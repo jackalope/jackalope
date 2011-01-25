@@ -10,7 +10,7 @@ class RowIterator implements \SeekableIterator, \Countable
 
     protected $factory;
 
-    protected $rows;
+    public $rows;
 
     protected $position = 0;
 

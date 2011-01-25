@@ -69,7 +69,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             }
         }
 
-        throw new PHPCR\ItemNotFoundException("Column :$columnName not found");
+        throw new \PHPCR\ItemNotFoundException("Column :$columnName not found");
     }
 
     /**
