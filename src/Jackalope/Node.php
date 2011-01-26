@@ -498,7 +498,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         try {
             return $this->getPropertyValue($relPath, $type);
-        } catch (Exception $e) {
+        } catch (\PHPCR\PathNotFoundException $e) {
             return $default;
         }
     }
