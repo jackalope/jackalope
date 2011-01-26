@@ -484,6 +484,26 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
+     * Tries to get the value of a property, if not the default is returned.
+     *
+     * This is a shortcut for getProperty().getXXX()
+     *
+     * @param string $relPath Name of this property
+     * @param string $default Value that will be returned if the property is not found.
+     * @param integer $type Type conversion request, optional. Must be a constant from PropertyType
+     * @return mixed The value of the property with $relPath. or the $default if $relPath is not found
+     * @api
+     */
+    public function getPropertyValueIfExists($relPath, $default = null, $type = null)
+    {
+        try {
+            return $this->getPropertyValue($relPath, $type);
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    /**
      * If $filter is a string:
      * Gets all properties of this node accessible through the current Session
      * that match namePattern (if no pattern is given, all accessible properties
