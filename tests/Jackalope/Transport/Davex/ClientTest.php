@@ -98,7 +98,7 @@ class ClientTest extends TestCase
     public function testGetRepositoryDescriptorsEmptyBackendResponse()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/empty.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/empty.xml');
         $t = $this->getTransportMock();
         $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
@@ -114,7 +114,7 @@ class ClientTest extends TestCase
     {
         $reportRequest = $this->getTransportMock()->buildReportRequestMock('dcr:repositorydescriptors');
         $dom = new DOMDocument();
-        $dom->load('fixtures/repositoryDescriptors.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/repositoryDescriptors.xml');
         $t = $this->getTransportMock();
         $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
@@ -206,7 +206,7 @@ class ClientTest extends TestCase
     public function testLoginEmptyBackendResponse()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/empty.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/empty.xml');
         $t = $this->getTransportMock();
         $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
@@ -222,7 +222,7 @@ class ClientTest extends TestCase
     public function testLoginWrongWorkspace()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/wrongWorkspace.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/wrongWorkspace.xml');
         $t = $this->getTransportMock();
         $request = $this->getRequestMock($dom, array('setBody'));
         $t->expects($this->once())
@@ -238,7 +238,7 @@ class ClientTest extends TestCase
     {
         $propfindRequest = $this->getTransportMock()->buildPropfindRequestMock(array('D:workspace', 'dcr:workspaceName'));
         $dom = new DOMDocument();
-        $dom->load('fixtures/loginResponse.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/loginResponse.xml');
         $t = $this->getTransportMock();
 
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -322,7 +322,7 @@ class ClientTest extends TestCase
     public function testGetNodePathForIdentifierEmptyResponse()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/empty.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/empty.xml');
 
         $t = $this->getTransportMock('testuri');
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -340,7 +340,7 @@ class ClientTest extends TestCase
     {
         $locateRequest = $this->getTransportMock()->buildLocateRequestMock('test');
         $dom = new DOMDocument();
-        $dom->load('fixtures/locateRequest.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/locateRequest.xml');
 
         $t = $this->getTransportMock('testuri');
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -361,7 +361,7 @@ class ClientTest extends TestCase
     {
         $locateRequest = $this->getTransportMock()->buildLocateRequestMock('test');
         $dom = new DOMDocument();
-        $dom->load('fixtures/locateRequestTests.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/locateRequestTests.xml');
 
         $t = $this->getTransportMock('testuri');
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -382,7 +382,7 @@ class ClientTest extends TestCase
     public function testGetNamespacesEmptyResponse()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/empty.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/empty.xml');
 
         $t = $this->getTransportMock($this->config['url']);
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -400,7 +400,7 @@ class ClientTest extends TestCase
     {
         $reportRequest = $this->getTransportMock()->buildReportRequestMock('dcr:registerednamespaces');
         $dom = new DOMDocument();
-        $dom->load('fixtures/registeredNamespaces.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/registeredNamespaces.xml');
 
         $t = $this->getTransportMock($this->config['url']);
         $request = $this->getRequestMock($dom, array('setBody'));
@@ -463,7 +463,7 @@ class ClientTest extends TestCase
      */
     public function testGetNodeTypes()
     {
-        $t = $this->setUpNodeTypeMock(array(), 'fixtures/nodetypes.xml');
+        $t = $this->setUpNodeTypeMock(array(), dirname(__FILE__).'/../../../fixtures/nodetypes.xml');
 
         $nt = $t->getNodeTypes();
         $this->assertTrue($nt instanceOf DOMDocument);
@@ -475,7 +475,7 @@ class ClientTest extends TestCase
      */
     public function testSpecificGetNodeTypes()
     {
-        $t = $this->setUpNodeTypeMock(array('nt:folder', 'nt:file'), 'fixtures/small_nodetypes.xml');
+        $t = $this->setUpNodeTypeMock(array('nt:folder', 'nt:file'), dirname(__FILE__).'/../../../fixtures/small_nodetypes.xml');
 
         $nt = $t->getNodeTypes(array('nt:folder', 'nt:file'));
         $this->assertType('DOMDocument', $nt);
@@ -491,7 +491,7 @@ class ClientTest extends TestCase
      */
     public function testEmptyGetNodeTypes()
     {
-        $t = $this->setUpNodeTypeMock(array(), 'fixtures/empty.xml');
+        $t = $this->setUpNodeTypeMock(array(), dirname(__FILE__).'/../../../fixtures/empty.xml');
 
         $this->setExpectedException('\PHPCR\RepositoryException');
         $nt = $t->getNodeTypes();
@@ -505,7 +505,7 @@ class ClientTest extends TestCase
     public function testGetAccessibleWorkspaceNames()
     {
         $dom = new DOMDocument();
-        $dom->load('fixtures/accessibleWorkspaces.xml');
+        $dom->load(dirname(__FILE__).'/../../../fixtures/accessibleWorkspaces.xml');
 
         $t = $this->getTransportMock('testuri');
         $request = $this->getRequestMock($dom, array('setBody', 'setDepth'));
