@@ -343,9 +343,23 @@ class Client implements TransportInterface
         return $resp;
     }
 
-    public function querySQL($query)
+    public function querySQL($query, $limit = null, $offset = null)
     {
-        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$query.']]></JCR-SQL2></D:searchrequest>';
+        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$query.']]></JCR-SQL2>';
+
+        if (null !== $limit || null !== $limit) {
+            $body .= '<D:limit>';
+            if (null !== $limit) {
+                $body .= '<D:nresults>'.(int)$limit.'</D:nresults>';
+            }
+            if (null !== $offset) {
+                $body .= '<offset>'.(int)$offset.'</offset>';
+            }
+            $body .= '</D:limit>';
+        }
+
+        $body .= '</D:searchrequest>';
+
         $path = $this->normalizeUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
         $request->setBody($body);

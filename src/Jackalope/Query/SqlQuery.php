@@ -15,6 +15,8 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     protected $factory;
 
     protected $statement;
+    protected $limit;
+    protected $offset;
     protected $objectmanager;
     protected $path;
 
@@ -57,7 +59,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     public function execute()
     {
         $transport = $this->objectmanager->getTransport();
-        $rawData = $transport->querySQL($this->statement);
+        $rawData = $transport->querySQL($this->statement, $this->limit, $this->offset);
         $queryResult = $this->factory->get(
             'Query\QueryResult',
             array(
@@ -90,7 +92,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function setLimit($limit)
     {
-        throw new \PHPCR\RepositoryException('Not Implemented...');
+        $this->limit = $limit;
     }
 
     /**
@@ -102,7 +104,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function setOffset($offset)
     {
-        throw new \PHPCR\RepositoryException('Not Implemented...');
+        $this->offset = $offset;
     }
 
     /**
