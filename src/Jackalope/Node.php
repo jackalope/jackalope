@@ -557,7 +557,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         $names = self::filterNames($filter, array_keys($this->properties));
         foreach($names as $name) {
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
-            $result[] = $this->properties[$name]->getValue();
+            $result[] = $this->properties[$name]->getNativeValue();
         }
         return new \ArrayIterator($result);
     }
