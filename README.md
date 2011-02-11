@@ -15,13 +15,9 @@ ebi at liip.ch
 david at liip.ch
 chregu at liip.ch
 
-
-
 # Preconditions
 
-
 * libxml version >= 2.7.0 (due to a bug in libxml [http://bugs.php.net/bug.php?id=36501](http://bugs.php.net/bug.php?id=36501))
-
 
 # Setup
 
@@ -32,13 +28,13 @@ You need the jackrabbit-standalone-2.x.jar
 Once you have the jar, start it with
     $ java -jar jackrabbit*.jar
 
-When you start it the first time, this will create a folder called "jackrabbit" with some subfolders. In order to get the tests up and running, you need to create a workspace called tests. 
+When you start it the first time, this will create a folder called "jackrabbit" with some subfolders. In order to get the tests up and running, you need to create a workspace called tests.
 
     cp -rp jackrabbit/workspaces/default/ jackrabbit/workspaces/tests/
 
 You need to adjust the attribute "name" in jackrabbit/workspaces/tests/workspace.xml from "default" to "tests". After changing the workspace.xml, you'll have to restart jackrabbit.
 
-Clone the jackalope project 
+Clone the jackalope project
 
     git clone git://github.com/jackalope/jackalope.git
 
