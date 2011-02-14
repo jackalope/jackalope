@@ -119,13 +119,12 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
     {
         $predecessors = $this->getProperty("jcr:predecessors");
         $results = array();
-        if ($predecessors) {
-            foreach ($predecessors as $uuid) {
-                $n = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
-                $results[] = $n;
-            }
+        foreach ($predecessors as $uuid) {
+            $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+            $results[] = $node->getNode('jcr:frozenNode');
+            $results = array_merge($results, $node->getPredecessors());
         }
-        return $results;        
+        return $results;
     }
 
 
