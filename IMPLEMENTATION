@@ -1,7 +1,8 @@
-Jackalope implements the "client" part of Apache Jackrabbit in PHP. You need a
-running Jackrabbit as storage backend. Apache Jackrabbit uses the Davex
-(extended WebDav) protocol to communicate between its client library and the
-actual storage backend. See http://wiki.apache.org/jackrabbit/RemoteAccess
+Jackalope implements the "client" part of Apache Jackrabbit in PHP, according
+to the PHPCR API interfaces.
+You need a running Jackrabbit as storage backend. Apache Jackrabbit uses the
+Davex (extended WebDav) protocol to communicate between its client library and
+the actual storage backend. See http://wiki.apache.org/jackrabbit/RemoteAccess
 Jackalope uses this protocol to talk to the backend. This allows us to
 completely separate the PHP and Java code - and the storage backend can run
 on a different server if needed.
@@ -10,10 +11,4 @@ on a different server if needed.
 Architecture
 ************
 
-In the src folder, you find mainly classes with the names as defined in the
-API. The two important classes not defined by the API are the ObjectManager and
-TransportInterface. ObjectManager caches nodes and talks to Transport.
-Transport is again capsulated with an interface.
-Transport/Davex/Client implements the HTTP communication with Jackrabbit.
-To implement other storage backends, it would probably be enough to implement
-a new Transport class.
+See doc/architecture.md for an overview of the architecture
