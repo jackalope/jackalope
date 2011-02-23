@@ -56,7 +56,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         $this->namespaceManager = $this->factory->get('NamespaceManager', array($this->defaultNamespaces));
 
         $namespaces = $transport->getNamespaces();
-        foreach($namespaces as $prefix => $uri) {
+        foreach ($namespaces as $prefix => $uri) {
             if (! array_key_exists($prefix, $this->defaultNamespaces)) {
                 $this->userNamespaces[$prefix] = $uri;
             }

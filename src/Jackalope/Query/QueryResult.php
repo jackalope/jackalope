@@ -35,7 +35,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         $dom = new \DOMDocument();
         $dom->loadXML($rawData);
 
-        foreach($dom->getElementsByTagName('response') as $row) {
+        foreach ($dom->getElementsByTagName('response') as $row) {
             $columns = array();
             foreach ($row->getElementsByTagName('column') as $column) {
                 $sets = array();

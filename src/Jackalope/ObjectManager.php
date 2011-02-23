@@ -379,12 +379,12 @@ class ObjectManager
         // TODO: start transaction
 
         // remove nodes/properties
-        foreach($this->itemsRemove as $path => $dummy) {
+        foreach ($this->itemsRemove as $path => $dummy) {
             $this->transport->deleteItem($path);
         }
 
         // move nodes/properties
-        foreach($this->nodesMove as $src => $dst) {
+        foreach ($this->nodesMove as $src => $dst) {
             $this->transport->moveNode($src, $dst);
         }
 
@@ -399,7 +399,7 @@ class ObjectManager
             }
         }
         // create new nodes
-        foreach($nodesToCreate as $path => $dummy) {
+        foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
                 $this->transport->storeItem($path, $item->getProperties(), $item->getNodes());
@@ -440,7 +440,7 @@ class ObjectManager
             unset($this->objectsByPath['Node'][$path]);
         }
         /* local state is already updated in moveNode
-        foreach($this->nodesMove as $src => $dst) {
+        foreach ($this->nodesMove as $src => $dst) {
             $this->objectsByPath[$dst] = $this->objectsByPath[$src];
             unset($this->objectsByPath[$src]);
         }

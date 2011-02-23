@@ -446,7 +446,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         $names = self::filterNames($filter, $this->nodes);
         $result = array();
-        foreach($names as $name) {
+        foreach ($names as $name) {
             //OPTIMIZE: batch get nodes
             $result[$name] = $this->getNode($name);
         }
@@ -551,7 +551,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
-        foreach($names as $name) {
+        foreach ($names as $name) {
             $result[$name] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
         return new \ArrayIterator($result);
@@ -571,7 +571,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
-        foreach($names as $name) {
+        foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
             $result[] = $this->properties[$name]->getNativeValue();
         }
@@ -1182,7 +1182,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $filtered = array();
         if ($filter !== null) {
-            foreach($filter as $k => $f) {
+            foreach ($filter as $k => $f) {
                $f = trim($f);
                $filter[$k] = strtr($f, array('*'=>'.*', //wildcard
                                              '.'  => '\\.', //escape regexp
@@ -1195,8 +1195,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                                              '^'  => '\\^',
                                              '$'  => '\\$'));
             }
-            foreach($names as $name) {
-                foreach($filter as $f) {
+            foreach ($names as $name) {
+                foreach ($filter as $f) {
                     if (preg_match('/^'.$f.'$/', $name)) {
                         $filtered[] = $name;
                     }

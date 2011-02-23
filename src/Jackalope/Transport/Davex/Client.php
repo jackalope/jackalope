@@ -224,9 +224,9 @@ class Client implements TransportInterface
 
         $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
         $descriptors = array();
-        foreach($descs as $desc) {
+        foreach ($descs as $desc) {
             $values = array();
-            foreach($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
+            foreach ($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
                 $values[] = $value->textContent;
             }
             if ($desc->childNodes->length == 2) {
@@ -692,7 +692,7 @@ class Client implements TransportInterface
 
         $mappings = array();
         $namespaces = $dom->getElementsByTagNameNS(self::NS_DCR, 'namespace');
-        foreach($namespaces as $elem) {
+        foreach ($namespaces as $elem) {
             $mappings[$elem->firstChild->textContent] = $elem->lastChild->textContent;
         }
         return $mappings;
@@ -750,7 +750,7 @@ class Client implements TransportInterface
         if (!is_array($properties)) {
             $properties = array($properties);
         }
-        foreach($properties as $property) {
+        foreach ($properties as $property) {
             $xml .= '<'. $property . '/>';
         }
         $xml .= '</D:prop></D:propfind>';

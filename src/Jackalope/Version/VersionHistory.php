@@ -123,7 +123,7 @@ class VersionHistory extends \Jackalope\Node {
 
         $successors = $node->getSuccessors();
         $results = array();
-        foreach($successors as $successor) {
+        foreach ($successors as $successor) {
             $results[$successor->getName()] = $successor;
             $results = array_merge($results, $this->getSuccessors($successor));
         }

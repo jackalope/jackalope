@@ -127,7 +127,7 @@ class Helper
         }
         switch($type) {
             case \PHPCR\PropertyType::STRING:
-                foreach($values as $v) {
+                foreach ($values as $v) {
                     if (is_bool($v)) {
                         $ret[] = $v ? 'true' : 'false';
                     } elseif ($v instanceof \DateTime) {
@@ -153,12 +153,12 @@ class Helper
                  * PHP usually treats everything not null|0|false as true. The PHPCR API
                  * follows the JCR specification here in order to be consistent.
                  */
-                foreach($values as $v) {
+                foreach ($values as $v) {
                     $ret[] = $v === true || is_string($v) && strcasecmp('true', $v) == 0;
                 }
                 break;
             case \PHPCR\PropertyType::DATE:
-                foreach($values as $v) {
+                foreach ($values as $v) {
                     $datetime = false;
                     if ($v instanceof \DateTime) {
                         $datetime = $v;
@@ -180,7 +180,7 @@ class Helper
                 break;
             case \PHPCR\PropertyType::REFERENCE:
             case \PHPCR\PropertyType::WEAKREFERENCE:
-                foreach($values as $v) {
+                foreach ($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
                         $id = $v->getIdentifier();
                         //TODO: we should check the type if node is referencable, not rely on getting no identifier
@@ -198,7 +198,7 @@ class Helper
                 }
                 break;
             case \PHPCR\PropertyType::BINARY:
-                foreach($values as $v) {
+                foreach ($values as $v) {
                     if (is_string($v)) {
                         $ret[] = $v;
                     } else {
@@ -208,12 +208,12 @@ class Helper
                 }
             default:
                 //FIXME: handle other types somehow
-                foreach($values as $v) $ret[] = $v;
+                foreach ($values as $v) $ret[] = $v;
                 break;
             //TODO: more type checks or casts? name, path, uri, decimal. but the backend can handle the checks.
         }
         if (isset($typename)) {
-            foreach($values as $v) {
+            foreach ($values as $v) {
                 if (! settype($v, $typename)) {
                     throw new \PHPCR\ValueFormatException;
                 }
