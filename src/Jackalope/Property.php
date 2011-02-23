@@ -188,9 +188,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::STRING) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::STRING);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -223,9 +222,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::LONG) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::LONG);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -241,9 +239,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::DOUBLE) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DOUBLE);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -259,9 +256,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::DECIMAL) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DECIMAL);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -277,9 +273,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::DATE) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::DATE);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -295,9 +290,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::BOOLEAN) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::BOOLEAN);
-        } else {
-            return $this->value;
         }
+        return $this->value;
     }
 
     /**
@@ -377,12 +371,12 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkMultiple();
         if (\PHPCR\PropertyType::BINARY === $this->type) {
             throw new NotImplementedException('Binaries not implemented');
-        } else {
-            try {
-                return strlen(Helper::convertType($this->value, \PHPCR\PropertyType::STRING));
-            } catch (Exception $e) {
-                return -1;
-            }
+        }
+
+        try {
+            return strlen(Helper::convertType($this->value, \PHPCR\PropertyType::STRING));
+        } catch (Exception $e) {
+            return -1;
         }
     }
 
@@ -403,12 +397,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         foreach ($this->value as $value) {
             if (\PHPCR\PropertyType::BINARY === $this->type) {
                 throw new NotImplementedException('Binaries not implemented');
-            } else {
-                try {
-                    array_push($ret, strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING)));
-                } catch(Exception $e) {
-                    array_push($ret, -1);
-                }
+            }
+            try {
+                array_push($ret, strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING)));
+            } catch(Exception $e) {
+                array_push($ret, -1);
             }
         }
         return $ret;
@@ -514,7 +507,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getIterator()
     {
         $value = $this->getNativeValue();
-        if (!is_array($value)) $value = array($value);
+        if (!is_array($value)) {
+            $value = array($value);
+        }
         return new \ArrayIterator($value);
     }
 
