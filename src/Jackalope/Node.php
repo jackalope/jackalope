@@ -46,7 +46,23 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             if (is_object($value)) {
                 array_push($this->nodes, $key);
             } else {
-                if ( 0 === strpos($key, ':')) continue; //It's a property type
+                // It's probably a property type
+                if (0 === strpos($key, ':')) {
+                    // It's a binary property and we just got its length
+                    if (is_int($value)) {
+                        $key = substr($key, 1);
+                        $this->properties[$key] = $this->factory->get(
+                            'Property',
+                            array(
+                                array('type' => \PHPCR\PropertyType::BINARY, 'value' => (string) $value),
+                                $this->getChildPath($key),
+                                $this->session,
+                                $this->objectManager,
+                            )
+                        );
+                    }
+                    continue;
+                }
 
                 switch ($key) {
                     case 'jcr:index':

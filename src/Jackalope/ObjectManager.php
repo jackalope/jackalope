@@ -294,6 +294,17 @@ class ObjectManager
     }
 
     /**
+     * Retrieves a binary value
+     *
+     * @param string $path
+     * @return string
+     */
+    public function getBinaryProperty($path)
+    {
+        return $this->transport->getBinaryProperty($path);
+    }
+
+    /**
      * This is only a proxy to the transport it returns all node types if none is given or only the ones given as array.
      *
      * @param array $nodeTypes Empty for all or selected node types by name

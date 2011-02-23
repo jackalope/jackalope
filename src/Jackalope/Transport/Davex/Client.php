@@ -281,6 +281,18 @@ class Client implements TransportInterface
         return $request->executeJson();
     }
 
+    /**
+     * Retrieves a binary value
+     *
+     * @param $path
+     * @return string
+     */
+    public function getBinaryProperty($path)
+    {
+        $request = $this->getRequest(Request::GET, $path);
+        return $request->execute();
+    }
+
     public function checkinItem($path)
     {
         try {

@@ -204,9 +204,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type != \PHPCR\PropertyType::BINARY) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::BINARY);
-        } else {
-            return $this->value;
         }
+        return $this->objectManager->getBinaryProperty($this->path);
     }
 
     /**
