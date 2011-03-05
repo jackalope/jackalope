@@ -273,8 +273,7 @@ class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Accepts an ItemVisitor. Calls the appropriate ItemVisitor visit method of
-     * the visitor according to whether this Item is a Node or a Property.
+     * Accepts an ItemVisitor, calls visit on it
      *
      * @param \PHPCR\ItemVisitorInterface $visitor The ItemVisitor to be accepted.
      * @throws \PHPCR\RepositoryException if an error occurs.
@@ -282,7 +281,7 @@ class Item implements \PHPCR\ItemInterface
      */
     public function accept(\PHPCR\ItemVisitorInterface $visitor)
     {
-        throw new NotImplementedException();
+        $visitor->visit($this);
     }
 
     /**
