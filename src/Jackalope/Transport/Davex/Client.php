@@ -111,8 +111,13 @@ class Client implements TransportInterface
      * @var curl
      */
     protected $curl = null;
-
-    protected $additionalHeaders;
+    
+    /** 
+     *  A list of additional HTTP headers to be sent on each request
+     *  @var array[]string   
+     */
+     
+    protected $defaultlHeaders = array();
 
     /**
      * Create a transport pointing to a server url.
@@ -140,9 +145,12 @@ class Client implements TransportInterface
         }
     }
 
-    public function addDefaultHeaders($headers)
+    /**
+     * Add a HTTP header which is sent on each Request
+     */
+    public function addDefaultHeader($header)
     {
-        $this->additionalHeaders = $headers;
+        $this->defaultHeaders[] = $header;
     }
 
     /**
@@ -161,7 +169,7 @@ class Client implements TransportInterface
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
-        foreach($this->additionalHeaders as $header) {
+        foreach($this->defaultHeaders as $header) {
             $request->addHeader($header);
         }
 
