@@ -112,6 +112,8 @@ class Client implements TransportInterface
      */
     protected $curl = null;
 
+    protected $additionalHeaders;
+
     /**
      * Create a transport pointing to a server url.
      *
@@ -138,6 +140,11 @@ class Client implements TransportInterface
         }
     }
 
+    public function addDefaultHeaders($headers)
+    {
+        $this->additionalHeaders = $headers;
+    }
+
     /**
      * Opens a cURL session if not yet one open.
      *
@@ -154,6 +161,9 @@ class Client implements TransportInterface
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
+        foreach($this->additionalHeaders as $header) {
+            $request->addHeader($header);
+        }
 
         return $request;
     }
