@@ -117,7 +117,7 @@ class Client implements TransportInterface
      *  @var array[]string   
      */
      
-    protected $defaultlHeaders = array();
+    protected $defaultHeaders = array();
 
     /**
      * Create a transport pointing to a server url.
