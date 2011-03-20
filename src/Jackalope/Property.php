@@ -448,7 +448,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * where the latter returns UNDEFINED. The type of a property instance is
      * never UNDEFINED (it must always have some actual type).
      *
-     * @return integer an int
+     * @return integer type id of this property
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */

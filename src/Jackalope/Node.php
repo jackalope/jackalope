@@ -357,7 +357,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             // update property
             // TODO maybe check if $this->properties[$name]->getType() === NodeType::UNDEFINED, in which case we can just overwrite with anything?
             if (null !== $type && $this->properties[$name]->getType() != $type) {
-                throw new NotImplementedException('TODO: Do we have to re-create the property? How to check allowed types?');
+                throw new NotImplementedException('TODO: Trying to set existing property to different type. Do we have to re-create the property? How to check allowed types?');
             }
             $this->properties[$name]->setValue($value);
         }
@@ -472,7 +472,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
             }
         } else {
-            $this->session->getProperty($this->getChildPath($relPath));
+            return $this->session->getProperty($this->getChildPath($relPath));
         }
     }
 

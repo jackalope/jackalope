@@ -94,7 +94,6 @@ class Helper
             $value = $value->getIdentifier();
         } else {
             throw new \PHPCR\ValueFormatException('Can not determine type of property with value "'.var_export($value, true).'"');
-            $type = \PHPCR\PropertyType::UNDEFINED;
         }
         return $type;
     }
@@ -109,7 +108,7 @@ class Helper
      * treating any non-empty string as true, not just the word "true".
      *
      * @param mixed $values The value or value array to check and convert
-     * @param int $type One of the type constants in \PHPCR\PropertyType
+     * @param int $type Target type to convert into. One of the type constants in \PHPCR\PropertyType
      * @return the value typecasted into the proper format (throws an exception if conversion is not possible)
      *
      * @throws \PHPCR\ValueFormatException is thrown if the specified value cannot be converted to the specified type.
@@ -189,12 +188,11 @@ class Helper
                         }
                         $ret[] = $id;
                     } elseif (is_string($v) && ! empty($v)) {
-                        //FIXME: check for valid uuid?
+                        //could check if string is valid uuid, but backend will do that
                         $ret[] = $v;
                     } else {
                         throw new \PHPCR\ValueFormatException("$v is not a unique id");
                     }
-                    //else: could check if string is valid uuid, but backend will do that
                 }
                 break;
             case \PHPCR\PropertyType::BINARY:
@@ -206,6 +204,7 @@ class Helper
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a binary string');
                     }
                 }
+            //FIXME: type PATH is missing. should automatically read property and node with getPath.
             default:
                 //FIXME: handle other types somehow
                 foreach ($values as $v) $ret[] = $v;
