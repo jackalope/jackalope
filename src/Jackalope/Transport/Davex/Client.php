@@ -120,6 +120,12 @@ class Client implements TransportInterface
     protected $defaultHeaders = array();
 
     /**
+     *  @var bool Send Expect: 100-continue header
+     */
+
+    protected $sendExpect = false;
+
+    /**
      * Create a transport pointing to a server url.
      *
      * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
@@ -154,6 +160,18 @@ class Client implements TransportInterface
     }
 
     /**
+     * If you want to send the "Expect: 100-continue" header on larger
+     * PUT and POST requests, set this to true
+     * Disabled by default
+     *
+     * @param bool $send
+     */
+    public function sendExpect($send = true)
+    {
+        $this->sendExpect = $send;
+    }
+
+    /**
      * Opens a cURL session if not yet one open.
      *
      * @return null|false False in case there is already an open connection, else null;
@@ -171,6 +189,10 @@ class Client implements TransportInterface
         $request->setCredentials($this->credentials);
         foreach($this->defaultHeaders as $header) {
             $request->addHeader($header);
+        }
+
+        if (!$this->sendExpect) {
+            $request->addHeader("Expect:");
         }
 
         return $request;
