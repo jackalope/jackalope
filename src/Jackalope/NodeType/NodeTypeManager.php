@@ -276,9 +276,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
-        $nt = $this->createNodeType($ntd, $allowUpdate);
-        $this->addNodeType($nt);
-        return $nt;
+        $list = self::registerNodeTypes(array($ntd), $allowUpdate);
+        return each($nt);
     }
 
     /**
@@ -286,6 +285,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition
      * @param   bool    $allowUpdate    Whether an existing note type can be updated
+     * @return \PHPCR\NodeType\NodeType the node type corresponding to the type definition
      * @throws \PHPCR\NodeType\NodeTypeExistsException   If the node type is already existing and allowUpdate is false
      */
     protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
@@ -295,8 +295,10 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         }
         return $this->factory->get('NodeType\NodeType', array($this, $ntd));
     }
+
     /**
      * Registers or updates the specified array of NodeTypeDefinition objects.
+     *
      * This method is used to register or update a set of node types with mutual
      * dependencies. Returns an iterator over the resulting NodeType objects.
      * The effect of the method is "all or nothing"; if an error occurs, no node
@@ -304,8 +306,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @param array $definitions an array of NodeTypeDefinitions
      * @param boolean $allowUpdate a boolean
-     * @return Iterator over the registered node types implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
-     * @return \PHPCR\NodeType\NodeTypeIteratorInterface the registered node types.
+     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeDefinitionInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
      * @throws \PHPCR\InvalidNodeTypeDefinitionException - if a NodeTypeDefinition within the Collection is invalid or if the Collection contains an object of a type other than NodeTypeDefinition.
      * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and a NodeTypeDefinition within the Collection specifies a node type name that is already registered.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
@@ -316,12 +317,63 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         $nts = array();
         // prepare them first (all or nothing)
         foreach ($definitions as $definition) {
-            $nts[] = $this->createNodeType($ntd, $allowUpdate);
+            $nts[$definition->getName()] = $this->createNodeType($definition, $allowUpdate);
         }
+
+        $this->objectManager->registerNodeTypes($definitions);
+
+        // no need to fetch the nodes as with cnd, we already have the def and can
+        // now register them ourselves
         foreach ($nts as $nt) {
             $this->addNodeType($nt);
         }
+
         return new ArrayIterator($nts);
+    }
+
+    /**
+     * Register namespaces and new node types or update node types based on a
+     * jackrabbit cnd string
+     *
+     * From the Jackrabbit documentation:
+     * The Compact Namespace and Node Type Definition (CND) notation provides
+     * a compact standardized syntax for defining node types and making
+     * namespace declarations.
+     *
+     * A simple example is
+     *   <'phpcr'='http://www.doctrine-project.org/phpcr-odm'>
+     *   [phpcr:managed]
+     *     mixin
+     *     - phpcr:alias (string)
+     *
+     * For full documentation of the format, see
+     * http://jackrabbit.apache.org/node-type-notation.html
+     *
+     * This is Jackalope specific and not part of the PHPCR API!
+     *
+     * @param $cnd a string with cnd information
+     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeIteratorInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
+     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
+     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     *
+     * @author david at liip.ch
+     */
+    public function registerNodeTypesCnd($cnd)
+    {
+        //set fetched from backend to false to allow to load the new types from backend
+        $fetched = $this->fetchedAllFromBackend;
+        $this->fetchedAllFromBackend = false;
+        $this->objectManager->registerNodeTypesCnd($cnd);
+
+        //parse out type names and fetch types to return definitions of the new nodes
+        preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
+        foreach($names[1] as $name) {
+            $types[$name] = $this->getNodeType($name);
+        }
+        $this->fetchedAllFromBackend = $fetched;
+        return $types;
     }
 
     /**
@@ -342,8 +394,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         } else {
             throw new \PHPCR\NodeType\NoSuchNodeTypeException('NodeType not found: '.$name);
         }
-        // TODO remove from nodeTree
-        throw new NotImplementedException();
+        throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
     }
 
     /**

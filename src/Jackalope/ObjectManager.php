@@ -305,9 +305,11 @@ class ObjectManager
     }
 
     /**
-     * This is only a proxy to the transport it returns all node types if none is given or only the ones given as array.
+     * Returns node types named in the array or all types if no filter is given.
      *
-     * @param array $nodeTypes Empty for all or selected node types by name
+     * This is only a proxy to the transport
+     *
+     * @param array $nodeTypes Empty for all or specify node types by name
      * @return DOMDoocument containing the nodetype information
      */
     public function getNodeTypes($nodeTypes = array())
@@ -326,6 +328,26 @@ class ObjectManager
     public function getNodeType($nodeType)
     {
         return $this->getNodeTypes(array($nodeType));
+    }
+
+    /**
+     * Register node types with the backend.
+     *
+     * This is only a proxy to the transport
+     */
+    public function registerNodeTypes($types)
+    {
+        return $this->transport->registerNodeTypes($types);
+    }
+
+    /**
+     * Register node types from cnd with the backend.
+     *
+     * This is only a proxy to the transport
+     */
+    public function registerNodeTypesCnd($cnd)
+    {
+        return $this->transport->registerNodeTypesCnd($cnd);
     }
 
     /**

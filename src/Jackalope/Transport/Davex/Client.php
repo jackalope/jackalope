@@ -111,12 +111,12 @@ class Client implements TransportInterface
      * @var curl
      */
     protected $curl = null;
-    
-    /** 
+
+    /**
      *  A list of additional HTTP headers to be sent on each request
-     *  @var array[]string   
+     *  @var array[]string
      */
-     
+
     protected $defaultHeaders = array();
 
     /**
@@ -754,6 +754,49 @@ class Client implements TransportInterface
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
         return $dom;
+    }
+
+    /**
+     * Register namespaces and new node types or update node types based on a
+     * jackrabbit cnd string
+     *
+     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
+     *
+     * @param $cnd The cnd string
+     * @return bool true on success
+     *
+     * @author david at liip.ch
+     */
+    public function registerNodeTypesCnd($cnd)
+    {
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        $request->setBody($this->buildRegisterNodeTypeRequest($cnd));
+        $request->execute();
+        return true;
+    }
+
+    /**
+     * @param array $types a list of \PHPCR\NodeType\NodeTypeDefinitionInterface objects
+     * @return bool true on success
+     */
+    public function registerNodeTypes($types)
+    {
+        throw new \Jackalope\NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
+        //see http://jackrabbit.apache.org/node-type-notation.html
+    }
+
+    /**
+     * Build the xml required to register node types
+     *
+     * @param string $cnd the node type definition
+     * @return string XML with register request
+     *
+     * @author david at liip.ch
+     */
+    protected function buildRegisterNodeTypeRequest($cnd)
+    {
+        $cnd = str_replace(array('<','>'), array('&lt;','&gt;'), $cnd);
+        return '<?xml version="1.0" encoding="UTF-8" standalone="no"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:nodetypes-cnd xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.$cnd.'</dcr:nodetypes-cnd></D:prop></D:set></D:propertyupdate>';
     }
 
     /**
