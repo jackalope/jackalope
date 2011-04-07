@@ -121,7 +121,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($value instanceof \PHPCR\NodeInterface) {
             if ($this->type == \PHPCR\PropertyType::REFERENCE ||
                 $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
-                //FIXME how to test if node is referenceable?
+                //FIXME check for the mix:referenceable mixintype
                 //throw new \PHPCR\ValueFormatException('reference property may only be set to a referenceable node');
                 $this->value = $value->getIdentifier();
             } else {
@@ -172,6 +172,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getNativeValue()
     {
+        if ($this->type == \PHPCR\PropertyType::REFERENCE ||
+            $this->type == \PHPCR\PropertyType::WEAKREFERENCE ||
+            $this->type == \PHPCR\PropertyType::PATH) {
+            $this->getNode();
+        }
         return $this->value;
     }
 
