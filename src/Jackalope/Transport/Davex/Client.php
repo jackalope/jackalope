@@ -767,10 +767,10 @@ class Client implements TransportInterface
      *
      * @author david at liip.ch
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
-        $request->setBody($this->buildRegisterNodeTypeRequest($cnd));
+        $request->setBody($this->buildRegisterNodeTypeRequest($cnd, $allowUpdate));
         $request->execute();
         return true;
     }
@@ -793,9 +793,10 @@ class Client implements TransportInterface
      *
      * @author david at liip.ch
      */
-    protected function buildRegisterNodeTypeRequest($cnd)
+    protected function buildRegisterNodeTypeRequest($cnd, $allowUpdate)
     {
-        $cnd = str_replace(array('<','>'), array('&lt;','&gt;'), $cnd);
+        $cnd = '<dcr:cnd>'.str_replace(array('<','>'), array('&lt;','&gt;'), $cnd).'</dcr:cnd>';
+        $cnd .= '<dcr:allowupdate>'.($allowUpdate ? 'true' : 'false').'</dcr:allowupdate>';
         return '<?xml version="1.0" encoding="UTF-8" standalone="no"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:nodetypes-cnd xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.$cnd.'</dcr:nodetypes-cnd></D:prop></D:set></D:propertyupdate>';
     }
 

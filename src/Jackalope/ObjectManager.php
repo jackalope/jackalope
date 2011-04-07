@@ -347,9 +347,9 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        return $this->transport->registerNodeTypesCnd($cnd);
+        return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
     }
 
     /**

@@ -360,12 +360,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @author david at liip.ch
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         //set fetched from backend to false to allow to load the new types from backend
         $fetched = $this->fetchedAllFromBackend;
         $this->fetchedAllFromBackend = false;
-        $this->objectManager->registerNodeTypesCnd($cnd);
+        $this->objectManager->registerNodeTypesCnd($cnd, $allowUpdate);
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
