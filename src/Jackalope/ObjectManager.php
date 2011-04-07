@@ -1,6 +1,7 @@
 <?php
 /**
- * Class to handle nodes using a specific transport layer.
+ * Class to handle nodes and acting as Unit of Work for write operations using
+ * the transport interface.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  *
@@ -13,8 +14,9 @@ namespace Jackalope;
  * Implementation specific class that talks to the Transport layer to get nodes
  * and caches every node retrieved to improve performance.
  *
- * For update method, the object manager keeps track which nodes are dirty so it
- * knows what to give to transport to write to the backend.
+ * For write operations, the object manager acts as the Unit of Work handler:
+ * it keeps track which nodes are dirty and updates them with the transport
+ * interface.
  *
  * @package jackalope
  */

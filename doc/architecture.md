@@ -34,11 +34,9 @@ This layer implements the phpCR interfaces in pure, framework-agnostic PHP. It p
 
 See the README files in the main folder for how to set up the project.
 
-In the src folder, you find mainly classes with the names as defined by the
-PHPCR API. The two important classes not defined by the API are the
-ObjectManager and TransportInterface.
-ObjectManager caches nodes and talks to Transport.
-Transport is again capsulated with an interface. (See below)
+In the src folder, you find mainly classes with the names as defined by the PHPCR API. The two important classes not defined by the API are the ObjectManager and TransportInterface.
+ * ObjectManager caches nodes and talks to Transport. For write operations, it acts as "Unit of Work" handler.
+ * Transport is again capsulated with an interface. (See below)
 
 
 Storage layer using the WebDAV/davex protocol to talk to Jackrabbit
