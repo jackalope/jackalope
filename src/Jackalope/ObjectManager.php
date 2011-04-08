@@ -336,20 +336,28 @@ class ObjectManager
      * Register node types with the backend.
      *
      * This is only a proxy to the transport
+     *
+     * @param array $definitions an array of NodeTypeDefinitions
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @return bool true on success
      */
-    public function registerNodeTypes($types)
+    public function registerNodeTypes($types, $allowUpdate)
     {
-        return $this->transport->registerNodeTypes($types);
+        return $this->transport->registerNodeTypes($types, $allowUpdate);
     }
 
     /**
-     * Register node types from cnd with the backend.
+     * Implementation specific way to register node types from cnd with the backend.
      *
      * This is only a proxy to the transport
+     *
+     * @param $cnd a string with cnd information
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @return bool true on success
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        return $this->transport->registerNodeTypesCnd($cnd);
+        return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
     }
 
     /**

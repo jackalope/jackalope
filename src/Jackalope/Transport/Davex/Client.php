@@ -763,23 +763,25 @@ class Client implements TransportInterface
      * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
      *
      * @param $cnd The cnd string
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
      * @return bool true on success
      *
      * @author david at liip.ch
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
-        $request->setBody($this->buildRegisterNodeTypeRequest($cnd));
+        $request->setBody($this->buildRegisterNodeTypeRequest($cnd, $allowUpdate));
         $request->execute();
         return true;
     }
 
     /**
      * @param array $types a list of \PHPCR\NodeType\NodeTypeDefinitionInterface objects
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
      * @return bool true on success
      */
-    public function registerNodeTypes($types)
+    public function registerNodeTypes($types, $allowUpdate)
     {
         throw new \Jackalope\NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
         //see http://jackrabbit.apache.org/node-type-notation.html
@@ -793,9 +795,10 @@ class Client implements TransportInterface
      *
      * @author david at liip.ch
      */
-    protected function buildRegisterNodeTypeRequest($cnd)
+    protected function buildRegisterNodeTypeRequest($cnd, $allowUpdate)
     {
-        $cnd = str_replace(array('<','>'), array('&lt;','&gt;'), $cnd);
+        $cnd = '<dcr:cnd>'.str_replace(array('<','>'), array('&lt;','&gt;'), $cnd).'</dcr:cnd>';
+        $cnd .= '<dcr:allowupdate>'.($allowUpdate ? 'true' : 'false').'</dcr:allowupdate>';
         return '<?xml version="1.0" encoding="UTF-8" standalone="no"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:nodetypes-cnd xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.$cnd.'</dcr:nodetypes-cnd></D:prop></D:set></D:propertyupdate>';
     }
 

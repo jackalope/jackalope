@@ -354,7 +354,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * This is Jackalope specific and not part of the PHPCR API!
      *
      * @param $cnd a string with cnd information
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
      * @return Iterator over the registered \PHPCR\NodeType\NodeTypeIteratorInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
+     *
      * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
      * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
@@ -362,12 +364,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @author david at liip.ch
      */
-    public function registerNodeTypesCnd($cnd)
+    public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         //set fetched from backend to false to allow to load the new types from backend
         $fetched = $this->fetchedAllFromBackend;
         $this->fetchedAllFromBackend = false;
-        $this->objectManager->registerNodeTypesCnd($cnd);
+        $this->objectManager->registerNodeTypesCnd($cnd, $allowUpdate);
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
