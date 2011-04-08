@@ -267,8 +267,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * and then filled-in with definition information.
      *
      * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd an NodeTypeDefinition.
-     * @param boolean $allowUpdate a boolean
-     * @return \PHPCR\NodeType\NodeTypeInterface the registered node type
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @return \PHPCR\NodeType\NodeTypeInterface the registered or updated node type
+     *
      * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
      * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
@@ -305,8 +306,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * types are registered or updated.
      *
      * @param array $definitions an array of NodeTypeDefinitions
-     * @param boolean $allowUpdate a boolean
-     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeDefinitionInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
+     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeDefinitionInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding new or updated NodeType instances.
+     *
      * @throws \PHPCR\InvalidNodeTypeDefinitionException - if a NodeTypeDefinition within the Collection is invalid or if the Collection contains an object of a type other than NodeTypeDefinition.
      * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and a NodeTypeDefinition within the Collection specifies a node type name that is already registered.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
@@ -322,7 +324,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         $this->objectManager->registerNodeTypes($definitions);
 
-        // no need to fetch the nodes as with cnd, we already have the def and can
+        // no need to fetch the node types as with cnd, we already have the def and can
         // now register them ourselves
         foreach ($nts as $nt) {
             $this->addNodeType($nt);
