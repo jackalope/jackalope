@@ -1,0 +1,37 @@
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="bootstrap_doctrine.php">
+    <php>
+        <var name="jcr.user" value="admin" />
+        <var name="jcr.pass" value="admin" />
+        <var name="jcr.workspace" value="tests" />
+        <!-- Path to Doctrine stuff for transport -->
+        <var name="jcr.doctrine.loader" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="jcr.doctrine.commondir" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib" />
+        <var name="jcr.doctrine.dbaldir" value="/home/benny/code/php/wsnetbeans/dbal/lib" />
+    </php>
+
+    <testsuites>
+        <testsuite name="phpCR">
+            <directory>suite/tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>../</directory>
+            <exclude>
+                <directory>../tests</directory>
+                <directory>.</directory>
+                <file>../src/jackalope/transport/curl.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
