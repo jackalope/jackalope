@@ -1,6 +1,6 @@
 [submodule "api-test/suite"]
 	path = api-test/suite
-	url = git://github.com/jackalope/jackalope-api-tests.git
+	url = git://github.com/phpcr/phpcr-api-tests.git
 [submodule "lib/phpcr"]
 	path = lib/phpcr
-	url = git://github.com/jackalope/phpcr.git
+	url = git://github.com/phpcr/phpcr.git
