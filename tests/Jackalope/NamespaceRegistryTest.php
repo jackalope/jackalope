@@ -11,11 +11,12 @@ class NamespaceRegistryTest extends TestCase
     /**
      * Creates a Mock object of the dummy implementation of the TransportInterface.
      *
-     * @return TransportDummy
+     * @return Jackalope\TransportInterface
      */
     public function getTransportMockFixture()
     {
-        $transport = $this->getMock('Jackalope\TransportDummy');
+        // this was TransportDummy before, but you can mock interfaces!
+        $transport = $this->getMock('Jackalope\TransportInterface');
         return $transport;
     }
 
@@ -210,19 +211,4 @@ class NamespaceRegistryTest extends TestCase
              ),
         );
     }
-}
-
-/**
- * Dummy implementation of the transport interface to be able to mock it.
- *
- */
-class TransportDummy implements TransportInterface
-{
-    public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName){}
-
-    public function getRepositoryDescriptors(){}
-
-    public function getNamespaces(){}
-
-    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null) {}
 }
