@@ -78,6 +78,13 @@ function getJCRSession($config, $credentials = null) {
         //return $repository->login(null, null);
     }
 }
+
+function getFixtureLoader($config)
+{
+    require_once "suite/inc/importexport.php";
+    return new jackrabbit_importexport(__DIR__."/suite/fixtures/", (isset($config['jackalope_jar']) ? $config['jackalope_jar'] : null));
+}
+
 /** some constants */
 
 define('SPEC_VERSION_DESC', 'jcr.specification.version');
