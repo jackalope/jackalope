@@ -135,11 +135,12 @@ class DoctrineDBAL implements TransportInterface
     public function getItem($path)
     {
         $this->assertLoggedIn();
+        $path = ltrim($path, "/");
 
         $sql = "SELECT * FROM jcrnodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
         if (!$row) {
-            throw \PHPCR\ItemNotFoundException;
+            throw new \PHPCR\ItemNotFoundException("Item ".$path." not found.");
         }
 
         $data = array(
@@ -182,6 +183,7 @@ class DoctrineDBAL implements TransportInterface
             $data[$prop['name']] = $value;
             $data[":" . $prop['name']] = $type;
         }
+        var_dump($data);
         return $data;
     }
 
