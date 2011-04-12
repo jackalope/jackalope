@@ -317,11 +317,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getNode()
     {
-        if ($this->isMultiple()) {
-            $values = $this->value;
-        } else {
-            $values = array($this->value);
-        }
+        $values = $this->isMultiple() ? $this->value : array($this->value);
+
+        $results = array();
         switch($this->type) {
             case \PHPCR\PropertyType::PATH:
                 foreach($values as $value) {
@@ -345,11 +343,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             default:
                 throw new \PHPCR\ValueFormatException('Property is not a reference, weakreference or path');
         }
-        if ($this->isMultiple()) {
-            return $results;
-        } else {
-            return $results[0];
-        }
+
+        return $this->isMultiple() ? $results : $results[0];
     }
 
     /**
