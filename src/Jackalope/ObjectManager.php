@@ -72,7 +72,7 @@ class ObjectManager
      * Contains a list of items to be removed from the workspace upon save
      * @var array   [ absPath => 1 ]
      */
-    protected $itemsRemove = array();
+    protected $itemsRemove = array(); //TODO: only nodes can be in this list. call it nodesRemove?
 
     /**
      * Contains a list of node to be moved in the workspace upon save
@@ -121,6 +121,7 @@ class ObjectManager
      * Unfortunately there is currently no way to refetch a node once it has been fetched.
      *
      * @param string $absPath The absolute path of the node to create.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
      * @return \PHPCR\Node
      *
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
@@ -135,7 +136,7 @@ class ObjectManager
         }
         if (empty($this->objectsByPath[$class][$absPath])) {
             if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (deleted in current session): ' . $absPath);
+                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
             }
             // check whether a parent node was removed
             foreach ($this->itemsRemove as $path=>$dummy) {
@@ -412,7 +413,7 @@ class ObjectManager
 
         // remove nodes/properties
         foreach ($this->itemsRemove as $path => $dummy) {
-            $this->transport->deleteItem($path);
+            $this->transport->deleteNode($path);
         }
 
         // move nodes/properties
@@ -434,7 +435,7 @@ class ObjectManager
         foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
-                $this->transport->storeItem($path, $item->getProperties(), $item->getNodes());
+                $this->transport->storeNode($path, $item->getProperties(), $item->getNodes());
             } elseif ($item instanceof \PHPCR\PropertyInterface) {
                 $this->transport->storeProperty($path, $item);
             } else {
@@ -495,7 +496,11 @@ class ObjectManager
     }
 
     /**
-     * Removes the cache of the predecessor after the node has been checked in
+     * Removes the cache of the predecessor version after the node has been checked in
+     *
+     * @see VersionManager::checkin
+     *
+     * @return VersionInterface node version
      */
     public function checkin($absPath)
     {
@@ -510,9 +515,22 @@ class ObjectManager
         }
         return $node;
     }
+    /**
+     * Removes the cache of the predecessor version after the node has been checked in
+     *
+     * @see VersionManager::checkin
+     *
+     * @return void
+     */
+    public function checkout($absPath)
+    {
+        $this->getTransport()->checkoutItem($absPath);
+    }
 
     /**
      * Removes the node's cache after it has been restored.
+     *
+     * TODO: This is incomplete. Needs batch processing to avoid chicken-and-egg problems
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
@@ -524,6 +542,17 @@ class ObjectManager
             unset($this->objectsByPath['Node'][$absPath]);
         }
         $this->getTransport()->restoreItem($removeExisting, $vpath, $absPath);
+    }
+
+    /**
+     * Get the uuid of the version history node at $path
+     *
+     * @param string $path the path to the node we want the version
+     * @return string uuid of the version history node
+     */
+    public function getVersionHistory($path)
+    {
+        return $this->getTransport()->getVersionHistory($path);
     }
 
     /**
@@ -544,8 +573,10 @@ class ObjectManager
     }
 
     /**
+     * Remove a node or a property.
+     *
      * @param string $absPath the path to the node, including the node identifier
-     * @param string $propertyName optional, property name to delete from the given node's path
+     * @param string $propertyName optional, property name to delete from the given node's path instead of deleting the node
      *
      * @throws \PHPCR\RepositoryException If node cannot be found at given path
      */
