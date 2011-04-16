@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <table name="jcrworkspaces">
+    <column>id</column>
+    <column>name</column>
+    <row>
+      <value>1</value>
+      <value>tests</value>
+    </row>
+  </table>
+  <table name="jcrnodes">
+    <column>path</column>
+    <column>workspace_id</column>
+    <column>identifier</column>
+    <column>type</column>
+    <row>
+      <value></value>
+      <value>1</value>
+      <value>1</value>
+      <value>nt:unstructured</value>
+    </row>
+    <row>
+      <value>queryNode</value>
+      <value>1</value>
+      <value>2</value>
+      <value>nt:query</value>
+    </row>
+  </table>
+  <table name="jcrprops">
+    <column>path</column>
+    <column>workspace_id</column>
+    <column>name</column>
+    <column>node_identifier</column>
+    <column>type</column>
+    <column>string_data</column>
+    <column>int_data</column>
+    <column>float_data</column>
+    <column>clob_data</column>
+    <column>datetime_data</column>
+    <row>
+      <value>queryNode/jcr:language</value>
+      <value>1</value>
+      <value>jcr:language</value>
+      <value>2</value>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>xpath</value>
+      <null/>
+    </row>
+    <row>
+      <value>queryNode/jcr:statement</value>
+      <value>1</value>
+      <value>jcr:statement</value>
+      <value>2</value>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>//idExample[jcr:mimeType="text/plain"]</value>
+      <null/>
+    </row>
+  </table>
+</dataset>

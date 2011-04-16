@@ -40,21 +40,27 @@ $loader->register();
  */
 require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
+$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array('driver' => 'pdo_mysql', 'user' => 'root', 'password' => '', 'dbname' => 'jcrtests'));
+$schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
+try {
+    foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+        $dbConn->exec($sql);
+    }
+} catch(PDOException $e) {
+
+}
+
 /**
  * Repository lookup is implementation specific.
  * @param config The configuration where to find the repository
  * @return the repository instance
  */
 function getRepository($config) {
-    $conn = \Doctrine\DBAL\DriverManager::getConnection(array('driver' => 'pdo_sqlite', 'memory' => true));
-    $schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
-    foreach ($schema->toSql($conn->getDatabasePlatform()) AS $sql) {
-        $conn->exec($sql);
-    }
-    $conn->insert("jcrworkspaces", array("name" => "tests"));
+    global $dbConn;
+    $dbConn->insert("jcrworkspaces", array("name" => "tests"));
     
-    $transport = new \Jackalope\Transport\DoctrineDBAL($conn);
-    $GLOBALS['pdo'] = $conn->getWrappedConnection();
+    $transport = new \Jackalope\Transport\DoctrineDBAL($dbConn);
+    $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
     return new \Jackalope\Repository(null, null, $transport);
 }
 

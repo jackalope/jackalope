@@ -68,21 +68,15 @@
       <value>nt:folder</value>
     </row>
     <row>
-      <value>tests_read_access_base/multiValueProperty/deepnode</value>
-      <value>1</value>
-      <value>10</value>
-      <value>nt:folder</value>
-    </row>
-    <row>
       <value>tests_read_access_base/numberPropertyNode</value>
       <value>1</value>
-      <value>11</value>
+      <value>10</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/numberPropertyNode/jcr:content</value>
       <value>1</value>
-      <value>12</value>
+      <value>11</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -102,23 +96,11 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>2</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.431+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>2</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>admin</value>
+      <value>2009-04-27T13:00:54.082+02:00</value>
       <null/>
     </row>
     <row>
@@ -126,23 +108,11 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>3</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.432+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/index.txt/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>3</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>admin</value>
+      <value>2009-04-27T13:01:04.758+02:00</value>
       <null/>
     </row>
     <row>
@@ -186,11 +156,11 @@
       <value>1</value>
       <value>jcr:mixinTypes</value>
       <value>5</value>
-      <value>7</value>
+      <value>1</value>
+      <null/>
+      <null/>
+      <null/>
       <value>mix:referenceable</value>
-      <null/>
-      <null/>
-      <null/>
       <null/>
     </row>
     <row>
@@ -210,23 +180,11 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>5</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.445+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/idExample/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>5</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>admin</value>
+      <value>2009-04-27T13:01:04.758+02:00</value>
       <null/>
     </row>
     <row>
@@ -266,214 +224,46 @@
       <null/>
     </row>
     <row>
-      <value>tests_read_access_base/test:namespacedNode/jcr:created</value>
-      <value>1</value>
-      <value>jcr:created</value>
-      <value>7</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.450+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/test:namespacedNode/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>7</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>admin</value>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/emptyExample/jcr:created</value>
-      <value>1</value>
-      <value>jcr:created</value>
-      <value>8</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.450+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/emptyExample/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>8</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>admin</value>
-      <null/>
-    </row>
-    <row>
       <value>tests_read_access_base/multiValueProperty/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
       <value>9</value>
-      <value>7</value>
-      <value>mix:referenceable</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:uuid</value>
-      <value>1</value>
-      <value>jcr:uuid</value>
-      <value>9</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>14e18ef3-be20-4985-bee9-7bb4763b31de</value>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:baseVersion</value>
-      <value>1</value>
-      <value>jcr:baseVersion</value>
-      <value>9</value>
-      <value>9</value>
-      <value>51b8dc5b-5f0d-49db-8ae2-39a74abb549c</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:created</value>
-      <value>1</value>
-      <value>jcr:created</value>
-      <value>9</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.451+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>9</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>admin</value>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:isCheckedOut</value>
-      <value>1</value>
-      <value>jcr:isCheckedOut</value>
-      <value>9</value>
-      <value>6</value>
-      <null/>
-      <value>true</value>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:predecessors</value>
-      <value>1</value>
-      <value>jcr:predecessors</value>
-      <value>9</value>
-      <value>9</value>
-      <value>51b8dc5b-5f0d-49db-8ae2-39a74abb549c</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/jcr:versionHistory</value>
-      <value>1</value>
-      <value>jcr:versionHistory</value>
-      <value>9</value>
-      <value>9</value>
-      <value>e9a6150e-fbc1-4762-91da-f170472f14b7</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/deepnode/jcr:created</value>
-      <value>1</value>
-      <value>jcr:created</value>
-      <value>10</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.452+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/multiValueProperty/deepnode/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>10</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>admin</value>
+      <value>mix:referenceable mix:versionable</value>
       <null/>
     </row>
     <row>
       <value>tests_read_access_base/numberPropertyNode/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>11</value>
-      <value>5</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>2011-03-21T14:34:20.452+01:00</value>
-    </row>
-    <row>
-      <value>tests_read_access_base/numberPropertyNode/jcr:createdBy</value>
-      <value>1</value>
-      <value>jcr:createdBy</value>
-      <value>11</value>
+      <value>10</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>admin</value>
+      <value>2009-04-27T13:01:04.758+02:00</value>
       <null/>
     </row>
     <row>
-      <value>tests_read_access_base/numberPropertyNode/jcr:content/foo</value>
+      <value>tests_read_access_base/numberPropertyNode/jcr:content/longNumber</value>
       <value>1</value>
-      <value>foo</value>
-      <value>12</value>
+      <value>longNumber</value>
+      <value>11</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
-      <value>bar</value>
+      <value>999</value>
       <null/>
     </row>
     <row>
       <value>tests_read_access_base/numberPropertyNode/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>12</value>
+      <value>11</value>
       <value>1</value>
       <null/>
       <null/>
@@ -485,7 +275,7 @@
       <value>tests_read_access_base/numberPropertyNode/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>12</value>
+      <value>11</value>
       <value>1</value>
       <null/>
       <null/>
@@ -497,48 +287,12 @@
       <value>tests_read_access_base/numberPropertyNode/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>12</value>
+      <value>11</value>
       <value>1</value>
       <null/>
       <null/>
       <null/>
       <value>text/plain</value>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/numberPropertyNode/jcr:content/longNumber</value>
-      <value>1</value>
-      <value>longNumber</value>
-      <value>12</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>999</value>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/numberPropertyNode/jcr:content/ref</value>
-      <value>1</value>
-      <value>ref</value>
-      <value>12</value>
-      <value>9</value>
-      <value>842e61c0-09ab-42a9-87c0-308ccc90e6f4</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>tests_read_access_base/numberPropertyNode/jcr:content/yesOrNo</value>
-      <value>1</value>
-      <value>yesOrNo</value>
-      <value>12</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
-      <value>true</value>
       <null/>
     </row>
   </table>

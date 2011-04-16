@@ -45,15 +45,17 @@ class RepositorySchema
         $properties = $schema->createTable('jcrprops');
         $properties->addColumn('path', 'string');
         $properties->addColumn('workspace_id', 'integer');
+        $properties->addColumn('idx', 'integer', array('default' => 0));
         $properties->addColumn('name', 'string');
         $properties->addColumn('node_identifier', 'string');
         $properties->addColumn('type', 'integer');
+        $properties->addColumn('multi_valued', 'integer', array('default' => 0));
         $properties->addColumn('string_data', 'string', array('notnull' => false, 'length' => 4000));
         $properties->addColumn('int_data', 'integer', array('notnull' => false));
         $properties->addColumn('float_data', 'float', array('notnull' => false));
         $properties->addColumn('clob_data', 'text', array('notnull' => false));
         $properties->addColumn('datetime_data', 'datetime', array('notnull' => false));
-        $properties->setPrimaryKey(array('path', 'workspace_id'));
+        $properties->setPrimaryKey(array('path', 'workspace_id', 'idx'));
         $properties->addIndex(array('node_identifier'));
         $properties->addIndex(array('string_data'));
 
@@ -62,6 +64,33 @@ class RepositorySchema
         $binary->addColumn('workspace_id', 'integer');
         $binary->addColumn('data', 'text'); // TODO BLOB!
         $binary->setPrimaryKey(array('path', 'workspace_id'));
+
+        $types = $schema->createTable('jcrtype_nodes');
+        $types->addColumn('node_type_id', 'integer', array('autoincrement' => true));
+        $types->addColumn('name', 'string');
+        $types->addColumn('supertypes', 'string');
+        $types->addColumn('is_abstract', 'boolean');
+        $types->addColumn('protected', 'boolean');
+        $types->addColumn('is_mixin', 'boolean');
+        $types->addColumn('queryable', 'boolean');
+        $types->addColumn('primary_item', 'string');
+        $types->setPrimaryKey(array('id'));
+
+        $propTypes = $schema->createTable('jcrtype_props');
+        $propTypes->addColumn('node_type_id', 'integer');
+        $propTypes->addColumn('name', 'string');
+        $propTypes->addColumn('protected', 'boolean');
+        $propTypes->addColumn('auto_created', 'boolean');
+        $propTypes->addColumn('mandatory', 'boolean');
+        $propTypes->addColumn('property_type', 'integer');
+
+        $propContraints = $schema->createTable('jcrtype_props_contraints');
+
+        $childTypes = $schema->createTable('jcrtype_childs');
+        $childTypes->addColumn('node_type_id', 'integer');
+        $childTypes->addColumn('name', 'string');
+        $childTypes->addColumn('primary_types', 'string');
+        $childTypes->addColumn('default_type', 'string');
 
         return $schema;
     }
