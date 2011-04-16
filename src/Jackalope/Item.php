@@ -11,15 +11,6 @@ namespace Jackalope;
  */
 abstract class Item implements \PHPCR\ItemInterface
 {
-    /** @var Factory   The jackalope object factory for this object */
-    protected $factory;
-
-    /** @var Session    The session this item belongs to */
-    protected $session;
-
-    /** @var ObjectManager  The object manager to get nodes and properties from */
-    protected $objectManager;
-
     /** @var bool   false if item is read from backend, true if created locally in this session */
     protected $new;
 
@@ -40,6 +31,15 @@ abstract class Item implements \PHPCR\ItemInterface
 
     /** @var bool   Whether this item is a node  */
     protected $isNode = false;
+
+    /** @var Factory   The jackalope object factory for this object */
+    protected $factory;
+
+    /** @var Session    The session this item belongs to */
+    protected $session;
+
+    /** @var ObjectManager  The object manager to get nodes and properties from */
+    protected $objectManager;
 
     /**
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
