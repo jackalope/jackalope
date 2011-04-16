@@ -16,8 +16,8 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
         $this->objectmanager = $objectmanager;
         $this->factory = $factory;
     }
-    
-    
+
+
     /**
      * Creates for the versionable node at absPath a new version with a system
      * generated version name and returns that version (which will be the new
@@ -58,11 +58,11 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-     
-     // TODO @return \PHPCR\Version\VersionInterface the created version.
-     public function checkin($absPath) 
+     public function checkin($absPath)
      {
-         
+         //FIXME: make sure this doc above is correct:
+         // If this node is already checked-in, this method has no effect but returns
+         // the current base version of this node.
          return $this->objectmanager->checkin($absPath);
      }
 
@@ -91,10 +91,9 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-     public function checkout($absPath) 
+     public function checkout($absPath)
      {
-         $this->objectmanager->getTransport()->checkoutItem($absPath);
-
+         $this->objectmanager->checkout($absPath);
      }
 
     /**
@@ -114,7 +113,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function checkpoint($absPath) 
+    public function checkpoint($absPath)
     {
         throw new NotImplementedException();
     }
@@ -134,7 +133,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
-    public function isCheckedOut($absPath) 
+    public function isCheckedOut($absPath)
     {
         throw new NotImplementedException();
     }
@@ -149,7 +148,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function getVersionHistory($absPath) 
+    public function getVersionHistory($absPath)
     {
         return $this->factory->get('Version\VersionHistory', array($this->objectmanager,$absPath));
     }
@@ -163,7 +162,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getBaseVersion($absPath) 
+    public function getBaseVersion($absPath)
     {
         throw new NotImplementedException();
     }
@@ -236,7 +235,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * need to act accordingly in your implementation.
      *
      * @param boolean $removeExisting a boolean flag that governs what happens in case of an identifier collision
-     * @param string|array|\PHPCR\Version\VersionInterface $version a version name, an an array of Version objects
+     * @param string|array|\PHPCR\Version\VersionInterface $version a version name, an array of Version objects
      *                                                              or a Version object
      * @param string $absPath The absolute path to a node the prvileges shall be fetched of.
      * @return void
@@ -251,8 +250,9 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function restore($removeExisting, $version, $absPath = NULL) 
+    public function restore($removeExisting, $version, $absPath = NULL)
     {
+        //FIXME: This does not handle all cases
         $vh = $this->getVersionHistory($absPath);
         $version = $vh->getVersion($version);
         $vpath = $version->getPath();
@@ -297,7 +297,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException If another error occurs.
      * @api
      */
-    public function restoreByLabel($absPath, $versionLabel, $removeExisting) 
+    public function restoreByLabel($absPath, $versionLabel, $removeExisting)
     {
         throw new NotImplementedException();
     }
@@ -381,7 +381,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function merge($source, $srcWorkspace = NULL, $bestEffort = NULL, $isShallow = FALSE) 
+    public function merge($source, $srcWorkspace = NULL, $bestEffort = NULL, $isShallow = FALSE)
     {
         throw new NotImplementedException();
     }
@@ -452,7 +452,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function doneMerge($absPath, \PHPCR\Version\VersionInterface $version) 
+    public function doneMerge($absPath, \PHPCR\Version\VersionInterface $version)
     {
         throw new NotImplementedException();
     }
@@ -479,7 +479,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function cancelMerge($absPath, \PHPCR\Version\VersionInterface $version) 
+    public function cancelMerge($absPath, \PHPCR\Version\VersionInterface $version)
     {
         throw new NotImplementedException();
     }
@@ -506,7 +506,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createConfiguration($absPath, \PHPCR\Version\VersionInterface $baseline) 
+    public function createConfiguration($absPath, \PHPCR\Version\VersionInterface $baseline)
     {
         throw new NotImplementedException();
     }
@@ -524,7 +524,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setActivity(\PHPCR\NodeInterface $activity) 
+    public function setActivity(\PHPCR\NodeInterface $activity)
     {
         throw new NotImplementedException();
     }
@@ -538,7 +538,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getActivity() 
+    public function getActivity()
     {
         throw new NotImplementedException();
     }
@@ -558,7 +558,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createActivity($title) 
+    public function createActivity($title)
     {
         throw new NotImplementedException();
     }
@@ -574,7 +574,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function removeActivity(\PHPCR\NodeInterface $activityNode) 
+    public function removeActivity(\PHPCR\NodeInterface $activityNode)
     {
         throw new NotImplementedException();
     }

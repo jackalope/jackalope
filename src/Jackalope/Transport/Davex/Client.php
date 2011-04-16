@@ -333,6 +333,15 @@ class Client implements TransportInterface
         return $request->execute();
     }
 
+    /**
+     * Check-in item at path.
+     *
+     * @param string $path
+     * @return string path to the new version
+     *
+     * @throws PHPCR\UnsupportedRepositoryOperationException
+     * @throws PHPCR\RepositoryException
+     */
     public function checkinItem($path)
     {
         try {
@@ -341,18 +350,27 @@ class Client implements TransportInterface
             if ($curl->getHeader("Location")) {
                 return $this->cleanUriFromWebserverRoot(urldecode($curl->getHeader("Location")));
             } else {
-                // not sure
+                // TODO: not sure what this means
                 throw new \PHPCR\RepositoryException();
             }
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
             } else {
-                throw new \PHPCR\RepositoryException();
+                throw new \PHPCR\RepositoryException($e->getMessage());
             }
         }
     }
 
+    /**
+     * Check-out item at path.
+     *
+     * @param string $path
+     * @return void
+     *
+     * @throws PHPCR\UnsupportedRepositoryOperationException
+     * @throws PHPCR\RepositoryException
+     */
     public function checkoutItem($path)
     {
         $this->ensureAbsolutePath($path);
@@ -390,7 +408,7 @@ class Client implements TransportInterface
     public function getVersionHistory($path)
     {
         $this->ensureAbsolutePath($path);
-        $request = $this->getRequest(Request::GET,$path."/jcr:versionHistory");
+        $request = $this->getRequest(Request::GET, $path."/jcr:versionHistory");
         $resp = $request->execute();
         return $resp;
     }
@@ -451,14 +469,14 @@ class Client implements TransportInterface
     }
 
     /**
-     * Deletes a node and its subnodes
+     * Deletes a node and the whole subtree under it
      *
-     * @param string $path Absolute path to identify a special item.
+     * @param string $path Absolute path to the node
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteItem($path)
+    public function deleteNode($path)
     {
         $this->ensureAbsolutePath($path);
 
@@ -527,19 +545,20 @@ class Client implements TransportInterface
         $request->execute();
     }
 
-
     /**
-     * Stores an item to the given absolute path
+     * Recursively store a node and its children to the given absolute path.
      *
-     * @param string $path Absolute path to identify a special item.
-     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType
+     * The basename of the path is the name of the node
+     *
+     * @param string $path Absolute path to the node, name is part after last /
+     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType FIXME: would we need this?
      * @param \Traversable $properties array of \PHPCR\PropertyInterface objects
      * @param \Traversable $children array of \PHPCR\NodeInterface objects
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeItem($path, $properties, $children)
+    public function storeNode($path, $properties, $children)
     {
         $this->ensureAbsolutePath($path);
 
@@ -561,6 +580,16 @@ class Client implements TransportInterface
         return true;
     }
 
+    /**
+     * create the node markup and a list of value dispatches for multivalue properties
+     *
+     * this is a recursive function.
+     *
+     * @param string $path path to the current node, basename is the name of the node
+     * @param array $properties of this node
+     * @param array $children nodes of this node
+     * @param array $buffer list of xml strings to set multivalue properties
+     */
     protected function createNodeMarkup($path, $properties, $children, array &$buffer)
     {
         $body = '<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" sv:name="'.basename($path).'">';
@@ -660,6 +689,7 @@ class Client implements TransportInterface
             $value = str_replace(']]>',']]]]><![CDATA[>',$value);
             return '<![CDATA['.$value.']]>';
         }
+        //FIXME: handle boolean correctly. strings true and false?
         return $value;
     }
 

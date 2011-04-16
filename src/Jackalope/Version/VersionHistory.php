@@ -107,20 +107,17 @@ class VersionHistory extends \Jackalope\Node {
     public function getAllVersions()
     {
         if (!$this->versions) {
-            $uuid = $this->objectmanager->getTransport()->getVersionHistory($this->path);
+            $uuid = $this->objectmanager->getVersionHistory($this->path);
             $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
             $results = array();
             $rootNode = $node->getNode('jcr:rootVersion', 'Version\Version');
-            $results[$rootNode->getName()] = $rootNode; 
+            $results[$rootNode->getName()] = $rootNode;
             $this->versions = array_merge($results, $this->getSuccessors($rootNode));
         }
         return new \ArrayIterator($this->versions);
-
-        
     }
 
     protected function getSuccessors($node) {
-
         $successors = $node->getSuccessors();
         $results = array();
         foreach ($successors as $successor) {
@@ -349,5 +346,5 @@ class VersionHistory extends \Jackalope\Node {
     {
         throw new NotImplementedException();
     }
-    
+
 }

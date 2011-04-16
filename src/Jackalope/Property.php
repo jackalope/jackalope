@@ -168,13 +168,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * PHPCR Note: This is an additional method not found in JSR-283
      *
+     * References and Weakreferences are resolved to node instances, while path
+     * is returned as string.
+     *
      * @return mixed value of this property, or array in case of multi-value
      */
     public function getNativeValue()
     {
         if ($this->type == \PHPCR\PropertyType::REFERENCE ||
-            $this->type == \PHPCR\PropertyType::WEAKREFERENCE ||
-            $this->type == \PHPCR\PropertyType::PATH) {
+            $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
             $this->getNode();
         }
         return $this->value;
@@ -315,21 +317,34 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getNode()
     {
-        $this->checkMultiple(); //FIXME: multi-value
+        $values = $this->isMultiple() ? $this->value : array($this->value);
+
+        $results = array();
         switch($this->type) {
             case \PHPCR\PropertyType::PATH:
-                return $this->objectManager->getNode($this->value, $this->parentPath);
+                foreach($values as $value) {
+                    $results[] = $this->objectManager->getNode($value, $this->parentPath);
+                }
+                break;
             case \PHPCR\PropertyType::REFERENCE:
                 try {
-                    return $this->objectManager->getNode($this->value);
+                    foreach($values as $value) {
+                        $results[] = $this->objectManager->getNode($value);
+                    }
                 } catch(\PHPCR\ItemNotFoundException $e) {
                     throw new \PHPCR\RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
                 }
+                break;
             case \PHPCR\PropertyType::WEAKREFERENCE:
-                return $this->objectManager->getNode($this->value);
+                foreach($values as $value) {
+                    $results[] = $this->objectManager->getNode($value);
+                }
+                break;
             default:
                 throw new \PHPCR\ValueFormatException('Property is not a reference, weakreference or path');
         }
+
+        return $this->isMultiple() ? $results : $results[0];
     }
 
     /**
