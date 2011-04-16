@@ -48,9 +48,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             } else {
                 // It's probably a property type
                 if (0 === strpos($key, ':')) {
+                    $key = substr($key, 1);
                     // It's a binary property and we just got its length
-                    if (is_int($value)) {
-                        $key = substr($key, 1);
+                    if (is_int($value) && !isset($rawData[$key])) {
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -100,7 +100,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     default:
                         //TODO: if we create node locally, $rawData might be a plain array. So far this is not triggered, but its a bit flaky
                         // parsing of types done according to: http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
-                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
+                        $type = isset($rawData[':' . $key]) ? $rawData[':' . $key] : Helper::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(

@@ -356,7 +356,7 @@ class Request
     public function executeJson()
     {
         $response = $this->execute();
-        $json = json_decode($response);
+        $json = json_decode($response, true);
 
         if (null === $json && 'null' !== strtolower($response)) {
             throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} {$this->uri} \nResponse: \n$response");
