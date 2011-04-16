@@ -31,6 +31,7 @@ class DoctrineDBAL implements TransportInterface
     private $conn;
     private $loggedIn = false;
     private $workspaceId;
+    private $nodeTypes = array();
 
     public function __construct(Connection $conn)
     {
@@ -119,7 +120,11 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getAccessibleWorkspaceNames()
     {
-
+        $workspaceNames = array();
+        foreach ($this->conn->fetchAll("SELECT name FROM jcrworkspaces") AS $row) {
+            $workspaceNames[] = $row['name'];
+        }
+        return $workspaceNames;
     }
 
     /**
@@ -140,7 +145,7 @@ class DoctrineDBAL implements TransportInterface
         $sql = "SELECT * FROM jcrnodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
         if (!$row) {
-            throw new \PHPCR\ItemNotFoundException("Item ".$path." not found.");
+            throw new \PHPCR\ItemNotFoundException("Item /".$path." not found.");
         }
 
         $data = array(
@@ -183,7 +188,6 @@ class DoctrineDBAL implements TransportInterface
             $data[$prop['name']] = $value;
             $data[":" . $prop['name']] = $type;
         }
-        var_dump($data);
         return $data;
     }
 
@@ -260,7 +264,7 @@ class DoctrineDBAL implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteItem($path)
+    public function deleteNode($path)
     {
         $this->assertLoggedIn();
 
@@ -332,7 +336,7 @@ class DoctrineDBAL implements TransportInterface
     }
 
     /**
-     * Stores an item to the given absolute path
+     * Stores a node to the given absolute path
      *
      * @param string $path Absolute path to identify a special item.
      * @param \PHPCR\NodeType\NodeTypeInterface $primaryType
@@ -342,7 +346,7 @@ class DoctrineDBAL implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeItem($path, $properties, $children)
+    public function storeNode($path, $properties, $children)
     {
         $this->assertLoggedIn();
 
