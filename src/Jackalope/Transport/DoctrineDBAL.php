@@ -48,6 +48,8 @@ class DoctrineDBAL implements TransportInterface
         ),
     );
 
+    private $nodeIdentifiers = array();
+
     public function __construct(Connection $conn)
     {
         $this->conn = $conn;
@@ -166,6 +168,7 @@ class DoctrineDBAL implements TransportInterface
         $data = new \stdClass();
         $data->{'jcr:uuid'} = $row['identifier'];
         $data->{'jcr:primaryType'} = $row['type'];
+        $this->nodeIdentifiers[$path] = $row['identifier'];
 
         $sql = "SELECT path FROM jcrnodes WHERE parent = ? AND workspace_id = ?";
         $children = $this->conn->fetchAll($sql, array($path, $this->workspaceId));
@@ -293,6 +296,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function deleteNode($path)
     {
+        $path = ltrim($path, '/');
         $this->assertLoggedIn();
 
         $match = $path."%";
@@ -322,8 +326,6 @@ class DoctrineDBAL implements TransportInterface
             return true;
         } catch(\Exception $e) {
             $this->conn->rollBack();
-
-            #throw new \PHPCR\RepositoryException("Could not delete item at path ".$path);
             return false;
         }
     }
@@ -338,6 +340,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function deleteProperty($path)
     {
+        $path = ltrim($path, '/');
         $this->assertLoggedIn();
 
         $query = "DELETE FROM jcrprops WHERE path = ? AND workspace_id = ?";
@@ -375,6 +378,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function storeNode($path, $properties, $children)
     {
+        $path = ltrim($path, "/");
         $this->assertLoggedIn();
 
         $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : $this->generateUUID();
@@ -387,13 +391,14 @@ class DoctrineDBAL implements TransportInterface
                 'workspace_id' => $this->workspaceId,
             ));
         }
+        $this->nodeIdentifiers[$path] = $nodeIdentifier;
 
         foreach ($properties AS $property) {
             if ($property->getName() == 'jcr:uuid' || $property->getName() == 'jcr:primaryType') {
                 continue;
             }
 
-            $this->storeProperty($path, $property);
+            $this->storeProperty($property->getPath(), $property);
         }
     }
 
@@ -431,16 +436,25 @@ class DoctrineDBAL implements TransportInterface
      */
     public function storeProperty($path, \PHPCR\PropertyInterface $property)
     {
+        $path = ltrim($path, '/');
         // TODO: Upsert
         /* @var $property \PHPCR\PropertyInterface */
         $idx = 0;
-        $data = array('path' => $property->getPath(), 'workspace_id' => $this->workspaceId, 'idx' => 0);
         $this->conn->delete('jcrprops', array(
-            'path' => $property->getPath(),
+            'path' => $path,
             'workspace_id' => $this->workspaceId,
-            'multi_valued' => $property->isMultiple() ? 1 : 0,
         ));
 
+        $name = explode("/", $path);
+        $name = end($name);
+        $data = array(
+            'path' => $path,
+            'workspace_id' => $this->workspaceId,
+            'name' => $name,
+            'idx' => 0,
+            'multi_valued' => $property->isMultiple() ? 1 : 0,
+            'node_identifier' => $this->nodeIdentifiers[ltrim($property->getParent()->getPath(), '/')]
+        );
         $data['type'] = $property->getType();
         $isBinary = false;
         switch ($data['type']) {
@@ -486,7 +500,7 @@ class DoctrineDBAL implements TransportInterface
         if ($property->isMultiple()) {
             foreach ($values AS $value) {
                 $data[$dataFieldName] = $value;
-                $data['idx'] = ++$idx;
+                $data['idx'] = $idx++;
                 $this->conn->insert('jcrprops', $data);
             }
         } else {
@@ -547,9 +561,30 @@ class DoctrineDBAL implements TransportInterface
             <supertype>mix:created</supertype>
         </supertypes>
     </nodeType>
+    <nodeType name="nt:file" isMixin="false" isAbstract="false">
+        <supertypes>
+            <supertype>nt:hierachy</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType name="nt:folder" isMixin="false" isAbstract="false">
+        <supertypes>
+            <supertype>nt:hierachy</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType name="nt:resource" isMixin="false" isAbstract="false" primaryItemName="jcr:data">
+        <supertypes>
+            <supertype>mix:mimeType</supertype>
+            <supertype>mix:modified</supertype>
+        </supertypes>
+        <propertyDefinition name="jcr:created" requiredType="BINARY" autoCreated="false" protected="false" onParentVersion="COPY" />
+    </nodeType>
     <nodeType name="mix:created" isMixin="true">
         <propertyDefinition name="jcr:created" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
         <propertyDefinition name="jcr:createdBy" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+    </nodeType>
+    <nodeType name="mix:mimeType" isMixin="true">
+        <propertyDefinition name="jcr:mimeType" requiredType="DATE" autoCreated="false" protected="true" onParentVersion="COPY" />
+        <propertyDefinition name="jcr:encoding" requiredType="STRING" autoCreated="false" protected="true" onParentVersion="COPY" />
     </nodeType>
     <nodeType name="mix:lastModified" isMixin="true">
         <propertyDefinition name="jcr:lastModified" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
