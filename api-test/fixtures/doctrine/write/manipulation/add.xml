@@ -10,113 +10,132 @@
   </table>
   <table name="jcrnodes">
     <column>path</column>
+    <column>parent</column>
     <column>workspace_id</column>
     <column>identifier</column>
     <column>type</column>
     <row>
       <value></value>
+      <value>-1</value>
       <value>1</value>
       <value>1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add</value>
+      <value></value>
       <value>1</value>
       <value>2</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNode</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>4</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath/test:namespacedNode</value>
+      <value>tests_write_manipulation_add/testAddNodeWithPath</value>
       <value>1</value>
       <value>5</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeFileType</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>6</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeUnstructuredType</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>7</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddPropertyOnUnstructured</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>8</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMultiValuePropertyOnUnstructured</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeMissingType</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>10</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithInexistingType</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>11</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeExisting</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>12</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodePathNotFound</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>13</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeToProperty</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>14</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithIndex</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>15</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeChild</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>16</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnNewNode</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>17</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnExistingNode</value>
+      <value>tests_write_manipulation_add</value>
       <value>1</value>
       <value>18</value>
       <value>nt:unstructured</value>
@@ -128,6 +147,7 @@
     <column>name</column>
     <column>node_identifier</column>
     <column>type</column>
+    <column>multi_valued</column>
     <column>string_data</column>
     <column>int_data</column>
     <column>float_data</column>
@@ -139,6 +159,7 @@
       <value>jcr:created</value>
       <value>2</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -151,6 +172,7 @@
       <value>prop</value>
       <value>14</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>

@@ -10,71 +10,83 @@
   </table>
   <table name="jcrnodes">
     <column>path</column>
+    <column>parent</column>
     <column>workspace_id</column>
     <column>identifier</column>
     <column>type</column>
     <row>
       <value></value>
+      <value>-1</value>
       <value>1</value>
       <value>1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_read_access_base</value>
+      <value></value>
       <value>1</value>
       <value>2</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>3</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt/jcr:content</value>
+      <value>tests_read_access_base/index.txt</value>
       <value>1</value>
       <value>4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_read_access_base/idExample</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>5</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/idExample/jcr:content</value>
+      <value>tests_read_access_base/idExample</value>
       <value>1</value>
       <value>6</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_read_access_base/test:namespacedNode</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>7</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/emptyExample</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>8</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/multiValueProperty</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>9</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/numberPropertyNode</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>10</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/numberPropertyNode/jcr:content</value>
+      <value>tests_read_access_base/numberPropertyNode</value>
       <value>1</value>
       <value>11</value>
       <value>nt:unstructured</value>
@@ -86,6 +98,7 @@
     <column>name</column>
     <column>node_identifier</column>
     <column>type</column>
+    <column>multi_valued</column>
     <column>string_data</column>
     <column>int_data</column>
     <column>float_data</column>
@@ -97,6 +110,7 @@
       <value>jcr:created</value>
       <value>2</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -109,6 +123,7 @@
       <value>jcr:created</value>
       <value>3</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -121,6 +136,7 @@
       <value>jcr:data</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -133,6 +149,7 @@
       <value>jcr:lastModified</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -145,6 +162,7 @@
       <value>jcr:mimeType</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -157,6 +175,7 @@
       <value>jcr:mixinTypes</value>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -169,6 +188,7 @@
       <value>jcr:uuid</value>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -181,6 +201,7 @@
       <value>jcr:created</value>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -193,6 +214,7 @@
       <value>jcr:data</value>
       <value>6</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -205,6 +227,7 @@
       <value>jcr:lastModified</value>
       <value>6</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -217,6 +240,7 @@
       <value>jcr:mimeType</value>
       <value>6</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -229,6 +253,7 @@
       <value>jcr:mixinTypes</value>
       <value>9</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -241,6 +266,7 @@
       <value>jcr:created</value>
       <value>10</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -253,6 +279,7 @@
       <value>longNumber</value>
       <value>11</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -265,6 +292,7 @@
       <value>jcr:data</value>
       <value>11</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -277,6 +305,7 @@
       <value>jcr:lastModified</value>
       <value>11</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -289,6 +318,7 @@
       <value>jcr:mimeType</value>
       <value>11</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>

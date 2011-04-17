@@ -10,83 +10,97 @@
   </table>
   <table name="jcrnodes">
     <column>path</column>
+    <column>parent</column>
     <column>workspace_id</column>
     <column>identifier</column>
     <column>type</column>
     <row>
       <value></value>
+      <value>-1</value>
       <value>1</value>
       <value>1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete</value>
+      <value></value>
       <value>1</value>
       <value>2</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemNode</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemProperty</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveProperty</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>5</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveRemovedNode</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>6</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testNodeRemoveProperty</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>7</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveNode</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>8</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeSession</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeNode</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>10</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertySession</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>11</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertyNode</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>12</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testAddNodeOverRemoved</value>
+      <value>tests_write_manipulation_delete</value>
       <value>1</value>
       <value>13</value>
       <value>nt:unstructured</value>
@@ -98,6 +112,7 @@
     <column>name</column>
     <column>node_identifier</column>
     <column>type</column>
+    <column>multi_valued</column>
     <column>string_data</column>
     <column>int_data</column>
     <column>float_data</column>
@@ -109,6 +124,7 @@
       <value>jcr:created</value>
       <value>2</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -121,6 +137,7 @@
       <value>longNumber</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -133,6 +150,7 @@
       <value>longNumber</value>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -145,6 +163,7 @@
       <value>longNumber</value>
       <value>7</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -157,6 +176,7 @@
       <value>prop</value>
       <value>11</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -169,6 +189,7 @@
       <value>prop</value>
       <value>12</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>

@@ -43,11 +43,18 @@ require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array('driver' => 'pdo_mysql', 'user' => 'root', 'password' => '', 'dbname' => 'jcrtests'));
 $schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
 try {
-    foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+    foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
         $dbConn->exec($sql);
     }
 } catch(PDOException $e) {
 
+}
+try {
+    foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+        $dbConn->exec($sql);
+    }
+} catch(PDOException $e) {
+    echo $e->getMessage();
 }
 
 /**
@@ -129,7 +136,11 @@ class DoctrineFixtureLoader implements phpcrApiTestSuiteImportExportFixtureInter
         $tester->setSetUpOperation(PHPUnit_Extensions_Database_Operation_Factory::CLEAN_INSERT());
         $tester->setTearDownOperation(PHPUnit_Extensions_Database_Operation_Factory::NONE());
         $tester->setDataSet($dataSet);
-        $tester->onSetUp();
+        try {
+            $tester->onSetUp();
+        } catch(PHPUnit_Extensions_Database_Operation_Exception $e) {
+            throw new RuntimeException("Could not load fixture ".$file.": ".$e->getMessage());
+        }
     }
 }
 
@@ -150,4 +161,3 @@ define('OPTION_LOCKING_SUPPORTED', 'option.locking.supported');
 define('OPTION_QUERY_SQL_SUPPORTED', 'option.query.sql.supported');
 define('QUERY_XPATH_POS_INDEX', 'query.xpath.pos.index');
 define('QUERY_XPATH_DOC_ORDER', 'query.xpath.doc.order');
-

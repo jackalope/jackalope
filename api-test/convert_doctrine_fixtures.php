@@ -41,10 +41,12 @@ foreach ($ri AS $file) {
     $dataSetBuilder->addRow('jcrworkspaces', array('id' => 1, 'name' => 'tests'));
 
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
+    $seenPaths = array();
     if ($nodes->length > 0) {
         // system-view
         $dataSetBuilder->addRow("jcrnodes", array(
             'path' => '',
+            'parent' => '-1',
             'workspace_id' => 1,
             'identifier' => ++$ids,
             'type' => 'nt:unstructured',
@@ -65,21 +67,36 @@ foreach ($ri AS $file) {
             foreach ($node->childNodes AS $child) {
                 if ($child instanceof DOMElement && $child->tagName == "sv:property") {
                     $name = $child->getAttributeNS('http://www.jcp.org/jcr/sv/1.0', 'name');
+
+                    $value = array();
+                    foreach ($child->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'value') AS $nodeValue) {
+                        $value[] = $nodeValue->nodeValue;
+                    }
+
                     $attrs[$name] = array(
                         'type' =>  strtolower($child->getAttributeNS('http://www.jcp.org/jcr/sv/1.0', 'type')),
-                        'value' => $child->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'value')->item(0)->nodeValue,
+                        'value' => $value,
+                        'multiValued' => (in_array($name, array('jcr:mixinTypes'))),
                     );
                 }
             }
 
-            $dataSetBuilder->addRow('jcrnodes', array('path' => $path, 'workspace_id' => 1, 'identifier' => ++$ids, 'type' => $attrs['jcr:primaryType']['value']));
+            $dataSetBuilder->addRow('jcrnodes', array(
+                'path' => $path,
+                'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
+                'workspace_id' => 1,
+                'identifier' => ++$ids,
+                'type' => $attrs['jcr:primaryType']['value'][0])
+            );
 
             unset($attrs['jcr:primaryType']);
             foreach ($attrs AS $attr => $valueData) {
+                $idx = 0;
                 $data = array(
                     'path' => $path . '/' . $attr,
                     'workspace_id' => 1,
                     'name' => $attr,
+                    'idx' => $idx,
                     'node_identifier' => $ids,
                     'type' => 0,
                     'multi_valued' => 0,
@@ -92,18 +109,24 @@ foreach ($ri AS $file) {
                 if (isset($jcrTypes[$valueData['type']])) {
                     list($jcrTypeConst, $jcrTypeDbField) = $jcrTypes[$valueData['type']];
                     $data['type'] = $jcrTypeConst;
-                    $data[$jcrTypeDbField] = $valueData['value'];
+                    $data['multi_valued'] = $valueData['multiValued'] ? "1" : "0";
+                    foreach ($valueData['value'] AS $value) {
+                        $data[$jcrTypeDbField] = $value;
+                        $dataSetBuilder->addRow('jcrprops', $data);
+                        $data['idx'] = ++$idx;
+                    }
                 } else {
                     throw new InvalidArgumentException("No type ".$valueData['type']);
                 }
 
-                $dataSetBuilder->addRow('jcrprops', $data);
+                
             }
         }
     } else {
         // document-view
         $dataSetBuilder->addRow("jcrnodes", array(
             'path' => '',
+            'parent' => '-1',
             'workspace_id' => 1,
             'identifier' => ++$ids,
             'type' => 'nt:unstructured',
@@ -129,8 +152,18 @@ foreach ($ri AS $file) {
                 if (!isset($attrs['jcr:primaryType'])) {
                     $attrs['jcr:primaryType'] = 'nt:unstructured';
                 }
-
-                $dataSetBuilder->addRow('jcrnodes', array('path' => $path, 'workspace_id' => 1, 'identifier' => ++$ids, 'type' => $attrs['jcr:primaryType']));
+                
+                if (!isset($seenPaths[$path])) {
+                    $dataSetBuilder->addRow('jcrnodes', array(
+                        'path' => $path,
+                        'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
+                        'workspace_id' => 1,
+                        'identifier' => ++$ids,
+                        'type' => $attrs['jcr:primaryType'])
+                    );
+                }
+                $seenPaths[$path] = true;
+                
                 unset($attrs['jcr:primaryType']);
                 foreach ($attrs AS $attr => $valueData) {
                     $dataSetBuilder->addRow('jcrprops', array(

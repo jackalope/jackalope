@@ -36,11 +36,13 @@ class RepositorySchema
 
         $nodes = $schema->createTable('jcrnodes');
         $nodes->addColumn('path', 'string');
+        $nodes->addColumn('parent', 'string');
         $nodes->addColumn('workspace_id', 'integer');
         $nodes->addColumn('identifier', 'string');
         $nodes->addColumn('type', 'string');
         $nodes->setPrimaryKey(array('path', 'workspace_id'));
         $nodes->addUniqueIndex(array('identifier'));
+        $nodes->addIndex(array('parent'));
         
         $properties = $schema->createTable('jcrprops');
         $properties->addColumn('path', 'string');
@@ -74,7 +76,7 @@ class RepositorySchema
         $types->addColumn('is_mixin', 'boolean');
         $types->addColumn('queryable', 'boolean');
         $types->addColumn('primary_item', 'string');
-        $types->setPrimaryKey(array('id'));
+        $types->setPrimaryKey(array('node_type_id'));
 
         $propTypes = $schema->createTable('jcrtype_props');
         $propTypes->addColumn('node_type_id', 'integer');
@@ -83,8 +85,9 @@ class RepositorySchema
         $propTypes->addColumn('auto_created', 'boolean');
         $propTypes->addColumn('mandatory', 'boolean');
         $propTypes->addColumn('property_type', 'integer');
+        $propTypes->setPrimaryKey(array('node_type_id', 'name'));
 
-        $propContraints = $schema->createTable('jcrtype_props_contraints');
+        #$propContraints = $schema->createTable('jcrtype_props_contraints');
 
         $childTypes = $schema->createTable('jcrtype_childs');
         $childTypes->addColumn('node_type_id', 'integer');
