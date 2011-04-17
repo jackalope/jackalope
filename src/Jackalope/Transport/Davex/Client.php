@@ -495,7 +495,7 @@ class Client implements TransportInterface
      */
     public function deleteProperty($path)
     {
-        return $this->deleteItem($path);
+        return $this->deleteNode($path);
     }
 
     /**
