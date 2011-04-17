@@ -31,7 +31,22 @@ class DoctrineDBAL implements TransportInterface
     private $conn;
     private $loggedIn = false;
     private $workspaceId;
-    private $nodeTypes = array();
+    private $nodeTypes = array(
+        "nt:file" => array(
+            "is_abstract" => false,
+            "properties" => array(
+                "jcr:primaryType" => array('multi_valued' => false),
+                "jcr:mixinTypes" => array('multi_valued' => true),
+            ),
+        ),
+        "nt:folder" => array(
+            "is_abstract" => false,
+            "properties" => array(
+                "jcr:primaryType" => array('multi_valued' => false),
+                "jcr:mixinTypes" => array('multi_valued' => true),
+            ),
+        ),
+    );
 
     public function __construct(Connection $conn)
     {
@@ -67,7 +82,7 @@ class DoctrineDBAL implements TransportInterface
     private function assertLoggedIn()
     {
         if (!$this->loggedIn) {
-            throw RepositoryException();
+            throw new RepositoryException();
         }
     }
 
@@ -148,13 +163,21 @@ class DoctrineDBAL implements TransportInterface
             throw new \PHPCR\ItemNotFoundException("Item /".$path." not found.");
         }
 
-        $data = array(
-            'jcr:uuid' => $row['identifier'],
-            'jcr:primaryType' => $row['type'],
-        );
+        $data = new \stdClass();
+        $data->{'jcr:uuid'} = $row['identifier'];
+        $data->{'jcr:primaryType'} = $row['type'];
+
+        $sql = "SELECT path FROM jcrnodes WHERE parent = ? AND workspace_id = ?";
+        $children = $this->conn->fetchAll($sql, array($path, $this->workspaceId));
+
+        foreach ($children AS $child) {
+            $childName = explode("/", $child['path']);
+            $childName = end($childName);
+            $data->{$childName} = new \stdClass();
+        }
 
         $sql = "SELECT * FROM jcrprops WHERE node_identifier = ?";
-        $props = $this->conn->fetchAll($sql, array($data['jcr:uuid']));
+        $props = $this->conn->fetchAll($sql, array($data->{'jcr:uuid'}));
 
         foreach ($props AS $prop) {
             $value = null;
@@ -185,8 +208,12 @@ class DoctrineDBAL implements TransportInterface
                     $value = (double)$prop['float_data'];
                     break;
             }
-            $data[$prop['name']] = $value;
-            $data[":" . $prop['name']] = $type;
+            if ($prop['multi_valued'] == 1) {
+                $data->{$prop['name']}[$prop['idx']] = $value;
+            } else {
+                $data->{$prop['name']} = $value;
+            }
+            $data->{":" . $prop['name']} = $type;
         }
         return $data;
     }
@@ -332,7 +359,7 @@ class DoctrineDBAL implements TransportInterface
     {
         $this->assertLoggedIn();
 
-        $nodeName = end(explode("/", $srcAbsPath));
+        throw new \Jackalope\NotImplementedException("Moving nodes is not yet implemented");
     }
 
     /**
@@ -350,18 +377,22 @@ class DoctrineDBAL implements TransportInterface
     {
         $this->assertLoggedIn();
 
-        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid'] : $this->generateUUID();
+        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : $this->generateUUID();
         if (!$this->pathExists($path)) {
             $this->conn->insert("jcrnodes", array(
                 'identifier' => $nodeIdentifier,
-                'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType'] : "nt:unstructured",
+                'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getNativeValue() : "nt:unstructured",
                 'path' => $path,
+                'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
                 'workspace_id' => $this->workspaceId,
             ));
         }
 
-        unset($properties['jcr:uuid'], $properties['jcr:primaryType']);
         foreach ($properties AS $property) {
+            if ($property->getName() == 'jcr:uuid' || $property->getName() == 'jcr:primaryType') {
+                continue;
+            }
+
             $this->storeProperty($path, $property);
         }
     }
@@ -402,8 +433,13 @@ class DoctrineDBAL implements TransportInterface
     {
         // TODO: Upsert
         /* @var $property \PHPCR\PropertyInterface */
-        $data = array('path' => $property->getPath(), 'workspace_id' => $this->workspaceId);
-        $this->conn->delete('jcrprops', array('path' => $property->getPath(), 'workspace_id' => $this->workspaceId));
+        $idx = 0;
+        $data = array('path' => $property->getPath(), 'workspace_id' => $this->workspaceId, 'idx' => 0);
+        $this->conn->delete('jcrprops', array(
+            'path' => $property->getPath(),
+            'workspace_id' => $this->workspaceId,
+            'multi_valued' => $property->isMultiple() ? 1 : 0,
+        ));
 
         $data['type'] = $property->getType();
         $isBinary = false;
@@ -413,33 +449,50 @@ class DoctrineDBAL implements TransportInterface
             case \PHPCR\PropertyType::WEAKREFERENCE:
             case \PHPCR\PropertyType::REFERENCE:
             case \PHPCR\PropertyType::PATH:
-                $data['string_data'] = $property->getString();
+                $dataFieldName = 'string_data';
+                $values = $property->getString();
                 break;
             case \PHPCR\PropertyType::DECIMAL:
-                $data['string_data'] = $property->getDecimal();
+                $dataFieldName = 'string_data';
+                $values = $property->getDecimal();
                 break;
             case \PHPCR\PropertyType::STRING:
-                $data['clob_data'] = $property->getString();
+                $dataFieldName = 'clob_data';
+                $values = $property->getString();
                 break;
             case \PHPCR\PropertyType::BOOLEAN:
-                $data['int_data'] = $property->getBoolean() ? 1 : 0;
+                $dataFieldName = 'int_data';
+                $values = $property->getBoolean() ? 1 : 0;
                 break;
             case \PHPCR\PropertyType::LONG:
-                $data['int_data'] = $property->getLong();
+                $dataFieldName = 'int_data';
+                $values = $property->getLong();
                 break;
             case \PHPCR\PropertyType::BINARY:
                 $isBinary = true;
-                $data['int_data'] = $property->getBinary()->getSize();
+                $dataFieldName = 'int_data';
+                $values = $property->getBinary()->getSize();
                 break;
             case \PHPCR\PropertyType::DATE:
-                $data['datetime_data'] = $property->getDate()->format($this->conn->getDatabasePlatform()->getDateTimeFormatString());
+                $dataFieldName = 'datetime_data';
+                $values = $property->getDate()->format($this->conn->getDatabasePlatform()->getDateTimeFormatString());
                 break;
             case \PHPCR\PropertyType::DOUBLE:
-                $data['float_data'] = $property->getDouble();
+                $dataFieldName = 'float_data';
+                $values = $property->getDouble();
                 break;
         }
 
-        $this->conn->insert('jcrprops', $data);
+        if ($property->isMultiple()) {
+            foreach ($values AS $value) {
+                $data[$dataFieldName] = $value;
+                $data['idx'] = ++$idx;
+                $this->conn->insert('jcrprops', $data);
+            }
+        } else {
+            $data[$dataFieldName] = $values;
+            $this->conn->insert('jcrprops', $data);
+        }
     }
 
     /**
@@ -469,7 +522,45 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getNodeTypes($nodeTypes = array())
     {
-        return array();
+        $xml = <<<XML
+<nodeTypes>
+    <nodeType name="nt:base" isMixin="false" isAbstract="true">
+        <propertyDefinition name="jcr:primaryType" requiredType="NAME" autoCreated="true" mandatory="true" protected="true" onParentVersion="COMPUTE" />
+        <propertyDefinition name="jcr:mixinTypes" requiredType="NAME" autoCreated="true" mandatory="true" protected="true" multiple="true" onParentVersion="COMPUTE" />
+    </nodeType>
+    <nodeType name="nt:unstructured" hasOrderableChildNodes="true" isMixin="false" isAbstract="false">
+        <supertypes>
+            <supertype>nt:base</supertype>
+        </supertypes>
+        <childNodeDefinition autoCreated="false" declaringNodeType="nt:unstructured" defaultPrimaryType="nt:unstructured" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
+          <requiredPrimaryTypes>
+            <requiredPrimaryType>nt:base</requiredPrimaryType>
+          </requiredPrimaryTypes>
+        </childNodeDefinition>
+        <propertyDefinition autoCreated="false" declaringNodeType="nt:unstructured" fullTextSearchable="true" mandatory="false" multiple="true" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined" />
+    </nodeType>
+    <nodeType name="mix:etag" isMixin="true">
+        <propertyDefinition name="jcr:etag" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+    </nodeType>
+    <nodeType name="nt:hierachy" isAbstract="true">
+        <supertypes>
+            <supertype>mix:created</supertype>
+        </supertypes>
+    </nodeType>
+    <nodeType name="mix:created" isMixin="true">
+        <propertyDefinition name="jcr:created" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+        <propertyDefinition name="jcr:createdBy" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+    </nodeType>
+    <nodeType name="mix:lastModified" isMixin="true">
+        <propertyDefinition name="jcr:lastModified" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+        <propertyDefinition name="jcr:lastModifiedBy" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
+    </nodeType>
+</nodeTypes>
+XML;
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->loadXML($xml);
+
+        return $dom;
     }
 
     /**

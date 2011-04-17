@@ -10,35 +10,41 @@
   </table>
   <table name="jcrnodes">
     <column>path</column>
+    <column>parent</column>
     <column>workspace_id</column>
     <column>identifier</column>
     <column>type</column>
     <row>
       <value></value>
+      <value>-1</value>
       <value>1</value>
       <value>1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base</value>
+      <value></value>
       <value>1</value>
       <value>2</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versionable</value>
+      <value>tests_version_base</value>
       <value>1</value>
       <value>3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/unversionable</value>
+      <value>tests_version_base</value>
       <value>1</value>
       <value>4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versioned</value>
+      <value>tests_version_base</value>
       <value>1</value>
       <value>5</value>
       <value>nt:unstructured</value>
@@ -50,6 +56,7 @@
     <column>name</column>
     <column>node_identifier</column>
     <column>type</column>
+    <column>multi_valued</column>
     <column>string_data</column>
     <column>int_data</column>
     <column>float_data</column>
@@ -61,6 +68,7 @@
       <value>jcr:created</value>
       <value>2</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -73,6 +81,7 @@
       <value>jcr:mixinTypes</value>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>

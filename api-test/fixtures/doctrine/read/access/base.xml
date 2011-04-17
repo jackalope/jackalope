@@ -10,29 +10,34 @@
   </table>
   <table name="jcrnodes">
     <column>path</column>
+    <column>parent</column>
     <column>workspace_id</column>
     <column>identifier</column>
     <column>type</column>
     <row>
       <value></value>
+      <value>-1</value>
       <value>1</value>
       <value>1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_read_access_base</value>
+      <value></value>
       <value>1</value>
       <value>2</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt</value>
+      <value>tests_read_access_base</value>
       <value>1</value>
       <value>3</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt/jcr:content</value>
+      <value>tests_read_access_base/index.txt</value>
       <value>1</value>
       <value>4</value>
       <value>nt:unstructured</value>
@@ -44,6 +49,7 @@
     <column>name</column>
     <column>node_identifier</column>
     <column>type</column>
+    <column>multi_valued</column>
     <column>string_data</column>
     <column>int_data</column>
     <column>float_data</column>
@@ -55,6 +61,7 @@
       <value>jcr:created</value>
       <value>2</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -67,6 +74,7 @@
       <value>jcr:created</value>
       <value>3</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -79,6 +87,7 @@
       <value>jcr:data</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -91,6 +100,7 @@
       <value>jcr:lastModified</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -103,6 +113,7 @@
       <value>jcr:mimeType</value>
       <value>4</value>
       <value>1</value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
