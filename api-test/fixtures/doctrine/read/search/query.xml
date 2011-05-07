@@ -18,14 +18,14 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>1</value>
+      <value>2590c0f4-97a3-4c82-b1a0-62f77a6b26bb</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>queryNode</value>
       <value></value>
       <value>1</value>
-      <value>2</value>
+      <value>c08b4262-f938-4f71-bbba-aa1e3b9664d3</value>
       <value>nt:query</value>
     </row>
   </table>
@@ -45,9 +45,9 @@
       <value>queryNode/jcr:language</value>
       <value>1</value>
       <value>jcr:language</value>
-      <value>2</value>
+      <value>c08b4262-f938-4f71-bbba-aa1e3b9664d3</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -58,9 +58,9 @@
       <value>queryNode/jcr:statement</value>
       <value>1</value>
       <value>jcr:statement</value>
-      <value>2</value>
+      <value>c08b4262-f938-4f71-bbba-aa1e3b9664d3</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>

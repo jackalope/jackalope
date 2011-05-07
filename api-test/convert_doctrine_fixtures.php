@@ -1,4 +1,11 @@
 <?php
+/**
+ * Convert Jackalope Document or System Views into PHPUnit DBUnit Fixture XML files
+ *
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ */
+
+require_once __DIR__ . "/../src/Jackalope/Helper.php";
 
 $srcDir = __DIR__ . "/suite/fixtures";
 $destDir = __DIR__ . "/fixtures/doctrine";
@@ -36,19 +43,19 @@ foreach ($ri AS $file) {
     }
 
     echo "Importing " . str_replace($srcDir, "", $file->getPathname())."\n";
-    $ids = 0;
     $dataSetBuilder = new PHPUnit_Extensions_Database_XmlDataSetBuilder();
     $dataSetBuilder->addRow('jcrworkspaces', array('id' => 1, 'name' => 'tests'));
 
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
     $seenPaths = array();
     if ($nodes->length > 0) {
+        $id = \Jackalope\Helper::generateUUID();
         // system-view
         $dataSetBuilder->addRow("jcrnodes", array(
             'path' => '',
             'parent' => '-1',
             'workspace_id' => 1,
-            'identifier' => ++$ids,
+            'identifier' => $id,
             'type' => 'nt:unstructured',
         ));
         foreach ($nodes AS $node) {
@@ -81,11 +88,12 @@ foreach ($ri AS $file) {
                 }
             }
 
+            $id = \Jackalope\Helper::generateUUID();
             $dataSetBuilder->addRow('jcrnodes', array(
                 'path' => $path,
                 'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
                 'workspace_id' => 1,
-                'identifier' => ++$ids,
+                'identifier' => $id,
                 'type' => $attrs['jcr:primaryType']['value'][0])
             );
 
@@ -97,7 +105,7 @@ foreach ($ri AS $file) {
                     'workspace_id' => 1,
                     'name' => $attr,
                     'idx' => $idx,
-                    'node_identifier' => $ids,
+                    'node_identifier' => $id,
                     'type' => 0,
                     'multi_valued' => 0,
                     'string_data' => null,
@@ -123,12 +131,13 @@ foreach ($ri AS $file) {
             }
         }
     } else {
+        $id = \Jackalope\Helper::generateUUID();
         // document-view
         $dataSetBuilder->addRow("jcrnodes", array(
             'path' => '',
             'parent' => '-1',
             'workspace_id' => 1,
-            'identifier' => ++$ids,
+            'identifier' => $id,
             'type' => 'nt:unstructured',
         ));
 
@@ -152,17 +161,20 @@ foreach ($ri AS $file) {
                 if (!isset($attrs['jcr:primaryType'])) {
                     $attrs['jcr:primaryType'] = 'nt:unstructured';
                 }
-                
+
+                $id = \Jackalope\Helper::generateUUID();
                 if (!isset($seenPaths[$path])) {
                     $dataSetBuilder->addRow('jcrnodes', array(
                         'path' => $path,
                         'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
                         'workspace_id' => 1,
-                        'identifier' => ++$ids,
+                        'identifier' => $id,
                         'type' => $attrs['jcr:primaryType'])
                     );
+                    $seenPaths[$path] = $id;
+                } else {
+                    $id = $seenPaths[$path];
                 }
-                $seenPaths[$path] = true;
                 
                 unset($attrs['jcr:primaryType']);
                 foreach ($attrs AS $attr => $valueData) {
@@ -170,9 +182,9 @@ foreach ($ri AS $file) {
                         'path' => $path . '/' . $attr,
                         'workspace_id' => 1,
                         'name' => $attr,
-                        'node_identifier' => $ids,
+                        'node_identifier' => $id,
                         'type' => 1,
-                        'multi_valued' => 0,
+                        'multi_valued' => (in_array($attr, array('jcr:mixinTypes'))),
                         'string_data' => null,
                         'int_data' => null,
                         'float_data' => null,

@@ -26,6 +26,7 @@ use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
 use PHPCR\RepositoryException;
 use Doctrine\DBAL\Connection;
+use Jackalope\Helper;
 
 class DoctrineDBAL implements TransportInterface
 {
@@ -400,7 +401,7 @@ class DoctrineDBAL implements TransportInterface
         $path = ltrim($path, "/");
         $this->assertLoggedIn();
 
-        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : $this->generateUUID();
+        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
         if (!$this->pathExists($path)) {
             $this->conn->insert("jcrnodes", array(
                 'identifier' => $nodeIdentifier,
@@ -419,29 +420,6 @@ class DoctrineDBAL implements TransportInterface
 
             $this->storeProperty($property->getPath(), $property);
         }
-    }
-
-    private function generateUUID()
-    {
-        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            // 32 bits for "time_low"
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
-
-            // 16 bits for "time_mid"
-            mt_rand( 0, 0xffff ),
-
-            // 16 bits for "time_hi_and_version",
-            // four most significant bits holds version number 4
-            mt_rand( 0, 0x0fff ) | 0x4000,
-
-            // 16 bits, 8 bits for "clk_seq_hi_res",
-            // 8 bits for "clk_seq_low",
-            // two most significant bits holds zero and one for variant DCE1.1
-            mt_rand( 0, 0x3fff ) | 0x8000,
-
-            // 48 bits for "node"
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
-        );
     }
 
     /**

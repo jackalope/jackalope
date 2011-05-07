@@ -18,35 +18,35 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>1</value>
+      <value>c2ef5da2-4dd5-4f02-89f6-96d67cdb12b5</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base</value>
       <value></value>
       <value>1</value>
-      <value>2</value>
+      <value>d919aad5-907e-4554-aca2-7a14c67e477b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>3</value>
+      <value>76a99846-3c3c-499f-a23b-34123ad53f34</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/unversionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>4</value>
+      <value>ecee49eb-f4c9-4e8c-ada4-b30340df76bf</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versioned</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>5</value>
+      <value>73938ea1-8757-4aee-95e1-cfb3eb1c0375</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -66,9 +66,9 @@
       <value>tests_version_base/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>2</value>
+      <value>d919aad5-907e-4554-aca2-7a14c67e477b</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -79,9 +79,9 @@
       <value>tests_version_base/versioned/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>5</value>
+      <value>73938ea1-8757-4aee-95e1-cfb3eb1c0375</value>
       <value>1</value>
-      <value>0</value>
+      <value>1</value>
       <null/>
       <null/>
       <null/>
