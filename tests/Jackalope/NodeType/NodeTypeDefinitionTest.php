@@ -6,7 +6,6 @@ use Jackalope\TestCase;
 
 class NodeTypeDefinitionTest extends TestCase
 {
-
     /**
      * @expectedException   \InvalidArgumentException
      */
@@ -15,4 +14,12 @@ class NodeTypeDefinitionTest extends TestCase
         $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdclass);
     }
 
+    public function testCreateFromArray()
+    {
+        $factory = $this->getMock('Jackalope\Factory');
+        $nodeTypeManager = $this->getMock('Jackalope\NodeType\NodeTypeManager', array(), array(), '', false);
+        $typeDef = new NodeTypeDefinition($factory, $nodeTypeManager, array(
+
+        ));
+    }
 }

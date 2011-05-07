@@ -28,16 +28,36 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
      *
      * @param object $factory Ignored for now, as this class does not create objects
      */
-    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
     {
         $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
+
+        if ($node instanceof DOMElement) {
+            $this->fromXML($node);
+        } else if (is_array($node)) {
+            $this->fromArray($node);
+        }
+    }
+
+    protected function fromXML(DOMElement $node)
+    {
         $this->declaringNodeType = $node->getAttribute('declaringNodeType');
         $this->name = $node->getAttribute('name');
         $this->isAutoCreated = Helper::getBoolAttribute($node, 'isAutoCreated');
         $this->isMandatory = Helper::getBoolAttribute($node, 'mandatory');
         $this->isProtected = Helper::getBoolAttribute($node, 'isProtected');
         $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
+    }
+
+    protected function fromArray(array $data)
+    {
+        $this->declaringNodeType = $data['declaringNodeType'];
+        $this->name = $data['name'];
+        $this->isAutoCreated = $data['isAutoCreated'];
+        $this->isMandatory = $data['mandatory'];
+        $this->isProtected = $data['isProtected'];
+        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::valueFromName($data['onParentVersion']);
     }
 
     /**
