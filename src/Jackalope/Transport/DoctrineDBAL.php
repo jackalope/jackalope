@@ -84,6 +84,21 @@ class DoctrineDBAL implements TransportInterface
     }
 
     /**
+     * Create a new workspace.
+     *
+     * @param string $workspaceName
+     * @return void
+     */
+    public function createWorkspace($workspaceName)
+    {
+        $workspaceId = $this->getWorkspaceId($workspaceName);
+        if ($workspaceId !== false) {
+            throw new \PHPCR\RepositoryException("Workspace '" . $workspaceName . "' already exists");
+        }
+        $this->conn->insert('jcrworkspaces', array('name' => $workspaceName));
+    }
+
+    /**
      * Set this transport to a specific credential and a workspace.
      *
      * This can only be called once. To connect to another workspace or with
