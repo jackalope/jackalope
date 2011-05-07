@@ -18,28 +18,28 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>aba4c5ce-e4dd-4599-91ed-49084d1b2a28</value>
+      <value>7122d2eb-be67-4c5e-bec7-930efd979d1b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_read_access_base</value>
       <value></value>
       <value>1</value>
-      <value>975c9995-a475-4033-8f78-1551bb807365</value>
+      <value>8828b183-f1fb-4efa-871a-61e1403b965f</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt</value>
       <value>tests_read_access_base</value>
       <value>1</value>
-      <value>3076337c-ff15-48d8-8c45-4a8c269cbf9e</value>
+      <value>844e9ac8-8007-498e-a6be-2084cb9a8d5a</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_read_access_base/index.txt/jcr:content</value>
       <value>tests_read_access_base/index.txt</value>
       <value>1</value>
-      <value>4949a93c-b903-44fe-aef3-63b1b9d28626</value>
+      <value>fd2154de-04b4-4eef-8812-3f38c3dd2993</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -59,7 +59,7 @@
       <value>tests_read_access_base/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>975c9995-a475-4033-8f78-1551bb807365</value>
+      <value>8828b183-f1fb-4efa-871a-61e1403b965f</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -72,7 +72,7 @@
       <value>tests_read_access_base/index.txt/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>3076337c-ff15-48d8-8c45-4a8c269cbf9e</value>
+      <value>844e9ac8-8007-498e-a6be-2084cb9a8d5a</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -85,7 +85,7 @@
       <value>tests_read_access_base/index.txt/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>4949a93c-b903-44fe-aef3-63b1b9d28626</value>
+      <value>fd2154de-04b4-4eef-8812-3f38c3dd2993</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -98,7 +98,7 @@
       <value>tests_read_access_base/index.txt/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>4949a93c-b903-44fe-aef3-63b1b9d28626</value>
+      <value>fd2154de-04b4-4eef-8812-3f38c3dd2993</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -111,7 +111,7 @@
       <value>tests_read_access_base/index.txt/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>4949a93c-b903-44fe-aef3-63b1b9d28626</value>
+      <value>fd2154de-04b4-4eef-8812-3f38c3dd2993</value>
       <value>1</value>
       <value></value>
       <null/>

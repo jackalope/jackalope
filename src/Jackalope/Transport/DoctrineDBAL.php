@@ -76,6 +76,14 @@ class DoctrineDBAL implements TransportInterface
     }
 
     /**
+     * @return Doctrine\DBAL\Connection
+     */
+    public function getConnection()
+    {
+        return $this->conn;
+    }
+
+    /**
      * Set this transport to a specific credential and a workspace.
      *
      * This can only be called once. To connect to another workspace or with
@@ -91,14 +99,19 @@ class DoctrineDBAL implements TransportInterface
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
     {
-        $sql = "SELECT id FROM jcrworkspaces WHERE name = ?";
-        $this->workspaceId = $this->conn->fetchColumn($sql, array($workspaceName));
+        $this->workspaceId = $this->getWorkspaceId($workspaceName);
         if (!$this->workspaceId) {
             throw new \PHPCR\NoSuchWorkspaceException;
         }
 
         $this->loggedIn = true;
         return true;
+    }
+
+    private function getWorkspaceId($workspaceName)
+    {
+        $sql = "SELECT id FROM jcrworkspaces WHERE name = ?";
+        return $this->conn->fetchColumn($sql, array($workspaceName));
     }
 
     private function assertLoggedIn()
@@ -147,7 +160,75 @@ class DoctrineDBAL implements TransportInterface
      */
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
+        $this->assertLoggedIn();
+        
+        $srcAbsPath = ltrim($srcAbsPath, '/');
+        $dstAbsPath = ltrim($dstAbsPath, '/');
 
+        $workspaceId = $this->workspaceId;
+        if (null !== $srcWorkspace) {
+            $workspaceId = $this->getWorkspaceId($srcWorkspace);
+            if ($workspaceId === false) {
+                throw new \PHPCR\NoSuchWorkspaceException("Source workspace '" . $srcWorkspace . "' does not exist.");
+            }
+        }
+
+        if (substr($dstAbsPath, -1, 1) == "]") {
+            // TODO: Understand assumptions of CopyMethodsTest::testCopyInvalidDstPath more
+            throw new \PHPCR\RepositoryException("Invalid destination path");
+        }
+
+        if (!$this->pathExists($srcAbsPath)) {
+            throw new \PHPCR\PathNotFoundException("Source path '".$srcAbsPath."' not found");
+        }
+
+        if ($this->pathExists($dstAbsPath)) {
+            throw new \PHPCR\ItemExistsException("Cannot copy to destination path '" . $dstAbsPath . "' that already exists.");
+        }
+
+        if (!$this->pathExists($this->getParentPath($dstAbsPath))) {
+            throw new \PHPCR\PathNotFoundException("Parent of the destination path '" . $this->getParentPath($dstAbsPath) . "' has to exist.");
+        }
+
+        // Algorithm:
+        // 1. Select all nodes with path $srcAbsPath."%" and iterate them
+        // 2. create a new node with path $dstAbsPath + leftovers, with a new uuid. Save old => new uuid
+        // 3. copy all properties from old node to new node
+        // 4. if a reference is in the properties, either update the uuid based on the map if its inside the copied graph or keep it.
+        // 5. "May drop mixin types"
+
+        $this->conn->beginTransaction();
+
+        try {
+
+            $sql = "SELECT * FROM jcrnodes WHERE path LIKE ? AND workspace_id = ?";
+            $stmt = $this->conn->executeQuery($sql, array($srcAbsPath . "%", $workspaceId));
+
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $newPath = str_replace($srcAbsPath, $dstAbsPath, $row['path']);
+                $uuid = Helper::generateUUID();
+                $this->conn->insert("jcrnodes", array(
+                    'identifier' => $uuid,
+                    'type' => $row['type'],
+                    'path' => $newPath,
+                    'parent' => $this->getParentPath($newPath),
+                    'workspace_id' => $this->workspaceId,
+                ));
+
+                $sql = "SELECT * FROM jcrprops WHERE node_identifier = ?";
+                $propStmt = $this->conn->executeQuery($sql, array($row['identifier']));
+
+                while ($propRow = $propStmt->fetch(\PDO::FETCH_ASSOC)) {
+                    $propRow['node_identifier'] = $uuid;
+                    $propRow['path'] = str_replace($srcAbsPath, $dstAbsPath, $propRow['path']);
+                    $this->conn->insert('jcrprops', $propRow);
+                }
+            }
+            $this->conn->commit();
+        } catch (\Exception $e) {
+            $this->conn->rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -238,6 +319,7 @@ class DoctrineDBAL implements TransportInterface
             }
             $data->{":" . $prop['name']} = $type;
         }
+
         return $data;
     }
 
@@ -386,6 +468,17 @@ class DoctrineDBAL implements TransportInterface
     }
 
     /**
+     * Get parent path of a path.
+     * 
+     * @param  string $path
+     * @return string
+     */
+    private function getParentPath($path)
+    {
+        return implode("/", array_slice(explode("/", $path), 0, -1));
+    }
+
+    /**
      * Stores a node to the given absolute path
      *
      * @param string $path Absolute path to identify a special item.
@@ -407,7 +500,7 @@ class DoctrineDBAL implements TransportInterface
                 'identifier' => $nodeIdentifier,
                 'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getNativeValue() : "nt:unstructured",
                 'path' => $path,
-                'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
+                'parent' => $this->getParentPath($path),
                 'workspace_id' => $this->workspaceId,
             ));
         }
@@ -433,9 +526,12 @@ class DoctrineDBAL implements TransportInterface
      */
     public function storeProperty($path, \PHPCR\PropertyInterface $property)
     {
+        $path = ltrim($path, '/');
+        $this->assertLoggedIn();
+
         if (($property->getType() == PropertyType::REFERENCE || $property->getType() == PropertyType::WEAKREFERENCE) &&
-            $property->getNode()->isNodeType('mix:referenable')) {
-            throw new \PHPCR\ValueFormatException('Node ' . $property->getPath() . ' is not referencable');
+            !$property->getNode()->isNodeType('mix:referenceable')) {
+            throw new \PHPCR\ValueFormatException('Node ' . $property->getNode()->getPath() . ' is not referencable');
         }
 
         $path = ltrim($path, '/');
@@ -528,6 +624,7 @@ class DoctrineDBAL implements TransportInterface
         if (!$path) {
             throw new \PHPCR\ItemNotFoundException("no item found with uuid ".$uuid);
         }
+        return $path;
     }
 
     /**
