@@ -802,7 +802,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isNodeType($nodeTypeName)
     {
-        throw new NotImplementedException();
+        return (
+            $this->primaryType == $nodeTypeName ||
+            (isset($this->properties["jcr:mixinTypes"]) && in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getNativeValue()))
+        );
     }
 
     /**
