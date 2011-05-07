@@ -30,6 +30,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     
     protected function fromXML(DOMElement $node)
     {
+        parent::fromXML($node);
         $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
@@ -54,6 +55,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
 
     protected function fromArray(array $data)
     {
+        parent::fromArray($data);
         $this->requiredType = $data['requiredType'];
         $this->isMultiple = $data['multiple'];
         $this->isFullTextSearchable = $data['fullTextSearchable'];

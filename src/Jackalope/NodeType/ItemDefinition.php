@@ -32,12 +32,6 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
     {
         $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;
-
-        if ($node instanceof DOMElement) {
-            $this->fromXML($node);
-        } else if (is_array($node)) {
-            $this->fromArray($node);
-        }
     }
 
     protected function fromXML(DOMElement $node)

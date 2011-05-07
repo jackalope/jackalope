@@ -26,6 +26,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
 
     protected function fromXML(DOMElement $node)
     {
+        parent::fromXML($node);
         $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
         if (empty($this->defaultPrimaryTypeName)) {
@@ -45,6 +46,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
 
     protected function fromArray(array $data)
     {
+        parent::fromArray($data);
         $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
         $this->defaultPrimaryTypeName = $data['defaultPrimaryType'] ?: null;
         $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))

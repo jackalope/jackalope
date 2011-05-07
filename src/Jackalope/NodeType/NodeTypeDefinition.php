@@ -91,14 +91,16 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
         $this->primaryItemName = $data['primaryItemName'] ?: null;
         $this->declaredSuperTypeNames = $data['supertypes'];
+        $this->declaredPropertyDefinitions = new ArrayObject();
         foreach ($data['declaredPropertyDefinitions'] AS $propertyDef) {
             $this->declaredPropertyDefinitions[] = $this->factory->get(
                 'NodeType\PropertyDefinition',
                 array($propertyDef, $this->nodeTypeManager)
             );
         }
+        $this->declaredNodeDefinitions = new ArrayObject();
         foreach ($data['declaredNodeDefinitions'] AS $nodeDef) {
-            $this->declaredNodeDefinitions = $this->factory->get(
+            $this->declaredNodeDefinitions[] = $this->factory->get(
                 'NodeType\NodeDefinition',
                 array($nodeDef, $this->nodeTypeManager)
             );
