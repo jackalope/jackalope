@@ -522,10 +522,6 @@ class DoctrineDBAL implements TransportInterface
         $this->nodeIdentifiers[$path] = $nodeIdentifier;
 
         foreach ($properties AS $property) {
-            if ($property->getName() == 'jcr:uuid' || $property->getName() == 'jcr:primaryType') {
-                continue;
-            }
-
             $this->storeProperty($property->getPath(), $property);
         }
     }
@@ -542,6 +538,16 @@ class DoctrineDBAL implements TransportInterface
     public function storeProperty($path, \PHPCR\PropertyInterface $property)
     {
         $path = ltrim($path, '/');
+        $name = explode("/", $path);
+        $name = end($name);
+        // TODO: Upsert
+        /* @var $property \PHPCR\PropertyInterface */
+        $idx = 0;
+
+        if ($name == "jcr:uuid" || $name == "jcr:primaryType") {
+            return;
+        }
+
         $this->assertLoggedIn();
 
         if (($property->getType() == PropertyType::REFERENCE || $property->getType() == PropertyType::WEAKREFERENCE) &&
@@ -549,17 +555,11 @@ class DoctrineDBAL implements TransportInterface
             throw new \PHPCR\ValueFormatException('Node ' . $property->getNode()->getPath() . ' is not referencable');
         }
 
-        $path = ltrim($path, '/');
-        // TODO: Upsert
-        /* @var $property \PHPCR\PropertyInterface */
-        $idx = 0;
         $this->conn->delete('jcrprops', array(
             'path' => $path,
             'workspace_id' => $this->workspaceId,
         ));
-
-        $name = explode("/", $path);
-        $name = end($name);
+        
         $data = array(
             'path' => $path,
             'workspace_id' => $this->workspaceId,
