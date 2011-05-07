@@ -22,15 +22,31 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
 use PHPCR\RepositoryException;
 use Doctrine\DBAL\Connection;
 
 class DoctrineDBAL implements TransportInterface
 {
+    /**
+     * @var Doctrine\DBAL\Connection
+     */
     private $conn;
+
+    /**
+     * @var bool
+     */
     private $loggedIn = false;
+
+    /**
+     * @var int|string
+     */
     private $workspaceId;
+
+    /**
+     * @var array
+     */
     private $nodeTypes = array(
         "nt:file" => array(
             "is_abstract" => false,
@@ -48,6 +64,9 @@ class DoctrineDBAL implements TransportInterface
         ),
     );
 
+    /**
+     * @var array
+     */
     private $nodeIdentifiers = array();
 
     public function __construct(Connection $conn)
@@ -436,6 +455,11 @@ class DoctrineDBAL implements TransportInterface
      */
     public function storeProperty($path, \PHPCR\PropertyInterface $property)
     {
+        if (($property->getType() == PropertyType::REFERENCE || $property->getType() == PropertyType::WEAKREFERENCE) &&
+            $property->getNode()->isNodeType('mix:referenable')) {
+            throw new \PHPCR\ValueFormatException('Node ' . $property->getPath() . ' is not referencable');
+        }
+
         $path = ltrim($path, '/');
         // TODO: Upsert
         /* @var $property \PHPCR\PropertyInterface */
