@@ -177,7 +177,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->type == \PHPCR\PropertyType::REFERENCE ||
             $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
-            $this->getNode();
+            return $this->getNode();
         }
         return $this->value;
     }

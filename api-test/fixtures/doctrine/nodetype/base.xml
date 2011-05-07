@@ -18,56 +18,56 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>1</value>
+      <value>efb2fac4-a807-4dc4-ba5f-5adf96af6c61</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_nodetype_base</value>
       <value></value>
       <value>1</value>
-      <value>2</value>
+      <value>c01abc1d-cba5-4f36-a800-ffaded5f97c0</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_nodetype_base/index.txt</value>
       <value>tests_nodetype_base</value>
       <value>1</value>
-      <value>3</value>
+      <value>029d68a7-bdbd-44be-9331-63629c6151d0</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_nodetype_base/index.txt/jcr:content</value>
       <value>tests_nodetype_base/index.txt</value>
       <value>1</value>
-      <value>4</value>
+      <value>9694166a-1165-4759-9155-03e25cd07097</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_nodetype_base/idExample</value>
       <value>tests_nodetype_base</value>
       <value>1</value>
-      <value>5</value>
+      <value>7f274b18-c808-4014-a77c-79f1b13a5813</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_nodetype_base/idExample/jcr:content</value>
       <value>tests_nodetype_base/idExample</value>
       <value>1</value>
-      <value>6</value>
+      <value>af04cbf5-9649-4550-b66b-29b365fc3320</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_nodetype_base/nonreferenceable</value>
       <value>tests_nodetype_base</value>
       <value>1</value>
-      <value>7</value>
+      <value>a20d9b9c-eda2-4562-b4ab-fa50378aa2ed</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_nodetype_base/nodetogetref</value>
       <value>tests_nodetype_base</value>
       <value>1</value>
-      <value>8</value>
+      <value>912b1825-2b00-4295-aa21-50c68ad8c2e3</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -87,9 +87,9 @@
       <value>tests_nodetype_base/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>2</value>
+      <value>c01abc1d-cba5-4f36-a800-ffaded5f97c0</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -100,9 +100,9 @@
       <value>tests_nodetype_base/index.txt/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>3</value>
+      <value>029d68a7-bdbd-44be-9331-63629c6151d0</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -113,9 +113,9 @@
       <value>tests_nodetype_base/index.txt/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>4</value>
+      <value>9694166a-1165-4759-9155-03e25cd07097</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -126,9 +126,9 @@
       <value>tests_nodetype_base/index.txt/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>4</value>
+      <value>9694166a-1165-4759-9155-03e25cd07097</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -139,9 +139,9 @@
       <value>tests_nodetype_base/index.txt/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>4</value>
+      <value>9694166a-1165-4759-9155-03e25cd07097</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -152,7 +152,7 @@
       <value>tests_nodetype_base/idExample/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>5</value>
+      <value>7f274b18-c808-4014-a77c-79f1b13a5813</value>
       <value>1</value>
       <value>1</value>
       <null/>
@@ -165,9 +165,9 @@
       <value>tests_nodetype_base/idExample/jcr:uuid</value>
       <value>1</value>
       <value>jcr:uuid</value>
-      <value>5</value>
+      <value>7f274b18-c808-4014-a77c-79f1b13a5813</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -178,9 +178,9 @@
       <value>tests_nodetype_base/idExample/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>5</value>
+      <value>7f274b18-c808-4014-a77c-79f1b13a5813</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -191,9 +191,9 @@
       <value>tests_nodetype_base/idExample/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>6</value>
+      <value>af04cbf5-9649-4550-b66b-29b365fc3320</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -204,9 +204,9 @@
       <value>tests_nodetype_base/idExample/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>6</value>
+      <value>af04cbf5-9649-4550-b66b-29b365fc3320</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -217,9 +217,9 @@
       <value>tests_nodetype_base/idExample/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>6</value>
+      <value>af04cbf5-9649-4550-b66b-29b365fc3320</value>
       <value>1</value>
-      <value>0</value>
+      <value></value>
       <null/>
       <null/>
       <null/>
@@ -230,7 +230,7 @@
       <value>tests_nodetype_base/nonreferenceable/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>7</value>
+      <value>a20d9b9c-eda2-4562-b4ab-fa50378aa2ed</value>
       <value>1</value>
       <value>1</value>
       <null/>
@@ -243,7 +243,7 @@
       <value>tests_nodetype_base/nodetogetref/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>8</value>
+      <value>912b1825-2b00-4295-aa21-50c68ad8c2e3</value>
       <value>1</value>
       <value>1</value>
       <null/>
