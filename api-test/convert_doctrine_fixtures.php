@@ -88,7 +88,13 @@ foreach ($ri AS $file) {
                 }
             }
 
-            $id = \Jackalope\Helper::generateUUID();
+            if (isset($attrs['jcr:uuid']['value'][0])) {
+                $id = (string)$attrs['jcr:uuid']['value'][0];
+                unset($attrs['jcr:uuid']['value'][0]);
+            } else {
+                $id = \Jackalope\Helper::generateUUID();
+            }
+
             $dataSetBuilder->addRow('jcrnodes', array(
                 'path' => $path,
                 'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
@@ -162,7 +168,13 @@ foreach ($ri AS $file) {
                     $attrs['jcr:primaryType'] = 'nt:unstructured';
                 }
 
-                $id = \Jackalope\Helper::generateUUID();
+                if (isset($attrs['jcr:uuid'])) {
+                    $id = $attrs['jcr:uuid'];
+                    unset($attrs['jcr:uuid']);
+                } else {
+                    $id = \Jackalope\Helper::generateUUID();
+                }
+
                 if (!isset($seenPaths[$path])) {
                     $dataSetBuilder->addRow('jcrnodes', array(
                         'path' => $path,

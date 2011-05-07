@@ -18,434 +18,434 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>9b0d67b4-0ab9-404b-a62e-b0959fe4ed8a</value>
+      <value>97f2caae-b867-4dd0-87bd-22417dd11bb1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move</value>
       <value></value>
       <value>1</value>
-      <value>c2e1a44a-d93f-4653-98b3-fc957aed79fc</value>
+      <value>91b409f3-c022-4c16-9b4b-1df2244f0d66</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMove</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>1ea860cc-6e52-4fc8-b239-1ca218b824b1</value>
+      <value>5cd72a1e-2fd5-4c09-bdf6-b8748060ebb4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMove/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMove</value>
       <value>1</value>
-      <value>fdeea7d5-2fbc-4bd5-991c-78776976ca60</value>
+      <value>32d51aef-a578-4d6b-bc5a-e849c0c32c14</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile</value>
       <value>tests_write_manipulation_move/testSessionMove/srcNode</value>
       <value>1</value>
-      <value>c0eb9dbb-d974-4ec4-858b-819c6e6125ad</value>
+      <value>9ade19ad-6c1d-472a-876e-7edbd7c15edf</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile/jcr:content</value>
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile</value>
       <value>1</value>
-      <value>dbeab8b6-a342-4bff-8b38-e8a9f3d7a9e8</value>
+      <value>a9d0e75e-7fe1-4ce9-96ca-9fa7f2e40e00</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMove/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMove</value>
       <value>1</value>
-      <value>6153fe71-ff93-46b2-a943-c796508a86e1</value>
+      <value>686ecbea-0cfb-4f61-b332-e613e9bf5e47</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveReferencable</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>15fef70d-1994-422a-9abc-d9fe43b6448b</value>
+      <value>dc17b433-d6f1-4183-907f-65adea7c7738</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveReferencable/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveReferencable</value>
       <value>1</value>
-      <value>5e509d71-a1e4-4f1f-8907-d35fe0549637</value>
+      <value>842e61c0-09ab-42a9-87c0-308ccc90e6f4</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveReferencable/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveReferencable</value>
       <value>1</value>
-      <value>d12a7623-a2bd-4b89-90fb-33049eb2ca11</value>
+      <value>6b3627ee-7e45-47de-ae18-c27205069a9f</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdated</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>0051bab3-e361-4ded-b210-5196538d109c</value>
+      <value>d2e09298-a2a8-48b1-9ae7-4dfb2c52c197</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdated/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMovePathUpdated</value>
       <value>1</value>
-      <value>5b555448-662b-4397-a805-447c3ed8e2a1</value>
+      <value>f4455586-5c36-4e07-ac62-535644f9844a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdated/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMovePathUpdated</value>
       <value>1</value>
-      <value>db80d572-43f0-4dd0-95a8-de8df0805787</value>
+      <value>5df7cca5-ecee-4d4e-95e8-5407e4d31944</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>0bd4c24f-7686-478d-bd8f-6087dffc58e2</value>
+      <value>678d02cd-5a19-4929-b930-6bfd48fe14ab</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild</value>
       <value>1</value>
-      <value>9bd06eee-be28-400e-93f7-1438288bd0c3</value>
+      <value>f63ee3d0-9625-471a-81fe-ea53c6e5c69a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild/srcNode/srcChild</value>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild/srcNode</value>
       <value>1</value>
-      <value>d896796f-9afa-425d-ad9e-9f67b4f69bcd</value>
+      <value>22060b2a-22e5-40f7-a26a-3bc24b05f78b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMovePathUpdatedChild</value>
       <value>1</value>
-      <value>7ef72e14-1007-4d3b-b5da-a09a21b68e2f</value>
+      <value>82cf6369-37df-4d79-97f8-615134922dc6</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNode</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>7865505e-a3e9-4408-908d-786a724b77cb</value>
+      <value>6c79e3c8-eca8-4fec-aee3-12a5afb34f2d</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNode/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNode</value>
       <value>1</value>
-      <value>d46edc78-edec-453c-8252-1391f57691d1</value>
+      <value>077fcede-8675-487a-87ec-0615ced1fdba</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNode/srcNode/srcChild</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNode/srcNode</value>
       <value>1</value>
-      <value>9ebe73d1-a986-4da4-9ae5-ee43f211ffec</value>
+      <value>415c75b8-4844-46cd-95ac-e3a45282ee0e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNode/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNode</value>
       <value>1</value>
-      <value>9c22f0e5-e7fc-4e46-bd6b-dd9277509f27</value>
+      <value>ef23d2da-c864-4881-b0be-6f26425043e9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeParent</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>a374ec90-2b0c-47ac-aea0-49ea8902454d</value>
+      <value>8f989eb3-2413-4d17-9ce1-02f54958d244</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeParent/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeParent</value>
       <value>1</value>
-      <value>71adad40-8a27-484e-b30e-c6ff2a6347f4</value>
+      <value>4a5b53c3-301a-46ed-b734-2f9e67e32bd2</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeParent/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeParent</value>
       <value>1</value>
-      <value>9a0d060f-deaf-4add-9961-6715953b7035</value>
+      <value>1f9d4011-6a36-461f-8f56-683e6f7de367</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>a0ad3612-53b3-4ecc-99ab-79339dab073e</value>
+      <value>8def4e59-610b-42d3-816f-b23b9f440a1b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend</value>
       <value>1</value>
-      <value>0565ac3f-3107-4cb5-b2f6-7372289a7ec9</value>
+      <value>8a981070-d9b7-44f9-a476-c8fe3095f10c</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend/srcNode/srcChild</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend/srcNode</value>
       <value>1</value>
-      <value>8eabc2f4-9dd1-49d5-94b7-7bb6863baf01</value>
+      <value>1715c423-30dc-47df-8cf2-9f011013b0fc</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveHasNodeFromBackend</value>
       <value>1</value>
-      <value>d99faf40-ea6c-4279-833b-6c8b0e88439f</value>
+      <value>0b51fcc8-e469-4f53-a313-d5c67466f95e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveMoved</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>3e14e52d-f6b5-4553-9061-2490f784129b</value>
+      <value>ae6fc27e-fae0-4d5c-9594-633d2c615463</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveMoved/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveMoved</value>
       <value>1</value>
-      <value>77079566-ad7b-42ce-bf8d-d4e510caae09</value>
+      <value>32e1a890-1e31-4494-b425-4ea52821f5b2</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveMoved/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveMoved</value>
       <value>1</value>
-      <value>a55d8e14-0622-40bd-bf14-3f6bba985ae9</value>
+      <value>b5821579-5972-41f9-a08b-c1868e1cbff6</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveMoved/dstNode2</value>
       <value>tests_write_manipulation_move/testSessionMoveMoved</value>
       <value>1</value>
-      <value>e913a866-8bc1-4001-a741-a54023c7e6d8</value>
+      <value>2aeb6bec-2320-4643-b060-5d18e313a541</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionDeleteMoved</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>f4a582c8-a7f0-4357-99a8-65f9cccc0e6c</value>
+      <value>867e5cc5-f9be-4af4-9dab-ce3afe053fa1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionDeleteMoved/srcNode</value>
       <value>tests_write_manipulation_move/testSessionDeleteMoved</value>
       <value>1</value>
-      <value>f7efc585-e790-46cb-b029-0717632889fe</value>
+      <value>fa1afbc9-857a-4927-a0be-ac649b78d359</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionDeleteMoved/dstNode</value>
       <value>tests_write_manipulation_move/testSessionDeleteMoved</value>
       <value>1</value>
-      <value>d501a90a-0f4f-4b0f-a854-5ec62bd4bfcb</value>
+      <value>18e30625-a624-452a-ac75-33b6b61dcc33</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveAdded</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>118eab2c-aa7d-4268-88d8-fc24b70339f2</value>
+      <value>19527970-45d7-4b0a-bf65-bb9c93d188cb</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveAdded/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveAdded</value>
       <value>1</value>
-      <value>6fc558cf-4130-4b22-b9cb-fa72850f23c3</value>
+      <value>88e23d42-2d17-475e-be65-7e3c70fcd8b1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildAdded</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>0e37f3be-7417-4541-9ef0-9f581609e981</value>
+      <value>4636c11c-950d-436d-a699-3c747e4faf67</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildAdded/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveChildAdded</value>
       <value>1</value>
-      <value>6b3f04c2-3205-4513-8a7e-0edb0f39f081</value>
+      <value>14c40990-793f-4935-9e90-d07f1e6a9ea9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>6baa0ad0-66ac-4a86-997b-45e1a9172f4e</value>
+      <value>3918d991-56eb-4276-8048-257522cea9e5</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved</value>
       <value>1</value>
-      <value>66fea3ca-8f66-43c4-8f1a-19a1c80b1796</value>
+      <value>c45fcd12-3b6e-487b-b68b-cc945efd769e</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/srcNode/srcFile</value>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/srcNode</value>
       <value>1</value>
-      <value>09734843-1390-46d9-8ec5-8fac646f5f28</value>
+      <value>c7a80047-a988-431b-b364-dc13dce0e641</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/srcNode/srcFile/jcr:content</value>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/srcNode/srcFile</value>
       <value>1</value>
-      <value>f207403c-d83a-423f-a8cf-fd4cf6112efd</value>
+      <value>0f3f2258-8c1d-4614-a1d6-fb2c4e4c1f20</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveChildMoved</value>
       <value>1</value>
-      <value>00dda8b8-7b91-46c1-84a6-1b193c1ea838</value>
+      <value>8ec1ce54-9924-4252-b25a-c0efa6ffcdfd</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveProperty</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>18357fc1-5079-44c5-8136-96a11db7e535</value>
+      <value>3e758b74-0f12-459e-8041-5a0ac9549c01</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveProperty/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveProperty</value>
       <value>1</value>
-      <value>6a099d31-6b27-4606-9417-452b37803a62</value>
+      <value>eb8062f7-1d70-40b8-b622-c1c9e33bbdf4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveProperty/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveProperty</value>
       <value>1</value>
-      <value>4b643af2-a311-46e6-a1a3-4b3214eaacf5</value>
+      <value>582e5363-e199-41e7-bca9-76575c76fc77</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveInvalidDstPath</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>fdc54367-8d46-48a9-bb43-bd29ab5c6931</value>
+      <value>b7fe083d-53d2-4ed9-8bbe-1b39fb4d35ec</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveInvalidDstPath/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveInvalidDstPath</value>
       <value>1</value>
-      <value>3bf9457c-efe6-498b-b21c-e71053088180</value>
+      <value>ed130acb-7810-46f1-a6be-8d24a605405f</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveInvalidDstPath/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveInvalidDstPath</value>
       <value>1</value>
-      <value>380a2993-b298-4968-839a-0e589f01af83</value>
+      <value>92ca0e9d-b91a-4542-a5f0-79ff9d38dff8</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveSrcNotFound</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>5e6603e5-4339-4324-bb3d-e017cb2bb309</value>
+      <value>38a9cf7e-87dc-498e-a15d-0d65d057e03e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveSrcNotFound/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveSrcNotFound</value>
       <value>1</value>
-      <value>f987d564-ecc3-4e43-8ee2-71bf0788ee9e</value>
+      <value>6dd3751f-c56f-4070-be5d-ca53cb84e302</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstNotFound</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>8499f91b-3315-4bc7-b138-390b31dafaa1</value>
+      <value>c464f97f-d387-43d9-8905-9f5651743d88</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstNotFound/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveDstNotFound</value>
       <value>1</value>
-      <value>95797d42-7d47-421d-8be5-8b0ac3454488</value>
+      <value>d45f3666-2b7d-4b91-8d44-a0a778e850f2</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstExists</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>58f055d0-1053-4f8b-9690-47081eb143a5</value>
+      <value>818dd34f-5337-4e76-a485-a1e16895e6e3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/srcNode</value>
       <value>tests_write_manipulation_move/testSessionMoveDstExists</value>
       <value>1</value>
-      <value>5a467454-8762-4ae3-8892-c00e7ccea4a2</value>
+      <value>ec2edaea-c322-4e1d-a6ce-1d2be1761253</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/srcNode/srcChild</value>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/srcNode</value>
       <value>1</value>
-      <value>3513dd3d-5be6-4c07-8a8d-6bc2ed60b72f</value>
+      <value>da0fb4b7-5a7a-4cbf-801b-b38dd1c5f226</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/dstNode</value>
       <value>tests_write_manipulation_move/testSessionMoveDstExists</value>
       <value>1</value>
-      <value>d65ef0a3-25d0-4e35-b7ab-ec10fee69ee6</value>
+      <value>5588635c-403a-4dbe-be92-1655287a089a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/dstNode/srcChild</value>
       <value>tests_write_manipulation_move/testSessionMoveDstExists/dstNode</value>
       <value>1</value>
-      <value>04f72550-c1a6-488a-9432-002e414bcf62</value>
+      <value>0130865b-e2f7-4063-96c2-a734141e6df3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testWorkspaceMove</value>
       <value>tests_write_manipulation_move</value>
       <value>1</value>
-      <value>c448cb12-bf0f-4354-afd9-2dbbcbb84513</value>
+      <value>7745e018-ccf6-4b0a-9888-ff7e47f8e926</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testWorkspaceMove/srcNode</value>
       <value>tests_write_manipulation_move/testWorkspaceMove</value>
       <value>1</value>
-      <value>d567bd89-b202-4b16-98c8-9b2f82ae38d0</value>
+      <value>6bb30ebf-719a-4040-8c39-2389c2c83687</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_move/testWorkspaceMove/dstNode</value>
       <value>tests_write_manipulation_move/testWorkspaceMove</value>
       <value>1</value>
-      <value>73c9f7e6-9cbf-45a1-ad81-fd7b42f7a0c3</value>
+      <value>f0d5953f-a0a9-4405-a706-c3a4adbf283f</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -465,7 +465,7 @@
       <value>tests_write_manipulation_move/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>c2e1a44a-d93f-4653-98b3-fc957aed79fc</value>
+      <value>91b409f3-c022-4c16-9b4b-1df2244f0d66</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -478,7 +478,7 @@
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>c0eb9dbb-d974-4ec4-858b-819c6e6125ad</value>
+      <value>9ade19ad-6c1d-472a-876e-7edbd7c15edf</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -491,7 +491,7 @@
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>dbeab8b6-a342-4bff-8b38-e8a9f3d7a9e8</value>
+      <value>a9d0e75e-7fe1-4ce9-96ca-9fa7f2e40e00</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -504,7 +504,7 @@
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>dbeab8b6-a342-4bff-8b38-e8a9f3d7a9e8</value>
+      <value>a9d0e75e-7fe1-4ce9-96ca-9fa7f2e40e00</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -517,7 +517,7 @@
       <value>tests_write_manipulation_move/testSessionMove/srcNode/srcFile/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>dbeab8b6-a342-4bff-8b38-e8a9f3d7a9e8</value>
+      <value>a9d0e75e-7fe1-4ce9-96ca-9fa7f2e40e00</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -530,7 +530,7 @@
       <value>tests_write_manipulation_move/testSessionMoveReferencable/srcNode/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>5e509d71-a1e4-4f1f-8907-d35fe0549637</value>
+      <value>842e61c0-09ab-42a9-87c0-308ccc90e6f4</value>
       <value>1</value>
       <value>1</value>
       <null/>
@@ -540,23 +540,10 @@
       <null/>
     </row>
     <row>
-      <value>tests_write_manipulation_move/testSessionMoveReferencable/srcNode/jcr:uuid</value>
-      <value>1</value>
-      <value>jcr:uuid</value>
-      <value>5e509d71-a1e4-4f1f-8907-d35fe0549637</value>
-      <value>1</value>
-      <value></value>
-      <null/>
-      <null/>
-      <null/>
-      <value>842e61c0-09ab-42a9-87c0-308ccc90e6f4</value>
-      <null/>
-    </row>
-    <row>
       <value>tests_write_manipulation_move/testSessionMoveProperty/srcNode/prop</value>
       <value>1</value>
       <value>prop</value>
-      <value>6a099d31-6b27-4606-9417-452b37803a62</value>
+      <value>eb8062f7-1d70-40b8-b622-c1c9e33bbdf4</value>
       <value>1</value>
       <value></value>
       <null/>
