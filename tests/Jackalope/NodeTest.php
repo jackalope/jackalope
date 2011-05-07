@@ -6,19 +6,31 @@ class NodeTest extends TestCase
 {
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
-    public function testConstructor()
+    protected function createNode()
     {
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
         $node = new Node($factory, json_decode($this->JSON), '/jcr:node', $session, $objectManager);
-        $this->assertSame($session, $node->getSession());
+        return $node;
+    }
+
+    public function testConstructor()
+    {
+        $node = $this->createNode();
+        $this->assertType('Jackalope\Session', $node->getSession());
         $this->assertType('jackalope\Node', $node);
-        //TODO: Activate this…
-        // $this->assertTrue($node->getPrimaryNodeType()->isNodeType('rep:root'));
         $children = $node->getNodes();
         $this->assertType('Iterator', $children);
         $this->assertSame(2, count($children));
+    }
+
+    public function testNodeType()
+    {
+        $node = $this->createNode();
+        $this->assertTrue($node->isNodeType('rep:root'), "Should return true on is 'rep:root' node type.");
+        //TODO: Activate this…
+        // $this->assertTrue($node->getPrimaryNodeType()->isNodeType('rep:root'));
     }
 
     public function testFilterNames()
