@@ -557,6 +557,10 @@ class DoctrineDBAL implements TransportInterface
             return;
         }
 
+        if (!$property->isModified() && !$property->isNew()) {
+            return;
+        }
+
         $this->assertLoggedIn();
 
         if (($property->getType() == PropertyType::REFERENCE || $property->getType() == PropertyType::WEAKREFERENCE) &&
@@ -628,6 +632,16 @@ class DoctrineDBAL implements TransportInterface
         } else {
             $data[$dataFieldName] = $values;
             $this->conn->insert('jcrprops', $data);
+        }
+
+        if ($isBinary) {
+            var_dump("oeeerrr!");
+            $data = $property->getBinary()->read($value);
+            $this->conn->insert('jcrbinarydata', array(
+                'path' => $path,
+                'workspace_id' => $this->workspaceId,
+                'data' => $data,
+            ));
         }
     }
 
