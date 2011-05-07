@@ -20,7 +20,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         if ($node instanceof DOMElement) {
             $this->fromXML($node);
         } else if (is_array($node)) {
-            $this->fromArray($data);
+            $this->fromArray($node);
         }
     }
 
@@ -48,9 +48,9 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     {
         parent::fromArray($data);
         $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
-        $this->defaultPrimaryTypeName = $data['defaultPrimaryType'] ?: null;
+        $this->defaultPrimaryTypeName = isset($data['defaultPrimaryType']) ? $data['defaultPrimaryType'] : null;
         $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))
-                ? $data['requiredPrimaryTypeNames'] : aray(self::DEFAULT_PRIMARY_NODE);
+                ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
     }
 
     /**

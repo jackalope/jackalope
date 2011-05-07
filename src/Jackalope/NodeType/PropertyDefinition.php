@@ -57,12 +57,12 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     {
         parent::fromArray($data);
         $this->requiredType = $data['requiredType'];
-        $this->isMultiple = $data['multiple'];
-        $this->isFullTextSearchable = $data['fullTextSearchable'];
-        $this->isQueryOrderable = $data['queryOrderable'];
-        $this->valueConstraints = $data['valueConstraints'];
-        $this->availableQueryOperators = $data['availableQueryOperators'];
-        $this->defaultValues = $data['defaultValues'];
+        $this->isMultiple = isset($data['multiple']) ? $data['multiple'] : false;
+        $this->isFullTextSearchable = isset($data['fullTextSearchable']) ? $data['fullTextSearchable'] : false;
+        $this->isQueryOrderable = isset($data['queryOrderable']) ? $data['queryOrderable'] : false;
+        $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : array();
+        $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : array();
+        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : null;
     }
 
     /**

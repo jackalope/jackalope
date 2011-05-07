@@ -126,6 +126,11 @@ class Client implements TransportInterface
     protected $sendExpect = false;
 
     /**
+     * @var \Jackalope\NodeType\NodeTypeXmlConverter
+     */
+    protected $typeXmlConverter = null;
+
+    /**
      * Create a transport pointing to a server url.
      *
      * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
@@ -769,9 +774,10 @@ class Client implements TransportInterface
     }
 
     /**
-     * Returns node types
+     * Returns node types as array structure
+     * 
      * @param array nodetypes to request
-     * @return dom with the definitions
+     * @return array a list of nodetype definitions
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodeTypes($nodeTypes = array())
@@ -783,8 +789,14 @@ class Client implements TransportInterface
         if ($dom->firstChild->localName != 'nodeTypes') {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
-        return $dom;
+
+        if ($this->typeXmlConverter === null) {
+            $this->typeXmlConverter = new \Jackalope\NodeType\NodeTypeXmlConverter();
+        }
+
+        return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
+
 
     /**
      * Register namespaces and new node types or update node types based on a
