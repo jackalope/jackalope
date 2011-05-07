@@ -96,6 +96,15 @@ class DoctrineDBAL implements TransportInterface
             throw new \PHPCR\RepositoryException("Workspace '" . $workspaceName . "' already exists");
         }
         $this->conn->insert('jcrworkspaces', array('name' => $workspaceName));
+        $workspaceId = $this->conn->lastInsertId();
+
+        $this->conn->insert("jcrnodes", array(
+            'path' => '',
+            'parent' => '-1',
+            'workspace_id' => $workspaceId,
+            'identifier' => Helper::generateUUID(),
+            'type' => 'nt:unstructured',
+        ));
     }
 
     /**
