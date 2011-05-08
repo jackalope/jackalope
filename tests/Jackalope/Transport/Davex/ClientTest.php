@@ -281,19 +281,19 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::getItem
+     * @covers \Jackalope\Transport\Davex\Client::getNode
      * @expectedException \PHPCR\RepositoryException
      */
-    public function testGetItemWithoutAbsPath()
+    public function testGetNodeWithoutAbsPath()
     {
         $t = $this->getTransportMock();
-        $t->getItem('foo');
+        $t->getNode('foo');
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::getItem
+     * @covers \Jackalope\Transport\Davex\Client::getNode
      */
-    public function testGetItem()
+    public function testGetNode()
     {
         $t = $this->getTransportMock($this->config['url']);
 
@@ -303,7 +303,7 @@ class ClientTest extends TestCase
             ->with(Request::GET, '/foobar.0.json')
             ->will($this->returnValue($request));
 
-        $json = $t->getItem('/foobar');
+        $json = $t->getNode('/foobar');
     }
 
     /**
