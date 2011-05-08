@@ -27,6 +27,7 @@ use Jackalope\TransportInterface;
 use PHPCR\RepositoryException;
 use Doctrine\DBAL\Connection;
 use Jackalope\Helper;
+use Jackalope\NodeType\NodeTypeManager;
 
 class DoctrineDBAL implements TransportInterface
 {
@@ -69,6 +70,8 @@ class DoctrineDBAL implements TransportInterface
      * @var array
      */
     private $nodeIdentifiers = array();
+
+    private $nodeTypeManager = null;
 
     public function __construct(Connection $conn)
     {
@@ -673,66 +676,351 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getNodeTypes($nodeTypes = array())
     {
-        $xml = <<<XML
-<nodeTypes>
-    <nodeType name="nt:base" isMixin="false" isAbstract="true">
-        <propertyDefinition name="jcr:primaryType" requiredType="NAME" autoCreated="true" mandatory="true" protected="true" onParentVersion="COMPUTE" />
-        <propertyDefinition name="jcr:mixinTypes" requiredType="NAME" autoCreated="true" mandatory="true" protected="true" multiple="true" onParentVersion="COMPUTE" />
-    </nodeType>
-    <nodeType name="nt:unstructured" hasOrderableChildNodes="true" isMixin="false" isAbstract="false">
-        <supertypes>
-            <supertype>nt:base</supertype>
-        </supertypes>
-        <childNodeDefinition autoCreated="false" declaringNodeType="nt:unstructured" defaultPrimaryType="nt:unstructured" mandatory="false" name="*" onParentVersion="VERSION" protected="false" sameNameSiblings="false">
-          <requiredPrimaryTypes>
-            <requiredPrimaryType>nt:base</requiredPrimaryType>
-          </requiredPrimaryTypes>
-        </childNodeDefinition>
-        <propertyDefinition autoCreated="false" declaringNodeType="nt:unstructured" fullTextSearchable="true" mandatory="false" multiple="true" name="*" onParentVersion="COPY" protected="false" queryOrderable="true" requiredType="undefined" />
-    </nodeType>
-    <nodeType name="mix:etag" isMixin="true">
-        <propertyDefinition name="jcr:etag" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
-    </nodeType>
-    <nodeType name="nt:hierachy" isAbstract="true">
-        <supertypes>
-            <supertype>mix:created</supertype>
-        </supertypes>
-    </nodeType>
-    <nodeType name="nt:file" isMixin="false" isAbstract="false">
-        <supertypes>
-            <supertype>nt:hierachy</supertype>
-        </supertypes>
-    </nodeType>
-    <nodeType name="nt:folder" isMixin="false" isAbstract="false">
-        <supertypes>
-            <supertype>nt:hierachy</supertype>
-        </supertypes>
-    </nodeType>
-    <nodeType name="nt:resource" isMixin="false" isAbstract="false" primaryItemName="jcr:data">
-        <supertypes>
-            <supertype>mix:mimeType</supertype>
-            <supertype>mix:modified</supertype>
-        </supertypes>
-        <propertyDefinition name="jcr:created" requiredType="BINARY" autoCreated="false" protected="false" onParentVersion="COPY" />
-    </nodeType>
-    <nodeType name="mix:created" isMixin="true">
-        <propertyDefinition name="jcr:created" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
-        <propertyDefinition name="jcr:createdBy" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
-    </nodeType>
-    <nodeType name="mix:mimeType" isMixin="true">
-        <propertyDefinition name="jcr:mimeType" requiredType="DATE" autoCreated="false" protected="true" onParentVersion="COPY" />
-        <propertyDefinition name="jcr:encoding" requiredType="STRING" autoCreated="false" protected="true" onParentVersion="COPY" />
-    </nodeType>
-    <nodeType name="mix:lastModified" isMixin="true">
-        <propertyDefinition name="jcr:lastModified" requiredType="DATE" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
-        <propertyDefinition name="jcr:lastModifiedBy" requiredType="STRING" autoCreated="true" protected="true" onParentVersion="COMPUTE" />
-    </nodeType>
-</nodeTypes>
-XML;
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        $dom->loadXML($xml);
-
-        return $dom;
+        return array(
+            0 =>
+            array(
+                'name' => 'nt:base',
+                'isAbstract' => true,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:primaryType',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 7,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                    1 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:mixinTypes',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 7,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            1 =>
+            array(
+                'name' => 'nt:unstructured',
+                'isAbstract' => false,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'nt:base',
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => 'nt:unstructured',
+                        'name' => '*',
+                        'isAutoCreated' => true,
+                        'isMandatory' => false,
+                        'isProtected' => true,
+                        'onParentVersion' => 1,
+                        'requiredType' => 0,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => 'nt:unstructured',
+                        'name' => '*',
+                        'isAutoCreated' => true,
+                        'isMandatory' => false,
+                        'isProtected' => true,
+                        'onParentVersion' => 2,
+                        'allowsSameNameSiblings' => false,
+                        'defaultPrimaryTypeName' => 'nt:unstructured',
+                        'requiredPrimaryTypeNames' =>
+                        array(
+                            0 => 'nt:base',
+                        ),
+                    ),
+                ),
+            ),
+            2 =>
+            array(
+                'name' => 'mix:etag',
+                'isAbstract' => true,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:etag',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            3 =>
+            array(
+                'name' => 'nt:hierachy',
+                'isAbstract' => true,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'mix:created',
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            4 =>
+            array(
+                'name' => 'nt:file',
+                'isAbstract' => false,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'nt:hierachy',
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            5 =>
+            array(
+                'name' => 'nt:folder',
+                'isAbstract' => false,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'nt:hierachy',
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            6 =>
+            array(
+                'name' => 'nt:resource',
+                'isAbstract' => false,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => 'jcr:data',
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'mix:mimeType',
+                    1 => 'mix:modified',
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:created',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 1,
+                        'requiredType' => 2,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            7 =>
+            array(
+                'name' => 'mix:created',
+                'isAbstract' => true,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:created',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 5,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                    1 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:createdBy',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            8 =>
+            array(
+                'name' => 'mix:mimeType',
+                'isAbstract' => true,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:mimeType',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 1,
+                        'requiredType' => 5,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                    1 => array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:encoding',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 1,
+                        'requiredType' => 1,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            9 =>
+            array(
+                'name' => 'mix:lastModified',
+                'isAbstract' => true,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:lastModified',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 5,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                    1 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:lastModifiedBy',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => true,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+        );
     }
 
     /**
@@ -758,5 +1046,10 @@ XML;
     public function registerNodeTypes($types, $allowUpdate)
     {
         
+    }
+
+    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager)
+    {
+        $this->nodeTypeManager = $nodeTypeManager;
     }
 }
