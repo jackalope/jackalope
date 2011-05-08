@@ -59,7 +59,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     public function execute()
     {
         $transport = $this->objectmanager->getTransport();
-        $rawData = $transport->query($this); //$transport->querySQL($this->statement, $this->limit, $this->offset);
+        $rawData = $transport->query($this);
         $queryResult = $this->factory->get(
             'Query\QueryResult',
             array(
@@ -96,6 +96,16 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     }
 
     /**
+     * Access the limit from the transport layer
+     *
+     * @return the limit set with setLimit
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
      * Sets the start offset of the result set to offset.
      *
      * @param integer $offset
@@ -105,6 +115,26 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     public function setOffset($offset)
     {
         $this->offset = $offset;
+    }
+
+    /**
+     * Access the offset from the transport layer
+     *
+     * @return the offset set with setOffset
+     */
+    public function getOffset()
+    {
+        return $this->offset;
+    }
+
+    /**
+     * Access the query statement from the transport layer
+     *
+     * @return string the sql2 query statement
+     */
+    public function getStatementSql2()
+    {
+        return $this->statement; //TODO: should this expand bind variables? or the transport?
     }
 
     /**

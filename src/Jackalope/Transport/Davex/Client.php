@@ -21,6 +21,8 @@
  */
 
 namespace Jackalope\Transport\Davex;
+
+use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
 use Jackalope\TransportInterface;
 use Jackalope\NotImplementedException;
@@ -444,11 +446,13 @@ class Client implements TransportInterface
         return $resp;
     }
 
-    public function querySQL($query, $limit = null, $offset = null)
+    public function query(\PHPCR\Query\QueryInterface $query)
     {
-        //FIXME: refactor this to use query and not querySQL
+        $querystring = $query->getStatementSql2();
+        $limit = $query->getLimit();
+        $offset = $query->getOffset();
 
-        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$query.']]></JCR-SQL2>';
+        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$querystring.']]></JCR-SQL2>';
 
         if (null !== $limit || null !== $limit) {
             $body .= '<D:limit>';
@@ -466,12 +470,27 @@ class Client implements TransportInterface
         $path = $this->normalizeUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
         $request->setBody($body);
-        return $request->execute();
-    }
 
-    public function query(\PHPCR\Query\QueryInterface $query)
-    {
-        throw new NotImplementedException();
+        $rawData = $request->execute();
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($rawData);
+
+        $rows = array();
+        foreach ($dom->getElementsByTagName('response') as $row) {
+            $columns = array();
+            foreach ($row->getElementsByTagName('column') as $column) {
+                $sets = array();
+                foreach ($column->childNodes as $childNode) {
+                    $sets[$childNode->tagName] = $childNode->nodeValue;
+                }
+
+                $columns[] = $sets;
+            }
+
+            $rows[] = $columns;
+        }
+        return $rows;
     }
 
 
@@ -684,10 +703,16 @@ class Client implements TransportInterface
         $path = $property->getPath();
         $this->ensureAbsolutePath($path);
 
-        $type = \PHPCR\PropertyType::nameFromValue($property->getType());
+        $typeid = $property->getType();
+        $type = PropertyType::nameFromValue($typeid);
+        if ($typeid == PropertyType::REFERENCE ||
+            $typeid == PropertyType::WEAKREFERENCE) {
+                $nativeValue = $property->getString();
+            } else {
+                $nativeValue = $property->getValue();
+        }
 
         $request = $this->getRequest(Request::PUT, $path);
-        $nativeValue = $property->getValue();
         if ($property->getName() === 'jcr:mixinTypes') {
             $uri = $this->normalizeUri(dirname($path) === '\\' ? '/' : dirname($path));
             $request->setUri($uri);
