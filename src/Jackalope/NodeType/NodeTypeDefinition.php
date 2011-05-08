@@ -90,7 +90,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->isQueryable = $data['isQueryable'];!
         $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
         $this->primaryItemName = $data['primaryItemName'] ?: null;
-        $this->declaredSuperTypeNames = (isset($data['supertypes'])) ? $data['supertypes'] : array();
+        $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : array();
         $this->declaredPropertyDefinitions = new ArrayObject();
         foreach ($data['declaredPropertyDefinitions'] AS $propertyDef) {
             $this->declaredPropertyDefinitions[] = $this->factory->get(
