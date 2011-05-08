@@ -171,8 +171,7 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getItem($absPath)
     {
-
-        if(strpos($absPath,'/') !== 0) {
+        if (strpos($absPath,'/') !== 0) {
             throw new \PHPCR\PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 

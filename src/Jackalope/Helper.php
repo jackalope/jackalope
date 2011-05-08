@@ -207,7 +207,9 @@ class Helper
             //FIXME: type PATH is missing. should automatically read property and node with getPath.
             default:
                 //FIXME: handle other types somehow
-                foreach ($values as $v) $ret[] = $v;
+                foreach ($values as $v) {
+                    $ret[] = $v;
+                }
                 break;
             //TODO: more type checks or casts? name, path, uri, decimal. but the backend can handle the checks.
         }

@@ -323,13 +323,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $results = array();
         switch($this->type) {
             case \PHPCR\PropertyType::PATH:
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $results[] = $this->objectManager->getNode($value, $this->parentPath);
                 }
                 break;
             case \PHPCR\PropertyType::REFERENCE:
                 try {
-                    foreach($values as $value) {
+                    foreach ($values as $value) {
                         $results[] = $this->objectManager->getNode($value);
                     }
                 } catch(\PHPCR\ItemNotFoundException $e) {
@@ -337,7 +337,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
                 }
                 break;
             case \PHPCR\PropertyType::WEAKREFERENCE:
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $results[] = $this->objectManager->getNode($value);
                 }
                 break;

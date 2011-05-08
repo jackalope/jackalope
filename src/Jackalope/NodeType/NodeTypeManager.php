@@ -376,7 +376,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
-        foreach($names[1] as $name) {
+        foreach ($names[1] as $name) {
             $types[$name] = $this->getNodeType($name);
         }
         $this->fetchedAllFromBackend = $fetched;

@@ -198,7 +198,7 @@ class Client implements TransportInterface
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
-        foreach($this->defaultHeaders as $header) {
+        foreach ($this->defaultHeaders as $header) {
             $request->addHeader($header);
         }
 
