@@ -19,7 +19,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
 
         if ($node instanceof DOMElement) {
             $this->fromXML($node);
-        } else if (is_array($node)) {
+        } elseif (is_array($node)) {
             $this->fromArray($node);
         }
     }

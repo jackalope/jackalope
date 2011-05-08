@@ -96,7 +96,6 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function registerNamespace($prefix, $uri)
     {
-
         throw new NotImplementedException('Write');
 
         // prevent default namespace to be overridden.
@@ -251,7 +250,7 @@ Server: Jetty(6.1.x)
     {
         if (isset($this->defaultNamespaces[$prefix])) {
             return $this->defaultNamespaces[$prefix];
-        } else if (isset($this->userNamespaces[$prefix])) {
+        } elseif (isset($this->userNamespaces[$prefix])) {
             return $this->userNamespaces[$prefix];
         }
         throw new \PHPCR\NamespaceException("Mapping for '$prefix' is not defined");
