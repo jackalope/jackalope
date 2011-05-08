@@ -56,6 +56,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
 
         if ($nodetype instanceof DOMElement) {
             $this->fromXml($nodetype);
+        } else if (is_array($nodetype)) {
+            $this->fromArray($nodetype);
         } elseif ($nodetype instanceof \PHPCR\NodeType\NodeTypeDefinitionInterface) {
             $this->fromNodeTypeDefinition($nodetype); // copy constructor
         } elseif (!is_null($nodetype)) {
@@ -78,6 +80,31 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
         $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions());
         $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions());
+    }
+
+    protected function fromArray(array $data)
+    {
+        $this->name = $data['name'];
+        $this->isAbstract = $data['isAbstract'];
+        $this->isMixin = $data['isMixin'];
+        $this->isQueryable = $data['isQueryable'];!
+        $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
+        $this->primaryItemName = $data['primaryItemName'] ?: null;
+        $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : array();
+        $this->declaredPropertyDefinitions = new ArrayObject();
+        foreach ($data['declaredPropertyDefinitions'] AS $propertyDef) {
+            $this->declaredPropertyDefinitions[] = $this->factory->get(
+                'NodeType\PropertyDefinition',
+                array($propertyDef, $this->nodeTypeManager)
+            );
+        }
+        $this->declaredNodeDefinitions = new ArrayObject();
+        foreach ($data['declaredNodeDefinitions'] AS $nodeDef) {
+            $this->declaredNodeDefinitions[] = $this->factory->get(
+                'NodeType\NodeDefinition',
+                array($nodeDef, $this->nodeTypeManager)
+            );
+        }
     }
 
     /**

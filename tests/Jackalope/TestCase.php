@@ -51,10 +51,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $factory = new \Jackalope\Factory;
         $dom = new \DOMDocument();
         $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
+        $converter = new \Jackalope\NodeType\NodeTypeXmlConverter;
         $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
         $om->expects($this->any())
             ->method('getNodeTypes')
-            ->will($this->returnValue($dom));
+            ->will($this->returnValue($converter->getNodeTypesFromXml($dom)));
         return new \Jackalope\NodeType\NodeTypeManager($factory, $om);
     }
 }

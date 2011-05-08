@@ -11,11 +11,33 @@ use Jackalope\TestCase;
  */
 class NodeTypeTest extends TestCase
 {
+    public function testNodeGetSuperTypesMultiple()
+    {
+        $ntm = $this->getNodeTypeManager();
+        $nt = $ntm->getNodeType('nt:configuration');
+        $mixVersionableNodeType = $ntm->getNodeType('mix:versionable');
+        $superTypes = $nt->getSupertypes();
+        $superTypes2 = $nt->getSupertypes();
+
+        $this->assertEquals($superTypes, $superTypes2);
+    }
+
     public function testNodeTypeMethods()
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
-        $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
+        $mixVersionableNodeType = $ntm->getNodeType('mix:versionable');
+        $superTypes = $nt->getSupertypes();
+        $this->assertEquals(array("mix:versionable", "nt:base"), $nt->getDeclaredSupertypeNames());
+        $this->assertEquals(4, count($superTypes), "Four supertypes expected.");
+
+        $this->assertSame(array(
+            $ntm->getNodeType('mix:versionable'),
+            $ntm->getNodeType('mix:referenceable'),
+            $ntm->getNodeType('mix:simpleVersionable'),
+            $ntm->getNodeType('nt:base')),
+            $superTypes
+        );
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertType('Iterator', $declaredSubTypes);
@@ -65,6 +87,7 @@ class NodeTypeTest extends TestCase
 
     public function testGetDefinedChildNodesAndNodeDefinitions()
     {
+        xdebug_start_Trace("/tmp/jcr");
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();

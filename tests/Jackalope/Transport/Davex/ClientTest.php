@@ -466,8 +466,8 @@ class ClientTest extends TestCase
         $t = $this->setUpNodeTypeMock(array(), dirname(__FILE__).'/../../../fixtures/nodetypes.xml');
 
         $nt = $t->getNodeTypes();
-        $this->assertTrue($nt instanceOf DOMDocument);
-        $this->assertSame('mix:created', $nt->firstChild->firstChild->getAttribute('name'));
+        $this->assertType('array', $nt);
+        $this->assertSame('mix:created', $nt[0]['name']);
     }
 
     /**
@@ -478,12 +478,10 @@ class ClientTest extends TestCase
         $t = $this->setUpNodeTypeMock(array('nt:folder', 'nt:file'), dirname(__FILE__).'/../../../fixtures/small_nodetypes.xml');
 
         $nt = $t->getNodeTypes(array('nt:folder', 'nt:file'));
-        $this->assertType('DOMDocument', $nt);
-        $xp = new DOMXpath($nt);
-        $res = $xp->query('//nodeType');
-        $this->assertSame(2, $res->length);
-        $this->assertSame('nt:folder', $res->item(0)->getAttribute('name'));
-        $this->assertSame('nt:file', $res->item(1)->getAttribute('name'));
+        $this->assertType('array', $nt);
+        $this->assertSame(2, count($nt));
+        $this->assertSame('nt:folder', $nt[0]['name']);
+        $this->assertSame('nt:file', $nt[1]['name']);
     }
 
     /**

@@ -13,11 +13,20 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     protected $defaultPrimaryTypeName;
     protected $allowsSameNameSiblings;
 
-
-    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
     {
         parent::__construct($factory, $node, $nodeTypeManager);
 
+        if ($node instanceof DOMElement) {
+            $this->fromXML($node);
+        } else if (is_array($node)) {
+            $this->fromArray($node);
+        }
+    }
+
+    protected function fromXML(DOMElement $node)
+    {
+        parent::fromXML($node);
         $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
         if (empty($this->defaultPrimaryTypeName)) {
@@ -33,8 +42,15 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         } else {
             array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
         }
+    }
 
-
+    protected function fromArray(array $data)
+    {
+        parent::fromArray($data);
+        $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
+        $this->defaultPrimaryTypeName = isset($data['defaultPrimaryTypeName']) ? $data['defaultPrimaryTypeName'] : null;
+        $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))
+                ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
     }
 
     /**

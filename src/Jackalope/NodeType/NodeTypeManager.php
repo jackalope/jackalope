@@ -53,23 +53,23 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     protected function fetchNodeTypes($name = null)
     {
-        if ($this->fetchedAllFromBackend) return;
+        if ($this->fetchedAllFromBackend) {
+            return;
+        }
 
         if (! is_null($name)) {
             if (empty($this->primaryTypes[$name]) &&
                 empty($this->mixinTypes[$name])) {
                 //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
-                $dom = $this->objectManager->getNodeType($name);
+                $nodetypes = $this->objectManager->getNodeType($name);
             } else {
                 return; //we already know this node
             }
         } else {
-            $dom = $this->objectManager->getNodeTypes();
+            $nodetypes = $this->objectManager->getNodeTypes();
             $this->fetchedAllFromBackend = true;
         }
 
-        $xp = new \DOMXpath($dom);
-        $nodetypes = $xp->query('/nodeTypes/nodeType');
         foreach ($nodetypes as $nodetype) {
             $nodetype = $this->factory->get('NodeType\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();

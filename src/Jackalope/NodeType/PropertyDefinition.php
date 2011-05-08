@@ -17,9 +17,20 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     protected $isFullTextSearchable;
     protected $isQueryOrderable;
 
-    public function __construct($factory, DOMElement $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
     {
         parent::__construct($factory, $node, $nodeTypeManager);
+
+        if ($node instanceof DOMElement) {
+            $this->fromXML($node);
+        } else if (is_array($node)) {
+            $this->fromArray($node);
+        }
+    }
+    
+    protected function fromXML(DOMElement $node)
+    {
+        parent::fromXML($node);
         $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
         $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
         $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
@@ -40,6 +51,18 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
         foreach ($defaultValues as $defaultValue) {
             array_push($this->defaultValues, $defaultValue->nodeValue);
         }
+    }
+
+    protected function fromArray(array $data)
+    {
+        parent::fromArray($data);
+        $this->requiredType = $data['requiredType'];
+        $this->isMultiple = isset($data['multiple']) ? $data['multiple'] : false;
+        $this->isFullTextSearchable = isset($data['fullTextSearchable']) ? $data['fullTextSearchable'] : false;
+        $this->isQueryOrderable = isset($data['queryOrderable']) ? $data['queryOrderable'] : false;
+        $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : array();
+        $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : array();
+        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : array();
     }
 
     /**
