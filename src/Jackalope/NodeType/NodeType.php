@@ -27,7 +27,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
         if (null === $this->superTypes) {
             $this->superTypes = array();
             foreach ($this->getDeclaredSupertypes() as $superType) {
-                array_push($this->superTypes, $superType);
+                $this->superTypes[] = $superType;
                 $this->superTypes = array_merge($this->superTypes, $superType->getSupertypes());
             }
         }
@@ -44,7 +44,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
          if (null === $this->superTypeNames) {
              $this->superTypeNames = array();
              foreach ($this->getSupertypes() as $superType) {
-                 array_push($this->superTypeNames, $superType->getName());
+                 $this->superTypeNames[] = $superType->getName();
              }
         }
         return $this->superTypeNames;
@@ -64,7 +64,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
         if (null === $this->declaredSupertypes) {
             $this->declaredSupertypes = array();
             foreach ($this->declaredSuperTypeNames as $declaredSuperTypeName) {
-                array_push($this->declaredSupertypes, $this->nodeTypeManager->getNodeType($declaredSuperTypeName));
+                $this->declaredSupertypes[] = $this->nodeTypeManager->getNodeType($declaredSuperTypeName);
             }
         }
         return $this->declaredSupertypes;
@@ -82,7 +82,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     {
         $ret = array();
         foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
-            array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
+            $ret[] = $this->nodeTypeManager->getNodeType($subtype);
         }
         return new ArrayIterator($ret);
     }
@@ -100,7 +100,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     {
         $ret = array();
         foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
-            array_push($ret, $this->nodeTypeManager->getNodeType($subtype));
+            $ret[] = $this->nodeTypeManager->getNodeType($subtype);
         }
         return new ArrayIterator($ret);
     }
@@ -179,7 +179,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      * @param string $nodeTypeName The name of the node type of the child node.
      * @return boolean
      */
-    public function canAddChildNode($childNodeName, $nodeTypeName = NULL)
+    public function canAddChildNode($childNodeName, $nodeTypeName = null)
     {
         throw new NotImplementedException();
     }

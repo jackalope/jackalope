@@ -149,7 +149,9 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function getStoredQueryPath()
     {
-        if ($this->path == null) throw new \PHPCR\ItemNotFoundException('Not a stored query');
+        if ($this->path == null) {
+            throw new \PHPCR\ItemNotFoundException('Not a stored query');
+        }
         return $this->path;
     }
 

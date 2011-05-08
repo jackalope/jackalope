@@ -44,7 +44,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         //TODO: determine the index if != 1
         foreach ($rawData as $key => $value) {
             if (is_object($value)) {
-                array_push($this->nodes, $key);
+                $this->nodes[] = $key;
             } else {
                 // It's probably a property type
                 if (0 === strpos($key, ':')) {
@@ -150,7 +150,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If the last element of relPath has an index or if another error occurs.
      * @api
      */
-    public function addNode($relPath, $primaryNodeTypeName = NULL, $identifier = NULL)
+    public function addNode($relPath, $primaryNodeTypeName = null, $identifier = null)
     {
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
@@ -252,10 +252,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath)
     {
-        if ($srcChildRelPath == $destChildRelPath) return; //nothing to move
+        if ($srcChildRelPath == $destChildRelPath) {
+            //nothing to move
+            return;
+        }
         $oldpos = array_search($srcChildRelPath, $this->nodes);
-        if ($oldpos === false)
+        if ($oldpos === false) {
             throw new \PHPCR\ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+        }
 
         if ($destChildRelPath == null) {
             //null means move to end
@@ -264,9 +268,13 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         } else {
             //insert somewhere specified by dest path
             $newpos = array_search($destChildRelPath, $this->nodes);
-            if ($newpos === false)
+            if ($newpos === false) {
                 throw new \PHPCR\ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
-            if ($oldpos < $newpos) $newpos--; //we first unset, so
+            }
+            if ($oldpos < $newpos) {
+                //we first unset, so
+                $newpos--;
+            }
             unset($this->nodes[$oldpos]);
             array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
         }
@@ -317,7 +325,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @param string $name The name of a property of this node
      * @param mixed $value The value to be assigned
      * @param integer $type The type to set for the property
-     * @return \PHPCR\PropertyInterface The updated Property object or NULL if property was removed
+     * @return \PHPCR\PropertyInterface The updated Property object or null if property was removed
      * @throws \PHPCR\ValueFormatException if the specified property is a DATE but the value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format or if value cannot be converted to the type of the specified property or if the property already exists and is multi-valued.
      * @throws \PHPCR\Version\VersionException if this node is versionable and checked-in or is non-versionable but its nearest versionable ancestor is checked-in and this implementation performs this validation immediately instead of waiting until save.
      * @throws \PHPCR\Lock\LockException  if a lock prevents the setting of the property and this implementation performs this validation immediately instead of waiting until save.
@@ -325,7 +333,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setProperty($name, $value, $type = NULL)
+    public function setProperty($name, $value, $type = null)
     {
         if (is_null($value)) {
             if (isset($this->properties[$name])) {
@@ -385,7 +393,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getNode($relPath, $class = 'Node')
     {
-        $node = null;
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath), $class);
         } catch (\PHPCR\ItemNotFoundException $e) {
@@ -442,7 +449,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getNodes($filter = NULL)
+    public function getNodes($filter = null)
     {
         $names = self::filterNames($filter, $this->nodes);
         $result = array();
@@ -466,14 +473,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function getProperty($relPath)
     {
         if (false === strpos($relPath, '/')) {
-            if (isset($this->properties[$relPath])) {
-                return $this->properties[$relPath];
-            } else {
+            if (!isset($this->properties[$relPath])) {
                 throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
             }
-        } else {
-            return $this->session->getProperty($this->getChildPath($relPath));
+
+            return $this->properties[$relPath];
         }
+
+        return $this->session->getProperty($this->getChildPath($relPath));
     }
 
     /**
@@ -546,7 +553,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getProperties($filter = NULL)
+    public function getProperties($filter = null)
     {
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
@@ -653,7 +660,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getReferences($name = NULL)
+    public function getReferences($name = null)
     {
         throw new NotImplementedException();
     }
@@ -682,7 +689,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
-    public function getWeakReferences($name = NULL)
+    public function getWeakReferences($name = null)
     {
         throw new NotImplementedException();
     }
@@ -701,9 +708,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
-        } else {
-            return $this->session->nodeExists($this->getChildPath($relPath));
         }
+
+        return $this->session->nodeExists($this->getChildPath($relPath));
     }
 
     /**
@@ -719,9 +726,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
-        } else {
-           $this->session->propertyExists($this->getChildPath($relPath));
         }
+
+        return $this->session->propertyExists($this->getChildPath($relPath));
     }
 
     /**
@@ -1102,10 +1109,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
-     * Returns FALSE if this node is currently in the checked-in state (either
+     * Returns false if this node is currently in the checked-in state (either
      * due to its own status as a versionable node or due to the effect of
      * a versionable node being checked in above it). Otherwise this method
-     * returns TRUE. This includes the case where the repository does not
+     * returns true. This includes the case where the repository does not
      * support versioning (and therefore all nodes are always "checked-out",
      * by default).
      *
@@ -1119,9 +1126,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
-     * Returns TRUE if this node is locked either as a result of a lock held
+     * Returns true if this node is locked either as a result of a lock held
      * by this node or by a deep lock on a node above this node;
-     * otherwise returns FALSE. This includes the case where a repository does
+     * otherwise returns false. This includes the case where a repository does
      * not support locking (in which case all nodes are "unlocked" by default).
      *
      * @return boolean.

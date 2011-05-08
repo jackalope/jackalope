@@ -68,7 +68,7 @@ class Repository implements \PHPCR\RepositoryInterface
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login($credentials = NULL, $workspaceName = NULL)
+    public function login($credentials = null, $workspaceName = null)
     {
         if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
         if (! $this->transport->login($credentials, $workspaceName)) {
@@ -97,8 +97,8 @@ class Repository implements \PHPCR\RepositoryInterface
     }
 
     /**
-     * Returns TRUE if $key is a standard descriptor
-     * defined by the string constants in this interface and FALSE if it is
+     * Returns true if $key is a standard descriptor
+     * defined by the string constants in this interface and false if it is
      * either a valid implementation-specific key or not a valid key.
      *
      * @param string $key a descriptor key.

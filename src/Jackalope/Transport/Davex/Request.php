@@ -258,9 +258,8 @@ class Request
         if ($httpCode >= 200 && $httpCode < 300) {
             if ($getCurlObject) {
                 return $this->curl;
-            } else {
-                return $response;
             }
+            return $response;
         }
 
         switch ($this->curl->errno()) {
@@ -303,9 +302,8 @@ class Request
 
                         if (class_exists($class)) {
                             throw new $class($exceptionMsg);
-                        } else {
-                            throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
                         }
+                        throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
                 }
             }
         }
@@ -319,7 +317,6 @@ class Request
         }
 
         $curlError = $this->curl->error();
-
 
         $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} {$this->uri} \n\n$response";
         throw new \PHPCR\RepositoryException($msg);

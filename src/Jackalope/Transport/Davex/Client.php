@@ -349,17 +349,16 @@ class Client implements TransportInterface
             $curl = $request->execute(true);
             if ($curl->getHeader("Location")) {
                 return $this->cleanUriFromWebserverRoot(urldecode($curl->getHeader("Location")));
-            } else {
-                // TODO: not sure what this means
-                throw new \PHPCR\RepositoryException();
             }
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
-            } else {
-                throw new \PHPCR\RepositoryException($e->getMessage());
             }
+            throw new \PHPCR\RepositoryException($e->getMessage());
         }
+
+        // TODO: not sure what this means
+        throw new \PHPCR\RepositoryException();
     }
 
     /**
@@ -380,9 +379,8 @@ class Client implements TransportInterface
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
-            } else {
-                throw new \PHPCR\RepositoryException();
             }
+            throw new \PHPCR\RepositoryException();
         }
         return;
     }
@@ -503,7 +501,7 @@ class Client implements TransportInterface
      *
      * @param   string  $srcAbsPath     Absolute source path to the node
      * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
-     * @param   string  $srcWorkspace   The source workspace where the node can be found or NULL for current
+     * @param   string  $srcWorkspace   The source workspace where the node can be found or null for current
      * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
