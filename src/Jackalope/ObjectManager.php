@@ -269,8 +269,10 @@ class ObjectManager
      *
      * If you have an absolute path use {@link getNodeByPath()}.
      *
-     * @param string uuid or relative path
-     * @param string optional root if you are in a node context - not used if $identifier is an uuid
+     * @param string $identifier uuid or relative path
+     * @param string $root optional root if you are in a node context - not used if $identifier is an uuid
+     * @param string $class optional class name for the factory
+     *
      * @return \PHPCR\Node The specified Node. if not available, ItemNotFoundException is thrown
      *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
@@ -502,7 +504,7 @@ class ObjectManager
     {
         $path = $this->getTransport()->checkinItem($absPath);
         $node = $this->getNodeByPath($path, "Version\Version");
-        $predecessorUuids = $node->getProperty('jcr:predecessors')->getValue();
+        $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
         if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
             $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
             unset($this->objectsByPath['Version\Version'][$dirtyPath]);

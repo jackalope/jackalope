@@ -72,7 +72,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getSuccessors()
     {
-        $successors = $this->getProperty("jcr:successors");
+        $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
         if ($successors) {
             foreach ($successors as $uuid) {
