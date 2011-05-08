@@ -286,7 +286,7 @@ class VersionHistory extends \Jackalope\Node {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function hasVersionLabel($label, $version = NULL)
+    public function hasVersionLabel($label, $version = null)
     {
         throw new NotImplementedException();
     }
@@ -306,7 +306,7 @@ class VersionHistory extends \Jackalope\Node {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getVersionLabels($version = NULL)
+    public function getVersionLabels($version = null)
     {
         throw new NotImplementedException();
     }

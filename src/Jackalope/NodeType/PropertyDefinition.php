@@ -28,17 +28,17 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
         $xp = new DOMXPath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
         foreach ($valueConstraints as $valueConstraint) {
-            array_push($this->valueConstraints, $valueConstraint->nodeValue);
+            $this->valueConstraints[] = $valueConstraint->nodeValue;
         }
 
         $availableQueryOperators = $xp->query('availableQueryOperators/availableQueryOperator', $node);
         foreach ($availableQueryOperators as $availableQueryOperator) {
-            array_push($this->availableQueryOperators, $availableQueryOperator->nodeValue);
+            $this->availableQueryOperators[] = $availableQueryOperator->nodeValue;
         }
 
         $defaultValues = $xp->query('defaultValues/defaultValue', $node);
         foreach ($defaultValues as $defaultValue) {
-            array_push($this->defaultValues, $defaultValue->nodeValue);
+            $this->defaultValues[] = $defaultValue->nodeValue;
         }
     }
 
@@ -258,7 +258,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
      * property.
      *
      * This attribute only takes effect if the node type holding the property
-     * definition has a queryable setting of TRUE.
+     * definition has a queryable setting of true.
      *
      * JCR defines the comparison operators QueryObjectModelConstants::JCR_OPERATOR_*
      *
@@ -284,12 +284,12 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     }
 
     /**
-     * Returns TRUE if this property is full-text searchable,
+     * Returns true if this property is full-text searchable,
      * meaning that its value is accessible through the full-text search
      * function within a query.
      *
      * This attribute only takes effect if the node type holding the
-     * property definition has a queryable setting of TRUE.
+     * property definition has a queryable setting of true.
      *
      * @return boolean a boolean
      */
@@ -299,12 +299,12 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     }
 
     /**
-     * Returns TRUE if this property is query orderable,
+     * Returns true if this property is query orderable,
      * meaning that query results may be ordered by this property
      * using the order-by clause of a query.
      *
      * This attribute only takes effect if the node type holding the
-     * property definition has a queryable setting of TRUE.
+     * property definition has a queryable setting of true.
      *
      * @return boolean a boolean
      */

@@ -32,7 +32,7 @@ function jackalope_autoloader($class)
             return;
         }
     }
-    return FALSE;
+    return false;
 }
 #spl_autoload_extensions('.php');
 spl_autoload_register('jackalope_autoloader');

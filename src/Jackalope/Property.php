@@ -50,7 +50,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $this->isMultiple = true;
             $this->value = array();
             foreach ($data['value'] as $value) {
-                array_push($this->value, Helper::convertType($value, $type));
+                $this->value[] = Helper::convertType($value, $type);
             }
         } elseif (null !== $data['value']) {
             $this->value = Helper::convertType($data['value'], $type);
@@ -74,7 +74,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *   the type of this property is set to REFERENCE
      * * if the given $value is a Node object, its Identifier is fetched and
      *   the type of this property is set to WEAKREFERENCE if $weak is set to
-     *   TRUE
+     *   true
      * * if the given $value is a DateTime object, the property type will be
      *   set to DATE.
      *
@@ -93,7 +93,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * @param mixed $value The value to set. Array for multivalue properties
      * @param integer $type Type request for the property, optional. Must be a constant from PropertyType
-     * @param boolean $weak When a Node is given as $value this can be given as TRUE to create a WEAKREFERENCE, by default a REFERENCE is created
+     * @param boolean $weak When a Node is given as $value this can be given as true to create a WEAKREFERENCE, by default a REFERENCE is created
      * @return void
      * @throws \PHPCR\ValueFormatException if the type or format of the specified value is incompatible with the type of this property.
      * @throws \PHPCR\Version\VersionException if this property belongs to a node that is read-only due to a checked-in node and this implementation performs this validation immediately.
@@ -103,13 +103,14 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * @throws \IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      * @api
      */
-    public function setValue($value, $type = NULL, $weak = false)
+    public function setValue($value, $type = null, $weak = false)
     {
         $previousValue = $this->value;
         if (is_array($value) && !$this->isMultiple) {
             throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
         }
 
+        // TODO $type is actually never used
         if (null === $type) {
             if (null !== $this->type) {
                 $type = $this->type;
@@ -418,9 +419,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
                 throw new NotImplementedException('Binaries not implemented');
             }
             try {
-                array_push($ret, strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING)));
+                $ret[] = strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING));
             } catch(Exception $e) {
-                array_push($ret, -1);
+                $ret[] = -1;
             }
         }
         return $ret;
@@ -478,10 +479,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Returns TRUE if this property is multi-valued and FALSE if this property
+     * Returns true if this property is multi-valued and false if this property
      * is single-valued.
      *
-     * @return boolean TRUE if this property is multi-valued; FALSE otherwise.
+     * @return boolean true if this property is multi-valued; false otherwise.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */

@@ -148,11 +148,11 @@ class ObjectManager
             $fetchPath = $absPath;
             if (isset($this->nodesMove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
-            } else {
-                // The path was the destination of a previous move which isn't yet dispatched to the backend.
-                // I guess an exception would be fine but we can also just fetch the node from the previous path
-                $fetchPath = $this->resolveBackendPath($fetchPath);
             }
+
+            // The path was the destination of a previous move which isn't yet dispatched to the backend.
+            // I guess an exception would be fine but we can also just fetch the node from the previous path
+            $fetchPath = $this->resolveBackendPath($fetchPath);
 
             $node = $this->factory->get(
                 $class,
@@ -232,7 +232,7 @@ class ObjectManager
                         array_pop($finalParts);
                         break;
                     default:
-                        array_push($finalParts, $pathPart);
+                        $finalParts[] = $pathPart;
                         break;
                 }
             }
@@ -287,13 +287,12 @@ class ObjectManager
                 $node = $this->getNodeByPath($path, $class);
                 $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
                 return $node;
-            } else {
-                return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
             }
-        } else {
-            $path = $this->absolutePath($root, $identifier);
-            return $this->getNodeByPath($path, $class);
+            return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
         }
+
+        $path = $this->absolutePath($root, $identifier);
+        return $this->getNodeByPath($path, $class);
     }
 
     /**
@@ -391,9 +390,9 @@ class ObjectManager
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (1 === preg_match('/^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/', $id)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -566,7 +565,9 @@ class ObjectManager
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
-            if ($item->isModified()) return true;
+            if ($item->isModified()) {
+                return true;
+            }
         }
 
         return false;
