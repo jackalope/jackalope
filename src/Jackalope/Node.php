@@ -355,7 +355,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $path = $this->getChildPath($name);
             $property = $this->factory->get(
                             'Property',
-                            array(array('value'=>$data, 'type'=>$type), $path,
+                            array(array('value' => $data, 'type' => $type), $path,
                                   $this->session, $this->objectManager,
                                   true));
             $this->objectManager->addItem($path, $property);
