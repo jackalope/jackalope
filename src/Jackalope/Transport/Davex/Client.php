@@ -24,6 +24,7 @@ namespace Jackalope\Transport\Davex;
 use Jackalope\Transport\curl;
 use Jackalope\TransportInterface;
 use DOMDocument;
+use Jackalope\NodeType\NodeTypeManager;
 
 /**
  * Connection to one Jackrabbit server.
@@ -128,7 +129,12 @@ class Client implements TransportInterface
     /**
      * @var \Jackalope\NodeType\NodeTypeXmlConverter
      */
-    protected $typeXmlConverter = null;
+    protected $typeXmlConverter;
+
+    /**
+     * @var NodeTypeManager
+     */
+    protected $nodeTypeManager;
 
     /**
      * Create a transport pointing to a server url.
@@ -918,4 +924,8 @@ class Client implements TransportInterface
         return substr($uri,strlen($this->workspaceUriRoot));
     }
 
+    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager)
+    {
+        $this->nodeTypeManager = $nodeTypeManager;
+    }
 }

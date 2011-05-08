@@ -9,6 +9,8 @@
  */
 namespace Jackalope;
 
+use Jackalope\NodeType\NodeTypeManager;
+
 /**
  * Implementation specific interface:
  * Jackalope encapsulates all communication with the storage backend within
@@ -25,6 +27,13 @@ namespace Jackalope;
  */
 interface TransportInterface
 {
+    /**
+     * Pass the node type manager into the transport to be used for validation and such.
+     *
+     * @param NodeTypeManager $nodeTypeManager
+     * @return void
+     */
+    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager);
 
     /**
      * Get the repository descriptors from the jackrabbit server
