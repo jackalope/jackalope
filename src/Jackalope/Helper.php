@@ -26,16 +26,16 @@ class Helper
     {
         if ('false' === $node->getAttribute($attribute)) {
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
      * Check if the path is an absolute path or not.
      *
      * @param   string  $path   The path to check
-     * @return  bool    TRUE if path is absolute otherwise FALSE
+     * @return  bool    true if path is absolute otherwise false
      */
     public static function isAbsolutePath($path)
     {
@@ -50,7 +50,7 @@ class Helper
      *       check and scream if path is not well
      *
      * @param   string  $path   THe path to validate
-     * @return  bool    TRUE if valid otherwise FALSE
+     * @return  bool    true if valid otherwise false
      */
     public static function isValidPath($path)
     {
@@ -67,7 +67,7 @@ class Helper
      * * if the given $value is a DateTime object, the type will be DATE.
      *
      * @param mixed $value The variable we need to know the type of
-     * @param boolean $weak When a Node is given as $value this can be given as TRUE to create a WEAKREFERENCE.
+     * @param boolean $weak When a Node is given as $value this can be given as true to create a WEAKREFERENCE.
      * @return One of the \PHPCR\PropertyType constants
      * @api
      */
@@ -197,12 +197,12 @@ class Helper
                 break;
             case \PHPCR\PropertyType::BINARY:
                 foreach ($values as $v) {
-                    if (is_string($v)) {
-                        $ret[] = $v;
-                    } else {
+                    if (!is_string($v)) {
                         // TODO handle file handles?
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a binary string');
                     }
+
+                    $ret[] = $v;
                 }
             //FIXME: type PATH is missing. should automatically read property and node with getPath.
             default:

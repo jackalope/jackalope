@@ -46,7 +46,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
      * Initializes the NodeTypeDefinition from an optional source
      *
      * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
-     * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|NULL     $nodetype   Either by XML or by NodeTypeDefinition or NULL for an empty definition
+     * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|null     $nodetype   Either by XML or by NodeTypeDefinition or null for an empty definition
      * @throws  \InvalidArgumentException   If $nodetype cannot be copied from
      */
     public function __construct($factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
@@ -230,7 +230,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
     }
 
     /**
-     * Returns TRUE if the node type is queryable, meaning that the
+     * Returns true if the node type is queryable, meaning that the
      * available-query-operators, full-text-searchable and query-orderable
      * attributes of its property definitions take effect. See
      * PropertyDefinition#getAvailableQueryOperators(),

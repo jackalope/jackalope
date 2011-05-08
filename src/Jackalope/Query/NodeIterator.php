@@ -39,9 +39,7 @@ class NodeIterator implements \SeekableIterator, \Countable
         if (isset($foundPosition)) {
             $this->position = $foundPosition;
         }
-        else {
-            throw new \OutOfBoundsException("invalid seek position ($position)");
-        }
+        throw new \OutOfBoundsException("invalid seek position ($position)");
     }
 
     public function count()

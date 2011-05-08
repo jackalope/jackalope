@@ -156,12 +156,14 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
-        } elseif (isset($this->mixinTypes[$nodeTypeName])) {
-            return $this->mixinTypes[$nodeTypeName];
-        } else {
-            if (is_null($nodeTypeName)) $nodeTypeName = 'nodeTypeName was <null>';
-            throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
         }
+        if (isset($this->mixinTypes[$nodeTypeName])) {
+            return $this->mixinTypes[$nodeTypeName];
+        }
+        if (is_null($nodeTypeName)) {
+            $nodeTypeName = 'nodeTypeName was <null>';
+        }
+        throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
     }
 
     /**
@@ -228,7 +230,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createNodeTypeTemplate($ntd = NULL)
+    public function createNodeTypeTemplate($ntd = null)
     {
        return $this->factory->get('NodeType\NodeTypeTemplate', array($this, $ntd));
     }
@@ -322,6 +324,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
             $nts[$definition->getName()] = $this->createNodeType($definition, $allowUpdate);
         }
 
+        // FIXME: broken
         $this->objectManager->registerNodeTypes($definitions);
 
         // no need to fetch the node types as with cnd, we already have the def and can
@@ -398,6 +401,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         } else {
             throw new \PHPCR\NodeType\NoSuchNodeTypeException('NodeType not found: '.$name);
         }
+
         throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
     }
 

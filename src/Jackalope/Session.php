@@ -178,9 +178,8 @@ class Session implements \PHPCR\SessionInterface
 
         if ($this->nodeExists($absPath)) {
             return $this->getNode($absPath);
-        } else {
-            return $this->getProperty($absPath);
         }
+        return $this->getProperty($absPath);
     }
 
     /**
@@ -231,7 +230,9 @@ class Session implements \PHPCR\SessionInterface
      */
     public function itemExists($absPath)
     {
-        if ($absPath == '/') return true;
+        if ($absPath == '/') {
+            return true;
+        }
         return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
 
@@ -246,7 +247,9 @@ class Session implements \PHPCR\SessionInterface
      */
     public function nodeExists($absPath)
     {
-        if ($absPath == '/') return true;
+        if ($absPath == '/') {
+            return true;
+        }
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
             throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
@@ -495,7 +498,7 @@ class Session implements \PHPCR\SessionInterface
      * @param string $methodName the name of the method.
      * @param object $target the target object of the operation.
      * @param array $arguments the arguments of the operation.
-     * @return boolean FALSE if the operation cannot be performed, TRUE if the operation can be performed or if the repository cannot determine whether the operation can be performed.
+     * @return boolean false if the operation cannot be performed, true if the operation can be performed or if the repository cannot determine whether the operation can be performed.
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */

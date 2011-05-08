@@ -34,10 +34,10 @@ class Factory
         }
         if (count($params) == 0) {
             return new $name;
-        } else {
-            $class = new \ReflectionClass($name);
-            array_unshift($params, $this);
-            return $class->newInstanceArgs($params);
         }
+
+        $class = new \ReflectionClass($name);
+        array_unshift($params, $this);
+        return $class->newInstanceArgs($params);
     }
 }

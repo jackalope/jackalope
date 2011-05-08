@@ -132,7 +132,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * @throws \PHPCR\RepositoryException if the last element of destAbsPath has an index or if another error occurs.
      * @api
      */
-    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL)
+    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
     {
 
         if (!Helper::isAbsolutePath($srcAbsPath) || !Helper::isAbsolutePath($destAbsPath)) {
@@ -344,7 +344,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createWorkspace($name, $srcWorkspace = NULL)
+    public function createWorkspace($name, $srcWorkspace = null)
     {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }

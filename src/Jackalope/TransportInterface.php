@@ -144,7 +144,7 @@ interface TransportInterface
      *
      * @param   string  $srcAbsPath     Absolute source path to the node
      * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
-     * @param   string  $srcWorkspace   The workspace where the source node can be found or NULL for current workspace
+     * @param   string  $srcWorkspace   The workspace where the source node can be found or null for current workspace
      * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt

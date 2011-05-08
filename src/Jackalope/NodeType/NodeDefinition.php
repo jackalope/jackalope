@@ -37,10 +37,10 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
         if (0 < $requiredPrimaryTypes->length) {
             foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
-                array_push($this->requiredPrimaryTypeNames, $requiredPrimaryType->nodeValue);
+                $this->requiredPrimaryTypeNames[] = $requiredPrimaryType->nodeValue;
             }
         } else {
-            array_push($this->requiredPrimaryTypeNames, self::DEFAULT_PRIMARY_NODE);
+            $this->requiredPrimaryTypeNames[] = self::DEFAULT_PRIMARY_NODE;
         }
     }
 
@@ -67,16 +67,16 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      * set of node types.
      * In implementations that support node type registration an NodeDefinition
      * object may be acquired (in the form of a NodeDefinitionTemplate) that is
-     * not attached to a live NodeType. In such cases this method returns NULL.
+     * not attached to a live NodeType. In such cases this method returns null.
      *
      * @return \PHPCR\NodeType\NodeTypeInterface an array of NodeType objects.
      */
     public function getRequiredPrimaryTypes()
     {
-        // TODO if this is not attached to a live NodeType, return NULL
+        // TODO if this is not attached to a live NodeType, return null
         if (empty($this->requiredPrimaryTypes)) {
             foreach ($this->requiredPrimaryTypeNames as $primaryTypeName) {
-                array_push($this->requiredPrimaryTypes, $this->nodeTypeManager->getNodeType($primaryTypeName));
+                $this->requiredPrimaryTypes[] = $this->nodeTypeManager->getNodeType($primaryTypeName);
             }
         }
         return $this->requiredPrimaryTypes;
@@ -90,7 +90,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
      * If this NodeDefinition is actually a NodeDefinitionTemplate that is not
      * part of a registered node type, then this method will return the required
      * primary types as set in that template. If that template is a newly-created
-     * empty one, then this method will return NULL.
+     * empty one, then this method will return null.
      *
      * @return array a String array
      */
