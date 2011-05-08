@@ -149,9 +149,16 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * not implemented
      */
      //clone is a reserved keyword in php and may not be used as a function name.
-    public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException('Write');
+        /* @param boolean $removeExisting if false then this method throws an ItemExistsException on identifier conflict
+         *                                with an incoming node. If true then a identifier conflict is resolved by removing
+         *                                the existing node from its location in this workspace and cloning (copying in) the
+         *                                one from srcWorkspace.
+         *
+         * IMPLEMENT THIS CHECK HERE
+         */
     }
 
     /**

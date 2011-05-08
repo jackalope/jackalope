@@ -5,6 +5,9 @@ namespace Jackalope;
  * The entry point into the content repository. The Repository object is
  * usually acquired through the RepositoryFactory.
  *
+ *
+ * If you want to re-use existing database connections, just use new Repository
+ * and pass it the transport.
  */
 class Repository implements \PHPCR\RepositoryInterface
 {

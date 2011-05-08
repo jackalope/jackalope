@@ -313,16 +313,14 @@ class Client implements TransportInterface
     }
 
     /**
-     * Get the item from an absolute path
+     * Get the node from an absolute path
      *
-     * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @return array for the node (decoded from json)
+     * @param string $path Absolute path to the node.
+     * @return array associative array for the node (decoded from json with associative = true)
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getItem($path)
+    public function getNode($path)
     {
         $this->ensureAbsolutePath($path);
 
@@ -332,13 +330,19 @@ class Client implements TransportInterface
         return $request->executeJson();
     }
 
+    /* TODO: getProperty
+     * jackrabbit: instead of fetching the node, we could make Transport provide it with a
+     * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
+     * (davex getItem uses json, which is not applicable to properties)
+    */
+
     /**
      * Retrieves a binary value
      *
      * @param $path
      * @return string
      */
-    public function getBinaryProperty($path)
+    public function getBinaryProperty($path) //FIXME: is now getBinaryStream
     {
         $request = $this->getRequest(Request::GET, $path);
         return $request->execute();
@@ -779,8 +783,9 @@ class Client implements TransportInterface
 
     /**
      * Returns node types as array structure
-     * 
+     *
      * @param array nodetypes to request
+     *
      * @return array a list of nodetype definitions
      * @throws \PHPCR\RepositoryException if not logged in
      */
@@ -800,7 +805,6 @@ class Client implements TransportInterface
 
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
-
 
     /**
      * Register namespaces and new node types or update node types based on a

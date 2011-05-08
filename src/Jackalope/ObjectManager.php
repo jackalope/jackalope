@@ -186,10 +186,7 @@ class ObjectManager
         $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
         $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
 
-        /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
-         * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
-         * (davex getItem uses json, which is not applicable to properties)
-         */
+        // OPTIMIZE: should use getProperty
         $n = $this->getNodeByPath($nodep);
         return $n->getProperty($name); //throws PathNotFoundException if there is no such property
     }

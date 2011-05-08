@@ -21,20 +21,13 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * This interface is now synchronized with what we had for davex as per 2011-04-13
  * TODO: keep this in sync with Transport/Davex/Client.php
+ * TODO: add references to all phpcr api methods that use each transport method for additional doc
  *
  * @package jackalope
  * @subpackage transport
  */
 interface TransportInterface
 {
-    /**
-     * Pass the node type manager into the transport to be used for validation and such.
-     *
-     * @param NodeTypeManager $nodeTypeManager
-     * @return void
-     */
-    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager);
-
     /**
      * Get the repository descriptors from the jackrabbit server
      *
@@ -90,6 +83,9 @@ interface TransportInterface
     /**
      * Get the registered namespaces mappings from the backend.
      *
+     * Returns all additional namespaces. Does not return the ones defined as
+     * constants in \PHPCR\NamespaceRegistryInterface
+     *
      * @return array Associative array of prefix => uri
      *
      * @throws \PHPCR\RepositoryException if not logged in
@@ -100,15 +96,45 @@ interface TransportInterface
     /**
      * Get the node that is stored at an absolute path
      *
-     * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
-     * TODO: does it make sense to have json here or should transport instantiate the node objects?
+     * The array returned contains two keys for each property
+     * and one key for each child. A child is just containing
+     * an empty array as value (in the future we could use this
+     * for eager loading). A property contains a key with its
+     * own name and a one prefixed with a colon that contains
+     * the type constant.
+     *
+     * For binary properties, the value is not the binary data
+     * but the size of the binary. Use getBinaryStream to get the
+     * actual data.
+     *
+     * @example Return struct
+     * <code>
+     * array (
+     *      "jcr:uuid"      => "xxx",
+     *      ":jcr:uuid"     => \PHPCR\PropertyTypeInterface::TYPECONST,
+     *      "propertyName"  => "foo",
+     *      ":propertyName" => \PHPCR\PropertyTypeInterface::TYPECONST,
+     *      "foo"           => "bar",
+     *      ":foo"          => \PHPCR\PropertyTypeInterface::TYPECONST,
+     *      "childNode"     => array(),
+     * }
+     * </code>
      *
      * @param string $path Absolute path to identify a special item.
-     * @return array for the node (decoded from json)
+     * @return array associative array for the node (decoded from json with associative = true)
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getItem($path);
+    public function getNode($path);
+
+    /**
+     * Get the property stored at an absolute path.
+     *
+     * Same format as getNode with just one property.
+     *
+     * @return array associative array with the property value.
+     */
+    public function getProperty($path);
 
     /**
      * Get the node path from a JCR uuid
@@ -122,12 +148,12 @@ interface TransportInterface
     public function getNodePathForIdentifier($uuid);
 
     /**
-     * Retrieves a binary value
+     * Retrieve a stream of a binary property value
      *
-     * @param $path
-     * @return string with binary data
+     * @param $path The path to the property with the binary data
+     * @return resource with binary data
      */
-    public function getBinaryProperty($path); //OPTIMIZE: use the binary interface to only load if really requested?
+    public function getBinaryStream($path);
 
 
 
@@ -153,6 +179,25 @@ interface TransportInterface
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
 
     /**
+     * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
+     * location at destAbsPath in this workspace.
+     *
+     * There may be no node at dstAbsPath
+     * This method does not need to load the node but can execute the clone
+     * directly in the storage.
+     *
+     * @param   string  $srcAbsPath     Absolute source path to the node
+     * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
+     * @param   string  $srcWorkspace   The workspace where the source node can be found
+     *
+     * @return void
+     *
+     * @link http://www.ietf.org/rfc/rfc2518.txt
+     * @see \Jackalope\Workspace::cloneFrom
+     */
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+
+    /**
      * Moves a node from src to dst
      *
      * @param   string  $srcAbsPath     Absolute source path to the node
@@ -160,6 +205,7 @@ interface TransportInterface
      * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
+     * @see \Jackalope\Workspace::moveNode
      */
     public function moveNode($srcAbsPath, $dstAbsPath);
 
@@ -186,44 +232,48 @@ interface TransportInterface
     /**
      * Recursively store a node and its children to the given absolute path.
      *
-     * The basename of the path is the name of the node
+     * Transport stores the node at its path, with all properties and all children
      *
-     * @param string $path Absolute path to the node, name is part after last /
-     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType FIXME: would we need this?
-     * @param \Traversable $properties array of \PHPCR\PropertyInterface objects
-     * @param \Traversable $children array of \PHPCR\NodeInterface objects
+     * @param \PHPCR\NodeInterface $node the node to store
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeNode($path, $properties, $children);
+    public function storeNode(\PHPCR\NodeInterface $node);
 
     /**
-     * Stores a property to the given absolute path
+     * Stores a property to its absolute path
      *
-     * @param string $path Absolute path to store the property to
      * @param \PHPCR\PropertyInterface
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
-     * TODO: handle not found from backend if containing node was not saved? would be consistency error in ObjectManager
      */
-    public function storeProperty($path, \PHPCR\PropertyInterface $property);
-
+    public function storeProperty(\PHPCR\PropertyInterface $property);
 
     //TODO: set namespace, ...
 
     /*********************************
      * Methods for NodeType support. *
      *********************************/
+
+    /**
+     * Pass the node type manager into the transport to be used for validation and such.
+     *
+     * @param \Jackalope\NodeTypeManager $nodeTypeManager
+     * @return void
+     */
+    public function setNodeTypeManager($nodeTypeManager);
+
     /**
      * Get node types, either filtered or all
      *
      * @param array string names of node types to fetch, if empty array all node types are retrieved
-     * @return dom with the definitions (see NodeTypeDefinition::fromXml for what is expected)
-     * @throws \PHPCR\RepositoryException if not logged in
      *
-     * @see NodeTypeDefinition::fromXml TODO: should transport parse the xml to make this less backend specific?
+     * @return array with the definitions (see Jackalope\NodeTypeDefinition::fromArray for what is expected)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     * @see Jackalope\NodeTypeDefinition::fromArray
      */
     public function getNodeTypes($nodeTypes = array());
 
@@ -231,13 +281,14 @@ interface TransportInterface
      * Register namespaces and new node types or update node types based on a
      * jackrabbit cnd string
      *
-     * TODO: provide a php parser in case the storage backend does not know cnd
-     *
-     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
+     * TODO: change this to xml string (format described at the end of http://jackrabbit.apache.org/node-type-notation.html) we even have the parser in the node type manager
      *
      * @param $cnd The cnd string
      * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     *
      * @return bool true on success
+     *
+     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate);
 
@@ -246,6 +297,7 @@ interface TransportInterface
      *
      * @param array $types a list of \PHPCR\NodeType\NodeTypeDefinitionInterface objects
      * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     *
      * @return bool true on success
      */
     public function registerNodeTypes($types, $allowUpdate);
@@ -260,13 +312,15 @@ interface TransportInterface
     /**
      * Search something with the backend.
      *
-     * @param string $query a jcr-sql2 query
-     * @param int $limit number of results to return, defaults to unlimited
-     * @param int $offset index to start with results, defaults to the first result
-     * @return xml data with search result
+     * The language must be among those returned by getSupportedQueryLanguages
+     *
+     * @param \PHPCR\Query\QueryInterface $query the query object
+     * @return xml data with search result. TODO: what to return? should be some simple array
      * @see Query\QueryResult::__construct for the xml format. TODO: have the transport return a QueryResult?
      */
-    public function querySQL($query, $limit = null, $offset = null);
+    public function query(\PHPCR\Query\QueryInterface $query);
+
+    //TODO: getSupportedQueryLanguages
 
 
     /************************************************************************
@@ -321,4 +375,3 @@ interface TransportInterface
     public function getVersionHistory($path);
 
 }
-
