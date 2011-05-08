@@ -324,8 +324,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
             $nts[$definition->getName()] = $this->createNodeType($definition, $allowUpdate);
         }
 
-        // FIXME: broken
-        $this->objectManager->registerNodeTypes($definitions);
+        $this->objectManager->registerNodeTypes($definitions, $allowUpdate);
 
         // no need to fetch the node types as with cnd, we already have the def and can
         // now register them ourselves
