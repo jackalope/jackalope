@@ -91,7 +91,6 @@ class Helper
             $type = ($weak) ?
                     \PHPCR\PropertyType::WEAKREFERENCE :
                     \PHPCR\PropertyType::REFERENCE;
-            $value = $value->getIdentifier();
         } else {
             throw new \PHPCR\ValueFormatException('Can not determine type of property with value "'.var_export($value, true).'"');
         }

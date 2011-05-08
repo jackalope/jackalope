@@ -279,8 +279,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
-        $list = self::registerNodeTypes(array($ntd), $allowUpdate);
-        return each($nt);
+        self::registerNodeTypes(array($ntd), $allowUpdate);
+        return each($ntd);
     }
 
     /**
@@ -375,6 +375,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
+        $types = array();
         foreach ($names[1] as $name) {
             $types[$name] = $this->getNodeType($name);
         }
