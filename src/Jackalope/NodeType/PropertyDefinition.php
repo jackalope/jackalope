@@ -62,7 +62,7 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
         $this->isQueryOrderable = isset($data['queryOrderable']) ? $data['queryOrderable'] : false;
         $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : array();
         $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : array();
-        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : null;
+        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : array();
     }
 
     /**

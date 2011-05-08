@@ -13,7 +13,7 @@ class PropertyDefinitionTest extends TestCase
         'isAutoCreated' => false,
         'mandatory' => false,
         'isProtected' => false,
-        'onParentVersion' => "COPY",
+        'onParentVersion' => OnParentVersionAction::COPY,
         'requiredType' => 'binary',
         'multiple' => false,
         'fullTextSearchable' => false,

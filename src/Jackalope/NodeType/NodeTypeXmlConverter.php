@@ -57,9 +57,9 @@ class NodeTypeXmlConverter
         $data = $this->getItemDefinitionFromXml($node);
 
         $data['requiredType'] = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
-        $data['isMultiple'] = Helper::getBoolAttribute($node, 'multiple');
-        $data['isFullTextSearchable'] = Helper::getBoolAttribute($node, 'fullTextSearchable');
-        $data['isQueryOrderable'] = Helper::getBoolAttribute($node, 'queryOrderable');
+        $data['multiple'] = Helper::getBoolAttribute($node, 'multiple');
+        $data['fullTextSearchable'] = Helper::getBoolAttribute($node, 'fullTextSearchable');
+        $data['queryOrderable'] = Helper::getBoolAttribute($node, 'queryOrderable');
 
         $xp = new DOMXPath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
@@ -74,7 +74,7 @@ class NodeTypeXmlConverter
 
         $defaultValues = $xp->query('defaultValues/defaultValue', $node);
         foreach ($defaultValues as $defaultValue) {
-            $data['defaultValues'] = $defaultValue->nodeValue;
+            $data['defaultValues'][] = $defaultValue->nodeValue;
         }
         return $data;
     }

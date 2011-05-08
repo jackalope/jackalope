@@ -48,7 +48,7 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     {
         parent::fromArray($data);
         $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
-        $this->defaultPrimaryTypeName = isset($data['defaultPrimaryType']) ? $data['defaultPrimaryType'] : null;
+        $this->defaultPrimaryTypeName = isset($data['defaultPrimaryTypeName']) ? $data['defaultPrimaryTypeName'] : null;
         $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))
                 ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
     }
