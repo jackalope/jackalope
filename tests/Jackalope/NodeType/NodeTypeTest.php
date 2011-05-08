@@ -15,7 +15,13 @@ class NodeTypeTest extends TestCase
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
-        $this->assertSame(array($ntm->getNodeType('mix:versionable'),$ntm->getNodeType('mix:referenceable'),$ntm->getNodeType('mix:simpleVersionable'), $ntm->getNodeType('nt:base')),$nt->getSupertypes());
+        $this->assertSame(array(
+            $ntm->getNodeType('mix:versionable'),
+            $ntm->getNodeType('mix:referenceable'),
+            $ntm->getNodeType('mix:simpleVersionable'),
+            $ntm->getNodeType('nt:base')),
+            $nt->getSupertypes()
+        );
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertType('Iterator', $declaredSubTypes);
