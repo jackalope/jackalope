@@ -499,7 +499,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPropertyValue($name, $type=null)
     {
-        $val = $this->getProperty($name)->getNativeValue();
+        $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
             $val = Helper::convertType($val, $type);
         }
@@ -580,7 +580,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         $names = self::filterNames($filter, array_keys($this->properties));
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
-            $result[] = $this->properties[$name]->getNativeValue();
+            $result[] = $this->properties[$name]->getValue();
         }
         return new \ArrayIterator($result);
     }
@@ -791,7 +791,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $res = array();
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
-        foreach ($this->properties['jcr:mixinTypes']->getNativeValue() as $type) {
+        foreach ($this->properties['jcr:mixinTypes']->getValue() as $type) {
             $res[] = $ntm->getNodeType($type);
         }
         return $res;
@@ -811,7 +811,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         return (
             $this->primaryType == $nodeTypeName ||
-            (isset($this->properties["jcr:mixinTypes"]) && in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getNativeValue()))
+            (isset($this->properties["jcr:mixinTypes"]) && in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue()))
         );
     }
 
@@ -872,7 +872,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
-            $values = $this->properties['jcr:mixinTypes']->getNativeValue();
+            $values = $this->properties['jcr:mixinTypes']->getValue();
             $values[] = $mixinName;
             $values = array_unique($values);
             $this->properties['jcr:mixinTypes']->setValue($values);

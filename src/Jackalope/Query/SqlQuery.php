@@ -59,7 +59,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     public function execute()
     {
         $transport = $this->objectmanager->getTransport();
-        $rawData = $transport->querySQL($this->statement, $this->limit, $this->offset);
+        $rawData = $transport->query($this); //$transport->querySQL($this->statement, $this->limit, $this->offset);
         $queryResult = $this->factory->get(
             'Query\QueryResult',
             array(

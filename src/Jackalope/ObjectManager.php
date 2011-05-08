@@ -157,7 +157,7 @@ class ObjectManager
             $node = $this->factory->get(
                 $class,
                 array(
-                    $this->transport->getItem($fetchPath),
+                    $this->transport->getNode($fetchPath),
                     $absPath,
                     $this->session,
                     $this
@@ -431,9 +431,9 @@ class ObjectManager
         foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
-                $this->transport->storeNode($path, $item->getProperties(), $item->getNodes());
+                $this->transport->storeNode($item);
             } elseif ($item instanceof \PHPCR\PropertyInterface) {
-                $this->transport->storeProperty($path, $item);
+                $this->transport->storeProperty($item);
             } else {
                 throw new \UnexpectedValueException('Unknown type '.get_class($item));
             }
@@ -446,14 +446,14 @@ class ObjectManager
                     if ($item instanceof \PHPCR\NodeInterface) {
                         foreach ($item->getProperties() as $propertyName => $property) {
                             if ($property->isModified()) {
-                                $this->transport->storeProperty($property->getPath(), $property);
+                                $this->transport->storeProperty($property);
                             }
                         }
                     } elseif ($item instanceof \PHPCR\PropertyInterface) {
-                        if ($item->getNativeValue() === null) {
+                        if ($item->getValue() === null) {
                             $this->transport->deleteProperty($path);
                         } else {
-                            $this->transport->storeProperty($path, $item);
+                            $this->transport->storeProperty($item);
                         }
                     } else {
                         throw new \UnexpectedValueException('Unknown type '.get_class($item));
@@ -502,7 +502,7 @@ class ObjectManager
     {
         $path = $this->getTransport()->checkinItem($absPath);
         $node = $this->getNodeByPath($path, "Version\Version");
-        $predecessorUuids = $node->getProperty('jcr:predecessors')->getNativeValue();
+        $predecessorUuids = $node->getProperty('jcr:predecessors')->getValue();
         if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
             $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
             unset($this->objectsByPath['Version\Version'][$dirtyPath]);

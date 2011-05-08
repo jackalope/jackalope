@@ -130,7 +130,8 @@ interface TransportInterface
     /**
      * Get the property stored at an absolute path.
      *
-     * Same format as getNode with just one property.
+     * Same format as getNode with just one property. Again, for binary
+     * properties just returns the size and not the actual data.
      *
      * @return array associative array with the property value.
      */
@@ -314,14 +315,30 @@ interface TransportInterface
      *
      * The language must be among those returned by getSupportedQueryLanguages
      *
+     * Implementors: Expose all information required by the transport layers to
+     * execute the query with getters.
+     *
+     * array(
+     *     //row 1
+     *     array(
+     *         //column1
+     *         array('dcr:name' => 'value1',
+     *               'dcr:value' => 'value2',
+     *               'dcr:selectorName' => 'value3' //optional
+     *         ),
+     *         //column 2...
+     *     ),
+     *     //row 2
+     *     array(...
+     * )
+     *
      * @param \PHPCR\Query\QueryInterface $query the query object
-     * @return xml data with search result. TODO: what to return? should be some simple array
+     * @return array data with search result. TODO: what to return? should be some simple array
      * @see Query\QueryResult::__construct for the xml format. TODO: have the transport return a QueryResult?
      */
     public function query(\PHPCR\Query\QueryInterface $query);
 
     //TODO: getSupportedQueryLanguages
-
 
     /************************************************************************
      * Methods for Version support.                                         *

@@ -167,18 +167,20 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * Get the value in format default for the PropertyType of this property.
      *
-     * PHPCR Note: This is an additional method not found in JSR-283
+     * PHPCR Note: This directly returns the raw data for this property
      *
      * References and Weakreferences are resolved to node instances, while path
      * is returned as string.
      *
      * @return mixed value of this property, or array in case of multi-value
      */
-    public function getNativeValue()
+    public function getValue()
     {
         if ($this->type == \PHPCR\PropertyType::REFERENCE ||
             $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
-            $this->getNode();
+            return $this->getNode();
+        } elseif ($this->type == \PHPCR\PropertyType::BINARY) {
+            return $this->getBinary();
         }
         return $this->value;
     }
@@ -201,10 +203,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Returns a Binary representation of the value of this property. A
-     * shortcut for Property.getValue().getBinary(). See Value.
+     * Returns a stream with the data of this property.
      *
-     * @return \PHPCR\BinaryInterface A Binary representation of the value of this property.
+     * @return resource a php binary stream
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
@@ -213,7 +214,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != \PHPCR\PropertyType::BINARY) {
             return Helper::convertType($this->value, \PHPCR\PropertyType::BINARY);
         }
-        return new Binary($this->objectManager, $this->path, $this->value);
+        return $this->value; //FIXME get the stream from transport each time!
     }
 
     /**
@@ -526,7 +527,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getIterator()
     {
-        $value = $this->getNativeValue();
+        $value = $this->getValue();
         if (!is_array($value)) {
             $value = array($value);
         }

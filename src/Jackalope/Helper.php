@@ -202,7 +202,7 @@ class Helper
                         throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a binary string');
                     }
 
-                    $ret[] = $v;
+                    $ret[] = $v; //FIXME: streams!
                 }
             //FIXME: type PATH is missing. should automatically read property and node with getPath.
             default:
