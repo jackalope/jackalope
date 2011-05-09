@@ -96,27 +96,38 @@ interface TransportInterface
     /**
      * Get the node that is stored at an absolute path
      *
-     * The array returned contains two keys for each property
-     * and one key for each child. A child is just containing
-     * an empty array as value (in the future we could use this
-     * for eager loading). A property contains a key with its
-     * own name and a one prefixed with a colon that contains
-     * the type constant.
+     * The array returned contains two keys for each property and one key for
+     * each child.
+     * A child is just containing an empty array as value (in the future we
+     * could use this for eager loading).
+     * A property consists of a key with its own name and a value that is the
+     * property value, plus a second key with the same name but prefixed with a
+     * colon that has the type constant string as value.
      *
-     * For binary properties, the value is not the binary data
-     * but the size of the binary. Use getBinaryStream to get the
-     * actual data.
+     * For binary properties, the value of the type declaration is not the type
+     * string but the length of the binary. There is no value pair for binary
+     * data (to avoid loading large amount of unneeded data)
+     * Use getBinaryStream to get the actual data of a binary property.
+     *
+     * There is a couple of "magic" properties:
+     * <ul>
+     *   <li>jcr:uuid - the unique id of the node</li>
+     *   <li>jcr:primaryType - name of the primary type</li>
+     *   <li>jcr:mixinTypes - comma separated list of mixin types</li>
+     *   <li>jcr:index - the index of same name siblings</li>
+     * </ul>
      *
      * @example Return struct
      * <code>
      * array (
-     *      "jcr:uuid"      => "xxx",
-     *      ":jcr:uuid"     => \PHPCR\PropertyTypeInterface::TYPECONST,
+     *      "jcr:uuid"      => "64605997-e298-4334-a03e-673fc1de0911",
+     *      ":jcr:uuid"     => \PHPCR\PropertyType::TYPENAME_STRING,
      *      "propertyName"  => "foo",
-     *      ":propertyName" => \PHPCR\PropertyTypeInterface::TYPECONST,
+     *      ":propertyName" => \PHPCR\PropertyTypeInterface::TYPENAME_NAME,
      *      "foo"           => "bar",
-     *      ":foo"          => \PHPCR\PropertyTypeInterface::TYPECONST,
-     *      "childNode"     => array(),
+     *      ":foo"          => \PHPCR\PropertyTypeInterface::<TYPENAME_CONST>, //depending on type of that property
+     *      "childNodeName" => array(), //empty array (unless you recursively prefetch child nodes)
+     *      "anotherChild"  => array(),
      * }
      * </code>
      *

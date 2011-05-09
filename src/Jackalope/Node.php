@@ -30,26 +30,40 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     protected $uuid = null;
 
     /**
-     * Create a new node item.
+     * Create a node.
      *
-     * Parameters are identical to \jackalope\Item
+     * @param Jackalope\Factory $factory the factory to instantiate objects with
+     * @param array $rawData in the format as returned from Jackalope\TransportInterface
+     * @param string $path the absolute path of this node
+     * @param SessionInterface $session
+     * @param ObjectManager $objectManager
+     * @param boolean $new set to true if this is a new node being created. Defaults to false
      *
-     * @param array $rawData TODO: document the format of this
+     * @see Jackalope\TransportInterface::getNode()
      */
-    public function __construct($factory, $rawData, $path, $session, $objectManager, $new = false)
+    public function __construct($factory, $rawData, $path, \PHPCR\SessionInterface $session, $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;
 
-        //TODO: determine the index if != 1
+        //TODO: refactor to use hash array instead of stdClass struct
         foreach ($rawData as $key => $value) {
             if (is_object($value)) {
                 $this->nodes[] = $key;
             } else {
-                // It's probably a property type
+                //property or meta information
+
+                /* Property type declarations start with :, the value then is
+                 * the type string from the NodeType constants. We skip that and
+                 * look at the type when we encounter the value of the property.
+                 *
+                 * If its a binary data, we only get the type declaration and
+                 * no data. Then the $value is not the type string for binary,
+                 * but the number of bytes of the property
+                 */
                 if (0 === strpos($key, ':')) {
-                    // It's a binary property and we just got its length
                     if (is_int($value)) {
+                        // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
@@ -60,7 +74,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                                 $this->objectManager,
                             )
                         );
-                    }
+                    } //else this is a type declaration
+
+                    //skip this entry (if its binary, its already processeed
                     continue;
                 }
 
@@ -70,6 +86,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
+                        //TODO: should type really be a property?
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -81,6 +98,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         );
                         break;
                     case 'jcr:mixinTypes':
+                        //TODO: should mixin types really be properties?
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -94,7 +112,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     case 'jcr:uuid':
                         $this->uuid = $value;
                         break;
-                    //TODO: more special information?
+                    //do we have any other more meta information?
 
                     //OPTIMIZE: do not instantiate properties unless needed
                     default:
