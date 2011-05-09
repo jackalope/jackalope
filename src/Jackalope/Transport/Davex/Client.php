@@ -746,13 +746,20 @@ class Client implements TransportInterface
         return true;
     }
 
+    /**
+     * This method is used when building an XML of the properties
+     *
+     * @param  $value
+     * @param  $type
+     * @return mixed|string
+     */
     protected function propertyToXmlString($value, $type)
     {
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_DATE:
             return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
         case \PHPCR\PropertyType::TYPENAME_BINARY:
-            return base64_encode($value);
+            return base64_encode(stream_get_contents($value));
         case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
         case \PHPCR\PropertyType::TYPENAME_STRING:
         case \PHPCR\PropertyType::TYPENAME_URI:
@@ -763,11 +770,18 @@ class Client implements TransportInterface
         return $value;
     }
 
+    /**
+     * This method is used to directly set a property
+     * 
+     * @param  $value
+     * @param  $type
+     * @return mixed|string
+     */
     protected function propertyToRawString($value, $type)
     {
-        // skip binary encoding for raw strings
         switch ($type) {
         case \PHPCR\PropertyType::TYPENAME_BINARY:
+            return stream_get_contents($value);
         case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
         case \PHPCR\PropertyType::TYPENAME_STRING:
         case \PHPCR\PropertyType::TYPENAME_URI:
