@@ -300,9 +300,9 @@ class ObjectManager
      * @param string $path
      * @return string
      */
-    public function getBinaryProperty($path)
+    public function getBinaryStream($path)
     {
-        return $this->transport->getBinaryProperty($path);
+        return $this->transport->getBinaryStream($path);
     }
 
     /**

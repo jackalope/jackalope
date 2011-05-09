@@ -77,16 +77,18 @@ class Helper
         //this is mainly needed to create a new property
         if (is_string($value)) {
             $type = \PHPCR\PropertyType::STRING;
+        } elseif (is_resource($value)) {
+            $type = \PHPCR\PropertyType::BINARY;
         } elseif (is_int($value)) {
             $type = \PHPCR\PropertyType::LONG;
         } elseif (is_float($value)) {
             $type = \PHPCR\PropertyType::DOUBLE;
-        //there is no date class in php, its usually strings (or timestamp numbers)
-        //explicitly specify the type param for a date string
+        } elseif (is_object($value) && $value instanceof \DateTime) {
+            $type = \PHPCR\PropertyType::DATE;
         } elseif (is_bool($value)) {
             $type = \PHPCR\PropertyType::BOOLEAN;
         //name, path, reference, weakreference, uri are string, explicitly specify type if you need
-        //decimal is not really meaningful (its double only), explicitly specify type if you need
+        //decimal is handled as string, explicitly specify type if you need
         } elseif (is_object($value) && $value instanceof \PHPCR\NodeInterface) {
             $type = ($weak) ?
                     \PHPCR\PropertyType::WEAKREFERENCE :
