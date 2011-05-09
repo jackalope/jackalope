@@ -440,7 +440,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function hasMixinType($name)
     {
-        $this->fetchNodeTypes();
+        try {
+            $this->fetchNodeTypes($name);
+        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $ex) {
+            return false;
+        }
+
         return array_key_exists($name, $this->mixinTypes);
     }
 
@@ -453,7 +458,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function hasPrimaryType($name)
     {
-        $this->fetchNodeTypes();
+        try {
+            $this->fetchNodeTypes($name);
+        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $ex) {
+            return false;
+        }
+
         return array_key_exists($name, $this->primaryTypes);
     }
 }
