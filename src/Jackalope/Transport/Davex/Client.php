@@ -362,9 +362,9 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::GET, $path);
         //OPTIMIZE!
         $binary = $request->execute();
-        $stream = fopen('php://memory');
+        $stream = fopen('php://memory', 'rwb+');
         fwrite($stream, $binary);
-        fseek($stream, 0);
+        rewind($stream);
         return $stream;
     }
 

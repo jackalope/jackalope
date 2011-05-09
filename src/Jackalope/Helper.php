@@ -196,12 +196,19 @@ class Helper
                 break;
             case \PHPCR\PropertyType::BINARY:
                 foreach ($values as $v) {
-                    if (!is_string($v)) {
-                        // TODO handle file handles?
-                        throw new \PHPCR\ValueFormatException('Can not convert "'.var_export($v, true).'" into a binary string');
+                    // TODO handle file handles?
+                    if (is_string($v)) {
+                        $f = fopen('php://memory', 'rwb+');
+                        fwrite($f, $v);
+                        rewind($f);
+                        $v = $f;
                     }
 
-                    $ret[] = $v; //FIXME: streams!
+                    if (!is_resource($v)) {
+                        throw new \PHPCR\ValueFormatException('Cannot convert value into a binary resource');
+                    }
+
+                    $ret[] = $v;
                 }
             //FIXME: type PATH is missing. should automatically read property and node with getPath.
             default:
