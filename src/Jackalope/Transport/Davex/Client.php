@@ -360,7 +360,7 @@ class Client implements TransportInterface
     public function getBinaryStream($path)
     {
         $request = $this->getRequest(Request::GET, $path);
-        //OPTIMIZE!
+        // TODO: OPTIMIZE!
         $binary = $request->execute();
         $stream = fopen('php://memory', 'rwb+');
         fwrite($stream, $binary);
@@ -493,7 +493,6 @@ class Client implements TransportInterface
         return $rows;
     }
 
-
     /**
      * checks if the path is absolute, throws an exception if it is not
      *
@@ -582,7 +581,6 @@ class Client implements TransportInterface
         $request->execute();
     }
 
-
     /**
      * Moves a node from src to dst
      *
@@ -607,7 +605,6 @@ class Client implements TransportInterface
     {
         throw new NotImplementedException();
     }
-
 
     /**
      * Recursively store a node and its children to the given absolute path.
@@ -756,15 +753,15 @@ class Client implements TransportInterface
     protected function propertyToXmlString($value, $type)
     {
         switch ($type) {
-        case \PHPCR\PropertyType::TYPENAME_DATE:
-            return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
-        case \PHPCR\PropertyType::TYPENAME_BINARY:
-            return base64_encode(stream_get_contents($value));
-        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
-        case \PHPCR\PropertyType::TYPENAME_STRING:
-        case \PHPCR\PropertyType::TYPENAME_URI:
-            $value = str_replace(']]>',']]]]><![CDATA[>',$value);
-            return '<![CDATA['.$value.']]>';
+            case \PHPCR\PropertyType::TYPENAME_DATE:
+                return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
+            case \PHPCR\PropertyType::TYPENAME_BINARY:
+                return base64_encode(stream_get_contents($value));
+            case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+            case \PHPCR\PropertyType::TYPENAME_STRING:
+            case \PHPCR\PropertyType::TYPENAME_URI:
+                $value = str_replace(']]>',']]]]><![CDATA[>',$value);
+                return '<![CDATA['.$value.']]>';
         }
         //FIXME: handle boolean correctly. strings true and false?
         return $value;
@@ -780,12 +777,12 @@ class Client implements TransportInterface
     protected function propertyToRawString($value, $type)
     {
         switch ($type) {
-        case \PHPCR\PropertyType::TYPENAME_BINARY:
-            return stream_get_contents($value);
-        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
-        case \PHPCR\PropertyType::TYPENAME_STRING:
-        case \PHPCR\PropertyType::TYPENAME_URI:
-            return $value;
+            case \PHPCR\PropertyType::TYPENAME_BINARY:
+                return stream_get_contents($value);
+            case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+            case \PHPCR\PropertyType::TYPENAME_STRING:
+            case \PHPCR\PropertyType::TYPENAME_URI:
+                return $value;
         }
         return $this->propertyToXmlString($value, $type);
     }
