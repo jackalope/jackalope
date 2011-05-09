@@ -430,4 +430,28 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     public function getIterator() {
         return $this->getAllNodeTypes();
     }
+
+    /**
+     * Return wheter a given mixin type exists or not
+     * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
+     * @param string $name
+     * @return boolean
+     */
+    public function hasMixinType($name)
+    {
+        $this->fetchNodeTypes();
+        return array_key_exists($name, $this->mixinTypes);
+    }
+
+    /**
+     * Return wheter a given primary type exists or not
+     * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
+     * @param string $name
+     * @return boolean
+     */
+    public function hasPrimaryType($name)
+    {
+        $this->fetchNodeTypes();
+        return array_key_exists($name, $this->primaryTypes);
+    }
 }
