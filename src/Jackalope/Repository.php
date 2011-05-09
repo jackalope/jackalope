@@ -67,7 +67,7 @@ class Repository implements \PHPCR\RepositoryInterface
     * @param string $workspaceName the name of a workspace
     * @return \PHPCR\SessionInterface a valid session for the user to access the repository
     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-    * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+    * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */

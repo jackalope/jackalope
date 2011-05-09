@@ -223,7 +223,7 @@ class Client implements TransportInterface
      * @return boolean True on success, exceptions on failure.
      *
      * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-     * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
