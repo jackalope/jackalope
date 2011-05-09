@@ -889,10 +889,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function addMixin($mixinName)
     {
-        // Check if the mixinName exists
+        // Check if mixinName exists as a mixin type
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
         if (! $typemgr->hasMixinType($mixinName)) {
-            throw new \PHPCR\NodeType\NoSuchNodeTypeException("The mixin '$mixinName' does not exist");
+            throw new \PHPCR\NodeType\NoSuchNodeTypeException("The mixin type '$mixinName' does not exist");
         }
 
         // TODO handle LockException & VersionException cases

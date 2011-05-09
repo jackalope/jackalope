@@ -434,6 +434,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     /**
      * Return wheter a given mixin type exists or not
      * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
+     * @private
      * @param string $name
      * @return boolean
      */
@@ -446,6 +447,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     /**
      * Return wheter a given primary type exists or not
      * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
+     * @private
      * @param string $name
      * @return boolean
      */
