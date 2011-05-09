@@ -85,6 +85,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (is_null($value)) {
             $this->remove();
         }
+        if (! is_null($type) && ! is_integer($type)) {
+            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
+        }
         if ($this->new && is_null($this->type)) {
             $this->isMultiple = is_array($value);
         }
@@ -128,7 +131,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->type = $targettype;
         $this->value = $value;
 
-        if ($this->value !== $previousValue) {
+        if (! $this->new //never mark a new property as modified, or it will be saved twice
+            && $this->value !== $previousValue
+        ) {
             $this->setModified();
         }
     }

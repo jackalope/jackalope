@@ -114,7 +114,7 @@ class Helper
      *
      * @throws \PHPCR\ValueFormatException is thrown if the specified value cannot be converted to the specified type.
      * @throws \PHPCR\RepositoryException if the specified Node is not referenceable, the current Session is no longer active, or another error occurs.
-     * @throws IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
+     * @throws \InvalidArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
      */
     public static function convertType($values, $type)
     {
