@@ -30,16 +30,14 @@ class NodeIterator implements \SeekableIterator, \Countable
             foreach ($columns as $column) {
                 if ($column['dcr:name'] == 'jcr:path') {
                     if ($column['dcr:value'] == $nodeName) {
-                        $foundPosition = $position;
+                        $this->position = $position;
+                        return;
                     }
                 }
             }
         }
 
-        if (isset($foundPosition)) {
-            $this->position = $foundPosition;
-        }
-        throw new \OutOfBoundsException("invalid seek position ($position)");
+        throw new \OutOfBoundsException("invalid seek position ($nodeName)");
     }
 
     public function count()
