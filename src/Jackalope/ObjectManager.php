@@ -532,8 +532,8 @@ class ObjectManager
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
-        if (null !== $absPath &&
-            (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
+        if (null !== $absPath
+            && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
         ) {
             unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
             unset($this->objectsByPath['Version\Version'][$absPath]);

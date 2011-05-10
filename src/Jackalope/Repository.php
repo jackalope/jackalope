@@ -73,7 +73,10 @@ class Repository implements \PHPCR\RepositoryInterface
     */
     public function login($credentials = null, $workspaceName = null)
     {
-        if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
+        if ($workspaceName == null) {
+            //TODO: can default workspace have other name?
+            $workspaceName = 'default';
+        }
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }

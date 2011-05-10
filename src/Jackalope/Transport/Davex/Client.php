@@ -271,8 +271,9 @@ class Client implements TransportInterface
         $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
         $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'repositorydescriptors-report' ||
-            $dom->firstChild->namespaceURI != self::NS_DCR) {
+        if ($dom->firstChild->localName != 'repositorydescriptors-report'
+            || $dom->firstChild->namespaceURI != self::NS_DCR
+        ) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 
@@ -702,11 +703,12 @@ class Client implements TransportInterface
 
         $typeid = $property->getType();
         $type = PropertyType::nameFromValue($typeid);
-        if ($typeid == PropertyType::REFERENCE ||
-            $typeid == PropertyType::WEAKREFERENCE) {
-                $nativeValue = $property->getString();
-            } else {
-                $nativeValue = $property->getValue();
+        if ($typeid == PropertyType::REFERENCE
+            || $typeid == PropertyType::WEAKREFERENCE
+        ) {
+            $nativeValue = $property->getString();
+        } else {
+            $nativeValue = $property->getValue();
         }
 
         $request = $this->getRequest(Request::PUT, $path);
@@ -836,8 +838,9 @@ class Client implements TransportInterface
         $request->setBody($this->buildReportRequest('dcr:registerednamespaces'));
         $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'registerednamespaces-report' ||
-            $dom->firstChild->namespaceURI != self::NS_DCR) {
+        if ($dom->firstChild->localName != 'registerednamespaces-report'
+            || $dom->firstChild->namespaceURI != self::NS_DCR
+        ) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 

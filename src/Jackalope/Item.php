@@ -254,17 +254,18 @@ class Item implements \PHPCR\ItemInterface
         if ($this === $otherItem) { // trivial case
             return true;
         }
-        if ($this->session->getRepository() === $otherItem->getSession()->getRepository() &&
-            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() &&
-            get_class($this) == get_class($otherItem)) {
-
+        if ($this->session->getRepository() === $otherItem->getSession()->getRepository()
+            && $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace()
+            && get_class($this) == get_class($otherItem)
+        ) {
             if ($this instanceof Node) {
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
             } else { // assert($this instanceof Property)
-                if ($this->name == $otherItem->getName() &&
-                    $this->getParent()->isSame($otherItem->getParent())) {
+                if ($this->name == $otherItem->getName()
+                    && $this->getParent()->isSame($otherItem->getParent())
+                ) {
                         return true;
                 }
             }

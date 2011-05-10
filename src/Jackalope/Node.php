@@ -984,7 +984,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function update($srcWorkspace)
     {
-        if ($this->isNew()) return; //no node in workspace
+        if ($this->isNew()) {
+            //no node in workspace
+            return;
+        }
 
         throw new NotImplementedException('Write');
     }

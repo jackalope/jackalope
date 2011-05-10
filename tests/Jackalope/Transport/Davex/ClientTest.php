@@ -414,7 +414,7 @@ class ClientTest extends TestCase
 
         $ns = $t->getNamespaces();
         $this->assertType('array', $ns);
-        foreach($ns as $prefix => $uri) {
+        foreach ($ns as $prefix => $uri) {
             $this->assertType('string', $prefix);
             $this->assertType('string', $uri);
         }

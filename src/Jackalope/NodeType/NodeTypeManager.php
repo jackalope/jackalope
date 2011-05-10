@@ -58,8 +58,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         }
 
         if (! is_null($name)) {
-            if (empty($this->primaryTypes[$name]) &&
-                empty($this->mixinTypes[$name])) {
+            if (empty($this->primaryTypes[$name])
+                && empty($this->mixinTypes[$name])
+            ) {
                 //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
                 $nodetypes = $this->objectManager->getNodeType($name);
             } else {
@@ -74,8 +75,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
             $nodetype = $this->factory->get('NodeType\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();
             //do not overwrite existing types. maybe they where changed locally
-            if (empty($this->primaryTypes[$name]) &&
-                empty($this->mixinTypes[$name])) {
+            if (empty($this->primaryTypes[$name])
+                && empty($this->mixinTypes[$name])
+            ) {
                 $this->addNodeType($nodetype);
             }
         }
