@@ -86,7 +86,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
-                        //TODO: should type really be a property?
+                        //TODO: should type really be a property too?
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -98,7 +98,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         );
                         break;
                     case 'jcr:mixinTypes':
-                        //TODO: should mixin types really be properties?
+                        //TODO: should mixin types really be properties or rather a special field??
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -114,10 +114,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         break;
                     //do we have any other more meta information?
 
-                    //OPTIMIZE: do not instantiate properties unless needed
+                    //OPTIMIZE: do not instantiate properties until needed
                     default:
-                        //TODO: if we create node locally, $rawData might be a plain array. So far this is not triggered, but its a bit flaky
-                        // parsing of types done according to: http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
@@ -214,7 +212,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     }
                 }
                 if (is_null($primaryNodeTypeName)) {
-                    throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'");
+                    throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
                 }
             }
         }
@@ -353,6 +351,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setProperty($name, $value, $type = null)
     {
+        //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
+
         if (is_null($value)) {
             if (isset($this->properties[$name])) {
                 $this->properties[$name]->remove();
@@ -370,7 +370,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $property->setValue($value, $type); //do this before adding property, in case of exception
             $this->objectManager->addItem($path, $property);
             $this->properties[$name] = $property;
-            //validity check will be done by backend on commit, which is allowed by spec
         } else {
             $this->properties[$name]->setValue($value, $type);
         }
@@ -878,8 +877,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         // Check if mixinName exists as a mixin type
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
-        if (! $typemgr->hasMixinType($mixinName)) {
-            throw new \PHPCR\NodeType\NoSuchNodeTypeException("The mixin type '$mixinName' does not exist");
+        $nodeType = $typemgr->getNodeType($mixinName);
+        if (! $nodeType->isMixin()) {
+            throw new \PHPCR\NodeType\ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
         }
 
         // TODO handle LockException & VersionException cases
@@ -889,7 +889,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $values = array_unique($values);
             $this->properties['jcr:mixinTypes']->setValue($values);
         } else {
-            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::NAME);
+            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::STRING);
         }
         $this->setModified();
     }

@@ -19,6 +19,7 @@ namespace Jackalope;
  * interface.
  *
  * @package jackalope
+ * @private
  */
 class ObjectManager
 {
@@ -429,7 +430,7 @@ class ObjectManager
                 }
             }
         }
-        // create new nodes
+        // create new items
         foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
@@ -713,6 +714,7 @@ class ObjectManager
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
         }
+
         $this->itemsAdd[$absPath] = 1;
     }
 

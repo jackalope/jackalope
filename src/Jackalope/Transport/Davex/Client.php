@@ -771,7 +771,7 @@ class Client implements TransportInterface
 
     /**
      * This method is used to directly set a property
-     * 
+     *
      * @param  $value
      * @param  $type
      * @return mixed|string

@@ -350,11 +350,14 @@ class Item implements \PHPCR\ItemInterface
 
     /**
      * Tell this item that it has been modified.
-     * Used when deleting a node to tell the parent node about modification.
+     *
+     * This will do nothing if the node is new, to avoid duplicating store commands.
      */
     public function setModified()
     {
-        $this->modified = true;
+        if (! $this->isNew()) {
+            $this->modified = true;
+        }
     }
 
     /**

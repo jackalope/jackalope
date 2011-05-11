@@ -102,6 +102,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * Returns the declared subnodes of a given nodename
      * @param string Nodename
      * @return array of strings with the names of the subnodes
+     * @private
      */
     public function getDeclaredSubtypes($nodeTypeName)
     {
@@ -112,9 +113,11 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     }
 
     /**
-     * Returns the subnode hirarchie of a given nodename
+     * Returns the subnode hirarchy of a given nodename
+     *
      * @param string Nodename
      * @return array of strings with the names of the subnodes
+     * @private
      */
     public function getSubtypes($nodeTypeName)
     {
@@ -431,41 +434,5 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function getIterator() {
         return $this->getAllNodeTypes();
-    }
-
-    /**
-     * Return wheter a given mixin type exists or not
-     * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
-     * @private
-     * @param string $name
-     * @return boolean
-     */
-    public function hasMixinType($name)
-    {
-        try {
-            $this->fetchNodeTypes($name);
-        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $ex) {
-            return false;
-        }
-
-        return array_key_exists($name, $this->mixinTypes);
-    }
-
-    /**
-     * Return wheter a given primary type exists or not
-     * THIS IS NOT PART OF THE STANDARD API, PLEASE DON'T USE !
-     * @private
-     * @param string $name
-     * @return boolean
-     */
-    public function hasPrimaryType($name)
-    {
-        try {
-            $this->fetchNodeTypes($name);
-        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $ex) {
-            return false;
-        }
-
-        return array_key_exists($name, $this->primaryTypes);
     }
 }

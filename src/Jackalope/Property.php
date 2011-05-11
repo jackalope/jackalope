@@ -131,9 +131,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->type = $targettype;
         $this->value = $value;
 
-        if (! $this->new //never mark a new property as modified, or it will be saved twice
-            && $this->value !== $previousValue
-        ) {
+        if ($this->value !== $previousValue) {
             $this->setModified();
         }
     }
