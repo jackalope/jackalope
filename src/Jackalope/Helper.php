@@ -73,8 +73,8 @@ class Helper
      */
     public static function determineType($value, $weak = false)
     {
-        //determine type from variable type of value.
-        //this is mainly needed to create a new property
+        //FIXME: should use PropertyType::valueFromType
+
         if (is_string($value)) {
             $type = \PHPCR\PropertyType::STRING;
         } elseif (is_resource($value)) {
@@ -138,24 +138,17 @@ class Helper
                     }
                 }
                 break;
+            case \PHPCR\PropertyType::DECIMAL:
+                $typename = 'string';
+                break;
             case \PHPCR\PropertyType::LONG:
                 $typename = 'integer';
                 break;
-            case \PHPCR\PropertyType::DECIMAL:
             case \PHPCR\PropertyType::DOUBLE:
                 $typename = 'double';
                 break;
             case \PHPCR\PropertyType::BOOLEAN:
-                /*
-                 * When converting String values to boolean, JCR uses
-                 * java.lang.Boolean.valueOf(String) which evaluates to true only for the
-                 * string "true" (case insensitive).
-                 * PHP usually treats everything not null|0|false as true. The PHPCR API
-                 * follows the JCR specification here in order to be consistent.
-                 */
-                foreach ($values as $v) {
-                    $ret[] = $v === true || is_string($v) && strcasecmp('true', $v) == 0;
-                }
+                $typename = 'boolean'; //we follow php logic and are not binary compatible with jackrabbit. jcr is not specific about details of the conversion.
                 break;
             case \PHPCR\PropertyType::DATE:
                 foreach ($values as $v) {
@@ -198,7 +191,6 @@ class Helper
                 break;
             case \PHPCR\PropertyType::BINARY:
                 foreach ($values as $v) {
-                    // TODO handle file handles?
                     if (is_string($v)) {
                         $f = fopen('php://memory', 'rwb+');
                         fwrite($f, $v);
@@ -223,7 +215,7 @@ class Helper
         }
         if (isset($typename)) {
             foreach ($values as $v) {
-                if (! settype($v, $typename)) {
+                if (! settype($v, $typename)) { //TODO: will this work for streams? or should we read them into string and then convert?
                     throw new \PHPCR\ValueFormatException;
                 }
                 $ret[] = $v;
