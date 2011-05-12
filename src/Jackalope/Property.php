@@ -80,7 +80,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * @inheritDoc
      */
-    public function setValue($value, $type = null, $weak = false)
+    public function setValue($value, $type = null)
     {
         if (is_null($value)) {
             $this->remove();
@@ -105,7 +105,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
          */
 
         if (null === $type) {
-            $type = Helper::determineType(is_array($value) ? reset($value) : $value, $weak);
+            $type = Helper::determineType(is_array($value) ? reset($value) : $value);
         }
 
         $targettype = $this->type;

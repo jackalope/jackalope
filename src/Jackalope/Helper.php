@@ -128,10 +128,10 @@ class Helper
         switch($type) {
             case \PHPCR\PropertyType::STRING:
                 foreach ($values as $v) {
-                    if (is_bool($v)) {
-                        $ret[] = $v ? 'true' : 'false';
-                    } elseif ($v instanceof \DateTime) {
+                    if ($v instanceof \DateTime) {
                         $ret[] = $v->format(self::DATETIME_FORMAT);
+                    } elseif (is_resource($v)) {
+                        $ret[] = stream_get_contents($v);
                     } else {
                         settype($v, 'string');
                         $ret[] = $v;
