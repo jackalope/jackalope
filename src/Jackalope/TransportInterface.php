@@ -22,6 +22,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * This interface is now synchronized with what we had for davex as per 2011-04-13
  * TODO: keep this in sync with Transport/Davex/Client.php
  * TODO: add references to all phpcr api methods that use each transport method for additional doc
+ * TODO: add methods for all features. split into one interface per feature and transport implements just does it actually supports
  *
  * @package jackalope
  * @subpackage transport
@@ -96,17 +97,19 @@ interface TransportInterface
     /**
      * Get the node that is stored at an absolute path
      *
-     * The array returned contains two keys for each property and one key for
-     * each child.
-     * A child is just containing an empty array as value (in the future we
-     * could use this for eager loading).
-     * A property consists of a key with its own name and a value that is the
-     * property value, plus a second key with the same name but prefixed with a
-     * colon that has the type constant string as value.
+     * Returns a json_decode stdClass structure that contains two fields for
+     * each property and one field for each child.
+     * A child is just containing an empty class as value (in the future we
+     * could use this for eager loading with recursive structure).
+     * A property consists of a field named as the property is and a value that
+     * is the property value, plus a second field with the same name but
+     * prefixed with a colon that has a type specified as value (out of the
+     * string constants from PropertyType)
      *
      * For binary properties, the value of the type declaration is not the type
-     * string but the length of the binary. There is no value pair for binary
-     * data (to avoid loading large amount of unneeded data)
+     * but the length of the binary, thus integer instead of string.
+     * There is no value field for binary data (to avoid loading large amount
+     * of unneeded data)
      * Use getBinaryStream to get the actual data of a binary property.
      *
      * There is a couple of "magic" properties:
@@ -119,20 +122,33 @@ interface TransportInterface
      *
      * @example Return struct
      * <code>
-     * array (
-     *      "jcr:uuid"      => "64605997-e298-4334-a03e-673fc1de0911",
-     *      ":jcr:uuid"     => \PHPCR\PropertyType::TYPENAME_STRING,
-     *      "propertyName"  => "foo",
-     *      ":propertyName" => \PHPCR\PropertyTypeInterface::TYPENAME_NAME,
-     *      "foo"           => "bar",
-     *      ":foo"          => \PHPCR\PropertyTypeInterface::<TYPENAME_CONST>, //depending on type of that property
-     *      "childNodeName" => array(), //empty array (unless you recursively prefetch child nodes)
-     *      "anotherChild"  => array(),
+     * object(stdClass)#244 (4) {
+     *      ["jcr:uuid"]=>
+     *          string(36) "64605997-e298-4334-a03e-673fc1de0911"
+     *      [":jcr:primaryType"]=>
+     *          string(4) "Name"
+     *      ["jcr:primaryType"]=>
+     *          string(8) "nt:unstructured"
+     *      ["myProperty"]=>
+     *          string(4) "test"
+     *      [":myProperty"]=>
+     *          string(5) "String" //one of \PHPCR\PropertyTypeInterface::TYPENAME_NAME
+     *      [":myBinary"]=>
+     *          int 1538    //length of binary file, no "myBinary" field present
+     *      ["childNodeName"]=>
+     *          object(stdClass)#152 (0) {}
+     *      ["otherChild"]=>
+     *          object(stdClass)#153 (0) {}
      * }
      * </code>
      *
+     * Note: the reason to use json_decode with associative = false is that the
+     * array version can not distinguish between
+     *   ['foo', 'bar'] and {0: 'foo', 1: 'bar'}
+     * The first are properties, but the later is a list of children nodes.
+     *
      * @param string $path Absolute path to identify a special item.
-     * @return array associative array for the node (decoded from json with associative = true)
+     * @return stdClass a json struct for the node (as decoded from json with associative = false)
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
@@ -144,7 +160,9 @@ interface TransportInterface
      * Same format as getNode with just one property. Again, for binary
      * properties just returns the size and not the actual data.
      *
-     * @return array associative array with the property value.
+     * @return stdClass a json struct with the property type and property value(s)
+     *
+     * @see self::getNode($path)
      */
     public function getProperty($path);
 
