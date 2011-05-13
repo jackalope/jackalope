@@ -324,11 +324,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         $results = array();
         switch($this->type) {
-            case PropertyType::PATH:
-                foreach ($values as $value) {
-                    $results[] = $this->objectManager->getNode($value, $this->parentPath);
-                }
-                break;
             case PropertyType::REFERENCE:
                 try {
                     foreach ($values as $value) {
@@ -341,6 +336,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             case PropertyType::WEAKREFERENCE:
                 foreach ($values as $value) {
                     $results[] = $this->objectManager->getNode($value);
+                }
+                break;
+            case PropertyType::PATH:
+            case PropertyType::STRING:
+            case PropertyType::NAME:
+                foreach ($values as $value) {
+                    $results[] = $this->objectManager->getNode($value, $this->parentPath);
                 }
                 break;
             default:
