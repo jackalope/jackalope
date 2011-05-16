@@ -59,6 +59,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->type = $type;
 
         if ($type == PropertyType::BINARY) {
+            if (is_array($data['value'])) {
+                $this->isMultiple = true;
+            }
             $this->length = $data['value'];
             $this->value = null;
             return;
@@ -420,7 +423,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $ret = array();
         foreach ($this->value as $value) {
             if (PropertyType::BINARY === $this->type) {
-                throw new NotImplementedException('Binaries not implemented');
+                return $this->length;
             }
             try {
                 $ret[] = strlen(Helper::convertType($value, PropertyType::STRING));
