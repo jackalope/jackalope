@@ -471,6 +471,11 @@ class ObjectManager
         foreach ($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
         }
+
+        //clear those lists before reloading the newly added nodes from backend, to avoid collisions
+        $this->itemsRemove = array();
+        $this->nodesMove = array();
+
         /* local state is already updated in moveNode
         foreach ($this->nodesMove as $src => $dst) {
             $this->objectsByPath[$dst] = $this->objectsByPath[$src];
@@ -489,8 +494,6 @@ class ObjectManager
             }
         }
 
-        $this->itemsRemove = array();
-        $this->nodesMove = array();
         $this->itemsAdd = array();
     }
 
