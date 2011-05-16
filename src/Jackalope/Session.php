@@ -193,8 +193,11 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNode($absPath, $class = 'Node')
     {
+        if (empty($absPath) || ! $absPath[0] == '/') {
+            throw new \InvalidArgumentException("Path $absPath is not an absolute path");
+        }
         try {
-            return $this->objectManager->getNode($absPath, '/', $class);
+            return $this->objectManager->getNodeByPath($absPath, $class);
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
