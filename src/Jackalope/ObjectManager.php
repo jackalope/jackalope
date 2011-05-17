@@ -410,9 +410,23 @@ class ObjectManager
     {
         // TODO: start transaction
 
-        // remove nodes/properties
-        foreach ($this->itemsRemove as $path => $dummy) {
+        /* remove nodes/properties
+         *
+         * deleting a node deletes the whole tree
+         * we have to avoid deleting children/properties of nodes we already
+         * deleted. we sort the paths and then use that to check if parent path
+         * was already removed in a - comparably - cheap way
+         */
+        $todelete = array_keys($this->itemsRemove);
+        sort($todelete);
+        $last = ':'; // anything but '/'
+        foreach ($todelete as $path) {
+            if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
+                //parent path has already been removed
+                continue;
+            }
             $this->transport->deleteNode($path);
+            $last = $path;
         }
 
         // move nodes/properties

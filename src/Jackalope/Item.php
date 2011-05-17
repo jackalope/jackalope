@@ -2,13 +2,14 @@
 namespace Jackalope;
 
 /**
- * The Item is the base interface of Node and Property.
- * This class implements methods for both types.
- * It should not be instantiated directly.
+ * @inheritDoc
  *
- * @api
+ * TODO: we should have a state concept: NEW, MODIFIED, DIRTY, DELETED.
+ * modified needs to be saved
+ * dirty needs to refresh from backend when accessed (it was saved and should check with backend). should be set on confirmSaved
+ * deleted can not be used anymore at all
  */
-class Item implements \PHPCR\ItemInterface
+abstract class Item implements \PHPCR\ItemInterface
 {
     /** @var Factory   The jackalope object factory for this object */
     protected $factory;
@@ -338,7 +339,7 @@ class Item implements \PHPCR\ItemInterface
             throw new \PHPCR\RepositoryException('Cannot remove root node');
         }
 
-        // TODO: add sanity checks to all other write methods to avoid modification after deleting?
+        // TODO add sanity checks to all other write methods to avoid modification after deleting
         // TODO same-name siblings reindexing
         if ($this instanceof \PHPCR\PropertyInterface) {
             $this->objectManager->removeItem($this->parentPath, $this->name);

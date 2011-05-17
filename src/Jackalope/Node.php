@@ -1023,14 +1023,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
-     * This is necessary to remove the internal reference in the parent node
-     *
      * {@inheritDoc}
+     *
+     * Must notify the parent node about this, in addition to item::remove
      *
      * @return void
      * @uses unsetChildNode()
      * @api
-     **/
+     */
     public function remove()
     {
         parent::remove();
