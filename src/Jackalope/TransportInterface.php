@@ -245,7 +245,9 @@ interface TransportInterface
      * @param string $path Absolute path to the node
      * @return bool true on success
      *
-     * @throws \PHPCR\PathNotFoundException if the item is already deleted on the server. This should not happen.
+     * @throws \PHPCR\PathNotFoundException if the item is already deleted on
+     *      the server. This should not happen if ObjectManager is correctly
+     *      checking.
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function deleteNode($path);
