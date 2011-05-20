@@ -112,17 +112,22 @@ class VersionHistory extends \Jackalope\Node {
             $results = array();
             $rootNode = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\Version');
             $results[$rootNode->getName()] = $rootNode;
-            $this->versions = array_merge($results, $this->getSuccessors($rootNode));
+            $this->versions = array_merge($results, $this->getEventualSuccessors($rootNode));
         }
         return new \ArrayIterator($this->versions);
     }
 
-    protected function getSuccessors($node) {
+    /**
+     * Walk along the successors line to get all versions of this node
+     *
+     * According to spec, 3.13.1.4, these are called eventual successors
+     */
+    protected function getEventualSuccessors($node) {
         $successors = $node->getSuccessors();
         $results = array();
         foreach ($successors as $successor) {
             $results[$successor->getName()] = $successor;
-            $results = array_merge($results, $this->getSuccessors($successor));
+            $results = array_merge($results, $this->getEventualSuccessors($successor)); //TODO: remove end recursion
         }
         return $results;
     }

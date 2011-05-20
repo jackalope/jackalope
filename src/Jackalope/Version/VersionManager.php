@@ -115,7 +115,9 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function checkpoint($absPath)
     {
-        throw new NotImplementedException();
+        $version = $this->checkin($absPath); //just returns current version if already checked in
+        $this->checkout($absPath);
+        return $version;
     }
 
     /**
@@ -164,7 +166,14 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function getBaseVersion($absPath)
     {
-        throw new NotImplementedException();
+        $node = $this->objectmanager->getNodeByPath($absPath);
+        try {
+            //TODO: could check if node has versionable mixin type
+            $uuid = $node->getProperty('jcr:baseVersion')->getString();
+        } catch(\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\UnsupportedRepositoryOperationException("No jcr:baseVersion version for $path");
+        }
+        return $this->objectmanager->getNode($uuid, '/', 'Version\Version');
     }
 
     /**
@@ -474,7 +483,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\Version\VersionException if the version specified is not among those referenced in the
      *                                         jcr:mergeFailed  property of the node at absPath  or if the node
      *                                         is currently checked-in.
-     * @throws \PHPCR\InvalidItemStateExceptionif there are unsaved changes pending on the node at absPath.
+     * @throws \PHPCR\InvalidItemStateException if there are unsaved changes pending on the node at absPath.
      * @throws \PHPCR\UnsupportedRepositoryOperationExceptionif the node at absPath is not versionable.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api

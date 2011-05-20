@@ -72,6 +72,15 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getSuccessors()
     {
+        if (! $this->hasProperty('jcr:successors')) {
+            // no successors
+            return array();
+        }
+
+        /* predecessors is a multivalue property with REFERENCE.
+         * get it as string so we can create the Version instances from uuid
+         * with the objectmanager
+         */
         $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
         if ($successors) {
@@ -117,12 +126,20 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getPredecessors()
     {
-        $predecessors = $this->getProperty("jcr:predecessors");
+        if (! $this->hasProperty('jcr:predecessors')) {
+            // no predecessors
+            return array();
+        }
+
+        /*
+         * predecessors is a multivalue property with REFERENCE.
+         * get it as string so we can create the Version instances from uuid
+         * with the objectmanager. see 3.13.2.6
+         */
+        $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
         foreach ($predecessors as $uuid) {
-            $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
-            $results[] = $node->getNode('jcr:frozenNode');
-            $results = array_merge($results, $node->getPredecessors());
+            $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
         }
         return $results;
     }
@@ -137,6 +154,8 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getFrozenNode()
     {
+        $frozen = $this->getNode('jcr:frozenNode');
+        //TODO: what should we do now? recreate the node with the data at that time?
         throw new NotImplementedException();
     }
 }
