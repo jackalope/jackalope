@@ -21,7 +21,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     protected $path;
 
     /**
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TODO:string? $statement The SQL statement for this query
      * @param ObjectManager $objectmanager Object manager to execute query against
      * @param string $path If this query is loaded from workspace with QueryManager->getQuery, path has to be stored here

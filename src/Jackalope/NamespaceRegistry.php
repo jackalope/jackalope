@@ -46,7 +46,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     /**
      * Initializes the created object.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TransportInterface $transport
      */
     public function __construct($factory, TransportInterface $transport)

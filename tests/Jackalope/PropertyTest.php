@@ -8,36 +8,36 @@ class PropertyTest extends TestCase
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*
-        $val = new \jackalope\Value('undefined', '');
+        $val = new \Jackalope\Value('undefined', '');
         $this->assertSame(\PHPCR_PropertyType::UNDEFINED, $val->getType());
-        $val = new \jackalope\Value('String', '');
+        $val = new \Jackalope\Value('String', '');
         $this->assertSame(\PHPCR_PropertyType::STRING, $val->getType());
-        $this->setExpectedException('\jackalope\NotImplementedException');
-        $val = new \jackalope\Value('Binary', '');
+        $this->setExpectedException('\Jackalope\NotImplementedException');
+        $val = new \Jackalope\Value('Binary', '');
         // $this->assertSame(\PHPCR_PropertyType::BINARY, $val->getType());
-        $val = new \jackalope\Value('Long', '');
+        $val = new \Jackalope\Value('Long', '');
         $this->assertSame(\PHPCR_PropertyType::LONG, $val->getType());
-        $val = new \jackalope\Value('Double', '');
+        $val = new \Jackalope\Value('Double', '');
         $this->assertSame(\PHPCR_PropertyType::DOUBLE, $val->getType());
-        $this->setExpectedException('\jackalope\NotImplementedException');
-        $val = new \jackalope\Value('Date', '');
+        $this->setExpectedException('\Jackalope\NotImplementedException');
+        $val = new \Jackalope\Value('Date', '');
         // $this->assertSame(\PHPCR_PropertyType::DATE, $val->getType());
-        $val = new \jackalope\Value('Boolean', '');
+        $val = new \Jackalope\Value('Boolean', '');
         $this->assertSame(\PHPCR_PropertyType::BOOLEAN, $val->getType());
-        $val = new \jackalope\Value('Name', '');
+        $val = new \Jackalope\Value('Name', '');
         $this->assertSame(\PHPCR_PropertyType::NAME, $val->getType());
-        $val = new \jackalope\Value('Path', '');
+        $val = new \Jackalope\Value('Path', '');
         $this->assertSame(\PHPCR_PropertyType::PATH, $val->getType());
-        $val = new \jackalope\Value('Reference', '');
+        $val = new \Jackalope\Value('Reference', '');
         $this->assertSame(\PHPCR_PropertyType::REFERENCE, $val->getType());
-        $val = new \jackalope\Value('WeakReference', '');
+        $val = new \Jackalope\Value('WeakReference', '');
         $this->assertSame(\PHPCR_PropertyType::WEAKREFERENCE, $val->getType());
-        $val = new \jackalope\Value('URI', '');
+        $val = new \Jackalope\Value('URI', '');
         $this->assertSame(\PHPCR_PropertyType::URI, $val->getType());
-        $val = new \jackalope\Value('Decimal', '');
+        $val = new \Jackalope\Value('Decimal', '');
         $this->assertSame(\PHPCR_PropertyType::DECIMAL, $val->getType());
         $this->setExpectedException('InvalidArgumentException');
-        new \jackalope\Value('InvalidArgument', '');
+        new \Jackalope\Value('InvalidArgument', '');
         */
     }
 
@@ -45,14 +45,14 @@ class PropertyTest extends TestCase
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*
-        $val = new \jackalope\Value('String', '1.1');
+        $val = new \Jackalope\Value('String', '1.1');
         $this->assertSame('1.1', $val->getString());
         $this->assertSame(1, $val->getLong());
         $this->assertSame(1.1, $val->getDecimal());
         $this->assertSame(1.1, $val->getDouble());
         $this->assertSame(false, $val->getBoolean());
 
-        $val = new \jackalope\Value('String', 'TrUe');
+        $val = new \Jackalope\Value('String', 'TrUe');
         $this->assertSame(true, $val->getBoolean());
         */
     }

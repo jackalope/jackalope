@@ -26,8 +26,8 @@ class Repository implements \PHPCR\RepositoryInterface
      * Create repository, either with uri or transport
      * Typical uri for a local jackrabbit server is http://localhost:8080/server
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
-     *                If this is null, the \jackalope\Factory is instantiated
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
+     *                If this is null, the \Jackalope\Factory is instantiated
      *                Note that the repository is the only class accepting null as factory
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored

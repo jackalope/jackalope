@@ -142,7 +142,7 @@ class Client implements TransportInterface
     /**
      * Create a transport pointing to a server url.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      * @param serverUri location of the server
      */
     public function __construct($factory, $serverUri)

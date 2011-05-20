@@ -42,7 +42,7 @@ abstract class Item implements \PHPCR\ItemInterface
     protected $isNode = false;
 
     /**
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param string    $path   The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager

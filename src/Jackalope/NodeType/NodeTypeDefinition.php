@@ -45,7 +45,7 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
     /**
      * Initializes the NodeTypeDefinition from an optional source
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|null     $nodetype   Either by XML or by NodeTypeDefinition or null for an empty definition
      * @throws  \InvalidArgumentException   If $nodetype cannot be copied from
      */

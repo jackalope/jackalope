@@ -30,7 +30,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * For binary properties, the value is the length of the data, not the data itself.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param array $data array with fields
      *                    type (integer or string from PropertyType)
      *                    and value (data for creating value object - array for multivalue property)

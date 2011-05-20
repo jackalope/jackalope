@@ -84,7 +84,7 @@ class ObjectManager
     /**
      * Registers the provided parameters as attribute to the instance.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */

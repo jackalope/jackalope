@@ -8,7 +8,7 @@ class ObjectManagerTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $path = '/jcr:root';
-        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
+        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
         $this->assertType('jackalope\Node', $node);
         $children = $node->getNodes();
