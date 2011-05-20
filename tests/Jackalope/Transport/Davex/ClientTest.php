@@ -126,11 +126,11 @@ class ClientTest extends TestCase
             ->with($reportRequest);
 
         $desc = $t->getRepositoryDescriptors();
-        $this->assertType('array', $desc);
-        $this->assertType('string', $desc['identifier.stability']);
+        $this->assertInternalType('array', $desc);
+        $this->assertInternalType('string', $desc['identifier.stability']);
         $this->assertSame('identifier.stability.indefinite.duration', $desc['identifier.stability']);
-        $this->assertType('array', $desc['node.type.management.property.types']);
-        $this->assertType('string', $desc['node.type.management.property.types'][0]);
+        $this->assertInternalType('array', $desc['node.type.management.property.types']);
+        $this->assertInternalType('string', $desc['node.type.management.property.types'][0]);
         $this->assertSame('2', $desc['node.type.management.property.types'][0]);
     }
 
@@ -413,10 +413,10 @@ class ClientTest extends TestCase
             ->with($reportRequest);
 
         $ns = $t->getNamespaces();
-        $this->assertType('array', $ns);
+        $this->assertInternalType('array', $ns);
         foreach ($ns as $prefix => $uri) {
-            $this->assertType('string', $prefix);
-            $this->assertType('string', $uri);
+            $this->assertInternalType('string', $prefix);
+            $this->assertInternalType('string', $uri);
         }
     }
 
@@ -466,7 +466,7 @@ class ClientTest extends TestCase
         $t = $this->setUpNodeTypeMock(array(), dirname(__FILE__).'/../../../fixtures/nodetypes.xml');
 
         $nt = $t->getNodeTypes();
-        $this->assertType('array', $nt);
+        $this->assertInternalType('array', $nt);
         $this->assertSame('mix:created', $nt[0]['name']);
     }
 
@@ -478,7 +478,7 @@ class ClientTest extends TestCase
         $t = $this->setUpNodeTypeMock(array('nt:folder', 'nt:file'), dirname(__FILE__).'/../../../fixtures/small_nodetypes.xml');
 
         $nt = $t->getNodeTypes(array('nt:folder', 'nt:file'));
-        $this->assertType('array', $nt);
+        $this->assertInternalType('array', $nt);
         $this->assertSame(2, count($nt));
         $this->assertSame('nt:folder', $nt[0]['name']);
         $this->assertSame('nt:file', $nt[1]['name']);

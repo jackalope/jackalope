@@ -28,6 +28,6 @@ class WorkspaceTest extends TestCase
         $w = new Workspace($factory, $session, $objManager, $name);
 
         $ntm = $w->getNodeTypeManager();
-        $this->assertType('Jackalope\NodeType\NodeTypeManager', $ntm);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeTypeManager', $ntm);
     }
 }

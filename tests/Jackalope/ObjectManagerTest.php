@@ -10,9 +10,9 @@ class ObjectManagerTest extends TestCase
         $path = '/jcr:root';
         $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
-        $this->assertType('jackalope\Node', $node);
+        $this->assertInstanceOf('Jackalope\Node', $node);
         $children = $node->getNodes();
-        $this->assertType('Iterator', $children);
+        $this->assertInstanceOf('Iterator', $children);
         $this->assertSame(2, count($children));
         $this->assertSame($node, $om->getNode($path));
     }
@@ -20,11 +20,11 @@ class ObjectManagerTest extends TestCase
     public function testGetNodeTypes()
     {
         $factory = new \Jackalope\Factory;
-        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
-        $this->assertType('DOMDocument', $nodetypes);
+        $this->assertInstanceOf('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
-        $this->assertType('DOMDocument', $nodetypes);
+        $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
 
     public function testIsUUID()
@@ -68,7 +68,7 @@ class ObjectManagerTest extends TestCase
     public function testAbsolutePath($inputRoot, $inputRelPath, $output)
     {
         $factory = new \Jackalope\Factory;
-        $om = new \jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 

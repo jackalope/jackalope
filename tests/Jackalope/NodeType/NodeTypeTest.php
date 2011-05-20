@@ -40,10 +40,10 @@ class NodeTypeTest extends TestCase
         );
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertType('Iterator', $declaredSubTypes);
+        $this->assertInstanceOf('Iterator', $declaredSubTypes);
         $this->assertSame(0, count($declaredSubTypes));
         $subTypes = $nt->getSubtypes();
-        $this->assertType('Iterator', $subTypes);
+        $this->assertInstanceOf('Iterator', $subTypes);
         $this->assertSame(0, count($subTypes));
         $this->assertTrue($nt->isNodeType('nt:configuration'));
         $this->assertTrue($nt->isNodeType('nt:base'));
@@ -53,7 +53,7 @@ class NodeTypeTest extends TestCase
         $this->assertSame(count($expectedProperties), count($nt->getPropertyDefinitions()));
         $i = 0;
         foreach ($nt->getPropertyDefinitions() as $propDef) {
-            $this->assertType('jackalope\NodeType\PropertyDefinition', $propDef);
+            $this->assertInstanceOf('Jackalope\NodeType\PropertyDefinition', $propDef);
             $this->assertSame($expectedProperties[$i], $propDef->getName());
             $i++;
         }
@@ -61,17 +61,17 @@ class NodeTypeTest extends TestCase
 
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertType('Iterator', $declaredSubTypes);
+        $this->assertInstanceOf('Iterator', $declaredSubTypes);
         $this->assertSame(5, count($declaredSubTypes));
         $subnode = $declaredSubTypes->current();
-        $this->assertType('jackalope\NodeType\NodeType', $subnode);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('nt:file', $subnode->getName());
         $subTypes = $nt->getSubtypes();
-        $this->assertType('Iterator', $subTypes);
+        $this->assertInstanceOf('Iterator', $subTypes);
         $this->assertSame(7, count($subTypes));
         $subTypes->seek(4);
         $subnode = $subTypes->current();
-        $this->assertType('jackalope\NodeType\NodeType', $subnode);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('rep:Group', $subnode->getName());
 
         $nt = $ntm->getNodeType('rep:PrincipalAccessControl');
@@ -79,7 +79,7 @@ class NodeTypeTest extends TestCase
         $this->assertSame(count($expectedChildNodes), count($nt->getChildNodeDefinitions()));
         $i = 0;
         foreach ($nt->getChildNodeDefinitions() as $childNode) {
-            $this->assertType('jackalope\NodeType\NodeDefinition', $childNode);
+            $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $childNode);
             $this->assertSame($expectedChildNodes[$i], $childNode->getName());
             $i++;
         }
@@ -91,10 +91,10 @@ class NodeTypeTest extends TestCase
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertInternalType('array', $nodes);
         $this->assertSame(1, count($nodes));
         $node = $nodes[0];
-        $this->assertType('jackalope\NodeType\NodeDefinition', $node);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('*', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:hierarchyNode')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:hierarchyNode'), $node->getRequiredPrimaryTypeNames());
@@ -104,10 +104,10 @@ class NodeTypeTest extends TestCase
 
         $nt = $ntm->getNodeType('nt:file');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $nodes);
+        $this->assertInternalType('array', $nodes);
         $this->assertSame(1, count($nodes));
         $node = $nodes[0];
-        $this->assertType('jackalope\NodeType\NodeDefinition', $node);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('jcr:content', $node->getName());
         $this->assertSame(array($ntm->getNodeType('nt:base'), $ntm->getNodeType('nt:folder')), $node->getRequiredPrimaryTypes());
         $this->assertSame(array('nt:base', 'nt:folder'), $node->getRequiredPrimaryTypeNames());
@@ -129,11 +129,11 @@ class NodeTypeTest extends TestCase
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertInternalType('array', $properties);
         $this->assertSame(0, count($properties));
 
         $nt = $ntm->getNodeType('mix:created');
-        $this->assertType('jackalope\NodeType\NodeType', $nt);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $nt);
         $this->assertSame('mix:created', $nt->getName());
         $this->assertSame(array(), $nt->getDeclaredSupertypeNames());
         $this->assertFalse($nt->isAbstract());
@@ -144,7 +144,7 @@ class NodeTypeTest extends TestCase
 
         //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertType(\PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $properties);
+        $this->assertInternalType('array', $properties);
         $this->assertSame(2, count($properties));
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
