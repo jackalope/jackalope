@@ -61,7 +61,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                  * no data. Then the $value is not the type string for binary,
                  * but the number of bytes of the property
                  */
-                if (0 === strpos($key, ':')) {
+                if (0 === strpos($key, ':') && $key != '::NodeIteratorSize') {
                     if (is_int($value)) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
