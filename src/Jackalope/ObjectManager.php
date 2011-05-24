@@ -409,6 +409,8 @@ class ObjectManager
     public function save()
     {
         // TODO: start transaction
+        // this is extremly unspecific: http://jackrabbit.apache.org/frequently-asked-questions.html#FrequentlyAskedQuestions-HowdoIusetransactionswithJCR?
+        // or do we have to bundle everything into one request, make transport layer capable of transaction? http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
 
         /* remove nodes/properties
          *
