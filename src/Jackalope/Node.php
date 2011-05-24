@@ -60,6 +60,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                  * If its a binary data, we only get the type declaration and
                  * no data. Then the $value is not the type string for binary,
                  * but the number of bytes of the property
+                 *
+                 * The magic property ::NodeIteratorSize tells this node has no
+                 * children. Ignore that info for now. We might optimize with
+                 * this info once we do prefetch nodes.
                  */
                 if (0 === strpos($key, ':') && $key != '::NodeIteratorSize') {
                     if (is_int($value)) {
