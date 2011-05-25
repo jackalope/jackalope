@@ -1,7 +1,5 @@
 <?php
 
-declare(ENCODING = 'utf-8');
-
 namespace Jackalope\Version;
 
 use Jackalope\NotImplementedException;
@@ -85,8 +83,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
         $results = array();
         if ($successors) {
             foreach ($successors as $uuid) {
-                $n = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
-                $results[] = $n;
+                $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
             }
         }
         return $results;

@@ -1,11 +1,9 @@
 <?php
 
-declare(ENCODING = 'utf-8');
 namespace Jackalope\Version;
 
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
-
 
 /**
  * A VersionHistory object wraps an nt:versionHistory node. It provides

@@ -1,7 +1,5 @@
 <?php
 
-declare(ENCODING = 'utf-8');
-
 namespace Jackalope\Version;
 
 use Jackalope\ObjectManager, Jackalope\NotImplementedException;
