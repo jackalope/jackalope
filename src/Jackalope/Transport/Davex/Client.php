@@ -370,6 +370,32 @@ class Client implements TransportInterface
     }
 
     /**
+     * TODO: Write comment
+     * @param type $path
+     */
+    public function getReferences($path)
+    {
+        $request = $this->getRequest(Request::PROPFIND, $path);
+        $request->setBody($this->buildPropfindRequest(array('dcr:references')));
+        $request->setDepth(0);
+        $dom = $request->executeDom();
+
+        $references = array();
+
+        foreach($dom->getElementsByTagNameNS(self::NS_DCR, 'references') as $node) {
+            foreach($node->getElementsByTagNameNS(self::NS_DAV, 'href') as $ref) {
+                $references[] = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+            }
+        }
+
+//        var_dump("REQUEST " .  str_repeat('-', 120), $request);
+//        var_dump("RESPONSE " .  str_repeat('-', 120), $dom->saveXML());
+//        var_dump("REFERENCES " . str_repeat('-', 120), $references);
+
+        return $references;
+    }
+
+    /**
      * Check-in item at path.
      *
      * @param string $path

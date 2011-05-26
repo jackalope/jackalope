@@ -347,6 +347,22 @@ class ObjectManager
     }
 
     /**
+     * TODO: Write comment
+     */
+    public function getReferences($path)
+    {
+        $references = $this->transport->getReferences($path);
+        $props = array();
+
+        foreach($references as $path) {
+            // TODO: error checking
+            $props[] = $this->getPropertyByPath($path);
+        }
+
+        return new \ArrayIterator($props);
+    }
+
+    /**
      * Implementation specific way to register node types from cnd with the backend.
      *
      * This is only a proxy to the transport
