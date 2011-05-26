@@ -363,6 +363,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             }
             return null;
         }
+        if ($name == '' | false !== strpos($name, '/')) {
+            throw new \InvalidArgumentException("The name '$name' is no valid property name");
+        }
 
         if (!isset($this->properties[$name])) {
             $path = $this->getChildPath($name);
@@ -1193,10 +1196,26 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    protected function getChildPath($name)
+    /**
+     * Make sure $p is an absolute path
+     *
+     * If its a relative path, prepend the path to this node, otherwise return as is
+     *
+     * @param string $p the relative or absolute property or node path
+     *
+     * @return string the absolute path to this item, with relative paths resolved against the current node
+     */
+    protected function getChildPath($p)
     {
+        if ('' == $p) {
+            throw new \InvalidArgumentException("Name can not be empty");
+        }
+        if ($p[0] == '/') {
+            return $p;
+        }
+        //relative path, combine with base path for this node
         $path = $this->path === '/' ? '/' : $this->path.'/';
-        return $path . $name;
+        return $path . $p;
     }
 
     /** filter the list of names according to the filter expression / array
