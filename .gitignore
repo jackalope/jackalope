@@ -4,3 +4,5 @@ test-reports
 .buildpath
 .settings/
 cscope.out
+doc/config/phpdoc.ini
+doc/html
