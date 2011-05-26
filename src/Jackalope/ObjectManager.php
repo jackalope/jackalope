@@ -755,6 +755,8 @@ class ObjectManager
      * Implementation specific: Transport is used elsewhere, provide it here for Session
      *
      * @return TransportInterface
+     *
+     * @private
      */
     public function getTransport()
     {
