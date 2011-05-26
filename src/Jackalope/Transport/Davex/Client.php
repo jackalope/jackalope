@@ -853,6 +853,51 @@ class Client implements TransportInterface
     }
 
     /**
+     * Register a new namespace.
+     *
+     * Validation based on what was returned from getNamespaces has already
+     * happened in the NamespaceRegistry, as well as unregistering existing
+     * mappings.
+     *
+     * @param string $prefix The prefix to be mapped.
+     * @param string $uri The URI to be mapped.
+     */
+    public function registerNamespace($prefix, $uri)
+    {
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        // seems jackrabbit always expects full list of namespaces
+        $namespaces = $this->getNamespaces();
+        $namespaces[$prefix] = $uri;
+        $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->execute();
+        return true;
+    }
+
+    /**
+     * Unregister an existing namespace.
+     *
+     * Validation based on what was returned from getNamespaces has already
+     * happened in the NamespaceRegistry.
+     *
+     * @param string $prefix The prefix to unregister.
+     */
+    public function unregisterNamespace($prefix)
+    {
+        throw new \PHPCR\UnsupportedRepositoryOperationException('Unregistering namespace not supported by jackrabbit backend');
+
+        /*
+         * TODO: could look a bit like the following if the backend would support it
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        // seems jackrabbit always expects full list of namespaces
+        $namespaces = $this->getNamespaces();
+        unset($namespaces[$prefix]);
+        $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->execute();
+        return true;
+        */
+    }
+
+    /**
      * Returns node types as array structure
      *
      * @param array nodetypes to request
@@ -921,6 +966,24 @@ class Client implements TransportInterface
         $cnd = '<dcr:cnd>'.str_replace(array('<','>'), array('&lt;','&gt;'), $cnd).'</dcr:cnd>';
         $cnd .= '<dcr:allowupdate>'.($allowUpdate ? 'true' : 'false').'</dcr:allowupdate>';
         return '<?xml version="1.0" encoding="UTF-8" standalone="no"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:nodetypes-cnd xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.$cnd.'</dcr:nodetypes-cnd></D:prop></D:set></D:propertyupdate>';
+    }
+
+    /**
+     * Build the xml to update the namespaces
+     *
+     * You need to repeat all existing node type plus add your new ones
+     *
+     * @param array $mappings hashmap of prefix => uri for all existing and new namespaces
+     */
+    protected function buildRegisterNamespaceRequest($mappings) {
+        $ns = '';
+        foreach ($mappings as $prefix => $uri) {
+            $ns .= "<dcr:namespace><dcr:prefix>$prefix</dcr:prefix><dcr:uri>$uri</dcr:uri></dcr:namespace>";
+        }
+
+        return '<?xml version="1.0" encoding="UTF-8"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
+                $ns .
+                '</dcr:namespaces></D:prop></D:set></D:propertyupdate>';
     }
 
     /**
