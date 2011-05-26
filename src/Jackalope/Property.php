@@ -81,7 +81,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function setValue($value, $type = null)
     {
