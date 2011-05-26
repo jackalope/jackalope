@@ -671,7 +671,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getReferences($name = null)
     {
-        return $this->objectManager->getReferences($this->path);
+        return $this->objectManager->getReferences($this->path, $name);
     }
 
     /**

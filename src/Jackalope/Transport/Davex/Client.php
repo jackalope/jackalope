@@ -370,8 +370,10 @@ class Client implements TransportInterface
     }
 
     /**
-     * TODO: Write comment
-     * @param type $path
+     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @return array
      */
     public function getReferences($path)
     {
@@ -388,11 +390,7 @@ class Client implements TransportInterface
             }
         }
 
-//        var_dump("REQUEST " .  str_repeat('-', 120), $request);
-//        var_dump("RESPONSE " .  str_repeat('-', 120), $dom->saveXML());
-//        var_dump("REFERENCES " . str_repeat('-', 120), $references);
-
-        return $references;
+        return array_unique($references);
     }
 
     /**

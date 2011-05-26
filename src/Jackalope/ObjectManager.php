@@ -347,16 +347,22 @@ class ObjectManager
     }
 
     /**
-     * TODO: Write comment
+     * Returns all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path the path of the referenced node
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
+     * @return ArrayIterator
      */
-    public function getReferences($path)
+    public function getReferences($path, $name = null)
     {
         $references = $this->transport->getReferences($path);
         $props = array();
 
         foreach($references as $path) {
-            // TODO: error checking
-            $props[] = $this->getPropertyByPath($path);
+            $prop = $this->getPropertyByPath($path);
+            if ($name === null) { // TODO: || $prop->getName() === $name) {
+                $props[] = $prop;
+            }
         }
 
         return new \ArrayIterator($props);
