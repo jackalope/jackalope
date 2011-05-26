@@ -28,6 +28,22 @@ class Session implements \PHPCR\SessionInterface
     protected $objectManager;
     protected $credentials;
     protected $logout = false;
+    /**
+     * The namespace registry.
+     *
+     * It is only used to check prefixes and at setup.
+     * Session remapping must be handled locally.
+     */
+    protected $namespaceRegistry;
+
+    /**
+     * List of local namespaces
+     *
+     * TODO: implement local namespace rewriting
+     * see jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/conversion/PathParser.java and friends
+     * for how this is done in jackrabbit
+     */
+    //protected $localNamespaces;
 
     /** creates the corresponding workspace */
     public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
@@ -37,6 +53,7 @@ class Session implements \PHPCR\SessionInterface
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
+        $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
     }
 
     /**
@@ -634,7 +651,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function setNamespacePrefix($prefix, $uri)
     {
-        throw new NotImplementedException();
+        $this->namespaceRegistry->checkPrefix($prefix);
+        throw new NotImplementedException('TODO: implement session scope remapping of namespaces'); //this will lead to rewrite all names and paths in requests and replies
     }
 
     /**
@@ -646,7 +664,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespacePrefixes()
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getPrefixes();
     }
 
     /**
@@ -661,7 +680,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespaceURI($prefix)
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getURI($prefix);
     }
 
     /**
@@ -676,7 +696,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespacePrefix($uri)
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getPrefix($uri);
     }
 
     /**

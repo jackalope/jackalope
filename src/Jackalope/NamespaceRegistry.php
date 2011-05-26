@@ -37,13 +37,6 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     protected $userNamespaces = array();
 
     /**
-     * Instance of the NamespaceManager
-     *
-     * @var NamespaceManager
-     */
-    protected $namespaceManager = null;
-
-    /**
      * Initializes the created object.
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
@@ -53,7 +46,6 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     {
         $this->factory = $factory;
         $this->transport = $transport;
-        $this->namespaceManager = $this->factory->get('NamespaceManager', array($this->defaultNamespaces));
 
         $namespaces = $transport->getNamespaces();
         foreach ($namespaces as $prefix => $uri) {
@@ -99,7 +91,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         throw new NotImplementedException('Write');
 
         // prevent default namespace to be overridden.
-        $this->namespaceManager->checkPrefix($prefix);
+        $this->checkPrefix($prefix);
 
         // update local info
         $this->userNamespaces[$prefix] = $uri;
@@ -202,7 +194,7 @@ Server: Jetty(6.1.x)
      */
     public function unregisterNamespace($prefix)
     {
-        $this->namespaceManager->checkPrefix($prefix);
+        $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
             throw new \PHPCR\NamespaceException("Prefix $prefix is not currently registered");
@@ -295,5 +287,31 @@ Server: Jetty(6.1.x)
     public function getIterator()
     {
         return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
+    }
+
+    /**
+     * Verifies whether this is a valid prefix
+     *
+     *
+     * Throws the \PHPCR\NamespaceException if trying to use one of the
+     * built-in prefixes or a prefix that begins with the characters "xml"
+     * (in any combination of case)
+     *
+     *
+     * @return void
+     *
+     * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
+     */
+    public function checkPrefix($prefix)
+    {
+        if (! strncasecmp('xml', $prefix, 3)) {
+            throw new \PHPCR\NamespaceException("Do not use xml in prefixes for namespace changes: '$prefix'");
+        }
+        if (array_key_exists($prefix, $this->defaultNamespaces)) {
+            throw new \PHPCR\NamespaceException("Do not change the predefined prefixes: '$prefix'");
+        }
+        if (false !== strpos($prefix, ' ') || false !== strpos($prefix, ':')) {
+            throw new \PHPCR\NamespaceException("Not a valid namespace prefix '$prefix'");
+        }
     }
 }
