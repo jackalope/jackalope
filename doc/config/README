@@ -1,0 +1,16 @@
+=============
+Documentation
+=============
+
+The documentation of this project follows the semantics and paradigms of
+phpdoctor[1] and PHPDocumentor[1].
+
+If you want to /use/ the PHPCR API, you should look at the documentation of
+PHPCR, and not at the Jackalope implementation doc, as you should not rely on
+implementation specifics.
+The PHPCR documentation is online at http://phpcr.github.com/doc/html/index.html
+
+Since the documentation is updated constantly and easy to generate, it is not
+included in the project. Please see the phpcr README file in phpcr doc/config/
+for how to generate the current doc.
+
