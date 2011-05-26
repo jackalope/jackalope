@@ -185,19 +185,18 @@ class Session implements \PHPCR\SessionInterface
      * Returns the node at the specified absolute path in the workspace.
      *
      * @param string $absPath An absolute path.
-     * @param string $class The class of node to get.
      * @return \PHPCR\NodeInterface A node
      * @throws \PHPCR\PathNotFoundException if no accessible node is found at the specified path.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getNode($absPath, $class = 'Node')
+    public function getNode($absPath)
     {
         if (empty($absPath) || ! $absPath[0] == '/') {
             throw new \InvalidArgumentException("Path $absPath is not an absolute path");
         }
         try {
-            return $this->objectManager->getNodeByPath($absPath, $class);
+            return $this->objectManager->getNodeByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
