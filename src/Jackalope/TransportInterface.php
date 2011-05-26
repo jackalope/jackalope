@@ -284,7 +284,28 @@ interface TransportInterface
      */
     public function storeProperty(\PHPCR\PropertyInterface $property);
 
-    //TODO: set namespace, ...
+    /**
+     * Register a new namespace.
+     *
+     * Validation based on what was returned from getNamespaces has already
+     * happened in the NamespaceRegistry, as well as unregistering existing
+     * mappings.
+     *
+     * @param string $prefix The prefix to be mapped.
+     * @param string $uri The URI to be mapped.
+     */
+    public function registerNamespace($prefix, $uri);
+
+    /**
+     * Unregister an existing namespace.
+     *
+     * Validation based on what was returned from getNamespaces has already
+     * happened in the NamespaceRegistry.
+     *
+     * @param string $prefix The prefix to unregister.
+     */
+    public function unregisterNamespace($prefix);
+
 
     /*********************************
      * Methods for NodeType support. *
