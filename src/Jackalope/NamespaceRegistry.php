@@ -97,26 +97,16 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
             throw new \PHPCR\NamespaceException("Can not change default namespace $prefix = $uri");
         }
 
-        // check if prefix is already mapped
-        if (isset($this->userNamespaces[$prefix])) {
-            if ($this->userNamespaces[$prefix] == $uri) {
-                // nothing to do, we already have the mapping
-                return;
-            }
-            // unregister old mapping
-            $this->unregisterNamespace($prefix);
-        }
-        // check if target uri already exists and unregister if so
-        if (false !== $prefix = array_search($uri, $this->userNamespaces)) {
-            $this->unregisterNamespace($prefix);
-        }
-
         //first try putting the stuff in backend, and only afterwards update lokal info
 
         // this has no impact on running sessions, go directly to storage
         $this->transport->registerNamespace($prefix, $uri);
 
         // update local info
+        if (false !== $oldpref = array_search($uri, $this->userNamespaces)) {
+            // the backend takes care of storing this, but we have to update frontend info
+            unset($this->userNamespaces[$oldpref]);
+        }
         $this->userNamespaces[$prefix] = $uri;
     }
 
