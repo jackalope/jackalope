@@ -196,7 +196,7 @@ class NamespaceRegistryTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\NamespaceManager::checkPrefix
+     * @covers \Jackalope\NamespaceRegistry::checkPrefix
      */
     public function testCheckPrefix()
     {
