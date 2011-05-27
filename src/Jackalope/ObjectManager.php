@@ -177,6 +177,8 @@ class ObjectManager
      *
      * @param string $absPath The absolute path of the property to create.
      * @return \PHPCR\Property
+     *
+     * @throws ItemNotFoundException if item is not found at this path
      */
     public function getPropertyByPath($absPath)
     {
@@ -189,7 +191,11 @@ class ObjectManager
 
         // OPTIMIZE: should use getProperty
         $n = $this->getNodeByPath($nodep);
-        return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+        try {
+            return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+        } catch(\PHPCR\PahNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -243,26 +249,28 @@ class ObjectManager
     }
 
     /**
-     * Creates an absolute path from a root and a relative path and then normalizes it.
+     * Makes sure $relPath is absolute, prepending $root if it is not already,
+     * then normalizes the path.
      *
      * If root is missing or does not start with a slash, a slash will be prepended
      *
-     * @param string Root path to append the relative
-     * @param string Relative path
+     * @param string $root base path to prepend to $relPath if it is not already absolute
+     * @param string $relPath a relative or absolute path
      * @return string Absolute and normalized path
      */
     public function absolutePath($root, $relPath)
     {
-        $root = trim($root, '/');
-        if (strlen($root)) {
-            $concat = "/$root/";
-        } else {
-            $concat = '/';
+        if (strlen($relPath) && $relPath[0] != '/') {
+            $root = trim($root, '/');
+            if (strlen($root)) {
+                $concat = "/$root/";
+            } else {
+                $concat = '/';
+            }
+            $relPath = $concat . ltrim($relPath, '/');
         }
-        $concat .= ltrim($relPath, '/');
 
-        // TODO: maybe this should be required explicitly and not called from within this method...
-        return $this->normalizePath($concat);
+        return $this->normalizePath($relPath);
     }
 
     /**
