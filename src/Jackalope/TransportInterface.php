@@ -290,8 +290,11 @@ interface TransportInterface
      * Register a new namespace.
      *
      * Validation based on what was returned from getNamespaces has already
-     * happened in the NamespaceRegistry, as well as unregistering existing
-     * mappings.
+     * happened in the NamespaceRegistry.
+     *
+     * The transport is however responsible of removing an existing prefix for
+     * that uri, if one exists. As well as removing the current uri mapped to
+     * this prefix if this prefix is already existing.
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.

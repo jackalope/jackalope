@@ -858,20 +858,37 @@ class Client implements TransportInterface
     }
 
     /**
-     * Register a new namespace.
+     * {@inheritDoc}
      *
-     * Validation based on what was returned from getNamespaces has already
-     * happened in the NamespaceRegistry, as well as unregistering existing
-     * mappings.
-     *
-     * @param string $prefix The prefix to be mapped.
-     * @param string $uri The URI to be mapped.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if trying to overwrite existing prefix to new uri, as jackrabbit can not do this
      */
     public function registerNamespace($prefix, $uri)
     {
-        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
         // seems jackrabbit always expects full list of namespaces
         $namespaces = $this->getNamespaces();
+
+        // check if prefix is already mapped
+        if (isset($namespaces[$prefix])) {
+            if ($namespaces[$prefix] == $uri) {
+                // nothing to do, we already have the mapping
+                return;
+            }
+            // unregister old mapping
+            throw new \PHPCR\UnsupportedRepositoryOperationException("Trying to set existing prefix $prefix from ".$namespaces[$prefix]." to different uri $uri, but unregistering namespace is not supported by jackrabbit backend. You can move the old namespace to a different prefix before adding this prefix to work around this issue.");
+        }
+
+        // if target uri already exists elsewhere, do not re-send or result is random
+        /* weird: we can not unset this or we get the unregister not
+         * supported exception. but we can send two mappings and
+         * jackrabbit does the right guess what we want and moves the
+         * namespace to the new prefix
+
+        if (false !== $expref = array_search($uri, $namespaces)) {
+            unset($namespaces[$expref]);
+        }
+        */
+
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
         $namespaces[$prefix] = $uri;
         $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
         $request->execute();
