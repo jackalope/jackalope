@@ -215,6 +215,10 @@ class ObjectManager
      */
     public function normalizePath($path)
     {
+        if (strlen($path) == 0) {
+            return '/';
+        }
+
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (preg_match('/^\[([[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12})\]$/', $path, $matches)) {
             $uuid = $matches[1];
@@ -252,7 +256,10 @@ class ObjectManager
      * Makes sure $relPath is absolute, prepending $root if it is not already,
      * then normalizes the path.
      *
+     * If $relPath is already absolute, it is just normalized
+     *
      * If root is missing or does not start with a slash, a slash will be prepended
+     * If $relPath is completely empty, the result will be $root
      *
      * @param string $root base path to prepend to $relPath if it is not already absolute
      * @param string $relPath a relative or absolute path
@@ -268,6 +275,8 @@ class ObjectManager
                 $concat = '/';
             }
             $relPath = $concat . ltrim($relPath, '/');
+        } else if (strlen($relPath)==0) {
+            $relPath = $root;
         }
 
         return $this->normalizePath($relPath);
