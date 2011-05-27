@@ -176,8 +176,14 @@ class Helper
                 foreach ($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
                         $id = $v->getIdentifier();
-                        //TODO: we should check the type if node is referencable, not rely on getting no identifier
-                        if (empty($id)) {
+                        $isReferenceable = false;
+                        foreach ($v->getMixinNodeTypes() as $nodeType) {
+                            if ($nodeType->isNodeType('mix:referenceable')) {
+                                 $isReferenceable = true;
+                                 break;
+                            }
+                        }
+                        if (empty($id) || ! $isReferenceable) {
                             throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
                         }
                         $ret[] = $id;
