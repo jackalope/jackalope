@@ -350,7 +350,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
                 }
                 break;
             default:
-                throw new \PHPCR\ValueFormatException('Property is not a reference, weakreference or path');
+                throw new \PHPCR\ValueFormatException('Property is not a REFERENCE, WEAKREFERENCE or PATH (or convertible to PATH)');
         }
 
         return $this->isMultiple() ? $results : $results[0];
@@ -376,7 +376,23 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getProperty()
     {
-        throw new NotImplementedException();
+        $values = $this->isMultiple() ? $this->value : array($this->value);
+
+        $results = array();
+        switch($this->type) {
+            case PropertyType::PATH:
+            case PropertyType::STRING:
+            case PropertyType::NAME:
+                foreach ($values as $value) {
+                    $results[] = $this->objectManager->getPropertyByPath($this->objectManager->absolutePath($this->parentPath, $value));
+                }
+                break;
+            default:
+                throw new \PHPCR\ValueFormatException('Property is not a PATH (or convertible to PATH)');
+        }
+
+        return $this->isMultiple() ? $results : $results[0];
+
     }
 
     /**
