@@ -360,7 +360,7 @@ class ObjectManager
 
         foreach($references as $path) {
             $prop = $this->getPropertyByPath($path);
-            if ($name === null) { // TODO: || $prop->getName() === $name) {
+            if ($name === null || $prop->getName() === $name) {
                 $props[] = $prop;
             }
         }
