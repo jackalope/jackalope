@@ -95,7 +95,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $this->isMultiple = is_array($value);
         }
 
-        $previousValue = $this->value;
         if (is_array($value) && !$this->isMultiple) {
             throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
         }
@@ -131,12 +130,14 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
             $this->length = $stat['size'];
         }
-        $this->type = $targettype;
-        $this->value = $value;
 
-        if ($this->value !== $previousValue) {
+        if ($this->value !== $value) {
+            //identity check will detect type changes as well
             $this->setModified();
         }
+
+        $this->type = $targettype;
+        $this->value = $value;
     }
 
     /**
@@ -379,7 +380,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Returns the length of the value of this property.
+     * Returns the length(s) of the value(s) of this property.
      *
      * For a BINARY property, getLength returns the number of bytes.
      * For other property types, getLength returns the same value that would be
@@ -388,50 +389,33 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * Returns -1 if the implementation cannot determine the length.
      *
-     * @return integer an integer.
+     * For multivalue properties, the same rules apply, but returns an array of lengths
+     * with the same order as the values have in getValue
+     *
+     * @return mixed integer with the length, for multivalue property array of lengths
+     *
      * @throws \PHPCR\ValueFormatException if this property is multi-valued.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getLength()
     {
-        $this->checkMultiple();
         if (PropertyType::BINARY === $this->type) {
             return $this->length;
         }
 
-        try {
-            return strlen(Helper::convertType($this->value, PropertyType::STRING));
-        } catch (Exception $e) {
-            return -1;
-        }
-    }
-
-    /**
-     * Returns an array holding the lengths of the values of this (multi-value)
-     * property in bytes where each is individually calculated as described in
-     * getLength().
-     *
-     * @return array an array of lengths (integers)
-     * @throws \PHPCR\ValueFormatException if this property is single-valued.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
-    public function getLengths()
-    {
-        $this->checkMultiple(false);
+        $vals = $this->isMultiple ? $this->value : array($this->value);
         $ret = array();
-        foreach ($this->value as $value) {
-            if (PropertyType::BINARY === $this->type) {
-                return $this->length;
-            }
+
+        foreach($vals as $value) {
             try {
                 $ret[] = strlen(Helper::convertType($value, PropertyType::STRING));
-            } catch(Exception $e) {
+            } catch (\Exception $e) {
                 $ret[] = -1;
             }
         }
-        return $ret;
+
+        return $this->isMultiple ? $ret : $ret[0];
     }
 
     /**
