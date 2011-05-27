@@ -322,6 +322,7 @@ class Client implements TransportInterface
      * @param string $path Absolute path to the node.
      * @return array associative array for the node (decoded from json with associative = true)
      *
+     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNode($path)
@@ -331,7 +332,11 @@ class Client implements TransportInterface
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
-        return $request->executeJson();
+        try {
+            return $request->executeJson();
+        } catch (\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
