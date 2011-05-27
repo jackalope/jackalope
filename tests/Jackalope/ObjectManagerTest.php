@@ -82,7 +82,7 @@ class ObjectManagerTest extends TestCase
             array('/foo',   'bar',  '/foo/bar'),
             array('/foo',   '',     '/foo'),
             array('/foo/',  'bar',  '/foo/bar'),
-            array('/foo/',  '/bar', '/foo/bar'),
+            array('/foo/',  '/bar', '/bar'),
             array('foo',    'bar',  '/foo/bar'),
 
             // normalization is also part of ::absolutePath
@@ -90,7 +90,7 @@ class ObjectManagerTest extends TestCase
             array('/',          'foo/../bar',   '/bar'),
             array('/',          'foo/./bar',    '/foo/bar'),
             array('/foo/nope',  '../bar',       '/foo/bar'),
-            array('/foo/nope',  '/../bar',      '/foo/bar'),
+            array('/foo/nope',  '/../bar',      '/bar'),
         );
     }
 

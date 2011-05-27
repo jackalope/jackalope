@@ -238,11 +238,9 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     /**
      * Verifies whether this is a valid prefix
      *
-     *
      * Throws the \PHPCR\NamespaceException if trying to use one of the
      * built-in prefixes or a prefix that begins with the characters "xml"
      * (in any combination of case)
-     *
      *
      * @return void
      *
