@@ -148,8 +148,10 @@ interface TransportInterface
      * The first are properties, but the later is a list of children nodes.
      *
      * @param string $path Absolute path to identify a special item.
+     *
      * @return stdClass a json struct for the node (as decoded from json with associative = false)
      *
+     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNode($path);
