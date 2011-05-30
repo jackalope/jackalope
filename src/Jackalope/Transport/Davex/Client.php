@@ -399,7 +399,7 @@ class Client implements TransportInterface
             }
         }
 
-        return array_unique($references);
+        return $references;
     }
 
     /**
