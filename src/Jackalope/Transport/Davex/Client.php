@@ -378,9 +378,10 @@ class Client implements TransportInterface
      * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
      *
      * @param string $path
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
      * @return array
      */
-    public function getReferences($path)
+    public function getReferences($path, $name = null)
     {
         $request = $this->getRequest(Request::PROPFIND, $path);
         $request->setBody($this->buildPropfindRequest(array('dcr:references')));
@@ -391,7 +392,10 @@ class Client implements TransportInterface
 
         foreach($dom->getElementsByTagNameNS(self::NS_DCR, 'references') as $node) {
             foreach($node->getElementsByTagNameNS(self::NS_DAV, 'href') as $ref) {
-                $references[] = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+                $refpath = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+                if ($name === null || basename($refpath) === $name) {
+                    $references[] = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+                }
             }
         }
 

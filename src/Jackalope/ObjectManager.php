@@ -372,14 +372,12 @@ class ObjectManager
      */
     public function getReferences($path, $name = null)
     {
-        $references = $this->transport->getReferences($path);
+        $references = $this->transport->getReferences($path, $name);
         $props = array();
 
         foreach($references as $path) {
             $prop = $this->getPropertyByPath($path);
-            if ($name === null || $prop->getName() === $name) {
-                $props[] = $prop;
-            }
+            $props[] = $prop;
         }
 
         return new \ArrayIterator($props);

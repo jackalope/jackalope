@@ -453,7 +453,8 @@ interface TransportInterface
      * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
      *
      * @param string $path
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
      * @return array
      */
-    public function getReferences($path);
+    public function getReferences($path, $name = null);
 }
