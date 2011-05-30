@@ -180,8 +180,7 @@ class Helper
                         if ($v->isNew() || ! $v->isNodeType('mix:referenceable')) {
                             throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
                         }
-                        $id = $v->getIdentifier();
-                        $ret[] = $id;
+                        $ret[] = $v->getIdentifier();
                     } elseif (is_string($v) && ! empty($v)) {
                         //could check if string is valid uuid, but backend will do that
                         $ret[] = $v;
