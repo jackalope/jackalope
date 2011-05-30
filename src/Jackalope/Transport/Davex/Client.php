@@ -403,6 +403,35 @@ class Client implements TransportInterface
     }
 
     /**
+     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @return array
+     */
+    public function getWeakReferences($path, $name = null)
+    {
+        // TODO: this is almost the same as getReferences(). find a way to not repeat the code.
+        $request = $this->getRequest(Request::PROPFIND, $path);
+        $request->setBody($this->buildPropfindRequest(array('dcr:weakreferences')));
+        $request->setDepth(0);
+        $dom = $request->executeDom();
+
+        $references = array();
+
+        foreach($dom->getElementsByTagNameNS(self::NS_DCR, 'weakreferences') as $node) {
+            foreach($node->getElementsByTagNameNS(self::NS_DAV, 'href') as $ref) {
+                $refpath = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+                if ($name === null || basename($refpath) === $name) {
+                    $references[] = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
+                }
+            }
+        }
+
+        return $references;
+    }
+
+    /**
      * Check-in item at path.
      *
      * @param string $path

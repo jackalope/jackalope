@@ -703,7 +703,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getWeakReferences($name = null)
     {
-        throw new NotImplementedException();
+        return $this->objectManager->getWeakReferences($this->path, $name);
     }
 
     /**

@@ -457,4 +457,13 @@ interface TransportInterface
      * @return array
      */
     public function getReferences($path, $name = null);
+
+    /**
+     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @return array
+     */
+    public function getWeakReferences($path, $name = null);
 }
