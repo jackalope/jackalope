@@ -175,18 +175,10 @@ class Helper
             case \PHPCR\PropertyType::WEAKREFERENCE:
                 foreach ($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
-                        $id = $v->getIdentifier();
-                        $isReferenceable = false;
-                        foreach ($v->getMixinNodeTypes() as $nodeType) {
-                            if ($nodeType->isNodeType('mix:referenceable')) {
-                                 $isReferenceable = true;
-                                 break;
-                            }
+                        if (! $v->isNodeType('mix:referenceable') || $v->isNew()) {
+                            throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is new or not referencable');
                         }
-                        if (empty($id) || ! $isReferenceable) {
-                            throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
-                        }
-                        $ret[] = $id;
+                        $ret[] = $v->getIdentifier();
                     } elseif (is_string($v) && ! empty($v)) {
                         //could check if string is valid uuid, but backend will do that
                         $ret[] = $v;
