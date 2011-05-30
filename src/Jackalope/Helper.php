@@ -176,8 +176,9 @@ class Helper
                 foreach ($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
                         $id = $v->getIdentifier();
-                        //TODO: we should check the type if node is referencable, not rely on getting no identifier
-                        if (empty($id)) {
+                        // In Jackrabbit a new node cannot be referenced until it has been persisted
+                        // See: https://issues.apache.org/jira/browse/JCR-1614
+                        if ($v->isNew() || ! $v->isNodeType('mix:referenceable')) {
                             throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
                         }
                         $ret[] = $id;
