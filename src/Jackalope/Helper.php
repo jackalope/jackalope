@@ -175,12 +175,12 @@ class Helper
             case \PHPCR\PropertyType::WEAKREFERENCE:
                 foreach ($values as $v) {
                     if ($v instanceof \PHPCR\NodeInterface) {
-                        $id = $v->getIdentifier();
                         // In Jackrabbit a new node cannot be referenced until it has been persisted
                         // See: https://issues.apache.org/jira/browse/JCR-1614
                         if ($v->isNew() || ! $v->isNodeType('mix:referenceable')) {
                             throw new \PHPCR\ValueFormatException('Node ' . $v->getPath() . ' is not referencable');
                         }
+                        $id = $v->getIdentifier();
                         $ret[] = $id;
                     } elseif (is_string($v) && ! empty($v)) {
                         //could check if string is valid uuid, but backend will do that
