@@ -449,4 +449,11 @@ interface TransportInterface
      */
     public function getVersionHistory($path);
 
+    /**
+     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @return array
+     */
+    public function getReferences($path);
 }
