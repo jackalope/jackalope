@@ -90,7 +90,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         break;
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
-                        //TODO: should type really be a property too?
+                        // type information is exposed as property too, although there exist more specific methods
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -102,7 +102,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         );
                         break;
                     case 'jcr:mixinTypes':
-                        //TODO: should mixin types really be properties or rather a special field??
+                        // type information is exposed as property too, although there exist more specific methods
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -116,9 +116,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     case 'jcr:uuid':
                         $this->uuid = $value;
                         break;
-                    //do we have any other more meta information?
+                    // do we have any other meta information that needs special treatment?
 
-                    //OPTIMIZE: do not instantiate properties until needed
+                    // OPTIMIZE: do not instantiate properties until needed
                     default:
                         $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = $this->factory->get(
