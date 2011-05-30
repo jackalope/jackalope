@@ -189,7 +189,7 @@ class ObjectManager
         $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
         $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
 
-        // OPTIMIZE: should use getProperty
+        // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists
         $n = $this->getNodeByPath($nodep);
         try {
             return $n->getProperty($name); //throws PathNotFoundException if there is no such property
