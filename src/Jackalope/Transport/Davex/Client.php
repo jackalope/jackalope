@@ -140,6 +140,14 @@ class Client implements TransportInterface
     protected $nodeTypeManager;
 
     /**
+     * Check if an initial PROPFIND should be send to check if repository exists
+     * This is according to the JCR specifications and set to true by default
+     * @see setCheckLoginOnServer
+     * @var bool 
+     */
+    protected $checkLoginOnServer = true;
+    
+    /**
      * Create a transport pointing to a server url.
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
@@ -243,6 +251,10 @@ class Client implements TransportInterface
         $this->workspaceUri = $this->server . $workspaceName;
         $this->workspaceUriRoot = $this->workspaceUri . "/jcr:root";
 
+        if (!$this->checkLoginOnServer ) {
+            return true;
+        }
+
         $request = $this->getRequest(Request::PROPFIND, $this->workspaceUri);
         $request->setBody($this->buildPropfindRequest(array('D:workspace', 'dcr:workspaceName')));
         $dom = $request->executeDom();
@@ -258,6 +270,18 @@ class Client implements TransportInterface
         return true;
     }
 
+    /**
+     * Change the way Jackalope works when getting a session
+     * By default, it sends a PROPFIND to the server, to see if the repository exists
+     * You can disable that with setting it to false, then an error only occurs later
+     * if the repository doesn't exits
+     *
+     * @return bool always true
+     */
+    public function setCheckLoginOnServer($bool) {
+        $this->checkLoginOnServer = $bool;
+        return true;
+    }
     /**
      * Get the repository descriptors from the jackrabbit server
      * This happens without login or accessing a specific workspace.
