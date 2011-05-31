@@ -373,7 +373,7 @@ class ObjectManager
     public function getReferences($path, $name = null)
     {
         $references = $this->transport->getReferences($path, $name);
-        return $this->PathArrayToPropertiesIterator($references);
+        return $this->pathArrayToPropertiesIterator($references);
     }
 
     /**
@@ -386,18 +386,20 @@ class ObjectManager
     public function getWeakReferences($path, $name = null)
     {
         $references = $this->transport->getWeakReferences($path, $name);
-        return $this->PathArrayToPropertiesIterator($references);
+        return $this->pathArrayToPropertiesIterator($references);
     }
 
     /**
      * Transform an array containing properties paths to an ArrayIterator over Property objects
+     *
      * @param array $array an array of properties paths
      * @return ArrayIterator
      */
-    protected function PathArrayToPropertiesIterator($array)
+    protected function pathArrayToPropertiesIterator($array)
     {
         $props = array();
 
+        //OPTIMIZE: get all the nodes in one request?
         foreach($array as $path) {
             $prop = $this->getPropertyByPath($path);
             $props[] = $prop;
