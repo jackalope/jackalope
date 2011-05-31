@@ -34,7 +34,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      * Set of namespaces registered by the user.
      * @var array
      */
-    protected $userNamespaces = array();
+    protected $userNamespaces = null;
 
     /**
      * Initializes the created object.
@@ -46,11 +46,22 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     {
         $this->factory = $factory;
         $this->transport = $transport;
-
-        $namespaces = $transport->getNamespaces();
-        foreach ($namespaces as $prefix => $uri) {
-            if (! array_key_exists($prefix, $this->defaultNamespaces)) {
-                $this->userNamespaces[$prefix] = $uri;
+    }
+    
+    /**
+     * Loads the namespace map from the server, when it's not already loaded
+     *
+     * @return void
+     */
+     
+    protected function lazyLoadNamespaces() {
+        if ($this->userNamespaces === null) {
+            $namespaces = $this->transport->getNamespaces();
+            $this->userNamespaces = array();
+            foreach ($namespaces as $prefix => $uri) {
+                if (! array_key_exists($prefix, $this->defaultNamespaces)) {
+                    $this->userNamespaces[$prefix] = $uri;
+                }
             }
         }
     }
@@ -96,7 +107,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         if (false !== array_search($uri, $this->defaultNamespaces)) {
             throw new \PHPCR\NamespaceException("Can not change default namespace $prefix = $uri");
         }
-
+        $this->lazyLoadNamespaces();
         //first try putting the stuff in backend, and only afterwards update lokal info
 
         // this has no impact on running sessions, go directly to storage
@@ -145,6 +156,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function getPrefixes()
     {
+        $this->lazyLoadNamespaces();
         return array_merge(
             array_keys($this->defaultNamespaces),
             array_keys($this->userNamespaces)
@@ -160,6 +172,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function getURIs()
     {
+        $this->lazyLoadNamespaces();
         return array_merge(
             array_values($this->defaultNamespaces),
             array_values($this->userNamespaces)
@@ -179,6 +192,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         if (isset($this->defaultNamespaces[$prefix])) {
             return $this->defaultNamespaces[$prefix];
         } elseif (isset($this->userNamespaces[$prefix])) {
+            $this->lazyLoadNamespaces();
             return $this->userNamespaces[$prefix];
         }
         throw new \PHPCR\NamespaceException("Mapping for '$prefix' is not defined");
@@ -197,6 +211,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     {
         $prefix = array_search($uri, $this->defaultNamespaces);
         if ($prefix === false) {
+            $this->lazyLoadNamespaces();
             $prefix = array_search($uri, $this->userNamespaces);
             if ($prefix === false) {
                 throw new \PHPCR\NamespaceException("URI '$uri' is not defined in registry");
