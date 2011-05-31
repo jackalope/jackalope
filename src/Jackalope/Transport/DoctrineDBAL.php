@@ -282,7 +282,7 @@ class DoctrineDBAL implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getItem($path)
+    public function getNode($path)
     {
         $this->assertLoggedIn();
         $path = ltrim($path, "/");
@@ -516,10 +516,13 @@ class DoctrineDBAL implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeNode($path, $properties, $children)
+    public function storeNode(\PHPCR\NodeInterface $node)
     {
+        $path = $node->getPath();
         $path = ltrim($path, "/");
         $this->assertLoggedIn();
+
+        $properties = $node->getProperties();
 
         $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
         if (!$this->pathExists($path)) {
@@ -534,7 +537,7 @@ class DoctrineDBAL implements TransportInterface
         $this->nodeIdentifiers[$path] = $nodeIdentifier;
 
         foreach ($properties AS $property) {
-            $this->storeProperty($property->getPath(), $property);
+            $this->storeProperty($property);
         }
     }
 
@@ -547,8 +550,9 @@ class DoctrineDBAL implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeProperty($path, \PHPCR\PropertyInterface $property)
+    public function storeProperty(\PHPCR\PropertyInterface $property)
     {
+        $path = $property->getPath();
         $path = ltrim($path, '/');
         $name = explode("/", $path);
         $name = end($name);
@@ -1048,8 +1052,38 @@ class DoctrineDBAL implements TransportInterface
         
     }
 
-    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager)
+    public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;
+    }
+
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    public function getBinaryStream($path)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    public function getProperty($path)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    public function query(\PHPCR\Query\QueryInterface $query)
+    {
+            throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    public function registerNamespace($prefix, $uri)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    public function unregisterNamespace($prefix)
+    {
+
     }
 }

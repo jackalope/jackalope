@@ -18,35 +18,35 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>3ebf33dc-b974-43e4-a146-8080449212c5</value>
+      <value>d9e6277d-4bc3-42de-aacd-19417226d82f</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base</value>
       <value></value>
       <value>1</value>
-      <value>15d2068d-8e6b-4e18-b5e4-75bdc0a5c5fd</value>
+      <value>3ea56c4b-502a-4d22-82b2-ed0efd789675</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>49bb3af2-e469-47ad-bf19-858fab174d79</value>
+      <value>43626f31-5721-48a9-a415-2e91b64071cc</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/unversionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>c946fb5e-a7b8-4e54-ab6c-b9dab8e996c2</value>
+      <value>17e4101c-ffbe-4d4c-9d55-a636f3a4c747</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versioned</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>cbb55b2e-c092-4741-8920-5d3a8e7be18b</value>
+      <value>713ac9e9-0e1c-4013-9500-9702ed651a34</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -54,6 +54,7 @@
     <column>path</column>
     <column>workspace_id</column>
     <column>name</column>
+    <column>idx</column>
     <column>node_identifier</column>
     <column>type</column>
     <column>multi_valued</column>
@@ -66,9 +67,10 @@
       <value>tests_version_base/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>15d2068d-8e6b-4e18-b5e4-75bdc0a5c5fd</value>
+      <value>0</value>
+      <value>3ea56c4b-502a-4d22-82b2-ed0efd789675</value>
       <value>1</value>
-      <value></value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -79,13 +81,14 @@
       <value>tests_version_base/versioned/jcr:mixinTypes</value>
       <value>1</value>
       <value>jcr:mixinTypes</value>
-      <value>cbb55b2e-c092-4741-8920-5d3a8e7be18b</value>
+      <value>0</value>
+      <value>713ac9e9-0e1c-4013-9500-9702ed651a34</value>
+      <value>7</value>
       <value>1</value>
-      <value>1</value>
-      <null/>
-      <null/>
-      <null/>
       <value>mix:versionable</value>
+      <null/>
+      <null/>
+      <null/>
       <null/>
     </row>
   </table>
