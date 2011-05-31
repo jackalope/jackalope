@@ -58,8 +58,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         }
 
         if (! is_null($name)) {
-            if (empty($this->primaryTypes[$name]) &&
-                empty($this->mixinTypes[$name])) {
+            if (empty($this->primaryTypes[$name])
+                && empty($this->mixinTypes[$name])
+            ) {
                 //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
                 $nodetypes = $this->objectManager->getNodeType($name);
             } else {
@@ -74,8 +75,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
             $nodetype = $this->factory->get('NodeType\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();
             //do not overwrite existing types. maybe they where changed locally
-            if (empty($this->primaryTypes[$name]) &&
-                empty($this->mixinTypes[$name])) {
+            if (empty($this->primaryTypes[$name])
+                && empty($this->mixinTypes[$name])
+            ) {
                 $this->addNodeType($nodetype);
             }
         }
@@ -100,6 +102,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * Returns the declared subnodes of a given nodename
      * @param string Nodename
      * @return array of strings with the names of the subnodes
+     * @private
      */
     public function getDeclaredSubtypes($nodeTypeName)
     {
@@ -110,9 +113,11 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     }
 
     /**
-     * Returns the subnode hirarchie of a given nodename
+     * Returns the subnode hirarchy of a given nodename
+     *
      * @param string Nodename
      * @return array of strings with the names of the subnodes
+     * @private
      */
     public function getSubtypes($nodeTypeName)
     {
@@ -156,12 +161,14 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
-        } elseif (isset($this->mixinTypes[$nodeTypeName])) {
-            return $this->mixinTypes[$nodeTypeName];
-        } else {
-            if (is_null($nodeTypeName)) $nodeTypeName = 'nodeTypeName was <null>';
-            throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
         }
+        if (isset($this->mixinTypes[$nodeTypeName])) {
+            return $this->mixinTypes[$nodeTypeName];
+        }
+        if (is_null($nodeTypeName)) {
+            $nodeTypeName = 'nodeTypeName was <null>';
+        }
+        throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
     }
 
     /**
@@ -228,7 +235,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createNodeTypeTemplate($ntd = NULL)
+    public function createNodeTypeTemplate($ntd = null)
     {
        return $this->factory->get('NodeType\NodeTypeTemplate', array($this, $ntd));
     }
@@ -277,8 +284,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
-        $list = self::registerNodeTypes(array($ntd), $allowUpdate);
-        return each($nt);
+        self::registerNodeTypes(array($ntd), $allowUpdate);
+        return each($ntd);
     }
 
     /**
@@ -322,7 +329,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
             $nts[$definition->getName()] = $this->createNodeType($definition, $allowUpdate);
         }
 
-        $this->objectManager->registerNodeTypes($definitions);
+        $this->objectManager->registerNodeTypes($definitions, $allowUpdate);
 
         // no need to fetch the node types as with cnd, we already have the def and can
         // now register them ourselves
@@ -343,7 +350,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * namespace declarations.
      *
      * A simple example is
-     *   <'phpcr'='http://www.doctrine-project.org/phpcr-odm'>
+     *   <'phpcr'='http://www.doctrine-project.org/projects/phpcr_odm'>
      *   [phpcr:managed]
      *     mixin
      *     - phpcr:alias (string)
@@ -373,7 +380,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
-        foreach($names[1] as $name) {
+        $types = array();
+        foreach ($names[1] as $name) {
             $types[$name] = $this->getNodeType($name);
         }
         $this->fetchedAllFromBackend = $fetched;
@@ -398,6 +406,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         } else {
             throw new \PHPCR\NodeType\NoSuchNodeTypeException('NodeType not found: '.$name);
         }
+
         throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
     }
 

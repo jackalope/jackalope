@@ -1,6 +1,8 @@
 <?php
 namespace Jackalope;
 
+use PHPCR\PropertyType;
+
 /**
  * A Property object represents the smallest granularity of content storage.
  * It has a single parent node and no children. A property consists of a name
@@ -12,6 +14,8 @@ namespace Jackalope;
 class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
     protected $value;
+    /** length (only used for binary property */
+    protected $length;
     protected $isMultiple = false;
     protected $type;
     protected $definition;
@@ -20,9 +24,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * Create a property, either from server data or locally
      *
      * To indicate a property has newly been created locally, make sure to pass
-     * true for the $new parameter.
+     * true for the $new parameter. In that case, you should pass an empty array
+     * for $data and use setValue afterwards to let the type magic be handled.
+     * Then multivalue is determined on setValue
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * For binary properties, the value is the length of the data, not the data itself.
+     *
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param array $data array with fields
      *                    type (integer or string from PropertyType)
      *                    and value (data for creating value object - array for multivalue property)
@@ -35,22 +43,35 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 
+        if (empty($data) && $new == true) {
+            return;
+        }
+
         $type = $data['type'];
         if (is_string($type)) {
-            $type = \PHPCR\PropertyType::valueFromName($type);
+            $type = PropertyType::valueFromName($type);
         } elseif (!is_numeric($type)) {
             throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
         } else {
             //sanity check. this will throw InvalidArgumentException if $type is not a valid type
-            \PHPCR\PropertyType::nameFromValue($type);
+            PropertyType::nameFromValue($type);
         }
         $this->type = $type;
+
+        if ($type == PropertyType::BINARY) {
+            if (is_array($data['value'])) {
+                $this->isMultiple = true;
+            }
+            $this->length = $data['value'];
+            $this->value = null;
+            return;
+        }
 
         if (is_array($data['value'])) {
             $this->isMultiple = true;
             $this->value = array();
             foreach ($data['value'] as $value) {
-                array_push($this->value, Helper::convertType($value, $type));
+                $this->value[] = Helper::convertType($value, $type);
             }
         } elseif (null !== $data['value']) {
             $this->value = Helper::convertType($data['value'], $type);
@@ -60,82 +81,63 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Sets the value of this property to value. If this property's property
-     * type is not constrained by the node type of its parent node, then the
-     * property type may be changed. If the property type is constrained, then a
-     * best-effort conversion is attempted.
-     *
-     * This method is a session-write and therefore requires a <code>save</code>
-     * to dispatch the change.
-     *
-     * If no type is given, the value is stored as is, i.e. its type is
-     * preserved. Exceptions are:
-     * * if the given $value is a Node object, its Identifier is fetched and
-     *   the type of this property is set to REFERENCE
-     * * if the given $value is a Node object, its Identifier is fetched and
-     *   the type of this property is set to WEAKREFERENCE if $weak is set to
-     *   TRUE
-     * * if the given $value is a DateTime object, the property type will be
-     *   set to DATE.
-     *
-     * For Node objects as value:
-     * Sets this REFERENCE OR WEAKREFERENCE property to refer to the specified
-     * node. If this property is not of type REFERENCE or WEAKREFERENCE or the
-     * specified node is not referenceable then a ValueFormatException is thrown.
-     *
-     * If value is an array:
-     * If this property is not multi-valued then a ValueFormatException is
-     * thrown immediately.
-     *
-     * PHPCR Note: The Java API defines this method with multiple differing signatures.
-     * PHPCR Note: Because we removed the Value interface, this method replaces
-     * ValueFactory::createValue.
-     *
-     * @param mixed $value The value to set. Array for multivalue properties
-     * @param integer $type Type request for the property, optional. Must be a constant from PropertyType
-     * @param boolean $weak When a Node is given as $value this can be given as TRUE to create a WEAKREFERENCE, by default a REFERENCE is created
-     * @return void
-     * @throws \PHPCR\ValueFormatException if the type or format of the specified value is incompatible with the type of this property.
-     * @throws \PHPCR\Version\VersionException if this property belongs to a node that is read-only due to a checked-in node and this implementation performs this validation immediately.
-     * @throws \PHPCR\Lock\LockException if a lock prevents the setting of the value and this implementation performs this validation immediately.
-     * @throws \PHPCR\ConstraintViolationException if the change would violate a node-type or other constraint and this implementation performs this validation immediately.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @throws \IllegalArgumentException if the specified DateTime value cannot be expressed in the ISO 8601-based format defined in the JCR 2.0 specification and the implementation does not support dates incompatible with that format.
-     * @api
+     * {@inheritDoc}
      */
-    public function setValue($value, $type = NULL, $weak = false)
+    public function setValue($value, $type = null)
     {
-        $previousValue = $this->value;
+        if (is_null($value)) {
+            $this->remove();
+        }
+        if (! is_null($type) && ! is_integer($type)) {
+            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
+        }
+        if ($this->new && is_null($this->type)) {
+            $this->isMultiple = is_array($value);
+        }
+
         if (is_array($value) && !$this->isMultiple) {
             throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
         }
 
+        //TODO: check if changing type allowed.
+        /*
+         * if ($type !== null && ! canHaveType($type)) {
+         *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));
+         * }
+         */
+
         if (null === $type) {
-            if (null !== $this->type) {
-                $type = $this->type;
-            } else {
-                $type = Helper::determineType(is_array($value) ? reset($value) : $value, $weak);
-            }
+            $type = Helper::determineType(is_array($value) ? reset($value) : $value);
         }
 
-        if ($value instanceof \PHPCR\NodeInterface) {
-            if ($this->type == \PHPCR\PropertyType::REFERENCE ||
-                $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
-                //FIXME check for the mix:referenceable mixintype
-                //throw new \PHPCR\ValueFormatException('reference property may only be set to a referenceable node');
-                $this->value = $value->getIdentifier();
-            } else {
-               throw new \PHPCR\ValueFormatException('A non-reference property can not have a node as value');
-            }
-        } elseif (is_null($value)) {
-            $this->remove();
-        } else {
-            $this->value = Helper::convertType($value, $this->type);
+        $targettype = $this->type;
+        if ($this->type !== $type) {
+            /* TODO: find out with node type definition if the new type is allowed
+              if (canHaveType($type)) {
+                  */
+                  $targettype = $type;
+                  /*
+              } else {
+                  //convert to property type
+                  $targettype = $this->type;
+              }
+            */
         }
 
-        if ($this->value !== $previousValue) {
+        $value = Helper::convertType($value, $targettype);
+
+        if (PropertyType::BINARY === $targettype) {
+            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
+            $this->length = $stat['size'];
+        }
+
+        if ($this->value !== $value) {
+            //identity check will detect type changes as well
             $this->setModified();
         }
+
+        $this->type = $targettype;
+        $this->value = $value;
     }
 
     /**
@@ -149,7 +151,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (!$this->isMultiple()) {
             throw new \PHPCR\ValueFormatException('You can not add values to non-multiple properties');
         }
-        $this->value[] = $value;
+        $this->value[] = PropertyType::convertType($value, $this->type);
         $this->setModified();
     }
 
@@ -166,18 +168,21 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * Get the value in format default for the PropertyType of this property.
      *
-     * PHPCR Note: This is an additional method not found in JSR-283
+     * PHPCR Note: This directly returns the raw data for this property
      *
      * References and Weakreferences are resolved to node instances, while path
      * is returned as string.
      *
      * @return mixed value of this property, or array in case of multi-value
      */
-    public function getNativeValue()
+    public function getValue()
     {
-        if ($this->type == \PHPCR\PropertyType::REFERENCE ||
-            $this->type == \PHPCR\PropertyType::WEAKREFERENCE) {
+        if ($this->type == PropertyType::REFERENCE
+            || $this->type == PropertyType::WEAKREFERENCE
+        ) {
             return $this->getNode();
+        } elseif ($this->type == PropertyType::BINARY) {
+            return $this->getBinary();
         }
         return $this->value;
     }
@@ -193,26 +198,28 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getString()
     {
-        if ($this->type != \PHPCR\PropertyType::STRING) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::STRING);
+        if ($this->type != PropertyType::STRING) {
+            return Helper::convertType($this->value, PropertyType::STRING);
         }
         return $this->value;
     }
 
     /**
-     * Returns a Binary representation of the value of this property. A
-     * shortcut for Property.getValue().getBinary(). See Value.
+     * Returns a stream with the data of this property.
      *
-     * @return \PHPCR\BinaryInterface A Binary representation of the value of this property.
+     * @return resource a php binary stream
      * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getBinary()
     {
-        if ($this->type != \PHPCR\PropertyType::BINARY) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::BINARY);
+        if ($this->type != PropertyType::BINARY) {
+            return Helper::convertType($this->value, PropertyType::BINARY);
         }
-        return new Binary($this->objectManager, $this->path, $this->value);
+        if (null !== $this->value) {
+            return $this->value; //FIXME: should clone the stream
+        }
+        return $this->objectManager->getBinaryStream($this->path);
     }
 
     /**
@@ -226,8 +233,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getLong()
     {
-        if ($this->type != \PHPCR\PropertyType::LONG) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::LONG);
+        if ($this->type != PropertyType::LONG) {
+            return Helper::convertType($this->value, PropertyType::LONG);
         }
         return $this->value;
     }
@@ -243,8 +250,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDouble()
     {
-        if ($this->type != \PHPCR\PropertyType::DOUBLE) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::DOUBLE);
+        if ($this->type != PropertyType::DOUBLE) {
+            return Helper::convertType($this->value, PropertyType::DOUBLE);
         }
         return $this->value;
     }
@@ -260,8 +267,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDecimal()
     {
-        if ($this->type != \PHPCR\PropertyType::DECIMAL) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::DECIMAL);
+        if ($this->type != PropertyType::DECIMAL) {
+            return Helper::convertType($this->value, PropertyType::DECIMAL);
         }
         return $this->value;
     }
@@ -277,8 +284,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDate()
     {
-        if ($this->type != \PHPCR\PropertyType::DATE) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::DATE);
+        if ($this->type != PropertyType::DATE) {
+            return Helper::convertType($this->value, PropertyType::DATE);
         }
         return $this->value;
     }
@@ -294,8 +301,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getBoolean()
     {
-        if ($this->type != \PHPCR\PropertyType::BOOLEAN) {
-            return Helper::convertType($this->value, \PHPCR\PropertyType::BOOLEAN);
+        if ($this->type != PropertyType::BOOLEAN) {
+            return Helper::convertType($this->value, PropertyType::BOOLEAN);
         }
         return $this->value;
     }
@@ -321,27 +328,29 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         $results = array();
         switch($this->type) {
-            case \PHPCR\PropertyType::PATH:
-                foreach($values as $value) {
-                    $results[] = $this->objectManager->getNode($value, $this->parentPath);
-                }
-                break;
-            case \PHPCR\PropertyType::REFERENCE:
+            case PropertyType::REFERENCE:
                 try {
-                    foreach($values as $value) {
+                    foreach ($values as $value) {
                         $results[] = $this->objectManager->getNode($value);
                     }
                 } catch(\PHPCR\ItemNotFoundException $e) {
                     throw new \PHPCR\RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
                 }
                 break;
-            case \PHPCR\PropertyType::WEAKREFERENCE:
-                foreach($values as $value) {
+            case PropertyType::WEAKREFERENCE:
+                foreach ($values as $value) {
                     $results[] = $this->objectManager->getNode($value);
                 }
                 break;
+            case PropertyType::PATH:
+            case PropertyType::STRING:
+            case PropertyType::NAME:
+                foreach ($values as $value) {
+                    $results[] = $this->objectManager->getNode($value, $this->parentPath);
+                }
+                break;
             default:
-                throw new \PHPCR\ValueFormatException('Property is not a reference, weakreference or path');
+                throw new \PHPCR\ValueFormatException('Property is not a REFERENCE, WEAKREFERENCE or PATH (or convertible to PATH)');
         }
 
         return $this->isMultiple() ? $results : $results[0];
@@ -367,11 +376,27 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getProperty()
     {
-        throw new NotImplementedException();
+        $values = $this->isMultiple() ? $this->value : array($this->value);
+
+        $results = array();
+        switch($this->type) {
+            case PropertyType::PATH:
+            case PropertyType::STRING:
+            case PropertyType::NAME:
+                foreach ($values as $value) {
+                    $results[] = $this->objectManager->getPropertyByPath($this->objectManager->absolutePath($this->parentPath, $value));
+                }
+                break;
+            default:
+                throw new \PHPCR\ValueFormatException('Property is not a PATH (or convertible to PATH)');
+        }
+
+        return $this->isMultiple() ? $results : $results[0];
+
     }
 
     /**
-     * Returns the length of the value of this property.
+     * Returns the length(s) of the value(s) of this property.
      *
      * For a BINARY property, getLength returns the number of bytes.
      * For other property types, getLength returns the same value that would be
@@ -380,50 +405,33 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * Returns -1 if the implementation cannot determine the length.
      *
-     * @return integer an integer.
+     * For multivalue properties, the same rules apply, but returns an array of lengths
+     * with the same order as the values have in getValue
+     *
+     * @return mixed integer with the length, for multivalue property array of lengths
+     *
      * @throws \PHPCR\ValueFormatException if this property is multi-valued.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getLength()
     {
-        $this->checkMultiple();
-        if (\PHPCR\PropertyType::BINARY === $this->type) {
-            throw new NotImplementedException('Binaries not implemented');
+        if (PropertyType::BINARY === $this->type) {
+            return $this->length;
         }
 
-        try {
-            return strlen(Helper::convertType($this->value, \PHPCR\PropertyType::STRING));
-        } catch (Exception $e) {
-            return -1;
-        }
-    }
-
-    /**
-     * Returns an array holding the lengths of the values of this (multi-value)
-     * property in bytes where each is individually calculated as described in
-     * getLength().
-     *
-     * @return array an array of lengths (integers)
-     * @throws \PHPCR\ValueFormatException if this property is single-valued.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
-    public function getLengths()
-    {
-        $this->checkMultiple(false);
+        $vals = $this->isMultiple ? $this->value : array($this->value);
         $ret = array();
-        foreach ($this->value as $value) {
-            if (\PHPCR\PropertyType::BINARY === $this->type) {
-                throw new NotImplementedException('Binaries not implemented');
-            }
+
+        foreach($vals as $value) {
             try {
-                array_push($ret, strlen(Helper::convertType($value, \PHPCR\PropertyType::STRING)));
-            } catch(Exception $e) {
-                array_push($ret, -1);
+                $ret[] = strlen(Helper::convertType($value, PropertyType::STRING));
+            } catch (\Exception $e) {
+                $ret[] = -1;
             }
         }
-        return $ret;
+
+        return $this->isMultiple ? $ret : $ret[0];
     }
 
     /**
@@ -478,10 +486,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Returns TRUE if this property is multi-valued and FALSE if this property
+     * Returns true if this property is multi-valued and false if this property
      * is single-valued.
      *
-     * @return boolean TRUE if this property is multi-valued; FALSE otherwise.
+     * @return boolean true if this property is multi-valued; false otherwise.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
@@ -510,7 +518,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * @uses Node::unsetProperty()
      * @api
      **/
-    public function remove() {
+    public function remove()
+    {
         parent::remove();
 
         $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
@@ -525,7 +534,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getIterator()
     {
-        $value = $this->getNativeValue();
+        $value = $this->getValue();
         if (!is_array($value)) {
             $value = array($value);
         }

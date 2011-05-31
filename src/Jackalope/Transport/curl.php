@@ -83,7 +83,7 @@ class curl
     /**
      * Performs a cUrl session.
      *
-     * @return bool FALSE on failure otherwise TRUE or string (if CURLOPT_RETURNTRANSFER option is set)
+     * @return bool false on failure otherwise true or string (if CURLOPT_RETURNTRANSFER option is set)
      *
      * @see curl_exec
      */
@@ -159,9 +159,8 @@ class curl
     {
         if (isset($this->headers[$key])) {
             return $this->headers[$key];
-        } else {
-            return null;
         }
+        return null;
     }
     
     public function parseResponseHeaders()

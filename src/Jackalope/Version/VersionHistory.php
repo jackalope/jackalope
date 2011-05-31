@@ -1,11 +1,9 @@
 <?php
 
-declare(ENCODING = 'utf-8');
 namespace Jackalope\Version;
 
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
-
 
 /**
  * A VersionHistory object wraps an nt:versionHistory node. It provides
@@ -110,19 +108,24 @@ class VersionHistory extends \Jackalope\Node {
             $uuid = $this->objectmanager->getVersionHistory($this->path);
             $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
             $results = array();
-            $rootNode = $node->getNode('jcr:rootVersion', 'Version\Version');
+            $rootNode = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\Version');
             $results[$rootNode->getName()] = $rootNode;
-            $this->versions = array_merge($results, $this->getSuccessors($rootNode));
+            $this->versions = array_merge($results, $this->getEventualSuccessors($rootNode));
         }
         return new \ArrayIterator($this->versions);
     }
 
-    protected function getSuccessors($node) {
+    /**
+     * Walk along the successors line to get all versions of this node
+     *
+     * According to spec, 3.13.1.4, these are called eventual successors
+     */
+    protected function getEventualSuccessors($node) {
         $successors = $node->getSuccessors();
         $results = array();
         foreach ($successors as $successor) {
             $results[$successor->getName()] = $successor;
-            $results = array_merge($results, $this->getSuccessors($successor));
+            $results = array_merge($results, $this->getEventualSuccessors($successor)); //TODO: remove end recursion
         }
         return $results;
     }
@@ -286,7 +289,7 @@ class VersionHistory extends \Jackalope\Node {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function hasVersionLabel($label, $version = NULL)
+    public function hasVersionLabel($label, $version = null)
     {
         throw new NotImplementedException();
     }
@@ -306,7 +309,7 @@ class VersionHistory extends \Jackalope\Node {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getVersionLabels($version = NULL)
+    public function getVersionLabels($version = null)
     {
         throw new NotImplementedException();
     }

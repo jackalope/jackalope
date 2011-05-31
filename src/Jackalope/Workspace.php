@@ -132,7 +132,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * @throws \PHPCR\RepositoryException if the last element of destAbsPath has an index or if another error occurs.
      * @api
      */
-    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = NULL)
+    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
     {
 
         if (!Helper::isAbsolutePath($srcAbsPath) || !Helper::isAbsolutePath($destAbsPath)) {
@@ -149,9 +149,16 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * not implemented
      */
      //clone is a reserved keyword in php and may not be used as a function name.
-    public function klone($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException('Write');
+        /* @param boolean $removeExisting if false then this method throws an ItemExistsException on identifier conflict
+         *                                with an incoming node. If true then a identifier conflict is resolved by removing
+         *                                the existing node from its location in this workspace and cloning (copying in) the
+         *                                one from srcWorkspace.
+         *
+         * IMPLEMENT THIS CHECK HERE
+         */
     }
 
     /**
@@ -344,7 +351,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function createWorkspace($name, $srcWorkspace = NULL)
+    public function createWorkspace($name, $srcWorkspace = null)
     {
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }

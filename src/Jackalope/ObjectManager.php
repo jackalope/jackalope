@@ -19,6 +19,7 @@ namespace Jackalope;
  * interface.
  *
  * @package jackalope
+ * @private
  */
 class ObjectManager
 {
@@ -89,7 +90,7 @@ class ObjectManager
     /**
      * Registers the provided parameters as attribute to the instance.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
@@ -154,16 +155,16 @@ class ObjectManager
             $fetchPath = $absPath;
             if (isset($this->nodesMove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
-            } else {
-                // The path was the destination of a previous move which isn't yet dispatched to the backend.
-                // I guess an exception would be fine but we can also just fetch the node from the previous path
-                $fetchPath = $this->resolveBackendPath($fetchPath);
             }
+
+            // The path was the destination of a previous move which isn't yet dispatched to the backend.
+            // I guess an exception would be fine but we can also just fetch the node from the previous path
+            $fetchPath = $this->resolveBackendPath($fetchPath);
 
             $node = $this->factory->get(
                 $class,
                 array(
-                    $this->transport->getItem($fetchPath),
+                    $this->transport->getNode($fetchPath),
                     $absPath,
                     $this->session,
                     $this
@@ -182,6 +183,8 @@ class ObjectManager
      *
      * @param string $absPath The absolute path of the property to create.
      * @return \PHPCR\Property
+     *
+     * @throws ItemNotFoundException if item is not found at this path
      */
     public function getPropertyByPath($absPath)
     {
@@ -192,12 +195,13 @@ class ObjectManager
         $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
         $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
 
-        /* OPTIMIZE? instead of fetching the node, we could make Transport provide it with a
-         * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
-         * (davex getItem uses json, which is not applicable to properties)
-         */
+        // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists
         $n = $this->getNodeByPath($nodep);
-        return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+        try {
+            return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+        } catch(\PHPCR\PahNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -217,6 +221,10 @@ class ObjectManager
      */
     public function normalizePath($path)
     {
+        if (strlen($path) == 0) {
+            return '/';
+        }
+
         // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (preg_match('/^\[([[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12})\]$/', $path, $matches)) {
             $uuid = $matches[1];
@@ -238,7 +246,7 @@ class ObjectManager
                         array_pop($finalParts);
                         break;
                     default:
-                        array_push($finalParts, $pathPart);
+                        $finalParts[] = $pathPart;
                         break;
                 }
             }
@@ -251,26 +259,33 @@ class ObjectManager
     }
 
     /**
-     * Creates an absolute path from a root and a relative path and then normalizes it.
+     * Makes sure $relPath is absolute, prepending $root if it is not already,
+     * then normalizes the path.
+     *
+     * If $relPath is already absolute, it is just normalized
      *
      * If root is missing or does not start with a slash, a slash will be prepended
+     * If $relPath is completely empty, the result will be $root
      *
-     * @param string Root path to append the relative
-     * @param string Relative path
+     * @param string $root base path to prepend to $relPath if it is not already absolute
+     * @param string $relPath a relative or absolute path
      * @return string Absolute and normalized path
      */
     public function absolutePath($root, $relPath)
     {
-        $root = trim($root, '/');
-        if (strlen($root)) {
-            $concat = "/$root/";
-        } else {
-            $concat = '/';
+        if (strlen($relPath) && $relPath[0] != '/') {
+            $root = trim($root, '/');
+            if (strlen($root)) {
+                $concat = "/$root/";
+            } else {
+                $concat = '/';
+            }
+            $relPath = $concat . ltrim($relPath, '/');
+        } else if (strlen($relPath)==0) {
+            $relPath = $root;
         }
-        $concat .= ltrim($relPath, '/');
 
-        // TODO: maybe this should be required explicitly and not called from within this method...
-        return $this->normalizePath($concat);
+        return $this->normalizePath($relPath);
     }
 
     /**
@@ -278,8 +293,10 @@ class ObjectManager
      *
      * If you have an absolute path use {@link getNodeByPath()}.
      *
-     * @param string uuid or relative path
-     * @param string optional root if you are in a node context - not used if $identifier is an uuid
+     * @param string $identifier uuid or relative path
+     * @param string $root optional root if you are in a node context - not used if $identifier is an uuid
+     * @param string $class optional class name for the factory
+     *
      * @return \PHPCR\Node The specified Node. if not available, ItemNotFoundException is thrown
      *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
@@ -293,13 +310,12 @@ class ObjectManager
                 $node = $this->getNodeByPath($path, $class);
                 $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
                 return $node;
-            } else {
-                return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
             }
-        } else {
-            $path = $this->absolutePath($root, $identifier);
-            return $this->getNodeByPath($path, $class);
+            return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
         }
+
+        $path = $this->absolutePath($root, $identifier);
+        return $this->getNodeByPath($path, $class);
     }
 
     /**
@@ -308,9 +324,9 @@ class ObjectManager
      * @param string $path
      * @return string
      */
-    public function getBinaryProperty($path)
+    public function getBinaryStream($path)
     {
-        return $this->transport->getBinaryProperty($path);
+        return $this->transport->getBinaryStream($path);
     }
 
     /**
@@ -397,9 +413,9 @@ class ObjectManager
         // UUID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
         if (1 === preg_match('/^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/', $id)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -416,10 +432,26 @@ class ObjectManager
     public function save()
     {
         // TODO: start transaction
+        // this is extremly unspecific: http://jackrabbit.apache.org/frequently-asked-questions.html#FrequentlyAskedQuestions-HowdoIusetransactionswithJCR?
+        // or do we have to bundle everything into one request, make transport layer capable of transaction? http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
 
-        // remove nodes/properties
-        foreach ($this->nodesRemove as $path => $dummy) {
+        /* remove nodes/properties
+         *
+         * deleting a node deletes the whole tree
+         * we have to avoid deleting children/properties of nodes we already
+         * deleted. we sort the paths and then use that to check if parent path
+         * was already removed in a - comparably - cheap way
+         */
+        $todelete = array_keys($this->itemsRemove);
+        sort($todelete);
+        $last = ':'; // anything but '/'
+        foreach ($todelete as $path) {
+            if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
+                //parent path has already been removed
+                continue;
+            }
             $this->transport->deleteNode($path);
+            $last = $path;
         }
         foreach ($this->propertiesRemove AS $path => $dummy) {
             $this->transport->deleteProperty($path);
@@ -440,13 +472,13 @@ class ObjectManager
                 }
             }
         }
-        // create new nodes
+        // create new items
         foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
             if ($item instanceof \PHPCR\NodeInterface) {
-                $this->transport->storeNode($path, $item->getProperties(), $item->getNodes());
+                $this->transport->storeNode($item);
             } elseif ($item instanceof \PHPCR\PropertyInterface) {
-                $this->transport->storeProperty($path, $item);
+                $this->transport->storeProperty($item);
             } else {
                 throw new \UnexpectedValueException('Unknown type '.get_class($item));
             }
@@ -457,16 +489,16 @@ class ObjectManager
             foreach ($this->objectsByPath['Node'] as $path => $item) {
                 if ($item->isModified()) {
                     if ($item instanceof \PHPCR\NodeInterface) {
-                        foreach ($item->getProperties() as $propertyName => $property) {
+                        foreach ($item->getProperties() as $property) {
                             if ($property->isModified()) {
-                                $this->transport->storeProperty($property->getPath(), $property);
+                                $this->transport->storeProperty($property);
                             }
                         }
                     } elseif ($item instanceof \PHPCR\PropertyInterface) {
-                        if ($item->getNativeValue() === null) {
+                        if ($item->getValue() === null) {
                             $this->transport->deleteProperty($path);
                         } else {
-                            $this->transport->storeProperty($path, $item);
+                            $this->transport->storeProperty($item);
                         }
                     } else {
                         throw new \UnexpectedValueException('Unknown type '.get_class($item));
@@ -481,6 +513,11 @@ class ObjectManager
         foreach ($this->nodesRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
         }
+
+        //clear those lists before reloading the newly added nodes from backend, to avoid collisions
+        $this->itemsRemove = array();
+        $this->nodesMove = array();
+
         /* local state is already updated in moveNode
         foreach ($this->nodesMove as $src => $dst) {
             $this->objectsByPath[$dst] = $this->objectsByPath[$src];
@@ -492,7 +529,7 @@ class ObjectManager
             $item->confirmSaved();
         }
         if (isset($this->objectsByPath['Node'])) {
-            foreach ($this->objectsByPath['Node'] as $path => $item) {
+            foreach ($this->objectsByPath['Node'] as $item) {
                 if ($item->isModified()) {
                     $item->confirmSaved();
                 }
@@ -516,7 +553,7 @@ class ObjectManager
     {
         $path = $this->getTransport()->checkinItem($absPath);
         $node = $this->getNodeByPath($path, "Version\Version");
-        $predecessorUuids = $node->getProperty('jcr:predecessors')->getNativeValue();
+        $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
         if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
             $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
             unset($this->objectsByPath['Version\Version'][$dirtyPath]);
@@ -544,8 +581,8 @@ class ObjectManager
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
-        if (null !== $absPath &&
-            (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
+        if (null !== $absPath
+            && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
         ) {
             unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
             unset($this->objectsByPath['Version\Version'][$absPath]);
@@ -576,7 +613,9 @@ class ObjectManager
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
-            if ($item->isModified()) return true;
+            if ($item->isModified()) {
+                return true;
+            }
         }
 
         return false;
@@ -598,7 +637,7 @@ class ObjectManager
         }
 
         // was any parent moved?
-        foreach ($this->nodesMove as $src=>$dst) {
+        foreach ($this->nodesMove as $dst) {
             if (strpos($dst, $absPath) === 0) {
                 // this is MOVE, then DELETE but we dispatch DELETE before MOVE
                 // TODO we might could just remove the MOVE and put a DELETE on the previous node :)
@@ -725,6 +764,7 @@ class ObjectManager
             //TODO: determine if we have an identifier.
             $this->objectsByUuid[$item->getIdentifier()] = $absPath;
         }
+
         $this->itemsAdd[$absPath] = 1;
     }
 
@@ -746,6 +786,8 @@ class ObjectManager
      * Implementation specific: Transport is used elsewhere, provide it here for Session
      *
      * @return TransportInterface
+     *
+     * @private
      */
     public function getTransport()
     {

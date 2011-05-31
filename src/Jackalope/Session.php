@@ -28,6 +28,22 @@ class Session implements \PHPCR\SessionInterface
     protected $objectManager;
     protected $credentials;
     protected $logout = false;
+    /**
+     * The namespace registry.
+     *
+     * It is only used to check prefixes and at setup.
+     * Session remapping must be handled locally.
+     */
+    protected $namespaceRegistry;
+
+    /**
+     * List of local namespaces
+     *
+     * TODO: implement local namespace rewriting
+     * see jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/conversion/PathParser.java and friends
+     * for how this is done in jackrabbit
+     */
+    //protected $localNamespaces;
 
     /** creates the corresponding workspace */
     public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
@@ -37,6 +53,7 @@ class Session implements \PHPCR\SessionInterface
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
+        $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
     }
 
     /**
@@ -171,32 +188,29 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getItem($absPath)
     {
-
-        if(strpos($absPath,'/') !== 0) {
+        if (strpos($absPath,'/') !== 0) {
             throw new \PHPCR\PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
         if ($this->nodeExists($absPath)) {
             return $this->getNode($absPath);
-        } else {
-            return $this->getProperty($absPath);
         }
+        return $this->getProperty($absPath);
     }
 
     /**
      * Returns the node at the specified absolute path in the workspace.
      *
      * @param string $absPath An absolute path.
-     * @param string $class Defined which Class should be used to instantiate the node, eg. Node, Version\Version
      * @return \PHPCR\NodeInterface A node
      * @throws \PHPCR\PathNotFoundException if no accessible node is found at the specified path.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function getNode($absPath, $class = 'Node')
+    public function getNode($absPath)
     {
         try {
-            return $this->objectManager->getNode($absPath, '/', $class);
+            return $this->objectManager->getNodeByPath($absPath);
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -231,7 +245,9 @@ class Session implements \PHPCR\SessionInterface
      */
     public function itemExists($absPath)
     {
-        if ($absPath == '/') return true;
+        if ($absPath == '/') {
+            return true;
+        }
         return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
 
@@ -246,7 +262,9 @@ class Session implements \PHPCR\SessionInterface
      */
     public function nodeExists($absPath)
     {
-        if ($absPath == '/') return true;
+        if ($absPath == '/') {
+            return true;
+        }
 
         if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
             throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
@@ -495,7 +513,7 @@ class Session implements \PHPCR\SessionInterface
      * @param string $methodName the name of the method.
      * @param object $target the target object of the operation.
      * @param array $arguments the arguments of the operation.
-     * @return boolean FALSE if the operation cannot be performed, TRUE if the operation can be performed or if the repository cannot determine whether the operation can be performed.
+     * @return boolean false if the operation cannot be performed, true if the operation can be performed or if the repository cannot determine whether the operation can be performed.
      * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
@@ -630,7 +648,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function setNamespacePrefix($prefix, $uri)
     {
-        throw new NotImplementedException();
+        $this->namespaceRegistry->checkPrefix($prefix);
+        throw new NotImplementedException('TODO: implement session scope remapping of namespaces'); //this will lead to rewrite all names and paths in requests and replies
     }
 
     /**
@@ -642,7 +661,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespacePrefixes()
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getPrefixes();
     }
 
     /**
@@ -657,7 +677,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespaceURI($prefix)
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getURI($prefix);
     }
 
     /**
@@ -672,7 +693,8 @@ class Session implements \PHPCR\SessionInterface
      */
     public function getNamespacePrefix($uri)
     {
-        throw new NotImplementedException();
+        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        return $this->namespaceRegistry->getPrefix($uri);
     }
 
     /**

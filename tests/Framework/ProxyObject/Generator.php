@@ -343,10 +343,11 @@ class ProxyObjectGenerator
      */
     protected static function canProxyMethod(\ReflectionMethod $method)
     {
-        if ($method->isConstructor() ||
-        $method->isFinal() ||
-        $method->isStatic() ||
-        isset(self::$blacklistedMethodNames[$method->getName()])) {
+        if ($method->isConstructor()
+            || $method->isFinal()
+            || $method->isStatic()
+            || isset(self::$blacklistedMethodNames[$method->getName()])
+        ) {
             return false;
         } elseif ($method->isProtected()) {
             return true;

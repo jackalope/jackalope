@@ -41,7 +41,9 @@ function getRepository($config) {
     if (empty($config['url']) || empty($config['transport'])) {
         return false;
     }
-    if ($config['transport'] != 'davex') throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
+    if ($config['transport'] != 'davex') {
+        throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
+    }
     return new \Jackalope\Repository(null, $config['url'], null); //let jackalope factory create the transport
 }
 
@@ -71,10 +73,10 @@ function getJCRSession($config, $credentials = null) {
         }
         return $repository->login($credentials, $config['workspace']);
     } elseif (isset($config['workspace'])) {
-        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(phpcr_suite_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, $config['workspace']);
     } else {
-        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(phpcr_suite_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, null);
     }
 }

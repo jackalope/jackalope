@@ -1,7 +1,5 @@
 <?php
 
-declare(ENCODING = 'utf-8');
-
 namespace Jackalope\Version;
 
 use Jackalope\NotImplementedException;
@@ -50,7 +48,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      * Note that under simple versioning the behavior of this method is equivalent
      * to getting the unique successor (if any) of this version.
      *
-     * @return \PHPCR\VersionInterface a Version or NULL if no linear successor exists.
+     * @return \PHPCR\VersionInterface a Version or null if no linear successor exists.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @see VersionHistory::getAllLinearVersions()
      * @api
@@ -72,12 +70,20 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getSuccessors()
     {
-        $successors = $this->getProperty("jcr:successors");
+        if (! $this->hasProperty('jcr:successors')) {
+            // no successors
+            return array();
+        }
+
+        /* predecessors is a multivalue property with REFERENCE.
+         * get it as string so we can create the Version instances from uuid
+         * with the objectmanager
+         */
+        $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
         if ($successors) {
             foreach ($successors as $uuid) {
-                $n = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
-                $results[] = $n;
+                $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
             }
         }
         return $results;
@@ -94,7 +100,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      * Note that under simple versioning the behavior of this method is equivalent
      * to getting the unique predecessor (if any) of this version.
      *
-     * @return \PHPCR\Version\VersionInterface a Version or NULL if no linear predecessor exists.
+     * @return \PHPCR\Version\VersionInterface a Version or null if no linear predecessor exists.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @see VersionHistory::getAllLinearVersions()
      * @api
@@ -117,12 +123,20 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getPredecessors()
     {
-        $predecessors = $this->getProperty("jcr:predecessors");
+        if (! $this->hasProperty('jcr:predecessors')) {
+            // no predecessors
+            return array();
+        }
+
+        /*
+         * predecessors is a multivalue property with REFERENCE.
+         * get it as string so we can create the Version instances from uuid
+         * with the objectmanager. see 3.13.2.6
+         */
+        $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
         foreach ($predecessors as $uuid) {
-            $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
-            $results[] = $node->getNode('jcr:frozenNode');
-            $results = array_merge($results, $node->getPredecessors());
+            $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
         }
         return $results;
     }
@@ -137,6 +151,8 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
      */
     public function getFrozenNode()
     {
+        $frozen = $this->getNode('jcr:frozenNode');
+        //TODO: what should we do now? recreate the node with the data at that time?
         throw new NotImplementedException();
     }
 }

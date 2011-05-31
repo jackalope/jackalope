@@ -52,7 +52,7 @@ class RequestTest extends TestCase
             ->method('execute')
             ->will($this->returnValue('<xml/>'));
 
-        $this->assertTrue($request->executeDom() instanceof DOMDocument);
+        $this->assertInstanceOf('DOMDocument', $request->executeDom());
     }
 
     /**

@@ -5,6 +5,9 @@ namespace Jackalope;
  * The entry point into the content repository. The Repository object is
  * usually acquired through the RepositoryFactory.
  *
+ *
+ * If you want to re-use existing database connections, just use new Repository
+ * and pass it the transport.
  */
 class Repository implements \PHPCR\RepositoryInterface
 {
@@ -23,8 +26,8 @@ class Repository implements \PHPCR\RepositoryInterface
      * Create repository, either with uri or transport
      * Typical uri for a local jackrabbit server is http://localhost:8080/server
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
-     *                If this is null, the \jackalope\Factory is instantiated
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
+     *                If this is null, the \Jackalope\Factory is instantiated
      *                Note that the repository is the only class accepting null as factory
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
@@ -64,13 +67,16 @@ class Repository implements \PHPCR\RepositoryInterface
     * @param string $workspaceName the name of a workspace
     * @return \PHPCR\SessionInterface a valid session for the user to access the repository
     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-    * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+    * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login($credentials = NULL, $workspaceName = NULL)
+    public function login($credentials = null, $workspaceName = null)
     {
-        if ($workspaceName == null) $workspaceName = 'default'; //TODO: can default workspace have other name?
+        if ($workspaceName == null) {
+            //TODO: can default workspace have other name?
+            $workspaceName = 'default';
+        }
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
@@ -97,8 +103,8 @@ class Repository implements \PHPCR\RepositoryInterface
     }
 
     /**
-     * Returns TRUE if $key is a standard descriptor
-     * defined by the string constants in this interface and FALSE if it is
+     * Returns true if $key is a standard descriptor
+     * defined by the string constants in this interface and false if it is
      * either a valid implementation-specific key or not a valid key.
      *
      * @param string $key a descriptor key.

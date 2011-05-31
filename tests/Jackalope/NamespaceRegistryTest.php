@@ -8,6 +8,14 @@ class NamespaceRegistryTest extends TestCase
     /* Fixtures
     /*************************************************************************/
 
+    protected $defaultNamespaces = array(
+            "jcr" => "http://www.jcp.org/jcr/1.0",
+            "nt"  => "http://www.jcp.org/jcr/nt/1.0",
+            "mix" => "http://www.jcp.org/jcr/mix/1.0",
+            "xml" => "http://www.w3.org/XML/1998/namespace",
+            ""    => ""
+        );
+
     /**
      * Creates a Mock object of the dummy implementation of the TransportInterface.
      *
@@ -48,7 +56,6 @@ class NamespaceRegistryTest extends TestCase
     {
         $nsr = $this->getNamespaceRegistryFixture($namespaces);
 
-        $this->assertAttributeInstanceOf('Jackalope\NamespaceManager', 'namespaceManager', $nsr);
         $this->assertAttributeInstanceOf('Jackalope\TransportInterface', 'transport', $nsr);
         $this->assertAttributeEquals($expected, 'userNamespaces', $nsr);
     }
@@ -63,13 +70,7 @@ class NamespaceRegistryTest extends TestCase
         );
 
         $nsr = $this->getNamespaceRegistryFixture($namespaces);
-        $expected = array(
-            "jcr" => "http://www.jcp.org/jcr/1.0",
-            "nt"  => "http://www.jcp.org/jcr/nt/1.0",
-            "mix" => "http://www.jcp.org/jcr/mix/1.0",
-            "xml" => "http://www.w3.org/XML/1998/namespace",
-            ""    => ""
-        );
+        $expected = $this->defaultNamespaces;
 
         $this->assertEquals($expected, $nsr->getDefaultNamespaces());
     }
@@ -194,6 +195,32 @@ class NamespaceRegistryTest extends TestCase
         $nsr->getURI('beastie');
     }
 
+    /**
+     * @covers \Jackalope\NamespaceRegistry::checkPrefix
+     */
+    public function testCheckPrefix()
+    {
+        $factory = new \Jackalope\Factory;
+        $prefix = 'beastie';
+        $ns = $this->getNamespaceRegistryFixture(array());
+
+        $this->assertNull($ns->checkPrefix($prefix));
+    }
+
+    /**
+     * @dataProvider checkPrefixDataprovider
+     * @covers \Jackalope\NamespaceRegistry::checkPrefix
+     * @expectedException \PHPCR\NamespaceException
+     */
+    public function testCheckPrefixExpexctingNamespaceException($prefix)
+    {
+        $factory = new \Jackalope\Factory;
+        $ns = $this->getNamespaceRegistryFixture(array());
+        $ns->checkPrefix($prefix);
+    }
+
+
+
     /*************************************************************************/
     /* Dataproivder
     /*************************************************************************/
@@ -210,5 +237,25 @@ class NamespaceRegistryTest extends TestCase
                  array('xml' => 'http://beastie.lo/xml/1.0')
              ),
         );
+    }
+
+    public static function checkPrefixDataprovider()
+    {
+        return array(
+            'XML as prefix' => array('xml'),
+            'prefix in list of default namespaces' => array('jcr'),
+            'empty prefix' => array(''),
+        );
+    }
+
+}
+
+
+
+class NamespaceRegistryProxy extends \Jackalope\NamespaceRegistry
+{
+    public function checkPrefix($prefix)
+    {
+        return parent::checkPrefix($prefix);
     }
 }

@@ -32,22 +32,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         $this->objectmanager = $objectmanager;
         $this->factory = $factory;
 
-        $dom = new \DOMDocument();
-        $dom->loadXML($rawData);
-
-        foreach ($dom->getElementsByTagName('response') as $row) {
-            $columns = array();
-            foreach ($row->getElementsByTagName('column') as $column) {
-                $sets = array();
-                foreach ($column->childNodes as $childNode) {
-                    $sets[$childNode->tagName] = $childNode->nodeValue;
-                }
-
-                $columns[] = $sets;
-            }
-
-            $this->rows[] = $columns;
-        }
+        $this->rows = $rawData;
     }
 
     public function getIterator()

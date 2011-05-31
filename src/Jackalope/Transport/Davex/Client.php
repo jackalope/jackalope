@@ -21,8 +21,11 @@
  */
 
 namespace Jackalope\Transport\Davex;
+
+use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
 use Jackalope\TransportInterface;
+use Jackalope\NotImplementedException;
 use DOMDocument;
 use Jackalope\NodeType\NodeTypeManager;
 
@@ -139,7 +142,7 @@ class Client implements TransportInterface
     /**
      * Create a transport pointing to a server url.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory.
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      * @param serverUri location of the server
      */
     public function __construct($factory, $serverUri)
@@ -198,7 +201,7 @@ class Client implements TransportInterface
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
-        foreach($this->defaultHeaders as $header) {
+        foreach ($this->defaultHeaders as $header) {
             $request->addHeader($header);
         }
 
@@ -220,7 +223,7 @@ class Client implements TransportInterface
      * @return boolean True on success, exceptions on failure.
      *
      * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-     * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
+     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
@@ -268,8 +271,9 @@ class Client implements TransportInterface
         $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
         $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'repositorydescriptors-report' ||
-            $dom->firstChild->namespaceURI != self::NS_DCR) {
+        if ($dom->firstChild->localName != 'repositorydescriptors-report'
+            || $dom->firstChild->namespaceURI != self::NS_DCR
+        ) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 
@@ -313,23 +317,44 @@ class Client implements TransportInterface
     }
 
     /**
-     * Get the item from an absolute path
+     * Get the node from an absolute path
      *
-     * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
+     * @param string $path Absolute path to the node.
+     * @return array associative array for the node (decoded from json with associative = true)
      *
-     * @param string $path Absolute path to identify a special item.
-     * @return array for the node (decoded from json)
-     *
+     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getItem($path)
+    public function getNode($path)
     {
         $this->ensureAbsolutePath($path);
 
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
-        return $request->executeJson();
+        try {
+            return $request->executeJson();
+        } catch (\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Get the property stored at an absolute path.
+     *
+     * Same format as getNode with just one property.
+     *
+     * @return array associative array with the property value.
+     */
+    public function getProperty($path)
+    {
+        throw new NotImplementedException();
+        /*
+         * TODO: implement
+         * jackrabbit: instead of fetching the node, we could make Transport provide it with a
+         * GET /server/tests/jcr%3aroot/tests_level1_access_base/multiValueProperty/jcr%3auuid
+         * (davex getItem uses json, which is not applicable to properties)
+         */
     }
 
     /**
@@ -338,10 +363,15 @@ class Client implements TransportInterface
      * @param $path
      * @return string
      */
-    public function getBinaryProperty($path)
+    public function getBinaryStream($path)
     {
         $request = $this->getRequest(Request::GET, $path);
-        return $request->execute();
+        // TODO: OPTIMIZE!
+        $binary = $request->execute();
+        $stream = fopen('php://memory', 'rwb+');
+        fwrite($stream, $binary);
+        rewind($stream);
+        return $stream;
     }
 
     /**
@@ -360,17 +390,16 @@ class Client implements TransportInterface
             $curl = $request->execute(true);
             if ($curl->getHeader("Location")) {
                 return $this->cleanUriFromWebserverRoot(urldecode($curl->getHeader("Location")));
-            } else {
-                // TODO: not sure what this means
-                throw new \PHPCR\RepositoryException();
             }
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
-            } else {
-                throw new \PHPCR\RepositoryException($e->getMessage());
             }
+            throw new \PHPCR\RepositoryException($e->getMessage());
         }
+
+        // TODO: not sure what this means
+        throw new \PHPCR\RepositoryException();
     }
 
     /**
@@ -391,9 +420,8 @@ class Client implements TransportInterface
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
-            } else {
-                throw new \PHPCR\RepositoryException();
             }
+            throw new \PHPCR\RepositoryException();
         }
         return;
     }
@@ -424,9 +452,13 @@ class Client implements TransportInterface
         return $resp;
     }
 
-    public function querySQL($query, $limit = null, $offset = null)
+    public function query(\PHPCR\Query\QueryInterface $query)
     {
-        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$query.']]></JCR-SQL2>';
+        $querystring = $query->getStatementSql2();
+        $limit = $query->getLimit();
+        $offset = $query->getOffset();
+
+        $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$querystring.']]></JCR-SQL2>';
 
         if (null !== $limit || null !== $limit) {
             $body .= '<D:limit>';
@@ -444,7 +476,27 @@ class Client implements TransportInterface
         $path = $this->normalizeUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
         $request->setBody($body);
-        return $request->execute();
+
+        $rawData = $request->execute();
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($rawData);
+
+        $rows = array();
+        foreach ($dom->getElementsByTagName('response') as $row) {
+            $columns = array();
+            foreach ($row->getElementsByTagName('column') as $column) {
+                $sets = array();
+                foreach ($column->childNodes as $childNode) {
+                    $sets[$childNode->tagName] = $childNode->nodeValue;
+                }
+
+                $columns[] = $sets;
+            }
+
+            $rows[] = $columns;
+        }
+        return $rows;
     }
 
     /**
@@ -514,7 +566,7 @@ class Client implements TransportInterface
      *
      * @param   string  $srcAbsPath     Absolute source path to the node
      * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
-     * @param   string  $srcWorkspace   The source workspace where the node can be found or NULL for current
+     * @param   string  $srcWorkspace   The source workspace where the node can be found or null for current
      * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
@@ -534,7 +586,6 @@ class Client implements TransportInterface
         $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
         $request->execute();
     }
-
 
     /**
      * Moves a node from src to dst
@@ -556,26 +607,30 @@ class Client implements TransportInterface
         $request->execute();
     }
 
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    {
+        throw new NotImplementedException();
+    }
+
     /**
      * Recursively store a node and its children to the given absolute path.
      *
      * The basename of the path is the name of the node
      *
-     * @param string $path Absolute path to the node, name is part after last /
-     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType FIXME: would we need this?
-     * @param \Traversable $properties array of \PHPCR\PropertyInterface objects
-     * @param \Traversable $children array of \PHPCR\NodeInterface objects
+     * @param NodeInterface $node
+     *
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeNode($path, $properties, $children)
+    public function storeNode(\PHPCR\NodeInterface $node)
     {
+        $path = $node->getPath();
         $this->ensureAbsolutePath($path);
 
         $buffer = array();
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
-        $body .= $this->createNodeMarkup($path, $properties, $children, $buffer);
+        $body .= $this->createNodeMarkup($path, $node->getProperties(), $node->getNodes(), $buffer);
 
         $request = $this->getRequest(Request::MKCOL, $path);
         $request->setBody($body);
@@ -607,7 +662,7 @@ class Client implements TransportInterface
 
         foreach ($properties as $name => $property) {
             $type = \PHPCR\PropertyType::nameFromValue($property->getType());
-            $nativeValue = $property->getNativeValue();
+            $nativeValue = $property->getValue();
             $valueBody = '';
             // handle multivalue properties
             if (is_array($nativeValue)) {
@@ -646,14 +701,22 @@ class Client implements TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeProperty($path, \PHPCR\PropertyInterface $property)
+    public function storeProperty(\PHPCR\PropertyInterface $property)
     {
+        $path = $property->getPath();
         $this->ensureAbsolutePath($path);
 
-        $type = \PHPCR\PropertyType::nameFromValue($property->getType());
+        $typeid = $property->getType();
+        $type = PropertyType::nameFromValue($typeid);
+        if ($typeid == PropertyType::REFERENCE
+            || $typeid == PropertyType::WEAKREFERENCE
+        ) {
+            $nativeValue = $property->getString();
+        } else {
+            $nativeValue = $property->getValue();
+        }
 
         $request = $this->getRequest(Request::PUT, $path);
-        $nativeValue = $property->getNativeValue();
         if ($property->getName() === 'jcr:mixinTypes') {
             $uri = $this->normalizeUri(dirname($path) === '\\' ? '/' : dirname($path));
             $request->setUri($uri);
@@ -687,32 +750,46 @@ class Client implements TransportInterface
         return true;
     }
 
+    /**
+     * This method is used when building an XML of the properties
+     *
+     * @param  $value
+     * @param  $type
+     * @return mixed|string
+     */
     protected function propertyToXmlString($value, $type)
     {
         switch ($type) {
-        case \PHPCR\PropertyType::TYPENAME_DATE:
-            return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
-        case \PHPCR\PropertyType::TYPENAME_BINARY:
-            return base64_encode($value);
-        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
-        case \PHPCR\PropertyType::TYPENAME_STRING:
-        case \PHPCR\PropertyType::TYPENAME_URI:
-            $value = str_replace(']]>',']]]]><![CDATA[>',$value);
-            return '<![CDATA['.$value.']]>';
+            case \PHPCR\PropertyType::TYPENAME_DATE:
+                return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
+            case \PHPCR\PropertyType::TYPENAME_BINARY:
+                return base64_encode(stream_get_contents($value));
+            case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+            case \PHPCR\PropertyType::TYPENAME_STRING:
+            case \PHPCR\PropertyType::TYPENAME_URI:
+                $value = str_replace(']]>',']]]]><![CDATA[>',$value);
+                return '<![CDATA['.$value.']]>';
         }
         //FIXME: handle boolean correctly. strings true and false?
         return $value;
     }
 
+    /**
+     * This method is used to directly set a property
+     *
+     * @param  $value
+     * @param  $type
+     * @return mixed|string
+     */
     protected function propertyToRawString($value, $type)
     {
-        // skip binary encoding for raw strings
         switch ($type) {
-        case \PHPCR\PropertyType::TYPENAME_BINARY:
-        case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
-        case \PHPCR\PropertyType::TYPENAME_STRING:
-        case \PHPCR\PropertyType::TYPENAME_URI:
-            return $value;
+            case \PHPCR\PropertyType::TYPENAME_BINARY:
+                return stream_get_contents($value);
+            case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
+            case \PHPCR\PropertyType::TYPENAME_STRING:
+            case \PHPCR\PropertyType::TYPENAME_URI:
+                return $value;
         }
         return $this->propertyToXmlString($value, $type);
     }
@@ -766,8 +843,9 @@ class Client implements TransportInterface
         $request->setBody($this->buildReportRequest('dcr:registerednamespaces'));
         $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'registerednamespaces-report' ||
-            $dom->firstChild->namespaceURI != self::NS_DCR) {
+        if ($dom->firstChild->localName != 'registerednamespaces-report'
+            || $dom->firstChild->namespaceURI != self::NS_DCR
+        ) {
             throw new \PHPCR\RepositoryException('Error talking to the backend. '.$dom->saveXML());
         }
 
@@ -780,9 +858,72 @@ class Client implements TransportInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if trying to overwrite existing prefix to new uri, as jackrabbit can not do this
+     */
+    public function registerNamespace($prefix, $uri)
+    {
+        // seems jackrabbit always expects full list of namespaces
+        $namespaces = $this->getNamespaces();
+
+        // check if prefix is already mapped
+        if (isset($namespaces[$prefix])) {
+            if ($namespaces[$prefix] == $uri) {
+                // nothing to do, we already have the mapping
+                return;
+            }
+            // unregister old mapping
+            throw new \PHPCR\UnsupportedRepositoryOperationException("Trying to set existing prefix $prefix from ".$namespaces[$prefix]." to different uri $uri, but unregistering namespace is not supported by jackrabbit backend. You can move the old namespace to a different prefix before adding this prefix to work around this issue.");
+        }
+
+        // if target uri already exists elsewhere, do not re-send or result is random
+        /* weird: we can not unset this or we get the unregister not
+         * supported exception. but we can send two mappings and
+         * jackrabbit does the right guess what we want and moves the
+         * namespace to the new prefix
+
+        if (false !== $expref = array_search($uri, $namespaces)) {
+            unset($namespaces[$expref]);
+        }
+        */
+
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        $namespaces[$prefix] = $uri;
+        $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->execute();
+        return true;
+    }
+
+    /**
+     * Unregister an existing namespace.
+     *
+     * Validation based on what was returned from getNamespaces has already
+     * happened in the NamespaceRegistry.
+     *
+     * @param string $prefix The prefix to unregister.
+     */
+    public function unregisterNamespace($prefix)
+    {
+        throw new \PHPCR\UnsupportedRepositoryOperationException('Unregistering namespace not supported by jackrabbit backend');
+
+        /*
+         * TODO: could look a bit like the following if the backend would support it
+        $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        // seems jackrabbit always expects full list of namespaces
+        $namespaces = $this->getNamespaces();
+        unset($namespaces[$prefix]);
+        $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->execute();
+        return true;
+        */
+    }
+
+    /**
      * Returns node types as array structure
-     * 
+     *
      * @param array nodetypes to request
+     *
      * @return array a list of nodetype definitions
      * @throws \PHPCR\RepositoryException if not logged in
      */
@@ -802,7 +943,6 @@ class Client implements TransportInterface
 
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
-
 
     /**
      * Register namespaces and new node types or update node types based on a
@@ -831,7 +971,7 @@ class Client implements TransportInterface
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
-        throw new \Jackalope\NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
+        throw new NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
         //see http://jackrabbit.apache.org/node-type-notation.html
     }
 
@@ -848,6 +988,24 @@ class Client implements TransportInterface
         $cnd = '<dcr:cnd>'.str_replace(array('<','>'), array('&lt;','&gt;'), $cnd).'</dcr:cnd>';
         $cnd .= '<dcr:allowupdate>'.($allowUpdate ? 'true' : 'false').'</dcr:allowupdate>';
         return '<?xml version="1.0" encoding="UTF-8" standalone="no"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:nodetypes-cnd xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.$cnd.'</dcr:nodetypes-cnd></D:prop></D:set></D:propertyupdate>';
+    }
+
+    /**
+     * Build the xml to update the namespaces
+     *
+     * You need to repeat all existing node type plus add your new ones
+     *
+     * @param array $mappings hashmap of prefix => uri for all existing and new namespaces
+     */
+    protected function buildRegisterNamespaceRequest($mappings) {
+        $ns = '';
+        foreach ($mappings as $prefix => $uri) {
+            $ns .= "<dcr:namespace><dcr:prefix>$prefix</dcr:prefix><dcr:uri>$uri</dcr:uri></dcr:namespace>";
+        }
+
+        return '<?xml version="1.0" encoding="UTF-8"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
+                $ns .
+                '</dcr:namespaces></D:prop></D:set></D:propertyupdate>';
     }
 
     /**
@@ -924,7 +1082,7 @@ class Client implements TransportInterface
         return substr($uri,strlen($this->workspaceUriRoot));
     }
 
-    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager)
+    public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;
     }

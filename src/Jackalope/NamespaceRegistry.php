@@ -37,23 +37,15 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     protected $userNamespaces = array();
 
     /**
-     * Instance of the NamespaceManager
-     *
-     * @var NamespaceManager
-     */
-    protected $namespaceManager = null;
-
-    /**
      * Initializes the created object.
      *
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TransportInterface $transport
      */
     public function __construct($factory, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->transport = $transport;
-        $this->namespaceManager = $this->factory->get('NamespaceManager', array($this->defaultNamespaces));
 
         $namespaces = $transport->getNamespaces();
         foreach ($namespaces as $prefix => $uri) {
@@ -87,6 +79,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.
+     *
      * @return void
      *
      * @throws \PHPCR\NamespaceException If an attempt is made to re-assign a built-in prefix to a new URI or, to register a namespace with a prefix that begins with the characters "xml" (in any combination of case) or an attempt is made to perform a prefix re-assignment that is forbidden for implementation-specific reasons.
@@ -96,91 +89,25 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function registerNamespace($prefix, $uri)
     {
+        // prevent default namespace prefixes to be overridden.
+        $this->checkPrefix($prefix);
 
-        throw new NotImplementedException('Write');
-
-        // prevent default namespace to be overridden.
-        $this->namespaceManager->checkPrefix($prefix);
-
-        // update local info
-        $this->userNamespaces[$prefix] = $uri;
+        // prevent default namespace uris to be overridden
+        if (false !== array_search($uri, $this->defaultNamespaces)) {
+            throw new \PHPCR\NamespaceException("Can not change default namespace $prefix = $uri");
+        }
 
         //first try putting the stuff in backend, and only afterwards update lokal info
-        //validation happens on the server, see second request trace below
-        /*
-PROPPATCH /server/tests HTTP/1.1
-Authorization: Basic YWRtaW46YWRtaW4=
-User-Agent: Jakarta Commons-HttpClient/3.0
-Host: localhost:8080
-Content-Length: 1866
-Content-Type: text/xml; charset=UTF-8
 
-<?xml version="1.0" encoding="UTF-8"?><D:propertyupdate xmlns:D="DAV:"><D:set><D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><dcr:namespace><dcr:prefix/><dcr:uri/></dcr:namespace><dcr:namespace><dcr:prefix>nt</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/nt/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>test</dcr:prefix><dcr:uri>http://liip.to/jackalope</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>xs</dcr:prefix><dcr:uri>http://www.w3.org/2001/XMLSchema</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>xml</dcr:prefix><dcr:uri>http://www.w3.org/XML/1998/namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>crx</dcr:prefix><dcr:uri>http://www.day.com/crx/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn_old</dcr:prefix><dcr:uri>http://www.w3.org/2004/10/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>mix</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/mix/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>lx</dcr:prefix><dcr:uri>http://flux-cms.org/2.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>jcr</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sling</dcr:prefix><dcr:uri>http://sling.apache.org/jcr/sling/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>new_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>vlt</dcr:prefix><dcr:uri>http://www.day.com/jcr/vault/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sv</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/sv/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn</dcr:prefix><dcr:uri>http://www.w3.org/2005/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>rep</dcr:prefix><dcr:uri>internal</dcr:uri></dcr:namespace></dcr:namespaces></D:prop></D:set></D:propertyupdate>
+        // this has no impact on running sessions, go directly to storage
+        $this->transport->registerNamespace($prefix, $uri);
 
-HTTP/1.1 207 Multi Status
-Content-Type: text/xml; charset=utf-8
-Content-Length: 197
-Server: Jetty(6.1.x)
-
-<?xml version="1.0" encoding="UTF-8"?><D:multistatus xmlns:D="DAV:"><D:response><D:href>http://localhost:8080/server/tests/</D:href><D:status>HTTP/1.1 200 OK</D:status></D:response></D:multistatus>
-
-
-validation can happen on backend side:
-
-
-PROPPATCH /server/tests HTTP/1.1
-Authorization: Basic YWRtaW46YWRtaW4=
-User-Agent: Jakarta Commons-HttpClient/3.0
-Host: localhost:8080
-Content-Length: 2078
-Content-Type: text/xml; charset=UTF-8
-
-<?xml version="1.0" encoding="UTF-8"?>
-  <D:propertyupdate xmlns:D="DAV:">
-  <D:set>
-   <D:prop><dcr:namespaces xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
-     <dcr:namespace>
-       <dcr:prefix/>
-       <dcr:uri/>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>nt</dcr:prefix>
-       <dcr:uri>http://www.jcp.org/jcr/nt/1.0</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>valid</dcr:prefix>
-       <dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>test</dcr:prefix>
-       <dcr:uri>http://liip.to/jackalope</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>xs</dcr:prefix>
-       <dcr:uri>http://www.w3.org/2001/XMLSchema</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>xml</dcr:prefix>
-       <dcr:uri>http://www.w3.org/XML/1998/namespace</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>crx</dcr:prefix>
-       <dcr:uri>http://www.day.com/crx/1.0</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>fn_old</dcr:prefix>
-       <dcr:uri>http://www.w3.org/2004/10/xpath-functions</dcr:uri>
-     </dcr:namespace>
-     <dcr:namespace>
-       <dcr:prefix>mix</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/mix/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>lx</dcr:prefix><dcr:uri>http://flux-cms.org/2.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>jcr</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sling</dcr:prefix><dcr:uri>http://sling.apache.org/jcr/sling/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>new_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>vlt</dcr:prefix><dcr:uri>http://www.day.com/jcr/vault/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>my_prefix</dcr:prefix><dcr:uri>http://a_new_namespace</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>sv</dcr:prefix><dcr:uri>http://www.jcp.org/jcr/sv/1.0</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>fn</dcr:prefix><dcr:uri>http://www.w3.org/2005/xpath-functions</dcr:uri></dcr:namespace><dcr:namespace><dcr:prefix>rep</dcr:prefix><dcr:uri>internal</dcr:uri></dcr:namespace></dcr:namespaces></D:prop></D:set></D:propertyupdate>
-
-HTTP/1.1 409 Conflict
-Content-Type: text/xml; charset=utf-8
-Content-Length: 308
-Server: Jetty(6.1.x)
-
-<?xml version="1.0" encoding="UTF-8"?><D:error xmlns:D="DAV:"><dcr:exception xmlns:dcr="http://www.day.com/jcr/webdav/1.0"><dcr:class>javax.jcr.NamespaceException</dcr:class><dcr:message>failed to register namespace valid -&gt; http://www.jcp.org/jcr/1.0: reserved URI</dcr:message></dcr:exception></D:error>
-         */
+        // update local info
+        if (false !== $oldpref = array_search($uri, $this->userNamespaces)) {
+            // the backend takes care of storing this, but we have to update frontend info
+            unset($this->userNamespaces[$oldpref]);
+        }
+        $this->userNamespaces[$prefix] = $uri;
     }
 
     /**
@@ -203,12 +130,12 @@ Server: Jetty(6.1.x)
      */
     public function unregisterNamespace($prefix)
     {
-        $this->namespaceManager->checkPrefix($prefix);
+        $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
             throw new \PHPCR\NamespaceException("Prefix $prefix is not currently registered");
         }
-        throw new NotImplementedException('Write');
+        $this->transport->unregisterNamespace($prefix);
     }
 
     /**
@@ -251,7 +178,7 @@ Server: Jetty(6.1.x)
     {
         if (isset($this->defaultNamespaces[$prefix])) {
             return $this->defaultNamespaces[$prefix];
-        } else if (isset($this->userNamespaces[$prefix])) {
+        } elseif (isset($this->userNamespaces[$prefix])) {
             return $this->userNamespaces[$prefix];
         }
         throw new \PHPCR\NamespaceException("Mapping for '$prefix' is not defined");
@@ -296,5 +223,29 @@ Server: Jetty(6.1.x)
     public function getIterator()
     {
         return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
+    }
+
+    /**
+     * Verifies whether this is a valid prefix
+     *
+     * Throws the \PHPCR\NamespaceException if trying to use one of the
+     * built-in prefixes or a prefix that begins with the characters "xml"
+     * (in any combination of case)
+     *
+     * @return void
+     *
+     * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
+     */
+    public function checkPrefix($prefix)
+    {
+        if (! strncasecmp('xml', $prefix, 3)) {
+            throw new \PHPCR\NamespaceException("Do not use xml in prefixes for namespace changes: '$prefix'");
+        }
+        if (array_key_exists($prefix, $this->defaultNamespaces)) {
+            throw new \PHPCR\NamespaceException("Do not change the predefined prefixes: '$prefix'");
+        }
+        if (false !== strpos($prefix, ' ') || false !== strpos($prefix, ':')) {
+            throw new \PHPCR\NamespaceException("Not a valid namespace prefix '$prefix'");
+        }
     }
 }

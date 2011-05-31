@@ -1,7 +1,5 @@
 <?php
 
-declare(ENCODING = 'utf-8');
-
 namespace Jackalope\Version;
 
 use Jackalope\ObjectManager, Jackalope\NotImplementedException;
@@ -21,7 +19,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * Creates for the versionable node at absPath a new version with a system
      * generated version name and returns that version (which will be the new
-     * base version of this node). Sets the jcr:checkedOut property to FALSE
+     * base version of this node). Sets the jcr:checkedOut property to false
      * thus putting the node into the checked-in state. This means that the node
      * and its connected non-versionable subgraph become read-only. A node's
      * connected non-versionable subgraph is the set of non-versionable descendant
@@ -115,7 +113,9 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function checkpoint($absPath)
     {
-        throw new NotImplementedException();
+        $version = $this->checkin($absPath); //just returns current version if already checked in
+        $this->checkout($absPath);
+        return $version;
     }
 
     /**
@@ -164,7 +164,14 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function getBaseVersion($absPath)
     {
-        throw new NotImplementedException();
+        $node = $this->objectmanager->getNodeByPath($absPath);
+        try {
+            //TODO: could check if node has versionable mixin type
+            $uuid = $node->getProperty('jcr:baseVersion')->getString();
+        } catch(\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\UnsupportedRepositoryOperationException("No jcr:baseVersion version for $path");
+        }
+        return $this->objectmanager->getNode($uuid, '/', 'Version\Version');
     }
 
     /**
@@ -222,7 +229,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * The result in such a case is governed by the removeExisting flag. If
      * $removeExisting is true, then the incoming node takes precedence, and the
      * existing node (and its subgraph) is removed (if possible; otherwise a
-     * RepositoryException is thrown). If $removeExisting is FALSE, then an
+     * RepositoryException is thrown). If $removeExisting is false, then an
      * ItemExistsException is thrown and no changes are made. Note that this
      * applies not only to cases where the restored node itself conflicts with
      * an existing node but also to cases where a conflict occurs with any node
@@ -242,7 +249,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\Version\VersionException if the specified version does not have a corresponding node in
      *                                         the workspace this VersionManager has been created for or if an
      *                                         attempt is made to restore the root version (jcr:rootVersion).
-     * @throws \PHPCR\ItemExistsException if $removeExisting is FALSE and an identifier collision occurs or a
+     * @throws \PHPCR\ItemExistsException if $removeExisting is false and an identifier collision occurs or a
      *                                    node exists at $absPath.
      * @throws \PHPCR\InvalidItemStateException if this Session has pending unsaved changes.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if versioning is not supported.
@@ -250,7 +257,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function restore($removeExisting, $version, $absPath = NULL)
+    public function restore($removeExisting, $version, $absPath = null)
     {
         //FIXME: This does not handle all cases
         $vh = $this->getVersionHistory($absPath);
@@ -381,7 +388,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function merge($source, $srcWorkspace = NULL, $bestEffort = NULL, $isShallow = FALSE)
+    public function merge($source, $srcWorkspace = null, $bestEffort = null, $isShallow = false)
     {
         throw new NotImplementedException();
     }
@@ -474,7 +481,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      * @throws \PHPCR\Version\VersionException if the version specified is not among those referenced in the
      *                                         jcr:mergeFailed  property of the node at absPath  or if the node
      *                                         is currently checked-in.
-     * @throws \PHPCR\InvalidItemStateExceptionif there are unsaved changes pending on the node at absPath.
+     * @throws \PHPCR\InvalidItemStateException if there are unsaved changes pending on the node at absPath.
      * @throws \PHPCR\UnsupportedRepositoryOperationExceptionif the node at absPath is not versionable.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
@@ -530,10 +537,10 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     }
 
     /**
-     * Returns the node representing the current activity or NULL if there is no
+     * Returns the node representing the current activity or null if there is no
      * current activity.
      *
-     * @return \PHPCR\NodeInterface An nt:activity node or NULL.
+     * @return \PHPCR\NodeInterface An nt:activity node or null.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support activities.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api

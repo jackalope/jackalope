@@ -19,7 +19,7 @@ class NodeTypeManagerTest extends TestCase
     public function testGetNodeType()
     {
         $nt = $this->ntm->getNodeType('nt:file');
-        $this->assertType('jackalope\NodeType\NodeType', $nt);
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $nt);
         $this->assertSame('nt:file', $nt->getName());
         $this->assertFalse($nt->isAbstract());
         $this->assertFalse($nt->isMixin());
@@ -54,17 +54,17 @@ class NodeTypeManagerTest extends TestCase
     public function testCountTypeClasses()
     {
         $allNodes = $this->ntm->getAllNodeTypes();
-        $this->assertType('Iterator', $allNodes);
+        $this->assertInstanceOf('Iterator', $allNodes);
         $this->assertSame(52, count($allNodes));
-        $this->assertType('jackalope\NodeType\NodeType', $allNodes->current());
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $allNodes->current());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
-        $this->assertType('Iterator', $primaryNodes);
+        $this->assertInstanceOf('Iterator', $primaryNodes);
         $this->assertSame(36, count($primaryNodes));
-        $this->assertType('jackalope\NodeType\NodeType', $primaryNodes->current());
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $primaryNodes->current());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
-        $this->assertType('Iterator', $mixinNodes);
+        $this->assertInstanceOf('Iterator', $mixinNodes);
         $this->assertSame(16, count($mixinNodes));
-        $this->assertType('jackalope\NodeType\NodeType', $mixinNodes->current());
+        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 
 

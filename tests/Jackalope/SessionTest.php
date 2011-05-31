@@ -13,7 +13,10 @@ class SessionTest extends TestCase
         $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = new Transport\Davex\Client($factory, 'http://example.com');
+        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport->expects($this->once())
+            ->method('getNamespaces')
+            ->will($this->returnValue(array()));
         $s = new Session($factory, $repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());
         $this->assertSame($userID, $s->getUserID());

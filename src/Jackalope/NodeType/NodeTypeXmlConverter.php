@@ -149,10 +149,10 @@ class NodeTypeXmlConverter
     public function getNodeTypesFromXml(DOMDocument $dom)
     {
         $xp = new \DOMXpath($dom);
-        $nodetypesElements = $xp->query('/nodeTypes/nodeType');
-        $nodetypes = array();
-        foreach ($nodetypesElements as $nodetypeElement) {
-            $nodeTypes[] = $this->getNodeTypeDefinitionFromXml($nodetypeElement);
+        $nodeTypesElements = $xp->query('/nodeTypes/nodeType');
+        $nodeTypes = array();
+        foreach ($nodeTypesElements as $nodeTypeElement) {
+            $nodeTypes[] = $this->getNodeTypeDefinitionFromXml($nodeTypeElement);
         }
         return $nodeTypes;
     }

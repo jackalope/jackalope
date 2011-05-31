@@ -2,13 +2,14 @@
 namespace Jackalope;
 
 /**
- * The Item is the base interface of Node and Property.
- * This class implements methods for both types.
- * It should not be instantiated directly.
+ * {@inheritDoc}
  *
- * @api
+ * TODO: we should have a state concept: NEW, MODIFIED, DIRTY, DELETED.
+ * modified needs to be saved
+ * dirty needs to refresh from backend when accessed (it was saved and should check with backend). should be set on confirmSaved
+ * deleted can not be used anymore at all
  */
-class Item implements \PHPCR\ItemInterface
+abstract class Item implements \PHPCR\ItemInterface
 {
     /** @var bool   false if item is read from backend, true if created locally in this session */
     protected $new;
@@ -41,7 +42,7 @@ class Item implements \PHPCR\ItemInterface
     protected $objectManager;
 
     /**
-     * @param object $factory  an object factory implementing "get" as described in \jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param string    $path   The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager
@@ -68,7 +69,7 @@ class Item implements \PHPCR\ItemInterface
     /**
      * Returns the normalized absolute path to this item.
      *
-     * @returns string the normalized absolute path of this Item.
+     * @return string the normalized absolute path of this Item.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
@@ -170,7 +171,7 @@ class Item implements \PHPCR\ItemInterface
      * Indicates whether this Item is a Node or a Property. Returns true if
      * this Item is a Node; Returns false if this Item is a Property.
      *
-     * @return boolean TRUE if this Item is a Node, FALSE if it is a Property.
+     * @return boolean true if this Item is a Node, false if it is a Property.
      * @api
      */
     public function isNode()
@@ -191,7 +192,7 @@ class Item implements \PHPCR\ItemInterface
      * Note that in read-only implementations, this method will always return
      * false.
      *
-     * @return boolean TRUE if this item is new; FALSE otherwise.
+     * @return boolean true if this item is new; false otherwise.
      * @api
      */
     public function isNew()
@@ -211,7 +212,7 @@ class Item implements \PHPCR\ItemInterface
      * Note that in read-only implementations, this method will always return
      * false.
      *
-     * @return boolean TRUE if this item is modified; FALSE otherwise.
+     * @return boolean true if this item is modified; false otherwise.
      * @api
      */
     public function isModified()
@@ -220,7 +221,7 @@ class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Returns TRUE if this Item object represents the same actual workspace
+     * Returns true if this Item object represents the same actual workspace
      * item as the object otherItem.
      *
      * Two Item objects represent the same workspace item if all the following
@@ -234,7 +235,7 @@ class Item implements \PHPCR\ItemInterface
      *   objects.
      * * If they are Node objects, they have the same identifier.
      * * If they are Property objects they have identical names and
-     *   isSame() is TRUE of their parent nodes.
+     *   isSame() is true of their parent nodes.
      *
      * This method does not compare the states of the two items. For example, if
      * two Item objects representing the same actual workspace item have been
@@ -245,7 +246,7 @@ class Item implements \PHPCR\ItemInterface
      * state.
      *
      * @param \PHPCR\ItemInterface $otherItem the Item object to be tested for identity with this Item.
-     * @return boolean TRUE if this Item object and otherItem represent the same actual repository item; FALSE otherwise.
+     * @return boolean true if this Item object and otherItem represent the same actual repository item; false otherwise.
      * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
@@ -254,17 +255,18 @@ class Item implements \PHPCR\ItemInterface
         if ($this === $otherItem) { // trivial case
             return true;
         }
-        if ($this->session->getRepository() === $otherItem->getSession()->getRepository() &&
-            $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace() &&
-            get_class($this) == get_class($otherItem)) {
-
+        if ($this->session->getRepository() === $otherItem->getSession()->getRepository()
+            && $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace()
+            && get_class($this) == get_class($otherItem)
+        ) {
             if ($this instanceof Node) {
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
             } else { // assert($this instanceof Property)
-                if ($this->name == $otherItem->getName() &&
-                    $this->getParent()->isSame($otherItem->getParent())) {
+                if ($this->name == $otherItem->getName()
+                    && $this->getParent()->isSame($otherItem->getParent())
+                ) {
                         return true;
                 }
             }
@@ -337,7 +339,7 @@ class Item implements \PHPCR\ItemInterface
             throw new \PHPCR\RepositoryException('Cannot remove root node');
         }
 
-        // TODO: add sanity checks to all other write methods to avoid modification after deleting?
+        // TODO add sanity checks to all other write methods to avoid modification after deleting
         // TODO same-name siblings reindexing
         if ($this instanceof \PHPCR\PropertyInterface) {
             $this->objectManager->removeItem($this->parentPath, $this->name);
@@ -349,11 +351,14 @@ class Item implements \PHPCR\ItemInterface
 
     /**
      * Tell this item that it has been modified.
-     * Used when deleting a node to tell the parent node about modification.
+     *
+     * This will do nothing if the node is new, to avoid duplicating store commands.
      */
     public function setModified()
     {
-        $this->modified = true;
+        if (! $this->isNew()) {
+            $this->modified = true;
+        }
     }
 
     /**

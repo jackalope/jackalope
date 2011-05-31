@@ -81,5 +81,5 @@ Iterate directly over the Nodes
 As a shortcut you can directly iterate over the nodes of the queryResult
 
     foreach ($queryResult->getNodes() as $node) {
-        $this->assertType('Jackalope\Node', $node);
+        $this->assertInstanceOf('Jackalope\Node', $node);
     }
