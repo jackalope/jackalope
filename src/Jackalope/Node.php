@@ -615,7 +615,23 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPrimaryItem()
     {
-        throw new NotImplementedException();
+        try {
+            $primary_item = null;
+            $mgr = $this->session->getWorkspace()->getNodeTypeManager();
+            $item_name = $this->getPrimaryNodeType()->getPrimaryItemName();
+
+            if ($item_name !== null) {
+                $primary_item = $this->session->getItem($this->path . '/' . $item_name);
+            }
+        } catch (\Exception $ex) {
+            throw new \PHPCR\RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
+        }
+
+        if ($primary_item === null) {
+           throw new \PHPCR\ItemNotFoundException("No primary item found for node '{$this->path}'");
+        }
+
+        return $primary_item;
     }
 
     /**
