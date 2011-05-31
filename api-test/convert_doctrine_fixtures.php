@@ -20,7 +20,7 @@ $jcrTypes = array(
     "name"   => array(7, "string_data"),
     "path"   => array(8, "string_data"),
     "reference" => array(9, "string_data"),
-    "weak"   => array(10, "string_data"),
+    "weakreference" => array(10, "string_data"),
     "uri"    => array(11, "string_data"),
     "decimal" => array(12, "string_data"),
 );

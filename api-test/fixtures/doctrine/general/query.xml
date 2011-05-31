@@ -18,14 +18,14 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>a94ade76-425a-4837-a663-67b90aaa6e93</value>
+      <value>86e8491a-73fc-4b79-8aa4-d86c60036ac8</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>queryNode</value>
       <value></value>
       <value>1</value>
-      <value>0e8e856d-d378-4ffb-9d91-2618fecb2e88</value>
+      <value>74ba6824-42f9-4cf1-af24-95f2454d0f9d</value>
       <value>nt:query</value>
     </row>
   </table>
@@ -33,6 +33,7 @@
     <column>path</column>
     <column>workspace_id</column>
     <column>name</column>
+    <column>idx</column>
     <column>node_identifier</column>
     <column>type</column>
     <column>multi_valued</column>
@@ -45,9 +46,10 @@
       <value>queryNode/jcr:language</value>
       <value>1</value>
       <value>jcr:language</value>
-      <value>0e8e856d-d378-4ffb-9d91-2618fecb2e88</value>
+      <value>0</value>
+      <value>74ba6824-42f9-4cf1-af24-95f2454d0f9d</value>
       <value>1</value>
-      <value></value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
@@ -58,9 +60,10 @@
       <value>queryNode/jcr:statement</value>
       <value>1</value>
       <value>jcr:statement</value>
-      <value>0e8e856d-d378-4ffb-9d91-2618fecb2e88</value>
+      <value>0</value>
+      <value>74ba6824-42f9-4cf1-af24-95f2454d0f9d</value>
       <value>1</value>
-      <value></value>
+      <value>0</value>
       <null/>
       <null/>
       <null/>
