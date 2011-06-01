@@ -198,6 +198,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getString()
     {
+        if ($this->type == PropertyType::BINARY && empty($this->value)) {
+            return Helper::convertType($this->getBinary(), PropertyType::STRING);
+        }
         if ($this->type != PropertyType::STRING) {
             return Helper::convertType($this->value, PropertyType::STRING);
         }
@@ -216,9 +219,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return Helper::convertType($this->value, PropertyType::BINARY);
         }
-        if (null !== $this->value) {
-            return $this->value; //FIXME: should clone the stream
+        /*
+        OPTIMIZE: store and clone the stream? or is re-fetch from backend faster?
+        if (null == $this->value) {
+            $this->value = $this->objectManager->getBinaryStream($this->path);
         }
+        $stream = fopen('php://memory', 'rwb+'); multivalue...
+        stream_copy_to_stream($this->value, $stream);
+        return $stream;
+        */
         return $this->objectManager->getBinaryStream($this->path);
     }
 
