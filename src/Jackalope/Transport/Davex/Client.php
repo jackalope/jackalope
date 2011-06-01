@@ -1089,10 +1089,10 @@ class Client implements TransportInterface
                 '</dcr:privileges>';
 
         $valid_permissions = array(
-            \Jackalope\SessionInterface::ACTION_ADD_NODE,
-            \Jackalope\SessionInterface::ACTION_READ,
-            \Jackalope\SessionInterface::ACTION_REMOVE,
-            \Jackalope\SessionInterface::ACTION_SET_PROPERTY);
+            \PHPCR\SessionInterface::ACTION_ADD_NODE,
+            \PHPCR\SessionInterface::ACTION_READ,
+            \PHPCR\SessionInterface::ACTION_REMOVE,
+            \PHPCR\SessionInterface::ACTION_SET_PROPERTY);
 
         $result = array();
 
