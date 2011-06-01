@@ -28,7 +28,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * for $data and use setValue afterwards to let the type magic be handled.
      * Then multivalue is determined on setValue
      *
-     * For binary properties, the value is the length of the data, not the data itself.
+     * For binary properties, the value is the length of the data(s), not the data itself.
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param array $data array with fields

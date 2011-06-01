@@ -1,6 +1,8 @@
 <?php
 namespace Jackalope;
 
+use PHPCR\PropertyType;
+
 /**
  * The Session object provides read and (if implemented) write access to the
  * content of a particular workspace in the repository.
@@ -580,9 +582,78 @@ class Session implements \PHPCR\SessionInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function exportSystemView($absPath, $out, $skipBinary, $noRecurse)
+    public function exportSystemView($absPath, $stream, $skipBinary, $noRecurse)
     {
-        throw new NotImplementedException();
+        $node = $this->getNode($absPath);
+
+        fwrite($stream, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+        $this->exportSystemViewRecursive($node, $stream, $skipBinary, $noRecurse, true);
+    }
+
+    /**
+     * Recursively output node and all its children into the file in the system view format
+     *
+     * @param NodeInterface $node the node to output
+     * @param resource $stream The stream resource (i.e. aquired with fopen) to which the XML serialization of the subgraph will be output. Must support the fwrite method.
+     * @param boolean $skipBinary A boolean governing whether binary properties are to be serialized.
+     * @param boolean $noRecurse A boolean governing whether the subgraph at absPath is to be recursed.
+     * @param boolean $root Whether this is the root node of the resulting document, meaning the namespace declarations have to be included in it
+     *
+     * @return void
+     */
+    private function exportSystemViewRecursive($node, $stream, $skipBinary, $noRecurse, $root=false)
+    {
+        fwrite($stream, '<sv:node');
+        if ($root) {
+            $this->exportNamespaceDeclarations($stream);
+        }
+        //TODO: does root node have name jcr:root?
+        fwrite($stream, ' sv:name="'.$node->getName().'">');
+
+        // the order MUST be primary type, then mixins, if any, then jcr:uuid if its a referenceable node
+        fwrite($stream, '<sv:property sv:name="jcr:primaryType" sv:type="Name"><sv:value>'.htmlspecialchars($node->getPropertyValue('jcr:primaryType')).'</sv:value></sv:property>');
+        if ($node->hasProperty('jcr:mixinTypes')) {
+            fwrite($stream, '<sv:property sv:name="jcr:mixinTypes" sv:type="Name">');
+            foreach ($node->getPropertyValue('jcr:mixinTypes') as $type) {
+                fwrite($stream, '<sv:value>'.htmlspecialchars($type).'</sv:value>');
+            }
+            fwrite($stream, '</sv:property>');
+        }
+        if ($node->isNodeType('mix:referenceable')) {
+            fwrite($stream, '<sv:property sv:name="jcr:uuid" sv:type="String"><sv:value>'.$node->getIdentifier().'</sv:value></sv:property>');
+        }
+
+        foreach($node->getProperties() as $name => $property) {
+            if ($name == 'jcr:primaryType' || $name == 'jcr:mixinTypes' || $name == 'jcr:uuid') {
+                // explicitly handled before
+                continue;
+            }
+            if (PropertyType::BINARY == $property->getType() && $skipBinary) {
+                // do not output binary data in the xml
+                continue;
+            }
+            fwrite($stream, "<sv:property sv:name=\"$name\" sv:type=\""
+                                . PropertyType::nameFromValue($property->getType()).'"'
+                                . ($property->isMultiple() ? ' sv:multiple="true"' : '')
+                                . '>');
+            $values = $property->isMultiple() ? $property->getString() : array($property->getString());
+            foreach($values as $value) {
+                if (PropertyType::BINARY == $property->getType()) {
+                    $val = base64_encode($value);
+                } else {
+                    $val = htmlspecialchars($value);
+                    //TODO: can we still have invalid characters after this? if so base64 and property, xsi:type="xsd:base64Binary"
+                }
+                fwrite($stream, "<sv:value>$val</sv:value>");
+            }
+            fwrite($stream, "</sv:property>");
+        }
+        if (! $noRecurse) {
+            foreach($node as $child) {
+                $this->exportSystemViewRecursive($child, $stream, $skipBinary, $noRecurse);
+            }
+        }
+        fwrite($stream, '</sv:node>');
     }
 
     /**
@@ -613,7 +684,7 @@ class Session implements \PHPCR\SessionInterface
      * The output XML will be encoded in UTF-8.
      *
      * @param string $absPath The path of the root of the subgraph to be serialized. This must be the path to a node, not a property
-     * @param string $out The URI to which the XML serialization of the subgraph will be output.
+     * @param resource $stream The stream resource (i.e. aquired with fopen) to which the XML serialization of the subgraph will be output. Must support the fwrite method.
      * @param boolean $skipBinary A boolean governing whether binary properties are to be serialized.
      * @param boolean $noRecurse A boolean governing whether the subgraph at absPath is to be recursed.
      * @return void
@@ -622,9 +693,61 @@ class Session implements \PHPCR\SessionInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function exportDocumentView($absPath, $out, $skipBinary, $noRecurse)
+    public function exportDocumentView($absPath, $stream, $skipBinary, $noRecurse)
     {
-        throw new NotImplementedException();
+        $node = $this->getNode($absPath);
+
+        fwrite($stream, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+        $this->exportDocumentViewRecursive($node, $stream, $skipBinary, $noRecurse, true);
+    }
+
+    /**
+     * Recursively output node and all its children into the file in the document view format
+     *
+     * @param NodeInterface $node the node to output
+     * @param resource $stream the resource to write data out to
+     * @param boolean $skipBinary A boolean governing whether binary properties are to be serialized.
+     * @param boolean $noRecurse A boolean governing whether the subgraph at absPath is to be recursed.
+     * @param boolean $root Whether this is the root node of the resulting document, meaning the namespace declarations have to be included in it
+     *
+     * @return void
+     */
+    private function exportDocumentViewRecursive($node, $stream, $skipBinary, $noRecurse, $root=false)
+    {
+        //TODO: encode name according to spec
+        fwrite($stream, '<'.$node->getName());
+        if ($root) {
+            $this->exportNamespaceDeclarations($stream);
+        }
+        foreach($node->getProperties() as $name => $property) {
+            if (PropertyType::BINARY == $property->getType()) {
+                if ($skipBinary) {
+                    continue;
+                }
+                $val = base64_encode($property->getString());
+            } else {
+                //TODO: encode strings according to spec
+                $val = $property->isMultiple() ? implode(' ', $property->getString()) : $property->getString();
+            }
+            fwrite($stream, " $name=\"$val\"");
+        }
+        if ($noRecurse || ! $node->hasNodes()) {
+            fwrite($stream, '/>');
+        } else {
+            fwrite($stream, '>');
+            foreach($node as $child) {
+                $this->exportDocumentViewRecursive($child, $stream, $skipBinary, $noRecurse);
+            }
+            fwrite($stream, '</'.$node->getName().'>');
+        }
+    }
+    private function exportNamespaceDeclarations($stream)
+    {
+        foreach($this->workspace->getNamespaceRegistry() as $key => $uri) {
+            if (! empty($key)) { // no ns declaration for empty namespace
+                fwrite($stream, " xmlns:$key=\"$uri\"");
+            }
+        }
     }
 
     /**

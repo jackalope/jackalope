@@ -58,27 +58,30 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                  * look at the type when we encounter the value of the property.
                  *
                  * If its a binary data, we only get the type declaration and
-                 * no data. Then the $value is not the type string for binary,
-                 * but the number of bytes of the property
+                 * no data. Then the $value of the type declaration is not the
+                 * type string for binary, but the number of bytes of the
+                 * property - resp. array of number of bytes.
                  *
                  * The magic property ::NodeIteratorSize tells this node has no
                  * children. Ignore that info for now. We might optimize with
                  * this info once we do prefetch nodes.
                  */
-                if (0 === strpos($key, ':') && $key != '::NodeIteratorSize') {
-                    if (is_int($value)) {
+                if (0 === strpos($key, ':')) {
+                    if ((is_int($value) || is_array($value))
+                         && $key != '::NodeIteratorSize'
+                    ) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
-                                array('type' => \PHPCR\PropertyType::BINARY, 'value' => (string) $value),
+                                array('type' => \PHPCR\PropertyType::BINARY, 'value' => $value),
                                 $this->getChildPath($key),
                                 $this->session,
                                 $this->objectManager,
                             )
                         );
-                    } //else this is a type declaration
+                    } //else this is a type declaration for a type that has a value. values are processed below and read the :type field
 
                     //skip this entry (if its binary, its already processeed
                     continue;
