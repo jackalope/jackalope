@@ -23,7 +23,7 @@ namespace Jackalope\Transport;
 /**
  * Capsulate curl as an object
  *
- * @todo: TODO: Write phpt tests
+ * @todo: TODO: Write phpunit tests
  *
  * @package jackalope
  * @subpackage transport
@@ -35,13 +35,19 @@ class curl
      * @var resource
      */
     protected $curl;
-    
+
     /**
      * Contains header of a response, if needed
      * @var array
      */
-    
+
     protected $headers = array();
+
+    /**
+     * Response body as a string
+     * @var string
+     */
+    protected $response = '';
 
     /**
      * Handles the initialization of a curl session.
@@ -140,7 +146,7 @@ class curl
     {
         return curl_close($this->curl);
     }
-    
+
     public function readHeader($ch, $header)
     {
         if (strpos($header,":") !== false) {
@@ -149,25 +155,33 @@ class curl
         }
         return strlen($header);
     }
-    
-    public function getHeaders() 
+
+    public function getHeaders()
     {
         return $this->headers;
     }
-    
-    public function getHeader($key) 
+
+    public function getHeader($key)
     {
         if (isset($this->headers[$key])) {
             return $this->headers[$key];
         }
         return null;
     }
-    
+
     public function parseResponseHeaders()
     {
         $this->setopt(CURLOPT_HEADER, false);
         $this->setopt(CURLOPT_HEADERFUNCTION, array(&$this,'readHeader'));
     }
 
-      
+    public function setResponse($r)
+    {
+        $this->response = $r;
+    }
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
 }

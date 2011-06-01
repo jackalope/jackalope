@@ -253,6 +253,7 @@ class Request
 
 
         $response = $this->curl->exec();
+        $this->curl->setResponse($response);
 
         $httpCode = $this->curl->getinfo(CURLINFO_HTTP_CODE);
         if ($httpCode >= 200 && $httpCode < 300) {

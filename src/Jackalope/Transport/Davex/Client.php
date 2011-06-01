@@ -358,20 +358,64 @@ class Client implements TransportInterface
     }
 
     /**
-     * Retrieves a binary value
+     * Retrieves a binary value resp. multiple values
      *
-     * @param $path
-     * @return string
+     * @param $path the path to the binary property
+     *
+     * @return mixed decoded stream or array of streams
      */
     public function getBinaryStream($path)
     {
         $request = $this->getRequest(Request::GET, $path);
-        // TODO: OPTIMIZE!
-        $binary = $request->execute();
-        $stream = fopen('php://memory', 'rwb+');
-        fwrite($stream, $binary);
-        rewind($stream);
-        return $stream;
+        $curl = $request->execute(true);
+        switch($curl->getHeader('Content-Type')) {
+            case 'text/xml; charset=utf-8':
+                return $this->decodeBinaryDom($curl->getResponse());
+            case 'jcr-value/binary; charset=utf-8':
+                // TODO: OPTIMIZE stream handling!
+                $stream = fopen('php://memory', 'rwb+');
+                fwrite($stream, $curl->getResponse());
+                rewind($stream);
+                return $stream;
+            default:
+                throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
+        }
+    }
+
+    /**
+     * parse the multivalue binary response (a list of base64 encoded values)
+     *
+     * <dcr:values xmlns:dcr="http://www.day.com/jcr/webdav/1.0">
+     *   <dcr:value dcr:type="Binary">aDEuIENoYXB0ZXIgMSBUaXRsZQoKKiBmb28KKiBiYXIKKiogZm9vMgoqKiBmb28zCiogZm9vMAoKfHwgaGVhZGVyIHx8IGJhciB8fAp8IGggfCBqIHwKCntjb2RlfQpoZWxsbyB3b3JsZAp7Y29kZX0KCiMgZm9vCg==</dcr:value>
+     *   <dcr:value dcr:type="Binary">aDEuIENoYXB0ZXIgMSBUaXRsZQoKKiBmb28KKiBiYXIKKiogZm9vMgoqKiBmb28zCiogZm9vMAoKfHwgaGVhZGVyIHx8IGJhciB8fAp8IGggfCBqIHwKCntjb2RlfQpoZWxsbyB3b3JsZAp7Y29kZX0KCiMgZm9vCg==</dcr:value>
+     * </dcr:values>
+     *
+     * @param string $xml the xml as returned by jackrabbit
+     *
+     * @return array of stream resources
+     *
+     * @throws \PHPCR\RepositoryException if the xml is invalid or any value is not of type binary
+     */
+    private function decodeBinaryDom($xml)
+    {
+        $dom = new \DOMDocument();
+        if (! $dom->loadXML($xml)) {
+            throw new \PHPCR\RepositoryException("Failed to load xml data:\n\n$xml");
+        }
+        $ret = array();
+        foreach($dom->getElementsByTagNameNS(self::NS_DCR, 'values') as $node) {
+            foreach($node->getElementsByTagNameNS(self::NS_DCR, 'value') as $value) {
+                if ($value->getAttributeNS(self::NS_DCR, 'type') != \PHPCR\PropertyType::TYPENAME_BINARY) {
+                    throw new \PHPCR\RepositoryException('Expected binary value but got '.$value->getAttributeNS(self::NS_DCR, 'type'));
+                }
+                // TODO: OPTIMIZE stream handling!
+                $stream = fopen('php://memory', 'rwb+');
+                fwrite($stream, base64_decode($value->textContent));
+                rewind($stream);
+                $ret[] = $stream;
+            }
+        }
+        return $ret;
     }
 
     /**
@@ -495,7 +539,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::UPDATE, $path);
         $request->setBody($body);
-        $request->execute();
+        $request->execute(); // errors are checked in request
     }
 
     public function getVersionHistory($path)
