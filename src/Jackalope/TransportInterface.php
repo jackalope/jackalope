@@ -468,7 +468,8 @@ interface TransportInterface
     public function getWeakReferences($path, $name = null);
 
     /**
-     * Return the permissions (add_node, read, remove, set_property) of the current session on the node given by path.
+     * Return the permissions of the current session on the node given by path.
+     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
      *
      * @param string $path the path to the node we want to check
      * @return array of string

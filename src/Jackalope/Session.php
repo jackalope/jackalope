@@ -465,9 +465,36 @@ class Session implements \PHPCR\SessionInterface
     }
 
     /**
-     * For ACTION_READ, checks if the path is allowed to be read by the current session.
+     * Returns true if this Session has permission to perform the specified
+     * actions at the specified absPath and false otherwise.
      *
-     * If anything else/more than ACTION_READ is specified, will return false.
+     * The actions parameter is a comma separated list of action strings. The
+     * following action strings are defined:
+     *
+     *   - add_node: If hasPermission(path, "add_node") returns true, then this
+     *     Session has permission to add a node at path.
+     *
+     *   - set_property: If hasPermission(path, "set_property") returns true,
+     *     then this Session has permission to set (add or change) a property at
+     *     path.
+     *
+     *   - remove: If hasPermission(path, "remove") returns true, then this
+     *     Session has permission to remove an item at path.
+     *
+     *   - read: If hasPermission(path, "read") returns true, then this Session
+     *     has permission to retrieve (and read the value of, in the case of a
+     *     property) an item at path.
+     *
+     * When more than one action is specified in the actions parameter, this
+     * method will only return true if this Session has permission to perform
+     * all of the listed actions at the specified path.
+     *
+     * The information returned through this method will only reflect the access
+     * control status (both JCR defined and implementation-specific) and not
+     * other restrictions that may exist, such as node type constraints. For
+     * example, even though hasPermission may indicate that a particular Session
+     * may add a property at /A/B/C, the node type of the node at /A/B may
+     * prevent the addition of a property called C.
      *
      * @param string $absPath an absolute path.
      * @param string $actions a comma separated list of action strings.

@@ -1074,7 +1074,8 @@ class Client implements TransportInterface
     }
 
     /**
-     * Return the permissions (add_node, read, remove, set_property) of the current session on the node given by path.
+     * Return the permissions of the current session on the node given by path.
+     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
      *
      * @param string $path the path to the node we want to check
      * @return array of string
@@ -1088,10 +1089,10 @@ class Client implements TransportInterface
                 '</dcr:privileges>';
 
         $valid_permissions = array(
-            \Jackalope\Session::ACTION_ADD_NODE,
-            \Jackalope\Session::ACTION_READ,
-            \Jackalope\Session::ACTION_REMOVE,
-            \Jackalope\Session::ACTION_SET_PROPERTY);
+            \Jackalope\SessionInterface::ACTION_ADD_NODE,
+            \Jackalope\SessionInterface::ACTION_READ,
+            \Jackalope\SessionInterface::ACTION_REMOVE,
+            \Jackalope\SessionInterface::ACTION_SET_PROPERTY);
 
         $result = array();
 

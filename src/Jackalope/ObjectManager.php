@@ -806,6 +806,7 @@ class ObjectManager
      *      - read
      *      - remove
      *      - set_property
+     * This function will return an array containing zero, one or more of the above strings.
      *
      * @param type $absPath the path to get permissions
      * @return array of string
