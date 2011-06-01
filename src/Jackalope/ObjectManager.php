@@ -800,6 +800,22 @@ class ObjectManager
     }
 
     /**
+     * Return the permissions of the current session on the node given by path.
+     * Permission can be of 4 types:
+     *      - add_node
+     *      - read
+     *      - remove
+     *      - set_property
+     *
+     * @param type $absPath the path to get permissions
+     * @return array of string
+     */
+    public function getPermissions($absPath)
+    {
+        return $this->transport->getPermissions($absPath);
+    }
+
+    /**
      * Clears the state of the current session
      *
      * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.

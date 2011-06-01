@@ -1074,6 +1074,47 @@ class Client implements TransportInterface
     }
 
     /**
+     * Return the permissions (add_node, read, remove, set_property) of the current session on the node given by path.
+     *
+     * @param string $path the path to the node we want to check
+     * @return array of string
+     */
+    public function getPermissions($path)
+    {
+        // TODO: OPTIMIZE - once we have ACL this might be done without any server request
+        $body = '<?xml version="1.0" encoding="UTF-8"?>' .
+                '<dcr:privileges xmlns:dcr="http://www.day.com/jcr/webdav/1.0">' .
+                '<D:href xmlns:D="DAV:">'.$this->normalizeUri($path).'</D:href>' .
+                '</dcr:privileges>';
+
+        $valid_permissions = array(
+            \Jackalope\Session::ACTION_ADD_NODE,
+            \Jackalope\Session::ACTION_READ,
+            \Jackalope\Session::ACTION_REMOVE,
+            \Jackalope\Session::ACTION_SET_PROPERTY);
+
+        $result = array();
+
+        $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
+        $request->setBody($body);
+        $dom = $request->executeDom();
+
+        foreach($dom->getElementsByTagNameNS(self::NS_DAV, 'current-user-privilege-set') as $node) {
+            foreach($node->getElementsByTagNameNS(self::NS_DAV, 'privilege') as $privilege) {
+                foreach($privilege->childNodes as $child) {
+                    $permission = str_replace('dcr:', '', $child->tagName);
+                    if (! in_array($permission, $valid_permissions)) {
+                        throw new \PHPCR\RepositoryException("Invalid permission '$permission'");
+                    }
+                    $result[] = $permission;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Build the xml required to register node types
      *
      * @param string $cnd the node type definition

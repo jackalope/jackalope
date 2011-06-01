@@ -477,19 +477,16 @@ class Session implements \PHPCR\SessionInterface
      */
     public function hasPermission($absPath, $actions)
     {
-        if ($actions == self::ACTION_READ) {
-            throw new NotImplementedException('TODO: check read permission');
-           /*
-            * The information returned through this method will only reflect the access
-            * control status (both JCR defined and implementation-specific) and not
-            * other restrictions that may exist, such as node type constraints. For
-            * example, even though hasPermission may indicate that a particular Session
-            * may add a property at /A/B/C, the node type of the node at /A/B may
-            * prevent the addition of a property called C.
-            */
+        $actualPermissions = $this->objectManager->getPermissions($absPath);
+        $requestedPermissions = split(',', $actions);
+
+        foreach($requestedPermissions as $perm) {
+            if (! in_array(strtolower(trim($perm)), $actualPermissions)) {
+                return false;
+            }
         }
-        //no write operations are supported.
-        return false;
+
+        return true;
     }
 
     /**
