@@ -495,7 +495,7 @@ class Session implements \PHPCR\SessionInterface
     public function hasPermission($absPath, $actions)
     {
         $actualPermissions = $this->objectManager->getPermissions($absPath);
-        $requestedPermissions = split(',', $actions);
+        $requestedPermissions = explode(',', $actions);
 
         foreach($requestedPermissions as $perm) {
             if (! in_array(strtolower(trim($perm)), $actualPermissions)) {
