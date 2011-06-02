@@ -268,15 +268,11 @@ class Session implements \PHPCR\SessionInterface
             return true;
         }
 
-        if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
-        }
-
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getNode($absPath);
-        } catch(\Exception $e) {
+        } catch(\PHPCR\PathNotFoundException $e) {
             return false;
         }
         return true;
@@ -293,17 +289,11 @@ class Session implements \PHPCR\SessionInterface
      */
     public function propertyExists($absPath)
     {
-        // TODO: what about $absPath == '/' here? if not then ::itemExists is faulty
-
-        if (!Helper::isAbsolutePath($absPath) || !Helper::isValidPath($absPath)) {
-            throw new \PHPCR\RepositoryException("Path is invalid: $absPath");
-        }
-
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getProperty($absPath);
-        } catch(\Exception $e) {
+        } catch(\PHPCR\PathNotFoundException $e) {
             return false;
         }
         return true;
@@ -661,6 +651,7 @@ class Session implements \PHPCR\SessionInterface
                                 . ($property->isMultiple() ? ' sv:multiple="true"' : '')
                                 . '>');
             $values = $property->isMultiple() ? $property->getString() : array($property->getString());
+
             foreach($values as $value) {
                 if (PropertyType::BINARY == $property->getType()) {
                     $val = base64_encode($value);
@@ -739,21 +730,25 @@ class Session implements \PHPCR\SessionInterface
     private function exportDocumentViewRecursive($node, $stream, $skipBinary, $noRecurse, $root=false)
     {
         //TODO: encode name according to spec
-        fwrite($stream, '<'.$node->getName());
+        $nodename = $this->escapeXmlName($node->getName());
+        fwrite($stream, "<$nodename");
         if ($root) {
             $this->exportNamespaceDeclarations($stream);
         }
         foreach($node->getProperties() as $name => $property) {
+            if ($property->isMultiple()) {
+                // skip multiple properties. jackrabbit does this too. cheap but whatever. use system view for a complete export
+                continue;
+            }
             if (PropertyType::BINARY == $property->getType()) {
                 if ($skipBinary) {
                     continue;
                 }
-                $val = base64_encode($property->getString());
+                $value = base64_encode($property->getString());
             } else {
-                //TODO: encode strings according to spec
-                $val = $property->isMultiple() ? implode(' ', $property->getString()) : $property->getString();
+                $value = htmlspecialchars($property->getString());
             }
-            fwrite($stream, " $name=\"$val\"");
+            fwrite($stream, ' '.$this->escapeXmlName($name).'="'.$value.'"');
         }
         if ($noRecurse || ! $node->hasNodes()) {
             fwrite($stream, '/>');
@@ -762,8 +757,15 @@ class Session implements \PHPCR\SessionInterface
             foreach($node as $child) {
                 $this->exportDocumentViewRecursive($child, $stream, $skipBinary, $noRecurse);
             }
-            fwrite($stream, '</'.$node->getName().'>');
+            fwrite($stream, "</$nodename>");
         }
+    }
+    private function escapeXmlName($name)
+    {
+        $name = preg_replace('/_(x[0-9a-fA-F]4)/', '_x005f_\\1', $name);
+        return str_replace(array(' ',       '<',       '>',       '"',       "'"),
+                           array('_x0020_', '_x003c_', '_x003e_', '_x0022_', '_x0027_'),
+                           $name); // TODO: more invalid characters?
     }
     private function exportNamespaceDeclarations($stream)
     {
@@ -796,7 +798,8 @@ class Session implements \PHPCR\SessionInterface
     public function setNamespacePrefix($prefix, $uri)
     {
         $this->namespaceRegistry->checkPrefix($prefix);
-        throw new NotImplementedException('TODO: implement session scope remapping of namespaces'); //this will lead to rewrite all names and paths in requests and replies
+        throw new NotImplementedException('TODO: implement session scope remapping of namespaces');
+        //this will lead to rewrite all names and paths in requests and replies. part of this can be done in ObjectManager::normalizePath
     }
 
     /**

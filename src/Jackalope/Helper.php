@@ -32,32 +32,6 @@ class Helper
     }
 
     /**
-     * Check if the path is an absolute path or not.
-     *
-     * @param   string  $path   The path to check
-     * @return  bool    true if path is absolute otherwise false
-     */
-    public static function isAbsolutePath($path)
-    {
-        return $path && $path[0] == '/';
-    }
-
-    /**
-     * Whether the path conforms to the JCR Specs (see paragraph 3.2)
-     *
-     * TODO: only minimal check performed atm, not full specs
-     * TODO: what do we need this for in the frontend? i think the backend will
-     *       check and scream if path is not well
-     *
-     * @param   string  $path   THe path to validate
-     * @return  bool    true if valid otherwise false
-     */
-    public static function isValidPath($path)
-    {
-        return (strpos($path, '//') === false && preg_match('/^[\w{}\/#:^+~*\[\]\.-]*$/i', $path));
-    }
-
-    /**
      * Determine PropertyType from on variable type.
      *
      * This is most of the remainder of ValueFactory that is still needed.

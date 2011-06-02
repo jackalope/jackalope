@@ -19,6 +19,12 @@ use Jackalope\NodeType\NodeTypeManager;
  * The Transport is told how to access that backend in its constructor.
  * Look in the transport/ subfolder for actual implementations.
  *
+ * Implementors can expect Jackalope to only pass normalized absolute paths
+ * to the transport. What still has to be tested is if the paths contain no
+ * invalid characters according to
+ * <a href="http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names">the specification</a>
+ * and backend specific restrictions.
+ *
  * This interface is now synchronized with what we had for davex as per 2011-04-13
  * TODO: keep this in sync with Transport/Davex/Client.php
  * TODO: add references to all phpcr api methods that use each transport method for additional doc

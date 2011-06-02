@@ -228,6 +228,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         stream_copy_to_stream($this->value, $stream);
         return $stream;
         */
+        if ($this->isNew()) {
+            // new item never gets stream from backend
+            // TODO: clone stream?
+            return $this->value;
+        }
         return $this->objectManager->getBinaryStream($this->path);
     }
 

@@ -197,7 +197,7 @@ class Client implements TransportInterface
             $this->curl = new curl();
         }
 
-        $uri = $this->normalizeUri($uri);
+        $uri = $this->addWorkspacePathToUri($uri);
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
@@ -327,7 +327,7 @@ class Client implements TransportInterface
      */
     public function getNode($path)
     {
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
 
         $path .= '.0.json';
 
@@ -348,6 +348,7 @@ class Client implements TransportInterface
      */
     public function getProperty($path)
     {
+        $path = $this->encodePathForDavex($path);
         throw new NotImplementedException();
         /*
          * TODO: implement
@@ -366,6 +367,7 @@ class Client implements TransportInterface
      */
     public function getBinaryStream($path)
     {
+        $path = $this->encodePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path);
         $curl = $request->execute(true);
         switch($curl->getHeader('Content-Type')) {
@@ -452,6 +454,7 @@ class Client implements TransportInterface
      */
     protected function getNodeReferences($path, $name = null, $weak_reference = false)
     {
+        $path = $this->encodePathForDavex($path);
         $identifier = $weak_reference ? 'weakreferences' : 'references';
         $request = $this->getRequest(Request::PROPFIND, $path);
         $request->setBody($this->buildPropfindRequest(array('dcr:'.$identifier)));
@@ -483,11 +486,12 @@ class Client implements TransportInterface
      */
     public function checkinItem($path)
     {
+        $path = $this->encodePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKIN, $path);
             $curl = $request->execute(true);
             if ($curl->getHeader("Location")) {
-                return $this->cleanUriFromWebserverRoot(urldecode($curl->getHeader("Location")));
+                return $this->stripServerRootFromUri(urldecode($curl->getHeader("Location")));
             }
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
@@ -511,7 +515,7 @@ class Client implements TransportInterface
      */
     public function checkoutItem($path)
     {
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKOUT, $path);
             $request->execute();
@@ -526,11 +530,11 @@ class Client implements TransportInterface
 
     public function restoreItem($removeExisting, $versionPath, $path)
     {
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
 
         $body ='<D:update xmlns:D="DAV:">
 	<D:version>
-		<D:href>'.$this->normalizeUri($versionPath).'</D:href>
+		<D:href>'.$this->addWorkspacePathToUri($versionPath).'</D:href>
 	</D:version>';
         if ($removeExisting) {
             $body .= '<dcr:removeexisting xmlns:dcr="http://www.day.com/jcr/webdav/1.0" />';
@@ -544,7 +548,7 @@ class Client implements TransportInterface
 
     public function getVersionHistory($path)
     {
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path."/jcr:versionHistory");
         $resp = $request->execute();
         return $resp;
@@ -571,7 +575,7 @@ class Client implements TransportInterface
 
         $body .= '</D:searchrequest>';
 
-        $path = $this->normalizeUri('/');
+        $path = $this->addWorkspacePathToUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
         $request->setBody($body);
 
@@ -598,38 +602,6 @@ class Client implements TransportInterface
     }
 
     /**
-     * checks if the path is absolute, throws an exception if it is not
-     *
-     * @param path to check
-     * @throws \PHPCR\RepositoryException If path is not absolute
-     */
-    protected function ensureAbsolutePath($path)
-    {
-        if ('/' != substr($path, 0, 1)) {
-            //sanity check
-            throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
-        }
-    }
-
-    /**
-     * Prepends the workspace root to the uris that contain an absolute path
-     *
-     * @param   string  $uri    The URI to normalize
-     * @return  string  The normalized URI
-     * @throws \PHPCR\RepositoryException   If workspaceUri is missing
-     */
-    protected function normalizeUri($uri)
-    {
-        if (substr($uri, 0, 1) === '/') {
-            if (empty($this->workspaceUri)) {
-                throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
-            }
-            $uri = $this->workspaceUriRoot . $uri;
-        }
-        return $uri;
-    }
-
-    /**
      * Deletes a node and the whole subtree under it
      *
      * @param string $path Absolute path to the node
@@ -639,7 +611,7 @@ class Client implements TransportInterface
      */
     public function deleteNode($path)
     {
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
 
         $request = $this->getRequest(Request::DELETE, $path);
         $request->execute();
@@ -672,8 +644,8 @@ class Client implements TransportInterface
      */
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
-        $this->ensureAbsolutePath($srcAbsPath);
-        $this->ensureAbsolutePath($dstAbsPath);
+        $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
+        $dstAbsPath = $this->encodePathForDavex($dstAbsPath);
 
         if ($srcWorkspace) {
             $srcAbsPath = $this->server . $srcAbsPath;
@@ -681,7 +653,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::COPY, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
-        $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
+        $request->addHeader('Destination: '.$this->addWorkspacePathToUri($dstAbsPath));
         $request->execute();
     }
 
@@ -696,12 +668,12 @@ class Client implements TransportInterface
      */
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
-        $this->ensureAbsolutePath($srcAbsPath);
-        $this->ensureAbsolutePath($dstAbsPath);
+        $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
+        $dstAbsPath = $this->encodePathForDavex($dstAbsPath);
 
         $request = $this->getRequest(Request::MOVE, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
-        $request->addHeader('Destination: '.$this->normalizeUri($dstAbsPath));
+        $request->addHeader('Destination: '.$this->addWorkspacePathToUri($dstAbsPath));
         $request->execute();
     }
 
@@ -724,7 +696,7 @@ class Client implements TransportInterface
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
 
         $buffer = array();
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -770,7 +742,7 @@ class Client implements TransportInterface
                         $valueBody .= '<sv:value>'.$this->propertyToXmlString($value, $type).'</sv:value>';
                     }
                 } else {
-                    // multivalue properties with just one value have to be saved separately
+                    // multivalue properties with just one value have to be saved separately to transmit the multivalue info
                     $buffer[$path.'/'.$name] = '<?xml version="1.0" encoding="UTF-8"?><dcr:values xmlns:dcr="http://www.day.com/jcr/webdav/1.0">'.
                         '<dcr:value dcr:type="'.$type.'">'.$this->propertyToXmlString(reset($nativeValue), $type).'</dcr:value>'.
                     '</dcr:values>';
@@ -802,7 +774,7 @@ class Client implements TransportInterface
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $path = $property->getPath();
-        $this->ensureAbsolutePath($path);
+        $path = $this->encodePathForDavex($path);
 
         $typeid = $property->getType();
         $type = PropertyType::nameFromValue($typeid);
@@ -816,7 +788,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::PUT, $path);
         if ($property->getName() === 'jcr:mixinTypes') {
-            $uri = $this->normalizeUri(dirname($path) === '\\' ? '/' : dirname($path));
+            $uri = $this->addWorkspacePathToUri(dirname($path) === '\\' ? '/' : dirname($path));
             $request->setUri($uri);
             $request->setMethod(Request::PROPPATCH);
             $body = '<?xml version="1.0" encoding="UTF-8"?>'.
@@ -925,7 +897,7 @@ class Client implements TransportInterface
                 $this->workspaceUriRoot
             );
         }
-        return $this->cleanUriFromWebserverRoot(substr(\urldecode($fullPath),0,-1));
+        return $this->stripServerRootFromUri(substr(\urldecode($fullPath),0,-1));
     }
 
     /**
@@ -1217,13 +1189,86 @@ class Client implements TransportInterface
                '</D:href></dcr:locate-by-uuid>';
     }
 
-    public function cleanUriFromWebserverRoot($uri)
+    //TODO: this seems unused - and its never set anyways
+    public function setNodeTypeManager($nodeTypeManager)
+    {
+        $this->nodeTypeManager = $nodeTypeManager;
+    }
+
+    /**
+     * Whether the path conforms to the specification and is supported by this implementation
+     *
+     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
+     *
+     * TODO: the spec is extremly open and recommends to restrict further. We
+     * currently have rather random restrictions
+     *
+     * @param   string  $path   THe path to validate
+     *
+     * @return boolean always true, exception if this is not a valid path
+     *
+     * @throws RepositoryException if the path contains invalid characters
+     */
+    protected function ensureValidPath($path)
+    {
+        if (! (strpos($path, '//') === false
+              && strpos($path, '/../') === false
+              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
+        ) {
+            throw new \PHPCR\RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
+        // if we allow MORE stuff, we might have to adapt encodePathForDavex for escaping
+    }
+
+    /**
+     * Checks if the path is absolute and valid, and properly urlencodes special characters
+     *
+     * This is to be used in the Davex headers. The XML requests can cope with unencoded stuff
+     *
+     * @param string $path to check
+     *
+     * @return string the cleaned path
+     *
+     * @throws \PHPCR\RepositoryException If path is not absolute or invalid
+     */
+    protected function encodePathForDavex($path)
+    {
+        if ('/' != substr($path, 0, 1)) {
+            //sanity check
+            throw new \PHPCR\RepositoryException("Implementation error: '$path' is not an absolute path");
+        }
+        $this->ensureValidPath($path);
+        return str_replace(' ', '%20', $path); // TODO: does ensureValidPath allow other characters that should be encoded?
+    }
+
+    /**
+     * remove the server and workspace part from an uri, leaving the absolute
+     * path inside the current workspace
+     *
+     * @param string $uri a full uri including the server path, workspace and jcr%3aroot
+     *
+     * @return string absolute path in the current work space
+     */
+    protected function stripServerRootFromUri($uri)
     {
         return substr($uri,strlen($this->workspaceUriRoot));
     }
 
-    public function setNodeTypeManager($nodeTypeManager)
+    /**
+     * Prepends the workspace root to the uris that contain an absolute path
+     *
+     * @param   string  $uri The absolute path in the current workspace or server uri
+     * @return  string The server uri with this path
+     * @throws \PHPCR\RepositoryException   If workspaceUri is missing (not logged in)
+     */
+    protected function addWorkspacePathToUri($uri)
     {
-        $this->nodeTypeManager = $nodeTypeManager;
+        if (substr($uri, 0, 1) === '/') {
+            if (empty($this->workspaceUri)) {
+                throw new \PHPCR\RepositoryException("Implementation error: Please login before accessing content");
+            }
+            $uri = $this->workspaceUriRoot . $uri;
+        }
+        return $uri;
     }
 }
