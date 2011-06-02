@@ -1057,7 +1057,7 @@ class Client implements TransportInterface
         // TODO: OPTIMIZE - once we have ACL this might be done without any server request
         $body = '<?xml version="1.0" encoding="UTF-8"?>' .
                 '<dcr:privileges xmlns:dcr="http://www.day.com/jcr/webdav/1.0">' .
-                '<D:href xmlns:D="DAV:">'.$this->normalizeUri($path).'</D:href>' .
+                '<D:href xmlns:D="DAV:">'.$this->addWorkspacePathToUri($path).'</D:href>' .
                 '</dcr:privileges>';
 
         $valid_permissions = array(
