@@ -584,20 +584,32 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * See NodeInterface::getProperties for a full documentation
      *
      * @param string|array $filter a name pattern
-     * @return Iterator implementing SeekableIterator and Countable. Keys are the property names, values the corresponding property value (or array of values in case of multi-valued properties)
+     * @param boolean $dereference whether to dereference REFERENCE, WEAKREFERENCE and PATH properties
+     *
+     * @return array Keys are the property names, values the corresponding property value (or array of values in case of multi-valued properties)
+     *
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getPropertiesValues($filter=null)
+    public function getPropertiesValues($filter=null, $dereference=true)
     {
-        //OPTIMIZE: lazy iterator?
+        // OPTIMIZE: do not create properties in constructor, go over array here
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
-            $result[$name] = $this->properties[$name]->getValue();
+            $type = $this->properties[$name]->getType();
+            if (! $dereference &&
+                    (\PHPCR\PropertyType::REFERENCE == $type
+                    || \PHPCR\PropertyType::WEAKREFERENCE == $type
+                    || \PHPCR\PropertyType::PATH == $type)
+            ) {
+                $result[$name] = $this->properties[$name]->getString();
+            } else {
+                $result[$name] = $this->properties[$name]->getValue();
+            }
         }
-        return new \ArrayIterator($result);
+        return $result;
     }
 
     /**
