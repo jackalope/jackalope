@@ -346,7 +346,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setProperty($name, $value, $type = null)
+    public function setProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
     {
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
 
