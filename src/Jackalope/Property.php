@@ -83,15 +83,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * {@inheritDoc}
      */
-    public function setValue($value, $type = null)
+    public function setValue($value, $type = PropertyType::UNDEFINED)
     {
         if (is_null($value)) {
             $this->remove();
         }
-        if (! is_null($type) && ! is_integer($type)) {
+        if (! is_integer($type)) {
             throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
         }
-        if ($this->new && is_null($this->type)) {
+        if ($this->new) {
             $this->isMultiple = is_array($value);
         }
 
@@ -106,7 +106,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
          * }
          */
 
-        if (null === $type) {
+        if (PropertyType::UNDEFINED === $type) {
             $type = Helper::determineType(is_array($value) ? reset($value) : $value);
         }
 
@@ -132,7 +132,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
 
         if ($this->value !== $value) {
-            //identity check will detect type changes as well
+            //identity check will detect native variable type changes as well
             $this->setModified();
         }
 
