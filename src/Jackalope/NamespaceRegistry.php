@@ -53,8 +53,8 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      *
      * @return void
      */
-     
-    protected function lazyLoadNamespaces() {
+    protected function lazyLoadNamespaces() 
+    {
         if ($this->userNamespaces === null) {
             $namespaces = $this->transport->getNamespaces();
             $this->userNamespaces = array();

@@ -276,11 +276,11 @@ class Client implements TransportInterface
      * You can disable that with setting it to false, then an error only occurs later
      * if the repository doesn't exits
      *
-     * @return bool always true
+     * @return void
      */
-    public function setCheckLoginOnServer($bool) {
+    public function setCheckLoginOnServer($bool) 
+    {
         $this->checkLoginOnServer = $bool;
-        return true;
     }
     /**
      * Get the repository descriptors from the jackrabbit server
