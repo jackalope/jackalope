@@ -6,7 +6,8 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
+         syntaxCheck="true"
+         strict="true"
          bootstrap="bootstrap.php">
     <php>
         <var name="jcr.url" value="http://localhost:8080/server" />
