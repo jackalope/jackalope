@@ -17,18 +17,35 @@
     </php>
 
     <testsuites>
-        <testsuite name="phpCR">
+        <testsuite name="all">
+            <directory>suite/tests/</directory>
+            <directory>../tests/</directory>
+        </testsuite>
+        <!-- if phpunit would actually allow to use its config, we could add
+            this one and let the caller specify what they want to test
+        <testsuite name="api">
             <directory>suite/tests/</directory>
         </testsuite>
+        -->
     </testsuites>
 
+    <!-- configuration for code coverage report -->
     <filter>
         <whitelist>
             <directory>../</directory>
+
             <exclude>
+                <!-- ignore the unit tests -->
                 <directory>../tests</directory>
+
+                <!-- ignore the api tests -->
                 <directory>.</directory>
-                <file>../src/jackalope/transport/curl.php</file>
+
+                <!-- ignore whats not implemented yet -->
+                <directory>../lib/phpcr/src/PHPCR/Lock</directory>
+                <directory>../lib/phpcr/src/PHPCR/Observation</directory>
+                <directory>../lib/phpcr/src/PHPCR/Retention</directory>
+                <directory>../lib/phpcr/src/PHPCR/Security</directory>
             </exclude>
         </whitelist>
     </filter>
