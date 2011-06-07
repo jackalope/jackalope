@@ -1,0 +1,6 @@
+QOM TODO list
+-------------
+
+  - Check the class names are all correct (be coherent with the ...Constraint class names, i.e. AndConstraint)
+  - Double check the variables names
+  - Should we unit test this?
