@@ -745,6 +745,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         }
+        if (! strlen($relPath) || $relPath[0] == '/') {
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
+        }
 
         return $this->session->nodeExists($this->getChildPath($relPath));
     }
@@ -762,6 +765,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
+        }
+        if (! strlen($relPath) || $relPath[0] == '/') {
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->propertyExists($this->getChildPath($relPath));
