@@ -19,9 +19,9 @@ class NotConstraint implements NotInterface
      */
     protected $constraint;
 
-    public function __construct(\PHPCR\Query\QOM\ConstraintInterface $contraint)
+    public function __construct(\PHPCR\Query\QOM\ConstraintInterface $constraint)
     {
-        $this->constraint = $contraint;
+        $this->constraint = $constraint;
     }
 
     /**

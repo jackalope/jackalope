@@ -20,7 +20,7 @@ class Sql2Generator
      *
      * @param string $source
      * @param string $columns
-     * @param string $contraint
+     * @param string $constraint
      * @param string $ordering 
      * @return string
      */

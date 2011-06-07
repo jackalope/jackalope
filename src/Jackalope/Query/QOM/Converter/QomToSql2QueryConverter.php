@@ -33,7 +33,7 @@ class QomToSql2QueryConverter
     {
         $columns = $this->convertColumns($query->getColumns());
         $source = $this->convertSource($query->getSource());
-        $contraint = '';
+        $constraint = '';
         $orderings = '';
 
         if ($query->getConstraint() !== null) {
