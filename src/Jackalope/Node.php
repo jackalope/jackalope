@@ -27,8 +27,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     protected $nodes = array();
 
-    protected $uuid = null;
-
     /**
      * Create a node.
      *
@@ -116,10 +114,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                             )
                         );
                         break;
-                    case 'jcr:uuid':
-                        $this->uuid = $value;
-                        break;
-                    // do we have any other meta information that needs special treatment?
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
@@ -163,9 +157,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @param string $relPath The path of the new node to be created.
      * @param string $primaryNodeTypeName The name of the primary node type of the new node.
-     * @param string $identifier The identifier to use for the new node, if not given an UUID will be created. Non-JCR-spec parameter!
      * @return \PHPCR\NodeInterface The node that was added.
-     * @throws \PHPCR\ItemExistsException if the identifier is already used, if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
+     * @throws \PHPCR\ItemExistsException if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
      * @throws \PHPCR\PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
      * @throws \PHPCR\ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
      * @throws \PHPCR\Version\VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
@@ -173,7 +166,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If the last element of relPath has an index or if another error occurs.
      * @api
      */
-    public function addNode($relPath, $primaryNodeTypeName = null, $identifier = null)
+    public function addNode($relPath, $primaryNodeTypeName = null)
     {
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
@@ -195,7 +188,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                 throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
-            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName, $identifier);
+            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName);
         }
 
         if (!is_null($primaryNodeTypeName)) {
@@ -230,9 +223,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             throw new \PHPCR\RepositoryException("Index not allowed in name of newly created node: $relPath");
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
-        if (! is_null($identifier)) {
-            $data['jcr:uuid'] = $identifier;
-        }
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path,
                 $this->session, $this->objectManager, true));
@@ -653,13 +643,16 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * Returns the identifier of this node. Applies to both referenceable and
      * non-referenceable nodes.
      *
-     * @return string the identifier of this node
+     * @return string the identifier of this node or null if it has no identifier
      * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
     public function getIdentifier()
     {
-        return $this->uuid;
+        if (isset($this->properties['jcr:uuid'])) {
+            return $this->getPropertyValue('jcr:uuid');
+        }
+        return null;
     }
 
     /**

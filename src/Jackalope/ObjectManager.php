@@ -166,6 +166,7 @@ class ObjectManager
                     $this
                 )
             );
+            // TODO: is it always legal to call getIdentifier?
             if ($uuid = $node->getIdentifier()) {
                 // map even nodes that are not mix:referenceable, as long as they have a uuid
                 $this->objectsByUuid[$uuid] = $absPath;

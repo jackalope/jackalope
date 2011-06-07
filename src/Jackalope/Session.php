@@ -543,14 +543,6 @@ class Session implements \PHPCR\SessionInterface
     /**
      * not implemented
      */
-    public function getImportContentHandler($parentAbsPath, $uuidBehavior)
-    {
-        throw new NotImplementedException('Write');
-    }
-
-    /**
-     * not implemented
-     */
     public function importXML($parentAbsPath, $in, $uuidBehavior)
     {
         throw new NotImplementedException('Write');
@@ -621,8 +613,7 @@ class Session implements \PHPCR\SessionInterface
         if ($root) {
             $this->exportNamespaceDeclarations($stream);
         }
-        //TODO: does root node have name jcr:root?
-        fwrite($stream, ' sv:name="'.$node->getName().'">');
+        fwrite($stream, ' sv:name="'.($node->getPath() == '/' ? 'jcr:root' : $node->getName()).'">');
 
         // the order MUST be primary type, then mixins, if any, then jcr:uuid if its a referenceable node
         fwrite($stream, '<sv:property sv:name="jcr:primaryType" sv:type="Name"><sv:value>'.htmlspecialchars($node->getPropertyValue('jcr:primaryType')).'</sv:value></sv:property>');
@@ -762,7 +753,7 @@ class Session implements \PHPCR\SessionInterface
     }
     private function escapeXmlName($name)
     {
-        $name = preg_replace('/_(x[0-9a-fA-F]4)/', '_x005f_\\1', $name);
+        $name = preg_replace('/_(x[0-9a-fA-F]{4})/', '_x005f_\\1', $name);
         return str_replace(array(' ',       '<',       '>',       '"',       "'"),
                            array('_x0020_', '_x003c_', '_x003e_', '_x0022_', '_x0027_'),
                            $name); // TODO: more invalid characters?
