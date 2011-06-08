@@ -14,7 +14,7 @@ class SessionTest extends TestCase
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
         $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
-        $transport->expects($this->once())
+        $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
         $s = new Session($factory, $repository, $workspaceName, $cred, $transport);

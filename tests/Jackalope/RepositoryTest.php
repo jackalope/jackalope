@@ -17,7 +17,7 @@ class RepositoryTest extends TestCase
         $transport->expects($this->once())
             ->method('getRepositoryDescriptors')
             ->will($this->returnValue(array('bla'=>'bli')));
-        $transport->expects($this->once())
+        $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
 

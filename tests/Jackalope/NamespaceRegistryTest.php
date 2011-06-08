@@ -33,15 +33,22 @@ class NamespaceRegistryTest extends TestCase
      *
      * @param array $namespaces
      */
-    public function getNamespaceRegistryFixture($namespaces)
+    public function getNamespaceRegistryFixture($namespaces,$getNamespaceHasToBeCalled = true)
     {
+        if ($getNamespaceHasToBeCalled) {
+            $expects = $this->once();
+        } else {
+            $expects = $this->any();
+        }
+        
         $factory = new \Jackalope\Factory;
         $transport = $this->getTransportMockFixture();
         $transport
-            ->expects($this->once())
+            ->expects($expects)
             ->method('getNamespaces')
             ->will($this->returnValue($namespaces));
-        return new NamespaceRegistry($factory, $transport);
+        $nsr = new NamespaceRegistry($factory, $transport);
+        return $nsr;
     }
 
     /*************************************************************************/
@@ -54,9 +61,13 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testConstruct($expected, $namespaces)
     {
-        $nsr = $this->getNamespaceRegistryFixture($namespaces);
-
+        $nsr = $this->getNamespaceRegistryFixture($namespaces,false);
+        
         $this->assertAttributeInstanceOf('Jackalope\TransportInterface', 'transport', $nsr);
+        //after construct, userNamespaces is supposed to be null due to lazyLoading
+        $this->assertAttributeEquals(null, 'userNamespaces', $nsr);
+        //after we get the prefixes, userNamespaces is supposed to have the userNamespaces
+        $nsr->getPrefixes();
         $this->assertAttributeEquals($expected, 'userNamespaces', $nsr);
     }
 
@@ -69,9 +80,8 @@ class NamespaceRegistryTest extends TestCase
             'beastie' => 'http://beastie.lo/beastie/1.0',
         );
 
-        $nsr = $this->getNamespaceRegistryFixture($namespaces);
+        $nsr = $this->getNamespaceRegistryFixture($namespaces,false);
         $expected = $this->defaultNamespaces;
-
         $this->assertEquals($expected, $nsr->getDefaultNamespaces());
     }
 
@@ -113,7 +123,7 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testGetPrefixFromDefaultNamespace()
     {
-        $nsr = $this->getNamespaceRegistryFixture(array());
+        $nsr = $this->getNamespaceRegistryFixture(array(),false);
         $this->assertEquals("xml", $nsr->getPrefix("http://www.w3.org/XML/1998/namespace"));
     }
 
@@ -202,7 +212,7 @@ class NamespaceRegistryTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $prefix = 'beastie';
-        $ns = $this->getNamespaceRegistryFixture(array());
+        $ns = $this->getNamespaceRegistryFixture(array(),false);
 
         $this->assertNull($ns->checkPrefix($prefix));
     }
@@ -215,7 +225,7 @@ class NamespaceRegistryTest extends TestCase
     public function testCheckPrefixExpexctingNamespaceException($prefix)
     {
         $factory = new \Jackalope\Factory;
-        $ns = $this->getNamespaceRegistryFixture(array());
+        $ns = $this->getNamespaceRegistryFixture(array(),false);
         $ns->checkPrefix($prefix);
     }
 
