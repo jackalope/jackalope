@@ -141,6 +141,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function unregisterNamespace($prefix)
     {
+        $this->lazyLoadNamespaces();
         $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
             //defaultNamespaces would throw an exception in checkPrefix already
@@ -189,6 +190,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function getURI($prefix)
     {
+        $this->lazyLoadNamespaces();
         if (isset($this->defaultNamespaces[$prefix])) {
             return $this->defaultNamespaces[$prefix];
         } elseif (isset($this->userNamespaces[$prefix])) {
@@ -237,6 +239,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function getIterator()
     {
+        $this->lazyLoadNamespaces();
         return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
     }
 
