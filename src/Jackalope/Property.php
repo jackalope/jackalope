@@ -188,6 +188,25 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
+     * Get the value of this property to store in the storage backend.
+     *
+     * Path and reference properties are not resolved to the node objects.
+     * If this is a binary property, from the moment this method has been
+     * called the stream will be read from the transport layer again.
+     *
+     * @private
+     */
+    public function getValueForStorage()
+    {
+        $value = $this->value;
+        if (PropertyType::BINARY == $this->type) {
+            //from now on,
+            $this->value = null;
+        }
+        return $value;
+    }
+
+    /**
      * Returns a String representation of the value of this property. A
      * shortcut for Property.getValue().getString(). See Value.
      *
@@ -224,14 +243,19 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (null == $this->value) {
             $this->value = $this->objectManager->getBinaryStream($this->path);
         }
-        $stream = fopen('php://memory', 'rwb+'); multivalue...
-        stream_copy_to_stream($this->value, $stream);
-        return $stream;
         */
-        if ($this->isNew()) {
-            // new item never gets stream from backend
-            // TODO: clone stream?
-            return $this->value;
+        if ($this->value != null) {
+            // new or updated property
+            $val = is_array($this->value) ? $this->value : array($this->value);
+            foreach($val as $s) {
+                $stream = fopen('php://memory', 'rwb+');
+                $pos = ftell($s);
+                stream_copy_to_stream($s, $stream);
+                rewind($stream);
+                fseek($s, $pos); //go back to previous position
+                $ret[] = $stream;
+            }
+            return is_array($this->value) ? $ret : $ret[0];
         }
         return $this->objectManager->getBinaryStream($this->path);
     }

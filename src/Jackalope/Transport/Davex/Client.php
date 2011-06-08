@@ -143,10 +143,10 @@ class Client implements TransportInterface
      * Check if an initial PROPFIND should be send to check if repository exists
      * This is according to the JCR specifications and set to true by default
      * @see setCheckLoginOnServer
-     * @var bool 
+     * @var bool
      */
     protected $checkLoginOnServer = true;
-    
+
     /**
      * Create a transport pointing to a server url.
      *
@@ -278,7 +278,7 @@ class Client implements TransportInterface
      *
      * @return void
      */
-    public function setCheckLoginOnServer($bool) 
+    public function setCheckLoginOnServer($bool)
     {
         $this->checkLoginOnServer = $bool;
     }
@@ -756,7 +756,7 @@ class Client implements TransportInterface
 
         foreach ($properties as $name => $property) {
             $type = \PHPCR\PropertyType::nameFromValue($property->getType());
-            $nativeValue = $property->getValue();
+            $nativeValue = $property->getValueForStorage();
             $valueBody = '';
             // handle multivalue properties
             if (is_array($nativeValue)) {
@@ -802,13 +802,7 @@ class Client implements TransportInterface
 
         $typeid = $property->getType();
         $type = PropertyType::nameFromValue($typeid);
-        if ($typeid == PropertyType::REFERENCE
-            || $typeid == PropertyType::WEAKREFERENCE
-        ) {
-            $nativeValue = $property->getString();
-        } else {
-            $nativeValue = $property->getValue();
-        }
+        $nativeValue = $property->getValueForStorage();
 
         $request = $this->getRequest(Request::PUT, $path);
         if ($property->getName() === 'jcr:mixinTypes') {
@@ -879,7 +873,9 @@ class Client implements TransportInterface
     {
         switch ($type) {
             case \PHPCR\PropertyType::TYPENAME_BINARY:
-                return stream_get_contents($value);
+                $ret = stream_get_contents($value);
+                fclose($value);
+                return $ret;
             case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
             case \PHPCR\PropertyType::TYPENAME_STRING:
             case \PHPCR\PropertyType::TYPENAME_URI:
