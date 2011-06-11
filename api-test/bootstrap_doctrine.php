@@ -42,6 +42,7 @@ require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
 $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
     'driver'    => $GLOBALS['jcr.doctrine.dbal.driver'],
+    'host'      => $GLOBALS['jcr.doctrine.dbal.host'],
     'user'      => $GLOBALS['jcr.doctrine.dbal.username'],
     'password'  => $GLOBALS['jcr.doctrine.dbal.password'],
     'dbname'    => $GLOBALS['jcr.doctrine.dbal.dbname']
