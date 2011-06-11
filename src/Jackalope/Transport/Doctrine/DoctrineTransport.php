@@ -20,7 +20,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport;
+namespace Jackalope\Transport\Doctrine;
 
 use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
@@ -32,7 +32,7 @@ use Jackalope\NodeType\NodeTypeManager;
 /**
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DoctrineDBAL implements TransportInterface
+class DoctrineTransport implements TransportInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
