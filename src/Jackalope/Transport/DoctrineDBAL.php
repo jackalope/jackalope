@@ -192,8 +192,8 @@ class DoctrineDBAL implements TransportInterface
     {
         $this->assertLoggedIn();
         
-        $srcAbsPath = ltrim($srcAbsPath, '/');
-        $dstAbsPath = ltrim($dstAbsPath, '/');
+        $srcAbsPath = $this->trimPath($srcAbsPath);
+        $dstAbsPath = $this->trimPath($dstAbsPath);
 
         $workspaceId = $this->workspaceId;
         if (null !== $srcWorkspace) {
@@ -288,7 +288,7 @@ class DoctrineDBAL implements TransportInterface
     public function getNode($path)
     {
         $this->assertLoggedIn();
-        $path = ltrim($path, "/");
+        $path = $this->trimPath($path);
 
         $sql = "SELECT * FROM jcrnodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
@@ -427,7 +427,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function deleteNode($path)
     {
-        $path = ltrim($path, '/');
+        $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
         $match = $path."%";
@@ -471,7 +471,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function deleteProperty($path)
     {
-        $path = ltrim($path, '/');
+        $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
         $query = "DELETE FROM jcrprops WHERE path = ? AND workspace_id = ?";
@@ -521,7 +521,7 @@ class DoctrineDBAL implements TransportInterface
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
-        $path = ltrim($path, "/");
+        $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
         $properties = $node->getProperties();
@@ -555,7 +555,7 @@ class DoctrineDBAL implements TransportInterface
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $path = $property->getPath();
-        $path = ltrim($path, '/');
+        $path = $this->trimPath($path);
         $name = explode("/", $path);
         $name = end($name);
         // TODO: Upsert
@@ -588,7 +588,7 @@ class DoctrineDBAL implements TransportInterface
             'name' => $name,
             'idx' => 0,
             'multi_valued' => $property->isMultiple() ? 1 : 0,
-            'node_identifier' => $this->nodeIdentifiers[ltrim($property->getParent()->getPath(), '/')]
+            'node_identifier' => $this->nodeIdentifiers[$this->trimPath($property->getParent()->getPath(), '/')]
         );
         $data['type'] = $property->getType();
 
@@ -1080,11 +1080,11 @@ class DoctrineDBAL implements TransportInterface
 
         $data = $this->conn->fetchAll(
             'SELECT data, idx FROM jcrbinarydata WHERE path = ? AND workspace_id = ?',
-            array(ltrim($path, "/"), $this->workspaceId)
+            array($this->trimPath($path, "/"), $this->workspaceId)
         );
 
+        // TODO: Error Handling on the stream?
         if (count($data) == 1) {
-            // TODO: Error Handling
             return fopen("data://text/plain,".$data[0]['data'], "r");
         } else {
             $streams = array();
@@ -1149,5 +1149,22 @@ class DoctrineDBAL implements TransportInterface
     public function getPermissions($path)
     {
         throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    protected function trimPath($path)
+    {
+        $this->ensureValidPath($path);
+
+        return ltrim($path, "/");
+    }
+
+    protected function ensureValidPath($path)
+    {
+        if (! (strpos($path, '//') === false
+              && strpos($path, '/../') === false
+              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
+        ) {
+            throw new \PHPCR\RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
     }
 }
