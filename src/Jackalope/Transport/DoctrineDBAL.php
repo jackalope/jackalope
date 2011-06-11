@@ -160,8 +160,6 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getRepositoryDescriptors()
     {
-        $this->assertLoggedIn();
-
         return array();
     }
 
@@ -174,7 +172,13 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getNamespaces()
     {
-        return array();
+        $data = $this->conn->fetchAll('SELECT * FROM jcrnamespaces');
+        $namespaces = array();
+
+        foreach ($data AS $row) {
+            $namespaces[$row['prefix']] = $row['uri'];
+        }
+        return $namespaces;
     }
 
     /**
@@ -628,8 +632,8 @@ class DoctrineDBAL implements TransportInterface
                         $values[] = strlen($binary);
                     }
                 } else {
-                    $binary = $property->getBinary();
-                    $binaryData[] = stream_get_contents($binary);
+                    $binary = stream_get_contents($property->getBinary());
+                    $binaryData[] = $binary;
                     $values = strlen($binary);
                 }
                 break;
@@ -645,11 +649,15 @@ class DoctrineDBAL implements TransportInterface
 
         if ($property->isMultiple()) {
             foreach ($values AS $value) {
+                $this->assertValidPropertyValue($data['type'], $value, $path);
+
                 $data[$dataFieldName] = $value;
                 $data['idx'] = $idx++;
                 $this->conn->insert('jcrprops', $data);
             }
         } else {
+            $this->assertValidPropertyValue($data['type'], $values, $path);
+
             $data[$dataFieldName] = $values;
             $this->conn->insert('jcrprops', $data);
         }
@@ -664,6 +672,44 @@ class DoctrineDBAL implements TransportInterface
             ));
         }
     }
+
+    private function assertValidPropertyValue($type, $value, $path)
+    {
+        if ($type === \PHPCR\PropertyType::NAME) {
+            if (strpos($value, ":") !== false) {
+                list($prefix, $localName) = explode(":", $value);
+
+                if (!in_array($prefix, array_keys($this->getNamespaces()))) {
+                    throw new \PHPCR\ValueFormatException("Invalid JCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
+                }
+            }
+        } else if ($type === \PHPCR\PropertyType::PATH) {
+            if (!preg_match('((/[a-zA-Z0-9:_-]+)+)', $value)) {
+                throw new \PHPCR\ValueFormatException("Invalid PATH at " . $path .": Segments are seperated by / and allowed chars are a-zA-Z0-9:_-");
+            }
+        } else if ($type === \PHPCR\PropertyType::URI) {
+            if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
+                throw new \PHPCR\ValueFormatException("Invalid URI at " . $path .": Has to follow RFC 3986.");
+            }
+        }
+    }
+
+    const VALIDATE_URI_RFC3986 = "
+/^
+([a-z][a-z0-9\*\-\.]*):\/\/
+(?:
+  (?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+  (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@
+)?
+(?:
+  (?:[a-z0-9\-\.]|%[0-9a-f]{2})+
+  |(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\])
+)
+(?::[0-9]+)?
+(?:[\/|\?]
+  (?:[\w#!:\.\?\+=&@!$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})
+*)?
+$/xi";
 
     /**
      * Get the node path from a JCR uuid
@@ -1037,6 +1083,118 @@ class DoctrineDBAL implements TransportInterface
                 array(
                 ),
             ),
+            10 => array(
+                'name' => 'mix:referenceable',
+                'isAbstract' => false,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:uuid',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => false,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            11 => array(
+                'name' => 'mix:language',
+                'isAbstract' => false,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 =>
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:language',
+                        'isAutoCreated' => true,
+                        'isMandatory' => true,
+                        'isProtected' => true,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => false,
+                        'fullTextSearchable' => true,
+                        'queryOrderable' => true,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
+            12 => array(
+                'name' => 'mix:shareable',
+                'isAbstract' => false,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' => array('mix:referencable'),
+                'declaredPropertyDefinitions' => array(),
+                'declaredNodeDefinitions' => array(),
+            ),
+            13 => array(
+                'name' => 'mix:title',
+                'isAbstract' => false,
+                'isMixin' => true,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => NULL,
+                'declaredSuperTypeNames' =>
+                array(
+                ),
+                'declaredPropertyDefinitions' =>
+                array(
+                    0 => array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:title',
+                        'isAutoCreated' => false,
+                        'isMandatory' => false,
+                        'isProtected' => false,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => false,
+                        'fullTextSearchable' => false,
+                        'queryOrderable' => false,
+                    ),
+                    1 => array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:description',
+                        'isAutoCreated' => false,
+                        'isMandatory' => false,
+                        'isProtected' => false,
+                        'onParentVersion' => 4,
+                        'requiredType' => 1,
+                        'multiple' => false,
+                        'fullTextSearchable' => false,
+                        'queryOrderable' => false,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            )
         );
     }
 
@@ -1108,12 +1266,15 @@ class DoctrineDBAL implements TransportInterface
 
     public function registerNamespace($prefix, $uri)
     {
-        throw new \Jackalope\NotImplementedException("Not implemented yet");
+        $this->conn->insert('jcrnamespaces', array(
+            'prefix' => $prefix,
+            'uri' => $uri,
+        ));
     }
 
     public function unregisterNamespace($prefix)
     {
-
+        $this->conn->delete('jcrnamespaces', array('prefix' => $prefix));
     }
 
     /**
