@@ -76,6 +76,16 @@ class DoctrineDBAL implements TransportInterface
 
     private $nodeTypeManager = null;
 
+    private $userNamespaces = null;
+
+    private $validNamespacePrefixes = array(
+        \PHPCR\NamespaceRegistryInterface::PREFIX_EMPTY => true,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_JCR => true,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_NT => true,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_MIX => true,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_XML => true,
+    );
+
     public function __construct(Connection $conn)
     {
         $this->conn = $conn;
@@ -172,13 +182,16 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getNamespaces()
     {
-        $data = $this->conn->fetchAll('SELECT * FROM jcrnamespaces');
-        $namespaces = array();
+        if ($this->userNamespaces === null) {
+            $data = $this->conn->fetchAll('SELECT * FROM jcrnamespaces');
+            $this->userNamespaces = array();
 
-        foreach ($data AS $row) {
-            $namespaces[$row['prefix']] = $row['uri'];
+            foreach ($data AS $row) {
+                $this->validNamespacePrefixes[$row['prefix']] = true;
+                $this->userNamespaces[$row['prefix']] = $row['uri'];
+            }
         }
-        return $namespaces;
+        return $this->userNamespaces;
     }
 
     /**
@@ -673,13 +686,23 @@ class DoctrineDBAL implements TransportInterface
         }
     }
 
+    /**
+     * Validation if all the data is correct before writing it into the database.
+     *
+     * @param int $type
+     * @param mixed $value
+     * @param string $path
+     * @throws \PHPCR\ValueFormatException
+     * @return void
+     */
     private function assertValidPropertyValue($type, $value, $path)
     {
         if ($type === \PHPCR\PropertyType::NAME) {
             if (strpos($value, ":") !== false) {
                 list($prefix, $localName) = explode(":", $value);
 
-                if (!in_array($prefix, array_keys($this->getNamespaces()))) {
+                $this->getNamespaces();
+                if (!isset($this->validNamespacePrefixes[$prefix])) {
                     throw new \PHPCR\ValueFormatException("Invalid JCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
                 }
             }
