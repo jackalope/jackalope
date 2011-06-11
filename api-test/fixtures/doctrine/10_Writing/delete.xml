@@ -18,91 +18,91 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>0ee4e41e-e910-42f5-88a4-31aae1154f3c</value>
+      <value>1fab8d7c-8300-48eb-83b7-9a3205379613</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete</value>
       <value></value>
       <value>1</value>
-      <value>92999387-a7c8-4ddd-83dd-70feb40b2d6c</value>
+      <value>772ac036-a2d5-49eb-a490-0abc2c0488e4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>13128940-cdce-485a-a7f2-27ebc1102fea</value>
+      <value>2d377daf-8ff6-40bb-b783-df59441b1fc6</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>1c7aa0d4-4e68-4ac7-a6d8-4555e4ee78d7</value>
+      <value>6d5a1976-675a-46c9-9e64-0f3d7cd64734</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>1b2b939e-0342-4ee4-bc63-462fc9aab970</value>
+      <value>ee1486e9-ee5d-4e8f-b6d2-06267bbee6c0</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveRemovedNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>893a506f-5f6d-48a7-a60e-64fde8086c06</value>
+      <value>cc04c90e-56ca-42e1-982d-8d4972d8c950</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testNodeRemoveProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>f8a691d4-686c-4f22-bd4c-07fd8783aef5</value>
+      <value>c2e28c3f-c935-4a57-912a-ba2b92044bf9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>59924baa-d486-4e60-b895-18988551c199</value>
+      <value>90fb999b-ab93-47d0-8cfd-29c2ce719ccc</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeSession</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>927a4a96-bfdb-4feb-9051-92ad2abed427</value>
+      <value>6e42bdbd-adc6-497d-8c96-e257605edce3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>e4421b4b-dfad-4cdd-9b31-16895e990bdf</value>
+      <value>d88e5f21-f75f-4359-a7b6-767604060fb9</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertySession</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>3df9f755-872f-43db-b9dd-f38234907925</value>
+      <value>93345627-08a6-486e-a61f-a09ec388559d</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertyNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>e789527f-2976-4cf0-bd56-8b4f2e226630</value>
+      <value>64e1d4a0-2f19-4cd1-a6f2-aa03fee7c4cc</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testAddNodeOverRemoved</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>6d52700f-348d-4e89-a203-c5bd5011dcb4</value>
+      <value>eabcf9c0-a601-4612-9efd-d13d537619a1</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -124,7 +124,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>92999387-a7c8-4ddd-83dd-70feb40b2d6c</value>
+      <value>772ac036-a2d5-49eb-a490-0abc2c0488e4</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -138,7 +138,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>1c7aa0d4-4e68-4ac7-a6d8-4555e4ee78d7</value>
+      <value>6d5a1976-675a-46c9-9e64-0f3d7cd64734</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -152,7 +152,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>1b2b939e-0342-4ee4-bc63-462fc9aab970</value>
+      <value>ee1486e9-ee5d-4e8f-b6d2-06267bbee6c0</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -166,7 +166,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>f8a691d4-686c-4f22-bd4c-07fd8783aef5</value>
+      <value>c2e28c3f-c935-4a57-912a-ba2b92044bf9</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -180,7 +180,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>3df9f755-872f-43db-b9dd-f38234907925</value>
+      <value>93345627-08a6-486e-a61f-a09ec388559d</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -194,7 +194,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>e789527f-2976-4cf0-bd56-8b4f2e226630</value>
+      <value>64e1d4a0-2f19-4cd1-a6f2-aa03fee7c4cc</value>
       <value>1</value>
       <value>0</value>
       <null/>

@@ -125,7 +125,7 @@ foreach ($ri AS $file) {
                     $data['type'] = $jcrTypeConst;
                     $data['multi_valued'] = $valueData['multiValued'] ? "1" : "0";
                     foreach ($valueData['value'] AS $value) {
-                        $data[$jcrTypeDbField] = ($jcrTypeConst == 2) ? strlen($value) : $value;
+                        $data[$jcrTypeDbField] = ($jcrTypeConst == 2) ? strlen(base64_decode($value)) : $value;
                         $dataSetBuilder->addRow('jcrprops', $data);
 
                         if ($jcrTypeConst == 2) {
@@ -133,7 +133,7 @@ foreach ($ri AS $file) {
                                 'path' => $data['path'],
                                 'workspace_id' => 1,
                                 'idx' => $data['idx'],
-                                'data' => $value,
+                                'data' => base64_decode($value),
                             ));
                         }
 

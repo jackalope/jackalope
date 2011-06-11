@@ -18,63 +18,63 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>ac119a5d-a23e-44b6-a291-a63cbba49f07</value>
+      <value>92c13441-c702-4a3c-891a-50816d19113d</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add</value>
       <value></value>
       <value>1</value>
-      <value>ed9bc25b-7a99-446c-93ab-fca0718d097f</value>
+      <value>edffe0b0-7d78-4d2e-9e7c-159de83f4e6b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>a07f2567-8a3e-4e46-8621-02edc8822648</value>
+      <value>27da281f-f948-456a-9d35-3d3ea48f848f</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>975015ff-187e-46ee-9dfe-cab7ee37791f</value>
+      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath/test:namespacedNode</value>
       <value>tests_write_manipulation_add/testAddNodeWithPath</value>
       <value>1</value>
-      <value>07e71607-8c37-43e8-b549-f4964694587c</value>
+      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeFileType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>90139c05-8048-4798-b50e-783f1fd396a7</value>
+      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeUnstructuredType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>7c1db1a3-76d8-48a1-8f77-9cf17273b7af</value>
+      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeAndChildNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>662ae431-acb7-4cd4-b233-e4c1856ef6d9</value>
+      <value>7bb64d43-14e3-4e9c-a36e-52f5a558d279</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddPropertyOnUnstructured</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>6718facb-e971-4a60-88b5-873c88a72b18</value>
+      <value>5e7a46e9-e5be-4b60-9c61-0e70cf39b93e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
@@ -88,77 +88,77 @@
       <value>tests_write_manipulation_add/testAddMultiValuePropertyOnUnstructured</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>63318a3e-d9c8-4100-9166-bca36e944b5a</value>
+      <value>dae22a2d-9400-4894-96a7-a3d6e1508c4a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeMissingType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>d3024118-d1d1-4449-a717-6df18ef09574</value>
+      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithInexistingType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>caaaaf71-64f9-47fd-8c2c-48b38d6c11b6</value>
+      <value>af1c9e30-8022-4478-9345-c622d0e034fa</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeExisting</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>82783b54-5843-4596-87be-188d139745cd</value>
+      <value>a29d5b92-82b1-43e8-a3fd-e1acbb3dbd2c</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodePathNotFound</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>7746ef61-ac0a-4945-a7a7-d37313ca4579</value>
+      <value>297a0a9d-c85a-4b28-9829-11065a5c3ba6</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeToProperty</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>06e10da5-b020-4929-af31-826377ca448b</value>
+      <value>0f6d4705-8d68-42d4-9554-9659ae0b46c8</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithIndex</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>98f47a6d-30f9-4a10-89a9-15642c83023d</value>
+      <value>393f9d4a-ef3b-48b8-8b12-4fb39396814e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddPropertyWrongType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>62a7d39b-9f96-4962-8329-f27a30366d47</value>
+      <value>22b38c0a-3bdc-4232-9b37-a442eab5176f</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeChild</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>a88791d8-cfcc-44ed-8143-271fd18e99ef</value>
+      <value>088c9072-dc6f-46bb-81d3-0cff3c7a535a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnNewNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>7cc23bdf-8ff8-463b-8dad-062d50e38d8c</value>
+      <value>75b6fbe6-3f0c-44d1-ae2e-4614d5625890</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnExistingNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>e5e42bc7-3dcb-4638-a74a-f31f66afcf92</value>
+      <value>4cb66e24-283b-4a59-b239-31faebfc6c97</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -180,7 +180,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>ed9bc25b-7a99-446c-93ab-fca0718d097f</value>
+      <value>edffe0b0-7d78-4d2e-9e7c-159de83f4e6b</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -194,7 +194,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>975015ff-187e-46ee-9dfe-cab7ee37791f</value>
+      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
       <value>5</value>
       <value>0</value>
       <null/>
@@ -208,7 +208,7 @@
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>975015ff-187e-46ee-9dfe-cab7ee37791f</value>
+      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -222,7 +222,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>07e71607-8c37-43e8-b549-f4964694587c</value>
+      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
       <value>5</value>
       <value>0</value>
       <null/>
@@ -236,7 +236,7 @@
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>07e71607-8c37-43e8-b549-f4964694587c</value>
+      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -250,7 +250,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>90139c05-8048-4798-b50e-783f1fd396a7</value>
+      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
       <value>5</value>
       <value>0</value>
       <null/>
@@ -264,7 +264,7 @@
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>90139c05-8048-4798-b50e-783f1fd396a7</value>
+      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -278,7 +278,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>7c1db1a3-76d8-48a1-8f77-9cf17273b7af</value>
+      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
       <value>5</value>
       <value>0</value>
       <null/>
@@ -292,7 +292,7 @@
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>7c1db1a3-76d8-48a1-8f77-9cf17273b7af</value>
+      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -320,7 +320,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>d3024118-d1d1-4449-a717-6df18ef09574</value>
+      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
       <value>5</value>
       <value>0</value>
       <null/>
@@ -334,7 +334,7 @@
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>d3024118-d1d1-4449-a717-6df18ef09574</value>
+      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -348,7 +348,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>06e10da5-b020-4929-af31-826377ca448b</value>
+      <value>0f6d4705-8d68-42d4-9554-9659ae0b46c8</value>
       <value>1</value>
       <value>0</value>
       <null/>
