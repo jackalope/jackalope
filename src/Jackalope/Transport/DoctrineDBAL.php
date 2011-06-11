@@ -1088,4 +1088,40 @@ class DoctrineDBAL implements TransportInterface
     {
 
     }
+
+    /**
+     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
+     * @return array
+     */
+    public function getReferences($path, $name = null)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    /**
+     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @return array
+     */
+    public function getWeakReferences($path, $name = null)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
+
+    /**
+     * Return the permissions of the current session on the node given by path.
+     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
+     *
+     * @param string $path the path to the node we want to check
+     * @return array of string
+     */
+    public function getPermissions($path)
+    {
+        throw new \Jackalope\NotImplementedException("Not implemented yet");
+    }
 }
