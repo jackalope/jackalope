@@ -16,6 +16,10 @@
         <var name="jcr.doctrine.loader" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
         <var name="jcr.doctrine.commondir" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib" />
         <var name="jcr.doctrine.dbaldir" value="/home/benny/code/php/wsnetbeans/dbal/lib" />
+        <var name="jcr.doctrine.dbal.driver" value="pdo_mysql" />
+        <var name="jcr.doctrine.dbal.username" value="root" />
+        <var name="jcr.doctrine.dbal.password" value="" />
+        <var name="jcr.doctrine.dbal.dbname" value="jcrtests" />
     </php>
 
     <testsuites>
