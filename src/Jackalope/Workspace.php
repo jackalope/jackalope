@@ -134,15 +134,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
     {
-
-        if (!Helper::isAbsolutePath($srcAbsPath) || !Helper::isAbsolutePath($destAbsPath)) {
-            throw new \PHPCR\RepositoryException('Source and destination paths must be absolute');
-        }
-        if ($this->session->nodeExists($destAbsPath)) {
-            throw new \PHPCR\ItemExistsException('Node already exists at destination (update-on-copy is currently not supported)');
-        }
-
-        $this->session->getObjectManager()->getTransport()->copyNode($srcAbsPath, $destAbsPath, $srcWorkspace);
+        $this->session->getObjectManager()->copyNodeImmediatly($srcAbsPath, $destAbsPath, $srcWorkspace);
     }
 
     /**
@@ -205,11 +197,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function move($srcAbsPath, $destAbsPath)
     {
-        if (!Helper::isAbsolutePath($srcAbsPath) || !Helper::isAbsolutePath($destAbsPath)) {
-            throw new \PHPCR\RepositoryException('Source and destination paths must be absolute');
-        }
-        $this->session->getObjectManager()->getTransport()->moveNode($srcAbsPath, $destAbsPath);
-        $this->session->getObjectManager()->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
+        $this->session->getObjectManager()->moveNodeImmediatly($srcAbsPath, $destAbsPath);
     }
 
     /**

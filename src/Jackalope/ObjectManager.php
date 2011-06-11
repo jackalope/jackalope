@@ -107,7 +107,9 @@ class ObjectManager
      * Checks moved nodes whether any parents (or the node itself) was moved and goes back
      * continuing with the translated path as there can be several moves of the same node.
      *
-     * @param   string  $path   The initial path we try to access a node from
+     * Leaves the path unmodified if it was not moved
+     *
+     * @param   string  $path The current path we try to access a node from
      * @return  string  The resolved path
      */
     protected function resolveBackendPath($path)
@@ -127,7 +129,7 @@ class ObjectManager
      * To prevent unnecessary work to be done a register will be written containing already retrieved nodes.
      * Unfortunately there is currently no way to refetch a node once it has been fetched.
      *
-     * @param string $absPath The absolute path of the node to create.
+     * @param string $absPath The absolute path of the node to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
      * @return \PHPCR\Node
      *
@@ -136,8 +138,9 @@ class ObjectManager
      */
     public function getNodeByPath($absPath, $class = 'Node')
     {
-        $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
+        $absPath = $this->normalizePath($absPath);
+
         if (!isset($this->objectsByPath[$class])) {
             $this->objectsByPath[$class] = array();
         }
@@ -146,20 +149,19 @@ class ObjectManager
                 throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
             }
             // check whether a parent node was removed
-            foreach ($this->nodesRemove as $path=>$dummy) {
+            // OPTIMIZE: this is not very efficient. have a tree structure?
+            foreach ($this->itemsRemove as $path=>$dummy) {
                 if (strpos($absPath, $path) === 0) {
                     throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
                 }
             }
 
-            $fetchPath = $absPath;
             if (isset($this->nodesMove[$absPath])) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
             }
 
-            // The path was the destination of a previous move which isn't yet dispatched to the backend.
-            // I guess an exception would be fine but we can also just fetch the node from the previous path
-            $fetchPath = $this->resolveBackendPath($fetchPath);
+            // make sure we fetch the correct path if this node has been moved in a not yet persisted operation
+            $fetchPath = $this->resolveBackendPath($absPath);
 
             $node = $this->factory->get(
                 $class,
@@ -170,7 +172,11 @@ class ObjectManager
                     $this
                 )
             );
-            $this->objectsByUuid[$node->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
+            // TODO: is it always legal to call getIdentifier?
+            if ($uuid = $node->getIdentifier()) {
+                // map even nodes that are not mix:referenceable, as long as they have a uuid
+                $this->objectsByUuid[$uuid] = $absPath;
+            }
             $this->objectsByPath[$class][$absPath] = $node;
         }
 
@@ -188,14 +194,13 @@ class ObjectManager
      */
     public function getPropertyByPath($absPath)
     {
-        $absPath = $this->normalizePath($absPath);
-
         $this->verifyAbsolutePath($absPath);
+        $absPath = $this->normalizePath($absPath);
 
         $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
         $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
 
-        // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists
+        // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists. and do the moved/deleted checks that are done in node
         $n = $this->getNodeByPath($nodep);
         try {
             return $n->getProperty($name); //throws PathNotFoundException if there is no such property
@@ -221,13 +226,15 @@ class ObjectManager
      */
     public function normalizePath($path)
     {
-        if (strlen($path) == 0) {
+        if (strlen($path) == 0 || $path == '/') {
             return '/';
         }
+        if ($path == '//') {
+            return $path; // edge case that will be eaten away
+        }
 
-        // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
-        if (preg_match('/^\[([[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12})\]$/', $path, $matches)) {
-            $uuid = $matches[1];
+        if ($this->isUUID($path)) {
+            $uuid = $path;
             if (empty($this->objectsByUuid[$uuid])) {
                 $finalPath = $this->transport->getNodePathForIdentifier($uuid);
                 $this->objectsByUuid[$uuid] = $finalPath;
@@ -235,26 +242,32 @@ class ObjectManager
                 $finalPath = $this->objectsByUuid[$uuid];
             }
         } else {
+            // when we implement Session::setNamespacePrefix to remap a prefix, this should be translated here too.
+            // more methods would have to call this
             $finalParts= array();
             $parts = explode('/', $path);
+
             foreach ($parts as $pathPart) {
                 switch ($pathPart) {
                     case '.':
-                    case '':
                         break;
                     case '..':
-                        array_pop($finalParts);
+                        if (count($finalParts) > 1) {
+                            // do not remove leading slash. "/.." is "/", not ""
+                            array_pop($finalParts);
+                        }
                         break;
                     default:
                         $finalParts[] = $pathPart;
                         break;
                 }
             }
-            $finalPath = implode('/', $finalParts);
-            if ($path[0] == '/') {
-                $finalPath = '/'.$finalPath;
+            if (count($finalParts) > 1 && $pathPart == '') {
+                array_pop($finalParts); //avoid trailing /
             }
+            $finalPath = implode('/', $finalParts);
         }
+
         return $finalPath;
     }
 
@@ -326,7 +339,7 @@ class ObjectManager
      */
     public function getBinaryStream($path)
     {
-        return $this->transport->getBinaryStream($path);
+        return $this->transport->getBinaryStream($this->resolveBackendPath($path));  // path guaranteed to be normalized and absolute
     }
 
     /**
@@ -370,6 +383,51 @@ class ObjectManager
     }
 
     /**
+     * Returns all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path the path of the referenced node
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
+     * @return ArrayIterator
+     */
+    public function getReferences($path, $name = null)
+    {
+        $references = $this->transport->getReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
+        return $this->pathArrayToPropertiesIterator($references);
+    }
+
+    /**
+     * Returns all accessible WEAKREFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path the path of the referenced node
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @return ArrayIterator
+     */
+    public function getWeakReferences($path, $name = null)
+    {
+        $references = $this->transport->getWeakReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
+        return $this->pathArrayToPropertiesIterator($references);
+    }
+
+    /**
+     * Transform an array containing properties paths to an ArrayIterator over Property objects
+     *
+     * @param array $array an array of properties paths
+     * @return ArrayIterator
+     */
+    protected function pathArrayToPropertiesIterator($array)
+    {
+        $props = array();
+
+        //OPTIMIZE: get all the properties in one request?
+        foreach($array as $path) {
+            $prop = $this->getPropertyByPath($path); //FIXME: this will break if we have non-persisted move
+            $props[] = $prop;
+        }
+
+        return new \ArrayIterator($props);
+    }
+
+    /**
      * Implementation specific way to register node types from cnd with the backend.
      *
      * This is only a proxy to the transport
@@ -387,17 +445,15 @@ class ObjectManager
      * Verifies the path to be absolute and well-formed.
      *
      * @param string $path the path to verify
-     * @return boolean Always true :)
+     *
+     * @return boolean always true, exception if this is not a valid path
      *
      * @throws \PHPCR\RepositoryException if the path is not absolute or well-formed
      */
-    public function verifyAbsolutePath($path)
+    protected function verifyAbsolutePath($path)
     {
-        if (!Helper::isAbsolutePath($path)) {
+        if (! ($path && $path[0] == '/')) {
             throw new \PHPCR\RepositoryException('Path is not absolute: ' . $path);
-        }
-        if (!Helper::isValidPath($path)) {
-            throw new \PHPCR\RepositoryException('Path is not well-formed (TODO: match against spec): ' . $path);
         }
         return true;
     }
@@ -431,7 +487,8 @@ class ObjectManager
      */
     public function save()
     {
-        // TODO: start transaction
+        // TODO: start transaction (see transaction branch)
+        // TODO: or even better, adjust transport to accept lists and do a diff request instead of single requests
         // this is extremly unspecific: http://jackrabbit.apache.org/frequently-asked-questions.html#FrequentlyAskedQuestions-HowdoIusetransactionswithJCR?
         // or do we have to bundle everything into one request, make transport layer capable of transaction? http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
 
@@ -551,13 +608,13 @@ class ObjectManager
      */
     public function checkin($absPath)
     {
-        $path = $this->getTransport()->checkinItem($absPath);
+        $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
         $node = $this->getNodeByPath($path, "Version\Version");
         $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
         if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
             $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
             unset($this->objectsByPath['Version\Version'][$dirtyPath]);
-            unset($this->objectsByPath['Node'][$dirtyPath]);
+            unset($this->objectsByPath['Node'][$dirtyPath]); //FIXME: the node object should be told about this
             unset($this->objectsByUuid[$predecessorUuids[0]]);
         }
         return $node;
@@ -571,7 +628,7 @@ class ObjectManager
      */
     public function checkout($absPath)
     {
-        $this->getTransport()->checkoutItem($absPath);
+        $this->transport->checkoutItem($absPath); //FIXME: what about pending move operations?
     }
 
     /**
@@ -588,7 +645,7 @@ class ObjectManager
             unset($this->objectsByPath['Version\Version'][$absPath]);
             unset($this->objectsByPath['Node'][$absPath]);
         }
-        $this->getTransport()->restoreItem($removeExisting, $vpath, $absPath);
+        $this->transport->restoreItem($removeExisting, $vpath, $absPath);  //FIXME: what about pending move operations?
     }
 
     /**
@@ -599,13 +656,13 @@ class ObjectManager
      */
     public function getVersionHistory($path)
     {
-        return $this->getTransport()->getVersionHistory($path);
+        return $this->transport->getVersionHistory($this->resolveBackendPath($path));
     }
 
     /**
      * Determine if any object is modified
      *
-     * @return boolean False
+     * @return boolean true if any pending changes
      */
     public function hasPendingChanges()
     {
@@ -668,7 +725,10 @@ class ObjectManager
     }
 
     /**
-     * Rewrites the path of an item while also updating all children
+     * Rewrites the path of an item while also updating all children.
+     *
+     * This applies both to the cache and to the items themselves so
+     * they return the correct value on getPath calls.
      *
      * Does some magic detection if for example you ADD a node and then rewrite (MOVE)
      * that exact node then it skips the MOVE and just ADDs to the new place. The return
@@ -745,6 +805,43 @@ class ObjectManager
         }
     }
 
+    /**
+     * Implement the workspace move method. It is dispatched immediatly
+     *
+     * @param string $srcAbsPath the path of the node to be moved.
+     * @param string $destAbsPath the location to which the node at srcAbsPath is to be moved.
+     *
+     * @see Workspace::move
+     */
+    public function moveNodeImmediatly($srcAbsPath, $destAbsPath)
+    {
+        $this->verifyAbsolutePath($srcAbsPath);
+        $this->verifyAbsolutePath($destAbsPath);
+
+        $this->transport->moveNode($srcAbsPath, $destAbsPath);
+        $this->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
+    }
+
+    /**
+     * Implement the workspace copy method. It is dispatched immediatly
+     *
+     * @param string $srcAbsPath the path of the node to be copied.
+     * @param string $destAbsPath the location to which the node at srcAbsPath is to be copied in this workspace.
+     * @param string $srcWorkspace the name of the workspace from which the copy is to be made.
+     *
+     * @see Workspace::copy
+     */
+    public function copyNodeImmediatly($srcAbsPath, $destAbsPath, $srcWorkspace)
+    {
+        $this->verifyAbsolutePath($srcAbsPath);
+        $this->verifyAbsolutePath($destAbsPath);
+
+        if ($this->session->nodeExists($destAbsPath)) {
+            throw new \PHPCR\ItemExistsException('Node already exists at destination (update-on-copy is currently not supported)');
+            // to support this, we would have to update the local cache of nodes as well
+        }
+        $this->transport->copyNode($srcAbsPath, $destAbsPath, $srcWorkspace);
+    }
 
     /**
      * WRITE: add an item at the specified path.
@@ -769,9 +866,28 @@ class ObjectManager
     }
 
     /**
+     * Return the permissions of the current session on the node given by path.
+     * Permission can be of 4 types:
+     *      - add_node
+     *      - read
+     *      - remove
+     *      - set_property
+     * This function will return an array containing zero, one or more of the above strings.
+     *
+     * @param type $absPath the path to get permissions
+     * @return array of string
+     */
+    public function getPermissions($absPath)
+    {
+        return $this->transport->getPermissions($absPath);
+    }
+
+    /**
      * Clears the state of the current session
      *
      * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
+     *
+     * TODO: this will screw up major, as the user of the api can still have references to nodes
      */
     public function clear()
     {

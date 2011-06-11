@@ -19,6 +19,7 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function __construct($factory, $objectmanager, $rows)
     {
+        // OPTIMIZE: we could pre-fetch several nodes here, assuming the user wants more than one node
         $this->objectmanager = $objectmanager;
         $this->factory = $factory;
         $this->rows = $rows;

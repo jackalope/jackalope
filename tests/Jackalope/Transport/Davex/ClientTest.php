@@ -523,17 +523,17 @@ class ClientTest extends TestCase
     }
 
     /**
-     * @covers \Jackalope\Transport\Davex\Client::normalizeUri
+     * @covers \Jackalope\Transport\Davex\Client::addWorkspacePathToUri
      */
-    public function testNormalizeUri()
+    public function testAddWorkspacePathToUri()
     {
         $factory = new \Jackalope\Factory;
         $transport = new ClientMock($factory, '');
 
-        $this->assertEquals('foo/bar', $transport->normalizeUriMock('foo/bar'), 'Relative uri was prepended with workspaceUriRoot');
-        $this->assertEquals('testWorkspaceUriRoot/foo/bar', $transport->normalizeUriMock('/foo/bar'), 'Absolute uri was not prepended with workspaceUriRoot');
-        $this->assertEquals('foo', $transport->normalizeUriMock('foo'), 'Relative uri was prepended with workspaceUriRoot');
-        $this->assertEquals('testWorkspaceUriRoot/foo', $transport->normalizeUriMock('/foo'), 'Absolute uri was not prepended with workspaceUriRoot');
+        $this->assertEquals('foo/bar', $transport->addWorkspacePathToUriMock('foo/bar'), 'Relative uri was prepended with workspaceUriRoot');
+        $this->assertEquals('testWorkspaceUriRoot/foo/bar', $transport->addWorkspacePathToUriMock('/foo/bar'), 'Absolute uri was not prepended with workspaceUriRoot');
+        $this->assertEquals('foo', $transport->addWorkspacePathToUriMock('foo'), 'Relative uri was prepended with workspaceUriRoot');
+        $this->assertEquals('testWorkspaceUriRoot/foo', $transport->addWorkspacePathToUriMock('/foo'), 'Absolute uri was not prepended with workspaceUriRoot');
     }
 
 }
@@ -580,8 +580,8 @@ class ClientMock extends Client
         return $this->getRequest($method, $uri);
     }
 
-    public function normalizeUriMock($uri)
+    public function addWorkspacePathToUriMock($uri)
     {
-        return $this->normalizeUri($uri);
+        return $this->addWorkspacePathToUri($uri);
     }
 }

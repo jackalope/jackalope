@@ -28,7 +28,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * for $data and use setValue afterwards to let the type magic be handled.
      * Then multivalue is determined on setValue
      *
-     * For binary properties, the value is the length of the data, not the data itself.
+     * For binary properties, the value is the length of the data(s), not the data itself.
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param array $data array with fields
@@ -86,15 +86,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     /**
      * {@inheritDoc}
      */
-    public function setValue($value, $type = null)
+    public function setValue($value, $type = PropertyType::UNDEFINED)
     {
         if (is_null($value)) {
             $this->remove();
         }
-        if (! is_null($type) && ! is_integer($type)) {
+        if (! is_integer($type)) {
             throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
         }
-        if ($this->new && is_null($this->type)) {
+        if ($this->new) {
             $this->isMultiple = is_array($value);
         }
 
@@ -109,7 +109,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
          * }
          */
 
-        if (null === $type) {
+        if (PropertyType::UNDEFINED === $type) {
             $type = Helper::determineType(is_array($value) ? reset($value) : $value);
         }
 
@@ -135,7 +135,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
 
         if ($this->value !== $value) {
-            //identity check will detect type changes as well
+            //identity check will detect native variable type changes as well
             $this->setModified();
         }
 
@@ -191,6 +191,25 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
+     * Get the value of this property to store in the storage backend.
+     *
+     * Path and reference properties are not resolved to the node objects.
+     * If this is a binary property, from the moment this method has been
+     * called the stream will be read from the transport layer again.
+     *
+     * @private
+     */
+    public function getValueForStorage()
+    {
+        $value = $this->value;
+        if (PropertyType::BINARY == $this->type) {
+            //from now on,
+            $this->value = null;
+        }
+        return $value;
+    }
+
+    /**
      * Returns a String representation of the value of this property. A
      * shortcut for Property.getValue().getString(). See Value.
      *
@@ -201,6 +220,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getString()
     {
+        if ($this->type == PropertyType::BINARY && empty($this->value)) {
+            return Helper::convertType($this->getBinary(), PropertyType::STRING);
+        }
         if ($this->type != PropertyType::STRING) {
             return Helper::convertType($this->value, PropertyType::STRING);
         }
@@ -219,8 +241,24 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return Helper::convertType($this->value, PropertyType::BINARY);
         }
-        if (null !== $this->value) {
-            return $this->value; //FIXME: should clone the stream
+        /*
+        OPTIMIZE: store and clone the stream? or is re-fetch from backend faster?
+        if (null == $this->value) {
+            $this->value = $this->objectManager->getBinaryStream($this->path);
+        }
+        */
+        if ($this->value != null) {
+            // new or updated property
+            $val = is_array($this->value) ? $this->value : array($this->value);
+            foreach($val as $s) {
+                $stream = fopen('php://memory', 'rwb+');
+                $pos = ftell($s);
+                stream_copy_to_stream($s, $stream);
+                rewind($stream);
+                fseek($s, $pos); //go back to previous position
+                $ret[] = $stream;
+            }
+            return is_array($this->value) ? $ret : $ret[0];
         }
         return $this->objectManager->getBinaryStream($this->path);
     }

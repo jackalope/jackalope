@@ -51,13 +51,13 @@ class ObjectManagerTest extends TestCase
 
         $factory = new \Jackalope\Factory;
         $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertSame($path, $om->normalizePath("[$uuid]"), 'Path normalization did not translate UUID into absolute path');
+        $this->assertSame($path, $om->normalizePath($uuid), 'Path normalization did not translate UUID into absolute path');
         // also verify it was cached
         $objectsByUuid = $om->getObjectsByUuid();
         $this->assertArrayHasKey($uuid, $objectsByUuid, 'Node UUID was not cached');
         $this->assertSame($path, $objectsByUuid[$uuid], 'Cached Node UUID path is wrong');
 
-        $this->assertNotEquals($path, $om->normalizePath($uuid), 'Path normalization accepted improperly formatted UUID path');
+        $this->assertNotEquals($path, $om->normalizePath("/$uuid"), 'Path normalization accepted improperly formatted UUID path');
     }
 
     /**

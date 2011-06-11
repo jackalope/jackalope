@@ -19,6 +19,12 @@ use Jackalope\NodeType\NodeTypeManager;
  * The Transport is told how to access that backend in its constructor.
  * Look in the transport/ subfolder for actual implementations.
  *
+ * Implementors can expect Jackalope to only pass normalized absolute paths
+ * to the transport. What still has to be tested is if the paths contain no
+ * invalid characters according to
+ * <a href="http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names">the specification</a>
+ * and backend specific restrictions.
+ *
  * This interface is now synchronized with what we had for davex as per 2011-04-13
  * TODO: keep this in sync with Transport/Davex/Client.php
  * TODO: add references to all phpcr api methods that use each transport method for additional doc
@@ -449,4 +455,30 @@ interface TransportInterface
      */
     public function getVersionHistory($path);
 
+    /**
+     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
+     * @return array
+     */
+    public function getReferences($path, $name = null);
+
+    /**
+     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
+     *
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @return array
+     */
+    public function getWeakReferences($path, $name = null);
+
+    /**
+     * Return the permissions of the current session on the node given by path.
+     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
+     *
+     * @param string $path the path to the node we want to check
+     * @return array of string
+     */
+    public function getPermissions($path);
 }

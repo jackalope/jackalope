@@ -27,8 +27,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     protected $nodes = array();
 
-    protected $uuid = null;
-
     /**
      * Create a node.
      *
@@ -58,15 +56,18 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                  * look at the type when we encounter the value of the property.
                  *
                  * If its a binary data, we only get the type declaration and
-                 * no data. Then the $value is not the type string for binary,
-                 * but the number of bytes of the property
+                 * no data. Then the $value of the type declaration is not the
+                 * type string for binary, but the number of bytes of the
+                 * property - resp. array of number of bytes.
                  *
                  * The magic property ::NodeIteratorSize tells this node has no
                  * children. Ignore that info for now. We might optimize with
                  * this info once we do prefetch nodes.
                  */
-                if (0 === strpos($key, ':') && $key != '::NodeIteratorSize') {
-                    if (is_int($value)) {
+                if (0 === strpos($key, ':')) {
+                    if ((is_int($value) || is_array($value))
+                         && $key != '::NodeIteratorSize'
+                    ) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
                         if (!isset($rawData->$key)) {
@@ -115,10 +116,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                             )
                         );
                         break;
-                    case 'jcr:uuid':
-                        $this->uuid = $value;
-                        break;
-                    // do we have any other meta information that needs special treatment?
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
@@ -162,9 +159,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @param string $relPath The path of the new node to be created.
      * @param string $primaryNodeTypeName The name of the primary node type of the new node.
-     * @param string $identifier The identifier to use for the new node, if not given an UUID will be created. Non-JCR-spec parameter!
      * @return \PHPCR\NodeInterface The node that was added.
-     * @throws \PHPCR\ItemExistsException if the identifier is already used, if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
+     * @throws \PHPCR\ItemExistsException if an item at the specified path already exists, same-name siblings are not allowed and this implementation performs this validation immediately.
      * @throws \PHPCR\PathNotFoundException if the specified path implies intermediary Nodes that do not exist or the last element of relPath has an index, and this implementation performs this validation immediately.
      * @throws \PHPCR\ConstraintViolationException if a node type or implementation-specific constraint is violated or if an attempt is made to add a node as the child of a property and this implementation performs this validation immediately.
      * @throws \PHPCR\Version\VersionException if the node to which the new child is being added is read-only due to a checked-in node and this implementation performs this validation immediately.
@@ -172,7 +168,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException If the last element of relPath has an index or if another error occurs.
      * @api
      */
-    public function addNode($relPath, $primaryNodeTypeName = null, $identifier = null)
+    public function addNode($relPath, $primaryNodeTypeName = null)
     {
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
@@ -194,7 +190,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                 throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
-            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName, $identifier);
+            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName);
         }
 
         if (!is_null($primaryNodeTypeName)) {
@@ -229,9 +225,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             throw new \PHPCR\RepositoryException("Index not allowed in name of newly created node: $relPath");
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
-        if (! is_null($identifier)) {
-            $data['jcr:uuid'] = $identifier;
-        }
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path,
                 $this->session, $this->objectManager, true));
@@ -355,7 +348,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
-    public function setProperty($name, $value, $type = null)
+    public function setProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
     {
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
 
@@ -583,20 +576,32 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * See NodeInterface::getProperties for a full documentation
      *
      * @param string|array $filter a name pattern
-     * @return Iterator implementing SeekableIterator and Countable. Keys are the property names, values the corresponding property value (or array of values in case of multi-valued properties)
+     * @param boolean $dereference whether to dereference REFERENCE, WEAKREFERENCE and PATH properties
+     *
+     * @return array Keys are the property names, values the corresponding property value (or array of values in case of multi-valued properties)
+     *
      * @throws \PHPCR\RepositoryException If an unexpected error occurs.
      * @api
      */
-    public function getPropertiesValues($filter=null)
+    public function getPropertiesValues($filter=null, $dereference=true)
     {
-        //OPTIMIZE: lazy iterator?
+        // OPTIMIZE: do not create properties in constructor, go over array here
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
-            $result[$name] = $this->properties[$name]->getValue();
+            $type = $this->properties[$name]->getType();
+            if (! $dereference &&
+                    (\PHPCR\PropertyType::REFERENCE == $type
+                    || \PHPCR\PropertyType::WEAKREFERENCE == $type
+                    || \PHPCR\PropertyType::PATH == $type)
+            ) {
+                $result[$name] = $this->properties[$name]->getString();
+            } else {
+                $result[$name] = $this->properties[$name]->getValue();
+            }
         }
-        return new \ArrayIterator($result);
+        return $result;
     }
 
     /**
@@ -617,20 +622,39 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPrimaryItem()
     {
-        throw new NotImplementedException();
+        try {
+            $primary_item = null;
+            $mgr = $this->session->getWorkspace()->getNodeTypeManager();
+            $item_name = $this->getPrimaryNodeType()->getPrimaryItemName();
+
+            if ($item_name !== null) {
+                $primary_item = $this->session->getItem($this->path . '/' . $item_name);
+            }
+        } catch (\Exception $ex) {
+            throw new \PHPCR\RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
+        }
+
+        if ($primary_item === null) {
+           throw new \PHPCR\ItemNotFoundException("No primary item found for node '{$this->path}'");
+        }
+
+        return $primary_item;
     }
 
     /**
      * Returns the identifier of this node. Applies to both referenceable and
      * non-referenceable nodes.
      *
-     * @return string the identifier of this node
+     * @return string the identifier of this node or null if it has no identifier
      * @throws \PHPCR\RepositoryException If an error occurs.
      * @api
      */
     public function getIdentifier()
     {
-        return $this->uuid;
+        if (isset($this->properties['jcr:uuid'])) {
+            return $this->getPropertyValue('jcr:uuid');
+        }
+        return null;
     }
 
     /**
@@ -676,7 +700,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getReferences($name = null)
     {
-        throw new NotImplementedException();
+        return $this->objectManager->getReferences($this->path, $name);
     }
 
     /**
@@ -705,7 +729,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getWeakReferences($name = null)
     {
-        throw new NotImplementedException();
+        return $this->objectManager->getWeakReferences($this->path, $name);
     }
 
     /**
@@ -722,6 +746,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
+        }
+        if (! strlen($relPath) || $relPath[0] == '/') {
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->nodeExists($this->getChildPath($relPath));
@@ -740,6 +767,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
+        }
+        if (! strlen($relPath) || $relPath[0] == '/') {
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->propertyExists($this->getChildPath($relPath));
