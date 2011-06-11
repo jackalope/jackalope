@@ -69,15 +69,17 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     if (is_int($value)) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
-                        $this->properties[$key] = $this->factory->get(
-                            'Property',
-                            array(
-                                array('type' => \PHPCR\PropertyType::BINARY, 'value' => (string) $value),
-                                $this->getChildPath($key),
-                                $this->session,
-                                $this->objectManager,
-                            )
-                        );
+                        if (!isset($rawData->$key)) {
+                            $this->properties[$key] = $this->factory->get(
+                                'Property',
+                                array(
+                                    array('type' => \PHPCR\PropertyType::BINARY, 'value' => (string) $value),
+                                    $this->getChildPath($key),
+                                    $this->session,
+                                    $this->objectManager,
+                                )
+                            );
+                        }
                     } //else this is a type declaration
 
                     //skip this entry (if its binary, its already processeed

@@ -29,6 +29,9 @@ use Doctrine\DBAL\Connection;
 use Jackalope\Helper;
 use Jackalope\NodeType\NodeTypeManager;
 
+/**
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ */
 class DoctrineDBAL implements TransportInterface
 {
     /**
@@ -329,6 +332,8 @@ class DoctrineDBAL implements TransportInterface
                     $value = (bool)$prop['int_data'];
                     break;
                 case \PHPCR\PropertyType::LONG:
+                    $value = (int)$prop['int_data'];
+                    break;
                 case \PHPCR\PropertyType::BINARY:
                     $value = (int)$prop['int_data'];
                     break;
@@ -339,12 +344,17 @@ class DoctrineDBAL implements TransportInterface
                     $value = (double)$prop['float_data'];
                     break;
             }
-            if ($prop['multi_valued'] == 1) {
-                $data->{$prop['name']}[$prop['idx']] = $value;
+
+            if ($type == \PHPCR\PropertyType::BINARY) {
+                $data->{":" . $prop['name']} = $value;
             } else {
-                $data->{$prop['name']} = $value;
+                if ($prop['multi_valued'] == 1) {
+                    $data->{$prop['name']}[$prop['idx']] = $value;
+                } else {
+                    $data->{$prop['name']} = $value;
+                }
+                $data->{":" . $prop['name']} = $type;
             }
-            $data->{":" . $prop['name']} = $type;
         }
 
         return $data;
@@ -657,7 +667,7 @@ class DoctrineDBAL implements TransportInterface
         if (!$path) {
             throw new \PHPCR\ItemNotFoundException("no item found with uuid ".$uuid);
         }
-        return $path;
+        return "/" . $path;
     }
 
     /**

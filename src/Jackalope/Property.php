@@ -48,6 +48,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
 
         $type = $data['type'];
+
         if (is_string($type)) {
             $type = PropertyType::valueFromName($type);
         } elseif (!is_numeric($type)) {
@@ -58,6 +59,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
         $this->type = $type;
 
+        #var_dump($path);
+        #var_dump($data);
         if ($type == PropertyType::BINARY) {
             if (is_array($data['value'])) {
                 $this->isMultiple = true;
