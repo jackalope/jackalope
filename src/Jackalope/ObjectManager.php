@@ -80,18 +80,6 @@ class ObjectManager
     protected $itemsRemove = array(); //TODO: only nodes can be in this list. call it nodesRemove?
 
     /**
-     * Contains a list of nodes to be removed from the workspace upon save
-     * @var array   [ absPath => 1 ]
-     */
-    protected $nodesRemove = array();
-
-    /**
-     * Contains a list of properties to be removed from the workspace upon save
-     * @var array   [ absPath => 1 ]
-     */
-    protected $propertiesRemove = array();
-
-    /**
      * Contains a list of node to be moved in the workspace upon save
      * @var array   [ srcAbsPath => dstAbsPath, .. ]
      */
@@ -605,7 +593,7 @@ class ObjectManager
             $this->transport->deleteNode($path);
             $last = $path;
         }
-        foreach ($this->propertiesRemove AS $path => $dummy) {
+        foreach ($this->itemsRemove AS $path => $dummy) {
             $this->transport->deleteProperty($path);
         }
 
@@ -662,7 +650,7 @@ class ObjectManager
         // TODO: have a davex client method to commit transaction
 
         // commit changes to the local state
-        foreach ($this->nodesRemove as $path => $dummy) {
+        foreach ($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
         }
 
@@ -688,8 +676,13 @@ class ObjectManager
             }
         }
 
+<<<<<<< HEAD
         $this->nodesRemove =
         $this->propertiesRemove =
+=======
+        $this->itemsRemove =
+        $this->itemsRemove =
+>>>>>>> Fix merge error with jackalope master, pick the right winner.
         $this->nodesMove = 
         $this->itemsAdd = array();
     }
@@ -761,7 +754,7 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->nodesRemove) || count($this->propertiesRemove)) {
+        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove) || count($this->itemsRemove)) {
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
@@ -812,9 +805,9 @@ class ObjectManager
             //this is a new unsaved node
             unset($this->itemsAdd[$absPath]);
         } else if ($propertyName) {
-            $this->propertiesRemove[$absPath] = 1;
+            $this->itemsRemove[$absPath] = 1;
         } else {
-            $this->nodesRemove[$absPath] = 1;
+            $this->itemsRemove[$absPath] = 1;
         }
 
     }
@@ -986,7 +979,7 @@ class ObjectManager
         $this->objectsByPath = array();
         $this->objectsByUuid = array();
         $this->itemsAdd = array();
-        $this->nodesRemove = array();
+        $this->itemsRemove = array();
         $this->nodesMove = array();
     }
 
