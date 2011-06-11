@@ -18,35 +18,35 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>204c4e5e-d14f-4ff7-8a1e-ced03d134073</value>
+      <value>6a520b96-901e-4095-a2b4-c68130db3a1d</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base</value>
       <value></value>
       <value>1</value>
-      <value>082422fa-c40d-41f8-a524-455b8cfe5c4a</value>
+      <value>82e75b1c-e20b-4e0c-ab5b-51a5c1618911</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>c42803f4-13c4-42f0-888c-b353041841f2</value>
+      <value>1875b868-7d9a-4053-94e7-91b82b8abfcf</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/unversionable</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>c6016685-aaf1-46ec-8150-dab93c5dae53</value>
+      <value>389278d5-e94b-4c22-905d-7cd2dd1e629f</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_version_base/versioned</value>
       <value>tests_version_base</value>
       <value>1</value>
-      <value>1d3feaf2-4ecb-4db9-8b9a-7e745f5cae9d</value>
+      <value>26e694bd-4ac5-4aaf-b249-c7e687539e13</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -68,7 +68,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>082422fa-c40d-41f8-a524-455b8cfe5c4a</value>
+      <value>82e75b1c-e20b-4e0c-ab5b-51a5c1618911</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -82,7 +82,7 @@
       <value>1</value>
       <value>jcr:mixinTypes</value>
       <value>0</value>
-      <value>1d3feaf2-4ecb-4db9-8b9a-7e745f5cae9d</value>
+      <value>26e694bd-4ac5-4aaf-b249-c7e687539e13</value>
       <value>7</value>
       <value>1</value>
       <value>mix:versionable</value>

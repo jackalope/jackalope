@@ -11,18 +11,18 @@ $srcDir = __DIR__ . "/suite/fixtures";
 $destDir = __DIR__ . "/fixtures/doctrine";
 
 $jcrTypes = array(
-    "string" => array(1, "clob_data"),
-    "binary" => array(2, "clob_data"),
-    "long"   => array(3, "int_data"),
-    "double" => array(4, "float_data"),
-    "date"   => array(5, "datetime_data"),
-    "boolean" => array(6, "int_data"),
-    "name"   => array(7, "string_data"),
-    "path"   => array(8, "string_data"),
-    "reference" => array(9, "string_data"),
+    "string"        => array(1, "clob_data"),
+    "binary"        => array(2, "clob_data"),
+    "long"          => array(3, "int_data"),
+    "double"        => array(4, "float_data"),
+    "date"          => array(5, "datetime_data"),
+    "boolean"       => array(6, "int_data"),
+    "name"          => array(7, "string_data"),
+    "path"          => array(8, "string_data"),
+    "reference"     => array(9, "string_data"),
     "weakreference" => array(10, "string_data"),
-    "uri"    => array(11, "string_data"),
-    "decimal" => array(12, "string_data"),
+    "uri"           => array(11, "string_data"),
+    "decimal"       => array(12, "string_data"),
 );
 
 $rdi = new RecursiveDirectoryIterator($srcDir);
