@@ -72,7 +72,7 @@ function getRepository($config) {
     global $dbConn;
     $dbConn->insert("jcrworkspaces", array("name" => "tests"));
     
-    $transport = new \Jackalope\Transport\DoctrineDBAL($dbConn);
+    $transport = new \Jackalope\Transport\Doctrine\DoctrineTransport($dbConn);
     $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
     return new \Jackalope\Repository(null, null, $transport);
 }
