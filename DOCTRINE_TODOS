@@ -1,0 +1,17 @@
+# Doctrine Todos
+
+## Known Failures in the API Test
+
+* NodeReadMethodsTest::testGetPropertiesValuesGlob() fails with "Failed asserting that <integer:2> matches expected <integer:1>.",
+  because jcr:uuid is returned although the node is not mix:referencable. This is not checked in DoctrineDBAL::getNode() type.
+
+* Reading_5_PropertyReadMethodsTest::testGetDateMulti and Reading_5_PropertyReadMethodsTest::testGetDate fail,
+  because DoctrineDBAL does not support saving timezones of DateTime instances
+
+## Todos
+
+* Implement usage of NodeTypeDefintions to read/write validation and formatting data correctly (such as auto-creating values, forcing multi-values)
+* Implement storage of NodeTypeDefinitions and such into the database
+* Versioning support
+* Refactor storage to implement one one table per database type?
+* Optimize database storage more, using real ids and normalizing the uuids and paths?
