@@ -80,8 +80,8 @@ class JCR2StandardNodeTypes
                         'declaringNodeType' => 'nt:unstructured',
                         'name' => '*',
                         'isAutoCreated' => true,
-                        'isMandatory' => false,
-                        'isProtected' => true,
+                        'isMandatory'   => false,
+                        'isProtected'   => true,
                         'onParentVersion' => 1,
                         'requiredType' => 0,
                         'multiple' => true,
@@ -427,7 +427,7 @@ class JCR2StandardNodeTypes
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => NULL,
-                'declaredSuperTypeNames' => array('mix:referencable'),
+                'declaredSuperTypeNames' => array('mix:referenceable'),
                 'declaredPropertyDefinitions' => array(),
                 'declaredNodeDefinitions' => array(),
             ),
@@ -471,7 +471,37 @@ class JCR2StandardNodeTypes
                 'declaredNodeDefinitions' =>
                 array(
                 ),
-            )
+            ),
+            14 =>
+            array(
+                'name' => 'nt:linkedFile',
+                'isAbstract' => false,
+                'isMixin' => false,
+                'isQueryable' => true,
+                'hasOrderableChildNodes' => true,
+                'primaryItemName' => 'jcr:content',
+                'declaredSuperTypeNames' =>
+                array(
+                    0 => 'nt:hierachy',
+                ),
+                'declaredPropertyDefinitions' => array(
+                    array(
+                        'declaringNodeType' => '',
+                        'name' => 'jcr:content',
+                        'isAutoCreated' => false,
+                        'isMandatory' => true,
+                        'isProtected' => false,
+                        'onParentVersion' => 4,
+                        'requiredType' => \PHPCR\PropertyType::REFERENCE,
+                        'multiple' => false,
+                        'fullTextSearchable' => false,
+                        'queryOrderable' => false,
+                    ),
+                ),
+                'declaredNodeDefinitions' =>
+                array(
+                ),
+            ),
         );
     }
 }
