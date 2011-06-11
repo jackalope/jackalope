@@ -18,14 +18,14 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>8cb590cc-ddd4-4005-b308-ac5dfacaacc8</value>
+      <value>b3a94f18-ca80-470b-9a72-1efa02f32443</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>queryNode</value>
       <value></value>
       <value>1</value>
-      <value>3b223169-31fc-42e6-91d9-afa1d4ca18e6</value>
+      <value>2583b5ac-a998-4f61-a638-cb7d8487caa1</value>
       <value>nt:query</value>
     </row>
   </table>
@@ -47,7 +47,7 @@
       <value>1</value>
       <value>jcr:language</value>
       <value>0</value>
-      <value>3b223169-31fc-42e6-91d9-afa1d4ca18e6</value>
+      <value>2583b5ac-a998-4f61-a638-cb7d8487caa1</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -61,7 +61,7 @@
       <value>1</value>
       <value>jcr:statement</value>
       <value>0</value>
-      <value>3b223169-31fc-42e6-91d9-afa1d4ca18e6</value>
+      <value>2583b5ac-a998-4f61-a638-cb7d8487caa1</value>
       <value>1</value>
       <value>0</value>
       <null/>

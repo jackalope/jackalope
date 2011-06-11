@@ -346,7 +346,11 @@ class DoctrineDBAL implements TransportInterface
             }
 
             if ($type == \PHPCR\PropertyType::BINARY) {
-                $data->{":" . $prop['name']} = $value;
+                if ($prop['multi_valued'] == 1) {
+                    $data->{":" . $prop['name']}[$prop['idx']] = $value;
+                } else {
+                    $data->{":" . $prop['name']} = $value;
+                }
             } else {
                 if ($prop['multi_valued'] == 1) {
                     $data->{$prop['name']}[$prop['idx']] = $value;
@@ -1074,9 +1078,21 @@ class DoctrineDBAL implements TransportInterface
     {
         $this->assertLoggedIn();
 
-        $data = $this->conn->fetchColumn('SELECT data FROM jcrbinarydata WHERE path = ?', array($path));
-        // TODO: Error Handling
-        return fopen("data://text/plain,".$data, "r");
+        $data = $this->conn->fetchAll(
+            'SELECT data, idx FROM jcrbinarydata WHERE path = ? AND workspace_id = ?',
+            array(ltrim($path, "/"), $this->workspaceId)
+        );
+
+        if (count($data) == 1) {
+            // TODO: Error Handling
+            return fopen("data://text/plain,".$data[0]['data'], "r");
+        } else {
+            $streams = array();
+            foreach ($data AS $row) {
+                $streams[$row['idx']] = fopen("data://text/plain,".$row['data'], "r");
+            }
+            return $streams;
+        }
     }
 
     public function getProperty($path)

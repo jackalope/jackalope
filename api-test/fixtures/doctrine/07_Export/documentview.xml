@@ -18,35 +18,35 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>b0ee1b76-1c82-480b-8d21-8acb0277ae92</value>
+      <value>947a1973-46f9-4b20-ad9b-2bb8faf0b897</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_export</value>
       <value></value>
       <value>1</value>
-      <value>1ef4ae8a-eb7d-4e0e-8aae-7f7cdebb53d5</value>
+      <value>8b0f1a50-5ffb-42a4-b28d-2b7ae6a8ef0a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_export/My_x005f_x0020_x0020_Documents</value>
       <value>tests_export</value>
       <value>1</value>
-      <value>eb7b3057-76d6-48b5-a2bb-e7af3309e2ae</value>
+      <value>e803c5de-d5b7-4417-a2ec-31422bd19b75</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_export/index.txt</value>
       <value>tests_export</value>
       <value>1</value>
-      <value>9fd0fb8b-dd54-4be5-887a-8e4566a50060</value>
+      <value>c5a98c21-03aa-4a9b-b28b-946d44ff06d9</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_export/index.txt/jcr:content</value>
       <value>tests_export/index.txt</value>
       <value>1</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>nt:unstructured</value>
     </row>
     <row>
@@ -60,7 +60,7 @@
       <value>tests_export/idExample/jcr:content</value>
       <value>tests_export/idExample</value>
       <value>1</value>
-      <value>78bdb4d6-d05f-4cae-ab34-3365fc9a747d</value>
+      <value>55d4fc8c-3e72-43be-93fe-124317e8fb2e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
@@ -74,28 +74,28 @@
       <value>tests_export/idExample/jcr:content/weakreference_source1</value>
       <value>tests_export/idExample/jcr:content</value>
       <value>1</value>
-      <value>7d936b28-29ec-4cc4-b00b-00caa4110bab</value>
+      <value>456f4ad9-9fc3-4b62-b951-1d9bd3a2eb45</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_export/idExample/jcr:content/weakreference_source2</value>
       <value>tests_export/idExample/jcr:content</value>
       <value>1</value>
-      <value>2ea007bc-058d-41cb-a506-e810ef667a64</value>
+      <value>df1703e9-ea20-43f6-acee-b579d5b795b4</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_export/test:namespacedNode</value>
       <value>tests_export</value>
       <value>1</value>
-      <value>a7751752-dc43-48f4-a95c-f622850d5614</value>
+      <value>96c57030-9538-4095-8616-741fcb8cf1e5</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_export/emptyExample</value>
       <value>tests_export</value>
       <value>1</value>
-      <value>c58d7b1e-2e2d-4ff8-a745-edab89e873b7</value>
+      <value>23ac6e14-26c1-4044-8235-b5cf8595123d</value>
       <value>nt:folder</value>
     </row>
     <row>
@@ -109,21 +109,21 @@
       <value>tests_export/multiValueProperty/deepnode</value>
       <value>tests_export/multiValueProperty</value>
       <value>1</value>
-      <value>b1d83809-65f1-4d69-98d0-95f31cafec3a</value>
+      <value>42905ac9-53a4-4659-95ec-ab52ea08cb1c</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_export/numberPropertyNode</value>
       <value>tests_export</value>
       <value>1</value>
-      <value>c0261b34-0313-4368-af5b-b40e8f0ed2bb</value>
+      <value>66121c92-d164-4303-8252-f952dee09a0c</value>
       <value>nt:file</value>
     </row>
     <row>
       <value>tests_export/numberPropertyNode/jcr:content</value>
       <value>tests_export/numberPropertyNode</value>
       <value>1</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>nt:unstructured</value>
     </row>
   </table>
@@ -143,7 +143,7 @@
       <value>tests_export/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>1ef4ae8a-eb7d-4e0e-8aae-7f7cdebb53d5</value>
+      <value>8b0f1a50-5ffb-42a4-b28d-2b7ae6a8ef0a</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -156,7 +156,7 @@
       <value>tests_export/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>1ef4ae8a-eb7d-4e0e-8aae-7f7cdebb53d5</value>
+      <value>8b0f1a50-5ffb-42a4-b28d-2b7ae6a8ef0a</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -169,7 +169,7 @@
       <value>tests_export/index.txt/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>9fd0fb8b-dd54-4be5-887a-8e4566a50060</value>
+      <value>c5a98c21-03aa-4a9b-b28b-946d44ff06d9</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -182,7 +182,7 @@
       <value>tests_export/index.txt/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>9fd0fb8b-dd54-4be5-887a-8e4566a50060</value>
+      <value>c5a98c21-03aa-4a9b-b28b-946d44ff06d9</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -195,7 +195,7 @@
       <value>tests_export/index.txt/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -208,7 +208,7 @@
       <value>tests_export/index.txt/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -221,7 +221,7 @@
       <value>tests_export/index.txt/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -234,7 +234,7 @@
       <value>tests_export/index.txt/jcr:content/mydateprop</value>
       <value>1</value>
       <value>mydateprop</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -247,7 +247,7 @@
       <value>tests_export/index.txt/jcr:content/zeronumber</value>
       <value>1</value>
       <value>zeronumber</value>
-      <value>d1938972-e8a5-44ca-88b5-9a2c5fa366b0</value>
+      <value>c4daa89d-0a13-4a4c-b85a-be5f0ab99f33</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -286,7 +286,7 @@
       <value>tests_export/idExample/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>78bdb4d6-d05f-4cae-ab34-3365fc9a747d</value>
+      <value>55d4fc8c-3e72-43be-93fe-124317e8fb2e</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -299,7 +299,7 @@
       <value>tests_export/idExample/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>78bdb4d6-d05f-4cae-ab34-3365fc9a747d</value>
+      <value>55d4fc8c-3e72-43be-93fe-124317e8fb2e</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -312,7 +312,7 @@
       <value>tests_export/idExample/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>78bdb4d6-d05f-4cae-ab34-3365fc9a747d</value>
+      <value>55d4fc8c-3e72-43be-93fe-124317e8fb2e</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -325,7 +325,7 @@
       <value>tests_export/idExample/jcr:content/weakreference_source1/ref1</value>
       <value>1</value>
       <value>ref1</value>
-      <value>7d936b28-29ec-4cc4-b00b-00caa4110bab</value>
+      <value>456f4ad9-9fc3-4b62-b951-1d9bd3a2eb45</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -338,7 +338,7 @@
       <value>tests_export/idExample/jcr:content/weakreference_source2/ref2</value>
       <value>1</value>
       <value>ref2</value>
-      <value>2ea007bc-058d-41cb-a506-e810ef667a64</value>
+      <value>df1703e9-ea20-43f6-acee-b579d5b795b4</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -351,7 +351,7 @@
       <value>tests_export/test:namespacedNode/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>a7751752-dc43-48f4-a95c-f622850d5614</value>
+      <value>96c57030-9538-4095-8616-741fcb8cf1e5</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -364,7 +364,7 @@
       <value>tests_export/test:namespacedNode/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>a7751752-dc43-48f4-a95c-f622850d5614</value>
+      <value>96c57030-9538-4095-8616-741fcb8cf1e5</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -377,7 +377,7 @@
       <value>tests_export/emptyExample/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>c58d7b1e-2e2d-4ff8-a745-edab89e873b7</value>
+      <value>23ac6e14-26c1-4044-8235-b5cf8595123d</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -390,7 +390,7 @@
       <value>tests_export/emptyExample/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>c58d7b1e-2e2d-4ff8-a745-edab89e873b7</value>
+      <value>23ac6e14-26c1-4044-8235-b5cf8595123d</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -429,7 +429,7 @@
       <value>tests_export/multiValueProperty/deepnode/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>b1d83809-65f1-4d69-98d0-95f31cafec3a</value>
+      <value>42905ac9-53a4-4659-95ec-ab52ea08cb1c</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -442,7 +442,7 @@
       <value>tests_export/multiValueProperty/deepnode/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>b1d83809-65f1-4d69-98d0-95f31cafec3a</value>
+      <value>42905ac9-53a4-4659-95ec-ab52ea08cb1c</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -455,7 +455,7 @@
       <value>tests_export/numberPropertyNode/jcr:created</value>
       <value>1</value>
       <value>jcr:created</value>
-      <value>c0261b34-0313-4368-af5b-b40e8f0ed2bb</value>
+      <value>66121c92-d164-4303-8252-f952dee09a0c</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -468,7 +468,7 @@
       <value>tests_export/numberPropertyNode/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
-      <value>c0261b34-0313-4368-af5b-b40e8f0ed2bb</value>
+      <value>66121c92-d164-4303-8252-f952dee09a0c</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -481,7 +481,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/foo</value>
       <value>1</value>
       <value>foo</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -494,7 +494,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/invalidPath</value>
       <value>1</value>
       <value>invalidPath</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -507,7 +507,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/invalidweak</value>
       <value>1</value>
       <value>invalidweak</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -520,7 +520,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/jcr:data</value>
       <value>1</value>
       <value>jcr:data</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -533,7 +533,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/jcr:lastModified</value>
       <value>1</value>
       <value>jcr:lastModified</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -546,7 +546,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/jcr:mimeType</value>
       <value>1</value>
       <value>jcr:mimeType</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -559,7 +559,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/longNumber</value>
       <value>1</value>
       <value>longNumber</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -572,7 +572,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/propertyPath</value>
       <value>1</value>
       <value>propertyPath</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -585,7 +585,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/ref</value>
       <value>1</value>
       <value>ref</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -598,7 +598,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/specialChars</value>
       <value>1</value>
       <value>specialChars</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
@@ -611,7 +611,7 @@
       <value>tests_export/numberPropertyNode/jcr:content/yesOrNo</value>
       <value>1</value>
       <value>yesOrNo</value>
-      <value>bdafb4d7-c5ae-46fa-8631-bc2e281fa5ef</value>
+      <value>8b66ca30-a9e7-43a2-b36c-9b5b1205d3d2</value>
       <value>1</value>
       <value></value>
       <null/>
