@@ -616,8 +616,17 @@ class DoctrineDBAL implements TransportInterface
                 break;
             case \PHPCR\PropertyType::BINARY:
                 $dataFieldName = 'int_data';
-                $binaryData = stream_get_contents($property->getBinary());
-                $values = strlen($binaryData);
+                if ($property->isMultiple()) {
+                    foreach ((array)$property->getBinary() AS $binary) {
+                        $binary = stream_get_contents($binary);
+                        $binaryData[] = $binary;
+                        $values[] = strlen($binary);
+                    }
+                } else {
+                    $binary = $property->getBinary();
+                    $binaryData[] = stream_get_contents($binary);
+                    $values = strlen($binary);
+                }
                 break;
             case \PHPCR\PropertyType::DATE:
                 $dataFieldName = 'datetime_data';
@@ -641,10 +650,12 @@ class DoctrineDBAL implements TransportInterface
         }
 
         if ($binaryData) {
+            foreach ($binaryData AS $idx => $data)
             $this->conn->insert('jcrbinarydata', array(
                 'path' => $path,
                 'workspace_id' => $this->workspaceId,
-                'data' => $binaryData,
+                'idx' => $idx,
+                'data' => $data,
             ));
         }
     }

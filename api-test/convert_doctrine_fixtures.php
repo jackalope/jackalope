@@ -12,7 +12,7 @@ $destDir = __DIR__ . "/fixtures/doctrine";
 
 $jcrTypes = array(
     "string"        => array(1, "clob_data"),
-    "binary"        => array(2, "clob_data"),
+    "binary"        => array(2, "int_data"),
     "long"          => array(3, "int_data"),
     "double"        => array(4, "float_data"),
     "date"          => array(5, "datetime_data"),
@@ -125,8 +125,18 @@ foreach ($ri AS $file) {
                     $data['type'] = $jcrTypeConst;
                     $data['multi_valued'] = $valueData['multiValued'] ? "1" : "0";
                     foreach ($valueData['value'] AS $value) {
-                        $data[$jcrTypeDbField] = $value;
+                        $data[$jcrTypeDbField] = ($jcrTypeConst == 2) ? strlen($value) : $value;
                         $dataSetBuilder->addRow('jcrprops', $data);
+
+                        if ($jcrTypeConst == 2) {
+                            $dataSetBuilder->addRow('jcrbinarydata', array(
+                                'path' => $data['path'],
+                                'workspace_id' => 1,
+                                'idx' => $data['idx'],
+                                'data' => $value,
+                            ));
+                        }
+
                         $data['idx'] = ++$idx;
                     }
                 } else {
