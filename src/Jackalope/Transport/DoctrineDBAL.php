@@ -1124,7 +1124,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getReferences($path, $name = null)
     {
-        throw new \Jackalope\NotImplementedException("Not implemented yet");
+        return $this->getNodeReferences($path, $name, false);
     }
 
     /**
@@ -1136,8 +1136,36 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getWeakReferences($path, $name = null)
     {
-        throw new \Jackalope\NotImplementedException("Not implemented yet");
+        return $this->getNodeReferences($path, $name, true);
     }
+
+    /**
+     * Returns the path of all accessible reference properties in the workspace that point to the node.
+     * If $weak_reference is false (default) only the REFERENCE properties are returned, if it is true, only WEAKREFERENCEs.
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @param boolean $weak_reference If true return only WEAKREFERENCEs, otherwise only REFERENCEs
+     * @return array
+     */
+    protected function getNodeReferences($path, $name = null, $weak_reference = false)
+    {
+        $path = $this->trimPath($path);
+        $type = $weak_reference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
+
+        $sql = "SELECT p.path, p.name FROM jcrprops p " .
+               "INNER JOIN jcrnodes r ON r.identifier = p.string_data AND p.workspace_id = ? AND r.workspace_id = ?" .
+               "WHERE r.path = ? AND p.type = ?";
+        $properties = $this->conn->fetchAll($sql, array($this->workspaceId, $this->workspaceId, $path, $type));
+
+        $references = array();
+        foreach ($properties AS $property) {
+            if ($name === null || $property['name'] == $name) {
+                $references[] = "/" . $property['path'];
+            }
+        }
+        return $references;
+    }
+
 
     /**
      * Return the permissions of the current session on the node given by path.
