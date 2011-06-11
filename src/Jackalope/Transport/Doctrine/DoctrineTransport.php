@@ -562,6 +562,10 @@ class DoctrineTransport implements TransportInterface
 
         foreach ($def->getDeclaredPropertyDefinitions() AS $propertyDef) {
             /* @var $propertyDef \PHPCR\NodeType\PropertyDefinitionInterface */
+            if ($propertyDef->getName() == '*') {
+                continue;
+            }
+
             if (!$node->hasProperty($propertyDef->getName())) {
                 if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated()) {
                     throw new \PHPCR\RepositoryException(
@@ -584,9 +588,6 @@ class DoctrineTransport implements TransportInterface
                         "property with this name."
                     );
                 }
-            } else {
-                $property = $node->getProperty($propertyDef->getName());
-                // TODO: Check value constraints!
             }
         }
     }
@@ -608,16 +609,26 @@ class DoctrineTransport implements TransportInterface
         $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
+        // This is very slow i believe :-(
         $nodeDef = $node->getPrimaryNodeType();
         $nodeTypes = $node->getMixinNodeTypes();
         array_unshift($nodeTypes, $nodeDef);
+        foreach ($nodeTypes as $nodeType) {
+            /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
+            foreach ($nodeType->getDeclaredSupertypes() AS $superType) {
+                $nodeTypes[] = $superType;
+            }
+        }
 
         $popertyDefs = array();
-        $childDefs = array();
         foreach ($nodeTypes AS $nodeType) {
             /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
             foreach ($nodeType->getDeclaredPropertyDefinitions() AS $itemDef) {
                 /* @var $itemDef \PHPCR\NodeType\ItemDefinitionInterface */
+                if ($itemDef->getName() == '*') {
+                    continue;
+                }
+
                 if (isset($popertyDefs[$itemDef->getName()])) {
                     throw new \PHPCR\RepositoryException("DoctrineTransport does not support child/property definitions for the same subpath.");
                 }
@@ -628,21 +639,31 @@ class DoctrineTransport implements TransportInterface
 
         $properties = $node->getProperties();
 
-        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
-        if (!$this->pathExists($path)) {
-            $this->conn->insert("jcrnodes", array(
-                'identifier' => $nodeIdentifier,
-                'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured",
-                'path' => $path,
-                'parent' => $this->getParentPath($path),
-                'workspace_id' => $this->workspaceId,
-            ));
-        }
-        $this->nodeIdentifiers[$path] = $nodeIdentifier;
+        $this->conn->beginTransaction();
 
-        foreach ($properties AS $property) {
-            $this->doStoreProperty($property, $popertyDefs);
+        try {
+            $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
+            if (!$this->pathExists($path)) {
+                $this->conn->insert("jcrnodes", array(
+                    'identifier' => $nodeIdentifier,
+                    'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured",
+                    'path' => $path,
+                    'parent' => $this->getParentPath($path),
+                    'workspace_id' => $this->workspaceId,
+                ));
+            }
+            $this->nodeIdentifiers[$path] = $nodeIdentifier;
+
+            foreach ($properties AS $property) {
+                $this->doStoreProperty($property, $popertyDefs);
+            }
+            $this->conn->commit();
+        } catch(\Exception $e) {
+            $this->conn->rollBack();
+            throw new \PHPCR\RepositoryException("Storing node " . $node->getPath() . " failed: " . $e->getMessage(), null, $e);
         }
+
+        return true;
     }
 
     /**
@@ -694,11 +715,13 @@ class DoctrineTransport implements TransportInterface
             'workspace_id' => $this->workspaceId,
         ));
 
-        $isMultiple = $property->isMultiple() ;
+        $isMultiple = $property->isMultiple();
         if (isset($propDefinitions[$name])) {
-            if ($propDefinitions[$name]->isMultiple() && !$isMultiple) {
+            /* @var $propertyDef \PHPCR\NodeType\PropertyDefinitionInterface */
+            $propertyDef = $propDefinitions[$name];
+            if ($propertyDef->isMultiple() && !$isMultiple) {
                 $isMultiple = true;
-            } else if (!$propDefinitions[$name]->isMultiple() && $isMultiple) {
+            } else if (!$propertyDef->isMultiple() && $isMultiple) {
                 throw new \PHPCR\ValueFormatException(
                     'Cannot store property ' . $property->getPath() . ' as array, '.
                     'property definition of nodetype ' . $propertyDef->getDeclaringNodeType()->getName() .
@@ -706,19 +729,23 @@ class DoctrineTransport implements TransportInterface
                 );
             }
 
-            if ($propDefinitions[$name]->getRequiredType() !== \PHPCR\PropertyType::UNDEFINED) {
+            if ($propertyDef !== \PHPCR\PropertyType::UNDEFINED) {
                 // TODO: Is this the correct way? No side effects while initializtion?
-                $property->setValue($property->getValue(), $propDefinitions[$name]->getRequiredType());
+                $property->setValue($property->getValue(), $propertyDef->getRequiredType());
+            }
+
+            foreach ($propertyDef->getValueConstraints() AS $valueConstraint) {
+                // TODO: Validate constraints
             }
         }
         
         $data = array(
-            'path' => $path,
-            'workspace_id' => $this->workspaceId,
-            'name' => $name,
-            'idx' => 0,
-            'multi_valued' => $isMultiple ? 1 : 0,
-            'node_identifier' => $this->nodeIdentifiers[$this->trimPath($property->getParent()->getPath(), '/')]
+            'path'              => $path,
+            'workspace_id'      => $this->workspaceId,
+            'name'              => $name,
+            'idx'               => 0,
+            'multi_valued'      => $isMultiple ? 1 : 0,
+            'node_identifier'   => $this->nodeIdentifiers[$this->trimPath($property->getParent()->getPath(), '/')]
         );
         $data['type'] = $property->getType();
 
@@ -791,10 +818,10 @@ class DoctrineTransport implements TransportInterface
         if ($binaryData) {
             foreach ($binaryData AS $idx => $data)
             $this->conn->insert('jcrbinarydata', array(
-                'path' => $path,
-                'workspace_id' => $this->workspaceId,
-                'idx' => $idx,
-                'data' => $data,
+                'path'          => $path,
+                'workspace_id'  => $this->workspaceId,
+                'idx'           => $idx,
+                'data'          => $data,
             ));
         }
     }
