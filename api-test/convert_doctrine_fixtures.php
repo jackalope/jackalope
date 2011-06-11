@@ -83,7 +83,7 @@ foreach ($ri AS $file) {
                     $attrs[$name] = array(
                         'type' =>  strtolower($child->getAttributeNS('http://www.jcp.org/jcr/sv/1.0', 'type')),
                         'value' => $value,
-                        'multiValued' => (in_array($name, array('jcr:mixinTypes'))),
+                        'multiValued' => (in_array($name, array('jcr:mixinTypes'))) || count($value) > 1,
                     );
                 }
             }
