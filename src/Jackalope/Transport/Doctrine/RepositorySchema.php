@@ -29,6 +29,11 @@ class RepositorySchema
     static public function create()
     {
         $schema = new Schema();
+        $namespace = $schema->createTable('jcrnamespaces');
+        $namespace->addColumn('prefix', 'string');
+        $namespace->addColumn('uri', 'string');
+        $namespace->setPrimaryKey(array('prefix'));
+
         $workspace = $schema->createTable('jcrworkspaces');
         $workspace->addColumn('id', 'integer', array('autoincrement' => true));
         $workspace->addColumn('name', 'string');

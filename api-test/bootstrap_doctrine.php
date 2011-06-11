@@ -103,10 +103,10 @@ function getJCRSession($config, $credentials = null) {
         }
         return $repository->login($credentials, $config['workspace']);
     } elseif (isset($config['workspace'])) {
-        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(phpcr_suite_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, $config['workspace']);
     } else {
-        throw new \PHPCR\RepositoryException(jackalope_baseCase::NOTSUPPORTEDLOGIN);
+        throw new \PHPCR\RepositoryException(phpcr_suite_baseCase::NOTSUPPORTEDLOGIN);
         //return $repository->login(null, null);
     }
 }

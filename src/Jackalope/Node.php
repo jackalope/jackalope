@@ -74,7 +74,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                             $this->properties[$key] = $this->factory->get(
                                 'Property',
                                 array(
-                                    array('type' => \PHPCR\PropertyType::BINARY, 'value' => (string) $value),
+                                    array('type' => \PHPCR\PropertyType::BINARY, 'value' => $value),
                                     $this->getChildPath($key),
                                     $this->session,
                                     $this->objectManager,
