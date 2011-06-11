@@ -297,6 +297,7 @@ class DoctrineDBAL implements TransportInterface
         }
 
         $data = new \stdClass();
+        // TODO: only return jcr:uuid when this node implements mix:referencable
         $data->{'jcr:uuid'} = $row['identifier'];
         $data->{'jcr:primaryType'} = $row['type'];
         $this->nodeIdentifiers[$path] = $row['identifier'];
@@ -841,7 +842,7 @@ class DoctrineDBAL implements TransportInterface
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => 'jcr:content',
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:hierachy',
@@ -1176,7 +1177,11 @@ class DoctrineDBAL implements TransportInterface
      */
     public function getPermissions($path)
     {
-        throw new \Jackalope\NotImplementedException("Not implemented yet");
+        return array(
+            \PHPCR\SessionInterface::ACTION_ADD_NODE,
+            \PHPCR\SessionInterface::ACTION_READ,
+            \PHPCR\SessionInterface::ACTION_REMOVE,
+            \PHPCR\SessionInterface::ACTION_SET_PROPERTY);
     }
 
     protected function trimPath($path)
