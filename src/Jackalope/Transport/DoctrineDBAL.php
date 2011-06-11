@@ -350,18 +350,6 @@ class DoctrineDBAL implements TransportInterface
         return $data;
     }
 
-    /**
-     * Retrieves a binary value
-     *
-     * @param $path
-     * @return string
-     */
-    public function getBinaryProperty($path)
-    {
-        $this->assertLoggedIn();
-
-        return $this->conn->fetchColumn('SELECT data FROM jcrbinarydata WHERE path = ?', array($path));
-    }
 
     /**
      * Check-in item at path.
@@ -374,7 +362,7 @@ class DoctrineDBAL implements TransportInterface
      */
     public function checkinItem($path)
     {
-
+        throw new \Jackalope\NotImplementedException();
     }
 
     /**
@@ -388,22 +376,22 @@ class DoctrineDBAL implements TransportInterface
      */
     public function checkoutItem($path)
     {
-
+        throw new \Jackalope\NotImplementedException();
     }
 
     public function restoreItem($removeExisting, $versionPath, $path)
     {
-
+        throw new \Jackalope\NotImplementedException();
     }
 
     public function getVersionHistory($path)
     {
-
+        throw new \Jackalope\NotImplementedException();
     }
 
     public function querySQL($query, $limit = null, $offset = null)
     {
-
+        throw new \Jackalope\NotImplementedException();
     }
 
     private function pathExists($path)
@@ -1064,7 +1052,11 @@ class DoctrineDBAL implements TransportInterface
 
     public function getBinaryStream($path)
     {
-        throw new \Jackalope\NotImplementedException("Not implemented yet");
+        $this->assertLoggedIn();
+
+        $data = $this->conn->fetchColumn('SELECT data FROM jcrbinarydata WHERE path = ?', array($path));
+        // TODO: Error Handling
+        return fopen("data://text/plain,".$data, "r");
     }
 
     public function getProperty($path)

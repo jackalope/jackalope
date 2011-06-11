@@ -40,7 +40,12 @@ $loader->register();
  */
 require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
-$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array('driver' => 'pdo_mysql', 'user' => 'root', 'password' => '', 'dbname' => 'jcrtests'));
+$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
+    'driver'    => $GLOBALS['jcr.doctrine.dbal.driver'],
+    'user'      => $GLOBALS['jcr.doctrine.dbal.username'],
+    'password'  => $GLOBALS['jcr.doctrine.dbal.password'],
+    'dbname'    => $GLOBALS['jcr.doctrine.dbal.dbname']
+));
 $schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
 try {
     foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
