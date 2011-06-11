@@ -70,6 +70,12 @@ class ObjectManager
     protected $itemsAdd = array();
 
     /**
+     * Contains a list of items to be removed from the workspace upon save
+     * @var array   [ absPath => 1 ]
+     */
+    protected $itemsRemove = array(); //TODO: only nodes can be in this list. call it nodesRemove?
+
+    /**
      * Contains a list of nodes to be removed from the workspace upon save
      * @var array   [ absPath => 1 ]
      */

@@ -526,7 +526,7 @@ class DoctrineDBAL implements TransportInterface
         if (!$this->pathExists($path)) {
             $this->conn->insert("jcrnodes", array(
                 'identifier' => $nodeIdentifier,
-                'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getNativeValue() : "nt:unstructured",
+                'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured",
                 'path' => $path,
                 'parent' => $this->getParentPath($path),
                 'workspace_id' => $this->workspaceId,
@@ -587,7 +587,8 @@ class DoctrineDBAL implements TransportInterface
             'node_identifier' => $this->nodeIdentifiers[ltrim($property->getParent()->getPath(), '/')]
         );
         $data['type'] = $property->getType();
-        $isBinary = false;
+
+        $binaryData = null;
         switch ($data['type']) {
             case \PHPCR\PropertyType::NAME:
             case \PHPCR\PropertyType::URI:
@@ -614,9 +615,9 @@ class DoctrineDBAL implements TransportInterface
                 $values = $property->getLong();
                 break;
             case \PHPCR\PropertyType::BINARY:
-                $isBinary = true;
                 $dataFieldName = 'int_data';
-                $values = $property->getBinary()->getSize();
+                $binaryData = stream_get_contents($property->getBinary());
+                $values = strlen($binaryData);
                 break;
             case \PHPCR\PropertyType::DATE:
                 $dataFieldName = 'datetime_data';
@@ -639,13 +640,11 @@ class DoctrineDBAL implements TransportInterface
             $this->conn->insert('jcrprops', $data);
         }
 
-        if ($isBinary) {
-            var_dump("oeeerrr!");
-            $data = $property->getBinary()->read($value);
+        if ($binaryData) {
             $this->conn->insert('jcrbinarydata', array(
                 'path' => $path,
                 'workspace_id' => $this->workspaceId,
-                'data' => $data,
+                'data' => $binaryData,
             ));
         }
     }
