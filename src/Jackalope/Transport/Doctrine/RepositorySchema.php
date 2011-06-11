@@ -64,8 +64,9 @@ class RepositorySchema
         $binary = $schema->createTable('jcrbinarydata');
         $binary->addColumn('path', 'string');
         $binary->addColumn('workspace_id', 'integer');
+        $binary->addColumn('idx', 'integer', array('default' => 0));
         $binary->addColumn('data', 'text'); // TODO BLOB!
-        $binary->setPrimaryKey(array('path', 'workspace_id'));
+        $binary->setPrimaryKey(array('path', 'workspace_id', 'idx'));
 
         $types = $schema->createTable('jcrtype_nodes');
         $types->addColumn('node_type_id', 'integer', array('autoincrement' => true));
