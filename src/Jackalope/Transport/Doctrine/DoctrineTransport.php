@@ -75,10 +75,20 @@ class DoctrineTransport implements TransportInterface
      */
     private $nodeIdentifiers = array();
 
+    /**
+     *
+     * @var PHPCR\NodeType\NodeTypeManagerInterface
+     */
     private $nodeTypeManager = null;
 
+    /**
+     * @var array
+     */
     private $userNamespaces = null;
 
+    /**
+     * @var array
+     */
     private $validNamespacePrefixes = array(
         \PHPCR\NamespaceRegistryInterface::PREFIX_EMPTY => true,
         \PHPCR\NamespaceRegistryInterface::PREFIX_JCR => true,
@@ -526,6 +536,61 @@ class DoctrineTransport implements TransportInterface
         return implode("/", array_slice(explode("/", $path), 0, -1));
     }
 
+    private function validateNode(\PHPCR\NodeInterface $node, \PHPCR\NodeType\NodeTypeDefinitionInterface $def)
+    {
+        foreach ($def->getDeclaredChildNodeDefinitions() AS $childDef) {
+            /* @var $childDef \PHPCR\NodeType\NodeDefinitionInterface */
+            if (!$node->hasNode($childDef->getName())) {
+                if ($childDef->isMandatory() && !$childDef->isAutoCreated()) {
+                    throw new \PHPCR\RepositoryException(
+                        "Child " . $child->getName() . " is mandatory, but is not present while ".
+                        "saving " . $def->getName() . " at " . $node->getPath()
+                    );
+                } else if ($childDef->isAutoCreated()) {
+
+                }
+
+                if ($node->hasProperty($childDef->getName())) {
+                    throw new \PHPCR\RepositoryException(
+                        "Node " . $node->getPath() . " has property with name ".
+                        $childDef->getName() . " but its node type '". $def->getName() . "' defines a ".
+                        "child with this name."
+                    );
+                }
+            }
+        }
+
+        foreach ($def->getDeclaredPropertyDefinitions() AS $propertyDef) {
+            /* @var $propertyDef \PHPCR\NodeType\PropertyDefinitionInterface */
+            if (!$node->hasProperty($propertyDef->getName())) {
+                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated()) {
+                    throw new \PHPCR\RepositoryException(
+                        "Property " . $propertyDef->getName() . " is mandatory, but is not present while ".
+                        "saving " . $def->getName() . " at " . $node->getPath()
+                    );
+                } else if ($propertyDef->isAutoCreated()) {
+                    $defaultValues = $propertyDef->getDefaultValues();
+                    $node->setProperty(
+                        $propertyDef->getName(),
+                        $propertyDef->isMultiple() ? $defaultValues : (isset($defaultValues[0]) ? $defaultValues[0] : null),
+                        $propertyDef->getRequiredType()
+                    );
+                }
+
+                if ($node->hasNode($propertyDef->getName())) {
+                    throw new \PHPCR\RepositoryException(
+                        "Node " . $node->getPath() . " has child with name ".
+                        $propertyDef->getName() . " but its node type '". $def->getName() . "' defines a ".
+                        "property with this name."
+                    );
+                }
+            } else {
+                $property = $node->getProperty($propertyDef->getName());
+                // TODO: Check value constraints!
+            }
+        }
+    }
+
     /**
      * Stores a node to the given absolute path
      *
@@ -543,6 +608,24 @@ class DoctrineTransport implements TransportInterface
         $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
+        $nodeDef = $node->getPrimaryNodeType();
+        $nodeTypes = $node->getMixinNodeTypes();
+        array_unshift($nodeTypes, $nodeDef);
+
+        $popertyDefs = array();
+        $childDefs = array();
+        foreach ($nodeTypes AS $nodeType) {
+            /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
+            foreach ($nodeType->getDeclaredPropertyDefinitions() AS $itemDef) {
+                /* @var $itemDef \PHPCR\NodeType\ItemDefinitionInterface */
+                if (isset($popertyDefs[$itemDef->getName()])) {
+                    throw new \PHPCR\RepositoryException("DoctrineTransport does not support child/property definitions for the same subpath.");
+                }
+                $popertyDefs[$itemDef->getName()] = $itemDef;
+            }
+            $this->validateNode($node, $nodeType);
+        }
+
         $properties = $node->getProperties();
 
         $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
@@ -558,7 +641,7 @@ class DoctrineTransport implements TransportInterface
         $this->nodeIdentifiers[$path] = $nodeIdentifier;
 
         foreach ($properties AS $property) {
-            $this->storeProperty($property);
+            $this->doStoreProperty($property, $popertyDefs);
         }
     }
 
@@ -572,6 +655,16 @@ class DoctrineTransport implements TransportInterface
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function storeProperty(\PHPCR\PropertyInterface $property)
+    {
+        return $this->doStoreProperty($property, array());
+    }
+
+    /**
+     * @param \PHPCR\PropertyInterface $property
+     * @param array $propDefinitions
+     * @return bool
+     */
+    private function doStoreProperty(\PHPCR\PropertyInterface $property, $propDefinitions = array())
     {
         $path = $property->getPath();
         $path = $this->trimPath($path);
@@ -600,13 +693,31 @@ class DoctrineTransport implements TransportInterface
             'path' => $path,
             'workspace_id' => $this->workspaceId,
         ));
+
+        $isMultiple = $property->isMultiple() ;
+        if (isset($propDefinitions[$name])) {
+            if ($propDefinitions[$name]->isMultiple() && !$isMultiple) {
+                $isMultiple = true;
+            } else if (!$propDefinitions[$name]->isMultiple() && $isMultiple) {
+                throw new \PHPCR\ValueFormatException(
+                    'Cannot store property ' . $property->getPath() . ' as array, '.
+                    'property definition of nodetype ' . $propertyDef->getDeclaringNodeType()->getName() .
+                    ' requests a single value.'
+                );
+            }
+
+            if ($propDefinitions[$name]->getRequiredType() !== \PHPCR\PropertyType::UNDEFINED) {
+                // TODO: Is this the correct way? No side effects while initializtion?
+                $property->setValue($property->getValue(), $propDefinitions[$name]->getRequiredType());
+            }
+        }
         
         $data = array(
             'path' => $path,
             'workspace_id' => $this->workspaceId,
             'name' => $name,
             'idx' => 0,
-            'multi_valued' => $property->isMultiple() ? 1 : 0,
+            'multi_valued' => $isMultiple ? 1 : 0,
             'node_identifier' => $this->nodeIdentifiers[$this->trimPath($property->getParent()->getPath(), '/')]
         );
         $data['type'] = $property->getType();
@@ -653,7 +764,8 @@ class DoctrineTransport implements TransportInterface
                 break;
             case \PHPCR\PropertyType::DATE:
                 $dataFieldName = 'datetime_data';
-                $values = $property->getDate()->format($this->conn->getDatabasePlatform()->getDateTimeFormatString());
+                $date = $property->getDate() ?: new \DateTime("now");
+                $values = $date->format($this->conn->getDatabasePlatform()->getDateTimeFormatString());
                 break;
             case \PHPCR\PropertyType::DOUBLE:
                 $dataFieldName = 'float_data';
@@ -661,8 +773,8 @@ class DoctrineTransport implements TransportInterface
                 break;
         }
 
-        if ($property->isMultiple()) {
-            foreach ($values AS $value) {
+        if ($isMultiple) {
+            foreach ((array)$values AS $value) {
                 $this->assertValidPropertyValue($data['type'], $value, $path);
 
                 $data[$dataFieldName] = $value;
