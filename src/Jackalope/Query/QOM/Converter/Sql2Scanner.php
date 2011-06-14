@@ -63,6 +63,46 @@ class Sql2Scanner
     }
 
     /**
+     * Expect the next token to be the given one and throw an exception if it's 
+     * not the case. The equality test is done case sensitively/insensitively 
+     * depending on the second parameter.
+     *
+     * @param string $token The expected token
+     * @param boolean $case_insensitive 
+     */
+    public function expectToken($token, $case_insensitive = true)
+    {
+        if (! $this->tokenIs($this->fetchNextToken(), $token, $case_insensitive)) {
+            throw new \Exception("Syntax error: Expected " . $expected_token);
+        }
+    }
+
+    /**
+     * Expect the next tokens to be the one given in the array of tokens and 
+     * throws an exception if it's not the case.
+     * @see expectToken
+     *
+     * @param array $tokens
+     * @param boolean $case_insensitive 
+     */
+    public function expectTokens($tokens, $case_insensitive = true)
+    {
+        foreach($tokens as $token) {
+            $this->expectToken($token, $case_insensitive);
+        }
+    }
+
+    public function tokenIs($token, $value, $case_insensitive = true)
+    {
+        if ($case_insensitive) {
+            $test = strtoupper($token) === strtoupper($value);
+        } else {
+            $test = $token === $value;
+        }
+        return $test;
+    }
+
+    /**
      * Scan a SQL2 string a extract the tokens
      *
      * @param string $sql2
