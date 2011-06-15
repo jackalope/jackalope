@@ -792,7 +792,7 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace move method. It is dispatched immediatly
+     * Implement the workspace move method. It is dispatched immediately
      *
      * @param string $srcAbsPath the path of the node to be moved.
      * @param string $destAbsPath the location to which the node at srcAbsPath is to be moved.
@@ -809,7 +809,7 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace copy method. It is dispatched immediatly
+     * Implement the workspace copy method. It is dispatched immediately
      *
      * @param string $srcAbsPath the path of the node to be copied.
      * @param string $destAbsPath the location to which the node at srcAbsPath is to be copied in this workspace.
