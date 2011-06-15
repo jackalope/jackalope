@@ -799,7 +799,7 @@ class ObjectManager
      *
      * @see Workspace::move
      */
-    public function moveNodeImmediatly($srcAbsPath, $destAbsPath)
+    public function moveNodeImmediately($srcAbsPath, $destAbsPath)
     {
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
@@ -817,7 +817,7 @@ class ObjectManager
      *
      * @see Workspace::copy
      */
-    public function copyNodeImmediatly($srcAbsPath, $destAbsPath, $srcWorkspace)
+    public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
     {
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
