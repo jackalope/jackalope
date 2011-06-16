@@ -196,7 +196,39 @@ class ObjectManager
         return $nodes;
     }
 
-    protected function getFetchPath($absPath, $class) {
+    /**
+     * Build a node based on the data you got from getRows.
+     *
+     * @param array $row search result data from current row.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
+     * @return \PHPCR\Node
+     */
+    public function getNodeFromRow($row, $class)
+    {
+        $item = array();
+        foreach ($row as $column) {
+            if ($column['dcr:name'] === 'jcr:path') {
+                $absPath = $column['dcr:value'];
+            }
+            $item[$column['dcr:name']] = $column['dcr:value'];
+        }
+        if (!isset($absPath)) {
+            throw new \PHPCR\RepositoryException('path not selected in result ' . $path);
+        }
+        $node = $this->factory->get(
+            $class,
+            array(
+                $item,
+                $absPath,
+                $this->session,
+                $this
+            )
+        );
+        return $node;
+    }
+
+    protected function getFetchPath($absPath, $class)
+    {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
         if (!isset($this->objectsByPath[$class])) {
