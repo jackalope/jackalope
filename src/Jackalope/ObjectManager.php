@@ -398,7 +398,7 @@ class ObjectManager
      * @param string $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
      *
-     * @return array \PHPCR\NodeInterface The specified Node. if not available, ItemNotFoundException is thrown
+     * @return \ArrayIterator of \PHPCR\NodeInterface of the specified nodes.
      * 
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
@@ -416,7 +416,8 @@ class ObjectManager
                 $paths[$key] = $identifier;
             }
         }
-        return array_merge($nodes, $this->getNodesByPath($paths, $class));
+        $nodes = array_merge($nodes, $this->getNodesByPath($paths, $class));
+        return new \ArrayIterator($nodes);
     }
 
     /**
