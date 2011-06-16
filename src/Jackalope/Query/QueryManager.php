@@ -55,7 +55,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      */
     public function getQOMFactory()
     {
-        throw new NotImplementedException();
+        return new \Jackalope\Query\QOM\QueryObjectModelFactory();
     }
 
     /**

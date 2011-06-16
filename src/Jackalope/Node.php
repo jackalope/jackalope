@@ -2,6 +2,7 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use PHPCR\PropertyType;
 
 /**
  * The Node interface represents a node in a workspace.
@@ -117,7 +118,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
+                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : PropertyType::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -505,7 +506,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
-            $val = Helper::convertType($val, $type);
+            $val = PropertyType::convertType($val, $type);
         }
         return $val;
     }
