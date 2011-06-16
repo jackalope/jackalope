@@ -268,7 +268,7 @@ class Request
             $tempCurl = new curl($uri);
             $tempCurl = $this->prepareCurl($tempCurl, $getCurlObject);
             $curls[$absPath] = $tempCurl;
-            curl_multi_add_handle($mh, $tempCurl->curl);
+            curl_multi_add_handle($mh, $tempCurl->getCurl());
         }
 
         $active = null;
@@ -293,13 +293,13 @@ class Request
                     if ($getCurlObject) {
                         $responses[$key] = $curl;
                     } else {
-                        $responses[$key] = curl_multi_getcontent($curl->curl);
+                        $responses[$key] = curl_multi_getcontent($curl->getCurl());
                     }
                 } elseif ($throwExceptions) {
                     $failed = array('curl' => $curl, 'httpCode' => $httpCode, 'response' => $response);
                 }
             }
-            curl_multi_remove_handle($mh, $curl->curl);
+            curl_multi_remove_handle($mh, $curl->getCurl());
         }
         curl_multi_close($mh);
         if (!empty($failed)) {
@@ -308,7 +308,7 @@ class Request
         return $responses;
     }
 
-    public function singleRequest($uri, $getCurlObject)
+    protected function singleRequest($uri, $getCurlObject)
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());

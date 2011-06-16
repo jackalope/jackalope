@@ -34,7 +34,7 @@ class curl
      * Contains a connection resource to a curl session.
      * @var resource
      */
-    public $curl;
+    protected $curl;
 
     /**
      * Contains header of a response, if needed
@@ -179,9 +179,15 @@ class curl
     {
         $this->response = $r;
     }
+
     public function getResponse()
     {
         return $this->response;
+    }
+
+    public function getCurl()
+    {
+        return $this->curl;
     }
 
 }
