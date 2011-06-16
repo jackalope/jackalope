@@ -248,21 +248,26 @@ class Request
      * Prepares the curl object, executes it and checks
      * for transport level errors, throwing the appropriate exceptions.
      *
-     * @return string XML representation of the response.
+     * @param bool $getCurlObject if to return the curl object instead of the response
      *
-     *
-     * @uses curl::errno()
-     * @uses curl::exec()
+     * @return string|array of XML representation of the response.
      */
-    public function execute($getCurlObject = false, $throwExceptions = true)
+    public function execute($getCurlObject = false)
     {
         if (count($this->uri) === 1) {
-            return $this->singleRequest(reset($this->uri), $getCurlObject);
+            return $this->singleRequest($getCurlObject);
         }
-        return $this->multiRequest($getCurlObject = false, $throwExceptions = true);
+        return $this->multiRequest($getCurlObject);
     }
 
-    protected function multiRequest($getCurlObject = false, $throwExceptions = true)
+    /**
+     * Requests the data for multiple requests
+     *
+     * @param bool $getCurlObject if to return the curl object instead of the response
+     *
+     * @return array of XML representations of responses or curl objects.
+     */
+    protected function multiRequest($getCurlObject = false)
     {
         $mh = curl_multi_init();
 
@@ -298,20 +303,22 @@ class Request
                     } else {
                         $responses[$key] = curl_multi_getcontent($curl->getCurl());
                     }
-                } elseif ($throwExceptions) {
-                    $failed = array('curl' => $curl, 'httpCode' => $httpCode, 'response' => $response);
                 }
             }
             curl_multi_remove_handle($mh, $curl->getCurl());
         }
         curl_multi_close($mh);
-        if (!empty($failed)) {
-            $this->handleError($failed['curl'], $failed['response'], $failed['httpCode']);
-        }
         return $responses;
     }
 
-    protected function singleRequest($uri, $getCurlObject)
+    /**
+     * Requests the data for a single requests
+     *
+     * @param bool $getCurlObject if to return the curl object instead of the response
+     *
+     * @return string XML representation of a response or curl object.
+     */
+    protected function singleRequest($getCurlObject)
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
@@ -328,13 +335,12 @@ class Request
 
         $this->curl->setopt(CURLOPT_RETURNTRANSFER, true);
         $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
-        $this->curl->setopt(CURLOPT_URL, $uri);
+        $this->curl->setopt(CURLOPT_URL, reset($this->uri));
         $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $this->curl->setopt(CURLOPT_POSTFIELDS, $this->body);
         if ($getCurlObject) {
             $this->curl->parseResponseHeaders();
         }
-
 
         $response = $this->curl->exec();
         $this->curl->setResponse($response);
@@ -362,9 +368,9 @@ class Request
     protected function handleError($curl, $response, $httpCode)
     {
         switch ($curl->errno()) {
-        case CURLE_COULDNT_RESOLVE_HOST:
-        case CURLE_COULDNT_CONNECT:
-            throw new \PHPCR\NoSuchWorkspaceException($curl->error());
+            case CURLE_COULDNT_RESOLVE_HOST:
+            case CURLE_COULDNT_CONNECT:
+                throw new \PHPCR\NoSuchWorkspaceException($curl->error());
         }
 
         // TODO extract HTTP status string from response, more descriptive about error
@@ -401,9 +407,8 @@ class Request
 
                         if (class_exists($class)) {
                             throw new $class($exceptionMsg);
-                        } else {
-                            throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
                         }
+                        throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
                 }
             }
         }
@@ -454,12 +459,10 @@ class Request
     {
         $responses = $this->execute();
         if (!is_array($responses)) {
-            $json = json_decode($responses);
-            if (null === $json && 'null' !== strtolower($responses)) {
-                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} {reset($this->uri} \nResponse: \n$responses");
-            }
-            return $json;
+            $responses = array($responses);
+            $reset = true;
         }
+
         foreach ($responses as $key => $response) {
             $json[$key] = json_decode($response);
             if (null === $json[$key] && 'null' !== strtolower($response)) {
@@ -467,6 +470,9 @@ class Request
             }
         }
         //TODO: are there error responses in json format? if so, handle them
+        if (isset($reset)) {
+            return reset($json);
+        }
         return $json;
     }
 }

@@ -359,7 +359,6 @@ class Client implements TransportInterface
     public function getNode($path)
     {
         $path = $this->encodePathForDavex($path);
-
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
@@ -371,12 +370,11 @@ class Client implements TransportInterface
     }
 
     /**
-     * Get the nodes from an absolute paths
+     * Get the nodes from an array of absolute paths
      *
      * @param array $path Absolute paths to the nodes.
      * @return array associative array for the node (decoded from json with associative = true)
      *
-     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodes($paths)
@@ -403,7 +401,6 @@ class Client implements TransportInterface
      */
     public function getProperty($path)
     {
-        $path = $this->encodePathForDavex($path);
         throw new NotImplementedException();
         /*
          * TODO: implement
@@ -434,9 +431,9 @@ class Client implements TransportInterface
                 fwrite($stream, $curl->getResponse());
                 rewind($stream);
                 return $stream;
-            default:
-                throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
         }
+
+        throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
     }
 
     /**
