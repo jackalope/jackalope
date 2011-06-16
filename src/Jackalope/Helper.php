@@ -106,6 +106,7 @@ class Helper
                         $ret[] = $v->format(self::DATETIME_FORMAT);
                     } elseif (is_resource($v)) {
                         $ret[] = stream_get_contents($v);
+                        rewind($v);
                     } else {
                         settype($v, 'string');
                         $ret[] = $v;
