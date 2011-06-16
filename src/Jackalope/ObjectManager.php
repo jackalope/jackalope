@@ -124,7 +124,7 @@ class ObjectManager
      * Unfortunately there is currently no way to refetch a node once it has been fetched.
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
      * @return \PHPCR\Node
      *
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
@@ -164,23 +164,26 @@ class ObjectManager
     /**
      * Get multiple nodes identified by an absolute paths.
      *
-     * @param array $identifiers Array containing the absolute paths of the nodes to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
+     * @param array $paths Array containing the absolute paths of the nodes to fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
      * @return array that contains all \PHPCR\Node's
      */
-    public function getNodesByPath($identifiers, $class = 'Node')
+    public function getNodesByPath($paths, $class = 'Node')
     {
-        foreach ($identifiers as $absPath) {
+        $nodes = $fetchPaths = array();
+
+        foreach ($paths as $absPath) {
             $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
         }
+
         $data = $this->transport->getNodes($fetchPaths, $class);
-        $nodes = array();
         foreach ($data as $fetchPath => $item) {
             $absPath = array_search($fetchPath, $fetchPaths);
             if (!empty($this->objectsByPath[$class][$absPath])) {
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
                 continue;
             }
+
             $nodes[$absPath] = $this->factory->get(
                 $class,
                 array(
@@ -190,69 +193,53 @@ class ObjectManager
                     $this
                 )
             );
-            $this->objectsByUuid[$nodes[$absPath]->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
+
+            if ($uuid = $nodes[$absPath]->getIdentifier()) {
+                $this->objectsByUuid[$uuid] = $absPath;
+            }
+
             $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
         }
+
         return $nodes;
     }
 
     /**
-     * Build a node based on the data you got from getRows.
+     * Determine the fetch path from a given absolute path
+     * 
+     * Also handles checks for removed or moved items
      *
-     * @param array $row search result data from current row.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
-     * @return \PHPCR\Node
+     * @param string $absPath The absolute path of the node to fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * @return string fetch path
      */
-    public function getNodeFromRow($row, $class)
-    {
-        $item = array();
-        foreach ($row as $column) {
-            if ($column['dcr:name'] === 'jcr:path') {
-                $absPath = $column['dcr:value'];
-            }
-            $item[$column['dcr:name']] = $column['dcr:value'];
-        }
-        if (!isset($absPath)) {
-            throw new \PHPCR\RepositoryException('path not selected in result ' . $path);
-        }
-        $node = $this->factory->get(
-            $class,
-            array(
-                $item,
-                $absPath,
-                $this->session,
-                $this
-            )
-        );
-        return $node;
-    }
-
     protected function getFetchPath($absPath, $class)
     {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
+
         if (!isset($this->objectsByPath[$class])) {
             $this->objectsByPath[$class] = array();
         }
+
         if (isset($this->itemsRemove[$absPath])) {
             throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
         }
+
         // check whether a parent node was removed
-        foreach ($this->itemsRemove as $path=>$dummy) {
+        foreach ($this->itemsRemove as $path => $dummy) {
             if (strpos($absPath, $path) === 0) {
                 throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
             }
         }
 
-        $fetchPath = $absPath;
         if (isset($this->nodesMove[$absPath])) {
             throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
-        } else {
-            // The path was the destination of a previous move which isn't yet dispatched to the backend.
-            // I guess an exception would be fine but we can also just fetch the node from the previous path
-            $fetchPath = $this->resolveBackendPath($fetchPath);
         }
-         return $fetchPath;
+
+        // The path was the destination of a previous move which isn't yet dispatched to the backend.
+        // I guess an exception would be fine but we can also just fetch the node from the previous path
+        return $this->resolveBackendPath($absPath);
     }
 
     /**
@@ -374,15 +361,15 @@ class ObjectManager
     }
 
     /**
-     * Get the node idenfied by an uuid or path or root path and relative path.
+     * Get the node identified by an uuid or (relative) path.
      *
      * If you have an absolute path use {@link getNodeByPath()}.
      *
-     * @param string $identifier uuid or relative path
+     * @param string $identifier uuid or (relative) path
      * @param string $root optional root if you are in a node context - not used if $identifier is an uuid
      * @param string $class optional class name for the factory
      *
-     * @return \PHPCR\Node The specified Node. if not available, ItemNotFoundException is thrown
+     * @return \PHPCR\NodeInterface The specified Node. if not available, ItemNotFoundException is thrown
      *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
@@ -403,20 +390,33 @@ class ObjectManager
         return $this->getNodeByPath($path, $class);
     }
 
+    /**
+     * Get the nodes identified by the given uuids or absolute paths.
+     *
+     * Note uuid's/path's that cannot be found will be ignored
+     *
+     * @param string $identifiers uuid's or absolute paths
+     * @param string $class optional class name for the factory
+     *
+     * @return array \PHPCR\NodeInterface The specified Node. if not available, ItemNotFoundException is thrown
+     * 
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     */
     public function getNodes($identifiers, $class = 'Node')
     {
-        $nodes = array();
+        $paths = $nodes = array();
         foreach ($identifiers as $key => $identifier) {
             if ($this->isUUID($identifier)) {
                 if (empty($this->objectsByUuid[$identifier])) {
-                    $identifiers[$key] = $this->transport->getNodePathForIdentifier($identifier);
+                    $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
                 } else {
-                    unset($identifiers[$key]);
                     $nodes[$this->objectsByUuid[$identifier]] = $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
                 }
+            } else {
+                $paths[$key] = $identifier;
             }
         }
-        return array_merge($nodes, $this->getNodesByPath($identifiers, $class));
+        return array_merge($nodes, $this->getNodesByPath($paths, $class));
     }
 
     /**

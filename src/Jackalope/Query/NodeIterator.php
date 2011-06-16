@@ -64,20 +64,10 @@ class NodeIterator implements \SeekableIterator, \Countable
     }
 
     /**
-     * Build nodes based on the data you got from the result set.
+     * Build nodes based on the paths contained in the result set.
      *
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
-     * @return array of \PHPCR\Node's
+     * @return array of \PHPCR\NodeInterface
      */
-    public function getNodesFromRows($class = 'Node') {
-        $nodes = array();
-        foreach ($this->rows as $row) {
-            $nodes[] = $this->objectmanager->getNodeFromRow($row, $class);
-        }
-
-        return $nodes;
-    }
-
     public function getNodes() {
         $paths = array();
         foreach ($this->rows as $row) {
