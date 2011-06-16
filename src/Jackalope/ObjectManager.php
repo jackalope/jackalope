@@ -144,7 +144,7 @@ class ObjectManager
             }
             // check whether a parent node was removed
             // OPTIMIZE: this is not very efficient. have a tree structure?
-            foreach ($this->itemsRemove as $path=>$dummy) {
+            foreach ($this->itemsRemove as $path => $dummy) {
                 if (strpos($absPath, $path) === 0) {
                     throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
                 }
@@ -175,6 +175,70 @@ class ObjectManager
         }
 
         return $this->objectsByPath[$class][$absPath];
+    }
+
+    /**
+     * Get multiple nodes identified by an absolute paths.
+     *
+     * @param array $identifiers Array containing the absolute paths of the nodes to fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
+     * @return array that contains all \PHPCR\Node's
+     */
+    public function getNodesByPath($identifiers, $class = 'Node')
+    {
+        foreach ($identifiers as $absPath) {
+            $fetchPaths[$absPath] = $this->prepareNode($absPath, $class);
+        }
+        $data = $this->transport->getNodes($fetchPaths, $class);
+        $nodes = array();
+        foreach ($data as $fetchPath => $item) {
+            $absPath = array_search($fetchPath, $fetchPaths);
+            if (!empty($this->objectsByPath[$class][$absPath])) {
+                $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
+                continue;
+            }
+            $nodes[$absPath] = $this->factory->get(
+                $class,
+                array(
+                    $item,
+                    $absPath,
+                    $this->session,
+                    $this
+                )
+            );
+            $this->objectsByUuid[$nodes[$absPath]->getIdentifier()] = $absPath; //FIXME: what about nodes that are NOT referencable?
+            $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
+        }
+        return $nodes;
+    }
+
+    protected function prepareNode($absPath, $class) {
+        $absPath = $this->normalizePath($absPath);
+        $this->verifyAbsolutePath($absPath);
+        if (!isset($this->objectsByPath[$class])) {
+            $this->objectsByPath[$class] = array();
+        }
+        if (empty($this->objectsByPath[$class][$absPath])) {
+            if (isset($this->itemsRemove[$absPath])) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+            }
+            // check whether a parent node was removed
+            foreach ($this->itemsRemove as $path=>$dummy) {
+                if (strpos($absPath, $path) === 0) {
+                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+                }
+            }
+
+            $fetchPath = $absPath;
+            if (isset($this->nodesMove[$absPath])) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+            } else {
+                // The path was the destination of a previous move which isn't yet dispatched to the backend.
+                // I guess an exception would be fine but we can also just fetch the node from the previous path
+                $fetchPath = $this->resolveBackendPath($fetchPath);
+            }
+         }
+         return $fetchPath;
     }
 
     /**
@@ -323,6 +387,22 @@ class ObjectManager
 
         $path = $this->absolutePath($root, $identifier);
         return $this->getNodeByPath($path, $class);
+    }
+
+    public function getNodes($identifiers, $class = 'Node')
+    {
+        $nodes = array();
+        foreach ($identifiers as $key => $identifier) {
+            if ($this->isUUID($identifier)) {
+                if (empty($this->objectsByUuid[$identifier])) {
+                    $identifiers[$key] = $this->transport->getNodePathForIdentifier($identifier);
+                } else {
+                    unset($identifiers[$key]);
+                    $nodes[$this->objectsByUuid[$identifier]] = $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
+                }
+            }
+        }
+        return array_merge($nodes, $this->getNodesByPath($identifiers, $class));
     }
 
     /**

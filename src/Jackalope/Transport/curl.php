@@ -34,7 +34,7 @@ class curl
      * Contains a connection resource to a curl session.
      * @var resource
      */
-    protected $curl;
+    public $curl;
 
     /**
      * Contains header of a response, if needed

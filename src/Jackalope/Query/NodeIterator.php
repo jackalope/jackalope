@@ -63,6 +63,19 @@ class NodeIterator implements \SeekableIterator, \Countable
         return $this->objectmanager->getNode($path);
     }
 
+    public function getNodes() {
+        $paths = array();
+        foreach ($this->rows as $row) {
+            foreach ($row as $column) {
+                if ($column['dcr:name'] == 'jcr:path') {
+                    $paths[] = $column['dcr:value'];
+                }
+            }
+        }
+
+        return $this->objectmanager->getNodes($paths);
+    }
+
     public function key()
     {
         // TODO: add a default for $path or handle case when no $path is found
