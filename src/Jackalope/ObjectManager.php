@@ -166,7 +166,7 @@ class ObjectManager
      *
      * @param array $paths Array containing the absolute paths of the nodes to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
-     * @return array that contains all \PHPCR\Node's
+     * @return \ArrayIterator that contains all \PHPCR\Node's
      */
     public function getNodesByPath($paths, $class = 'Node')
     {
@@ -201,7 +201,7 @@ class ObjectManager
             $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
         }
 
-        return $nodes;
+        return new \ArrayIterator($nodes);
     }
 
     /**
@@ -416,8 +416,9 @@ class ObjectManager
                 $paths[$key] = $identifier;
             }
         }
-        $nodes = array_merge($nodes, $this->getNodesByPath($paths, $class));
-        return new \ArrayIterator($nodes);
+        $tmp = $this->getNodesByPath($paths, $class);
+        $tmp->append($nodes);
+        return $nodes;
     }
 
     /**
