@@ -135,44 +135,28 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
         $absPath = $this->normalizePath($absPath);
 
-        if (!isset($this->objectsByPath[$class])) {
-            $this->objectsByPath[$class] = array();
+        if (!empty($this->objectsByPath[$class][$absPath])) {
+            // Return it from memory if we already have it
+            return $this->objectsByPath[$class][$absPath];
         }
-        if (empty($this->objectsByPath[$class][$absPath])) {
-            if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
-            }
-            // check whether a parent node was removed
-            // OPTIMIZE: this is not very efficient. have a tree structure?
-            foreach ($this->itemsRemove as $path => $dummy) {
-                if (strpos($absPath, $path) === 0) {
-                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
-                }
-            }
 
-            if (isset($this->nodesMove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
-            }
+        $fetchPath = $this->getFetchPath($absPath, $class)
 
-            // make sure we fetch the correct path if this node has been moved in a not yet persisted operation
-            $fetchPath = $this->resolveBackendPath($absPath);
-
-            $node = $this->factory->get(
-                $class,
-                array(
-                    $this->transport->getNode($fetchPath),
-                    $absPath,
-                    $this->session,
-                    $this
-                )
-            );
-            // TODO: is it always legal to call getIdentifier?
-            if ($uuid = $node->getIdentifier()) {
-                // map even nodes that are not mix:referenceable, as long as they have a uuid
-                $this->objectsByUuid[$uuid] = $absPath;
-            }
-            $this->objectsByPath[$class][$absPath] = $node;
+        $node = $this->factory->get(
+            $class,
+            array(
+                $this->transport->getNode($fetchPath),
+                $absPath,
+                $this->session,
+                $this
+            )
+        );
+        // TODO: is it always legal to call getIdentifier?
+        if ($uuid = $node->getIdentifier()) {
+            // map even nodes that are not mix:referenceable, as long as they have a uuid
+            $this->objectsByUuid[$uuid] = $absPath;
         }
+        $this->objectsByPath[$class][$absPath] = $node;
 
         return $this->objectsByPath[$class][$absPath];
     }
@@ -187,7 +171,7 @@ class ObjectManager
     public function getNodesByPath($identifiers, $class = 'Node')
     {
         foreach ($identifiers as $absPath) {
-            $fetchPaths[$absPath] = $this->prepareNode($absPath, $class);
+            $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
         }
         $data = $this->transport->getNodes($fetchPaths, $class);
         $nodes = array();
@@ -212,7 +196,7 @@ class ObjectManager
         return $nodes;
     }
 
-    protected function prepareNode($absPath, $class) {
+    protected function getFetchPath($absPath, $class) {
         $absPath = $this->normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
         if (!isset($this->objectsByPath[$class])) {
