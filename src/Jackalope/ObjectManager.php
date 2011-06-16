@@ -202,26 +202,24 @@ class ObjectManager
         if (!isset($this->objectsByPath[$class])) {
             $this->objectsByPath[$class] = array();
         }
-        if (empty($this->objectsByPath[$class][$absPath])) {
-            if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+        if (isset($this->itemsRemove[$absPath])) {
+            throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+        }
+        // check whether a parent node was removed
+        foreach ($this->itemsRemove as $path=>$dummy) {
+            if (strpos($absPath, $path) === 0) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
             }
-            // check whether a parent node was removed
-            foreach ($this->itemsRemove as $path=>$dummy) {
-                if (strpos($absPath, $path) === 0) {
-                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
-                }
-            }
+        }
 
-            $fetchPath = $absPath;
-            if (isset($this->nodesMove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
-            } else {
-                // The path was the destination of a previous move which isn't yet dispatched to the backend.
-                // I guess an exception would be fine but we can also just fetch the node from the previous path
-                $fetchPath = $this->resolveBackendPath($fetchPath);
-            }
-         }
+        $fetchPath = $absPath;
+        if (isset($this->nodesMove[$absPath])) {
+            throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+        } else {
+            // The path was the destination of a previous move which isn't yet dispatched to the backend.
+            // I guess an exception would be fine but we can also just fetch the node from the previous path
+            $fetchPath = $this->resolveBackendPath($fetchPath);
+        }
          return $fetchPath;
     }
 
