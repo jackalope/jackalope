@@ -71,10 +71,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $this->isMultiple = true;
             $this->value = array();
             foreach ($data['value'] as $value) {
-                $this->value[] = Helper::convertType($value, $type);
+                $this->value[] = PropertyType::convertType($value, $type);
             }
         } elseif (null !== $data['value']) {
-            $this->value = Helper::convertType($data['value'], $type);
+            $this->value = PropertyType::convertType($data['value'], $type);
         } else {
             throw new \PHPCR\RepositoryException('INTERNAL ERROR -- data[value] may not be null');
         }
@@ -107,7 +107,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
          */
 
         if (PropertyType::UNDEFINED === $type) {
-            $type = Helper::determineType(is_array($value) ? reset($value) : $value);
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
         }
 
         $targettype = $this->type;
@@ -124,7 +124,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             */
         }
 
-        $value = Helper::convertType($value, $targettype);
+        $value = PropertyType::convertType($value, $targettype);
 
         if (PropertyType::BINARY === $targettype) {
             $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
@@ -218,10 +218,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getString()
     {
         if ($this->type == PropertyType::BINARY && empty($this->value)) {
-            return Helper::convertType($this->getBinary(), PropertyType::STRING);
+            return PropertyType::convertType($this->getBinary(), PropertyType::STRING);
         }
         if ($this->type != PropertyType::STRING) {
-            return Helper::convertType($this->value, PropertyType::STRING);
+            return PropertyType::convertType($this->value, PropertyType::STRING);
         }
         return $this->value;
     }
@@ -236,7 +236,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getBinary()
     {
         if ($this->type != PropertyType::BINARY) {
-            return Helper::convertType($this->value, PropertyType::BINARY);
+            return PropertyType::convertType($this->value, PropertyType::BINARY);
         }
         /*
         OPTIMIZE: store and clone the stream? or is re-fetch from backend faster?
@@ -272,7 +272,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getLong()
     {
         if ($this->type != PropertyType::LONG) {
-            return Helper::convertType($this->value, PropertyType::LONG);
+            return PropertyType::convertType($this->value, PropertyType::LONG);
         }
         return $this->value;
     }
@@ -289,7 +289,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getDouble()
     {
         if ($this->type != PropertyType::DOUBLE) {
-            return Helper::convertType($this->value, PropertyType::DOUBLE);
+            return PropertyType::convertType($this->value, PropertyType::DOUBLE);
         }
         return $this->value;
     }
@@ -306,7 +306,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getDecimal()
     {
         if ($this->type != PropertyType::DECIMAL) {
-            return Helper::convertType($this->value, PropertyType::DECIMAL);
+            return PropertyType::convertType($this->value, PropertyType::DECIMAL);
         }
         return $this->value;
     }
@@ -323,7 +323,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getDate()
     {
         if ($this->type != PropertyType::DATE) {
-            return Helper::convertType($this->value, PropertyType::DATE);
+            return PropertyType::convertType($this->value, PropertyType::DATE);
         }
         return $this->value;
     }
@@ -340,7 +340,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function getBoolean()
     {
         if ($this->type != PropertyType::BOOLEAN) {
-            return Helper::convertType($this->value, PropertyType::BOOLEAN);
+            return PropertyType::convertType($this->value, PropertyType::BOOLEAN);
         }
         return $this->value;
     }
@@ -463,7 +463,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         foreach($vals as $value) {
             try {
-                $ret[] = strlen(Helper::convertType($value, PropertyType::STRING));
+                $ret[] = strlen(PropertyType::convertType($value, PropertyType::STRING));
             } catch (\Exception $e) {
                 $ret[] = -1;
             }
