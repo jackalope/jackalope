@@ -140,7 +140,7 @@ class ObjectManager
             return $this->objectsByPath[$class][$absPath];
         }
 
-        $fetchPath = $this->getFetchPath($absPath, $class)
+        $fetchPath = $this->getFetchPath($absPath, $class);
 
         $node = $this->factory->get(
             $class,

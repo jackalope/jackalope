@@ -129,8 +129,8 @@ class Request
     protected $method;
 
     /**
-     * Url to get/post/..
-     * @var string
+     * Url(s) to get/post/..
+     * @var array
      */
     protected $uri;
 
@@ -171,7 +171,7 @@ class Request
     {
         $this->curl = $curl;
         $this->method = $method;
-        $this->uri = $uri;
+        $this->setUri($uri);
     }
 
     public function setCredentials($creds)
@@ -204,7 +204,11 @@ class Request
 
     public function setUri($uri)
     {
-        $this->uri = $uri;
+        if (!is_array($uri)) {
+            $this->uri = array($uri => $uri);
+        } else {
+            $this->uri = $uri;
+        }
     }
 
     public function addHeader($header)
@@ -451,10 +455,11 @@ class Request
     {
         $responses = $this->execute();
         if (!is_array($responses)) {
-            if (null === $json[$key] && 'null' !== strtolower($response)) {
-                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} {$this->uri[$key]} \nResponse: \n$response");
+            $json = json_decode($responses);
+            if (null === $json && 'null' !== strtolower($responses)) {
+                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} {reset($this->uri} \nResponse: \n$responses");
             }
-            return json_decode($responses);
+            return $json;
         }
         foreach ($responses as $key => $response) {
             $json[$key] = json_decode($response);
