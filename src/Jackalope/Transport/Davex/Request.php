@@ -232,7 +232,6 @@ class Request
         $headers = array_merge($headers, $this->additionalHeaders);
 
         $curl->setopt(CURLOPT_RETURNTRANSFER, true);
-        // $curl->setopt(CURLOPT_PROXY, '127.0.0.1:8888');
         $curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
 
         $curl->setopt(CURLOPT_HTTPHEADER, $headers);
