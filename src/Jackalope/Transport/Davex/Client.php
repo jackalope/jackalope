@@ -877,7 +877,7 @@ class Client implements TransportInterface
     {
         switch ($type) {
             case \PHPCR\PropertyType::TYPENAME_DATE:
-                return $value->format(PropertyType::DATETIME_FORMAT);
+                return PropertyType::convertType($value, PropertyType::STRING);
             case \PHPCR\PropertyType::TYPENAME_BINARY:
                 return base64_encode(stream_get_contents($value));
             case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
