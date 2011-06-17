@@ -179,9 +179,15 @@ class curl
     {
         $this->response = $r;
     }
+
     public function getResponse()
     {
         return $this->response;
+    }
+
+    public function getCurl()
+    {
+        return $this->curl;
     }
 
 }
