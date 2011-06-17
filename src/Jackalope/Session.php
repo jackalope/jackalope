@@ -157,11 +157,13 @@ class Session implements \PHPCR\SessionInterface
     }
 
     /**
-     * Returns the node specified by the given identifier. Applies to both referenceable
-     * and non-referenceable nodes.
+     * Returns the node specified by the given identifier.
+     *
+     * Applies to both referenceable and non-referenceable nodes.
      *
      * @param string $id An identifier.
      * @return \PHPCR\NodeInterface A Node.
+     *
      * @throws \PHPCR\ItemNotFoundException if no node with the specified identifier exists or if this Session does not have read access to the node with the specified identifier.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
@@ -169,6 +171,29 @@ class Session implements \PHPCR\SessionInterface
     public function getNodeByIdentifier($id)
     {
         return $this->objectManager->getNode($id);
+    }
+
+    /**
+     * Returns the node specified by the given identifier.
+     *
+     * Applies to both referenceable and non-referenceable nodes.
+     *
+     * Note uuid's that cannot be found will be ignored
+     *
+     * @param string $ids An array of identifier.
+     * @return array containing \PHPCR\NodeInterface nodes keyed by uuid
+     *
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
+     */
+    public function getNodesByIdentifier($ids)
+    {
+        $nodesByPath = $this->objectManager->getNodes($ids);
+        $nodesByUUID = array();
+        foreach ($nodesByPath as $node) {
+            $nodesByUUID[$node->getIdentifier()] = $node;
+        }
+        return new \ArrayIterator($nodesByUUID);
     }
 
     /**
@@ -205,6 +230,7 @@ class Session implements \PHPCR\SessionInterface
      *
      * @param string $absPath An absolute path.
      * @return \PHPCR\NodeInterface A node
+     *
      * @throws \PHPCR\PathNotFoundException if no accessible node is found at the specified path.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
@@ -216,6 +242,22 @@ class Session implements \PHPCR\SessionInterface
         } catch (\PHPCR\ItemNotFoundException $e) {
             throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Returns all nodes specified in the absPath array.
+     *
+     * Note path's that cannot be found will be ignored
+     *
+     * @param array $absPaths An array containing absolute paths.
+     * @return array containing \PHPCR\NodeInterface nodes keyed by path
+     *
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
+     */
+    public function getNodes($absPaths)
+    {
+        return $this->objectManager->getNodesByPath($absPaths);
     }
 
     /**
