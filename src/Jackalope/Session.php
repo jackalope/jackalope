@@ -892,6 +892,7 @@ class Session implements \PHPCR\SessionInterface
         //TODO anything to do on logout?
         //OPTIMIZATION: flush object manager
         $this->logout = true;
+        $this->getTransport()->logout();
     }
 
     /**

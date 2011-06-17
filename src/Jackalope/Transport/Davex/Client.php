@@ -278,6 +278,18 @@ class Client implements TransportInterface
     }
 
     /**
+     * Releases all resources associated with this Session.
+     *
+     * This method should be called when a Session is no longer needed.
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        return $this->curl->close();
+    }
+
+    /**
      * Change the way Jackalope works when getting a session
      * By default, it sends a PROPFIND to the server, to see if the repository exists
      * You can disable that with setting it to false, then an error only occurs later

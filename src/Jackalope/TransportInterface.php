@@ -82,6 +82,19 @@ interface TransportInterface
      * behaviour of transport is undefined if this is not respected.       *
      ***********************************************************************/
 
+    /******************************************
+     * Methods for session management support *
+     ******************************************/
+
+    /**
+     * Releases all resources associated with this Session.
+     *
+     * This method should be called when a Session is no longer needed.
+     *
+     * @return void
+     */
+    public function logout();
+
 
     /*****************************
      * Methods for read support *

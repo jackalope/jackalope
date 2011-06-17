@@ -144,7 +144,12 @@ class curl
      */
     public function close()
     {
-        return curl_close($this->curl);
+        $res = null;
+        // This test is to avoid "not a valid cURL handle resource" warnings
+        if (is_resource($this->curl)) {
+            $res = curl_close($this->curl);
+        }
+        return $res;
     }
 
     public function readHeader($ch, $header)
