@@ -89,7 +89,8 @@ interface TransportInterface
     /**
      * Releases all resources associated with this Session.
      *
-     * This method should be called when a Session is no longer needed.
+     * This method is called on $session->logout
+     * Implementations can use it to close database connections and similar.
      *
      * @return void
      */
