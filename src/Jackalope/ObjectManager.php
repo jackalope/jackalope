@@ -173,7 +173,12 @@ class ObjectManager
         $nodes = $fetchPaths = array();
 
         foreach ($paths as $absPath) {
-            $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
+            if (!empty($this->objectsByPath[$class][$absPath])) {
+                // Return it from memory if we already have it
+                $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
+            } else {
+                $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
+            }
         }
 
         $data = $this->transport->getNodes($fetchPaths, $class);
@@ -404,21 +409,23 @@ class ObjectManager
      */
     public function getNodes($identifiers, $class = 'Node')
     {
-        $paths = $nodes = array();
+        $paths = array();
         foreach ($identifiers as $key => $identifier) {
             if ($this->isUUID($identifier)) {
                 if (empty($this->objectsByUuid[$identifier])) {
-                    $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
+                    try {
+                        $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
+                    } catch (\PHPCR\ItemNotFoundException $e) {
+                        // ignore
+                    }
                 } else {
-                    $nodes[$this->objectsByUuid[$identifier]] = $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
+                    $paths[$key] = $this->objectsByUuid[$identifier];
                 }
             } else {
                 $paths[$key] = $identifier;
             }
         }
-        $tmp = $this->getNodesByPath($paths, $class);
-        $tmp->append($nodes);
-        return $nodes;
+        return $this->getNodesByPath($paths, $class);
     }
 
     /**
