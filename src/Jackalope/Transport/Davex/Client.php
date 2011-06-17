@@ -201,11 +201,18 @@ class Client implements TransportInterface
     protected function getRequest($method, $uri)
     {
         // init curl
+        if (!is_array($uri)) {
+            $uri = array($uri => $uri);
+        }
+
         if (is_null($this->curl)) {
             $this->curl = new curl();
         }
 
-        $uri = $this->addWorkspacePathToUri($uri);
+        foreach ($uri as $key => $row) {
+            $uri[$key] = $this->addWorkspacePathToUri($row);
+        }
+
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
@@ -352,10 +359,32 @@ class Client implements TransportInterface
     public function getNode($path)
     {
         $path = $this->encodePathForDavex($path);
-
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
+        try {
+            return $request->executeJson();
+        } catch (\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Get the nodes from an array of absolute paths
+     *
+     * @param array $path Absolute paths to the nodes.
+     * @return array associative array for the node (decoded from json with associative = true)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodes($paths)
+    {
+        foreach ($paths as $key => $path) {
+            $paths[$key] = $this->encodePathForDavex($path);
+            $paths[$key] .= '.0.json';
+        }
+
+        $request = $this->getRequest(Request::GET, $paths);
         try {
             return $request->executeJson();
         } catch (\PHPCR\PathNotFoundException $e) {
@@ -372,7 +401,6 @@ class Client implements TransportInterface
      */
     public function getProperty($path)
     {
-        $path = $this->encodePathForDavex($path);
         throw new NotImplementedException();
         /*
          * TODO: implement
@@ -403,9 +431,9 @@ class Client implements TransportInterface
                 fwrite($stream, $curl->getResponse());
                 rewind($stream);
                 return $stream;
-            default:
-                throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
         }
+
+        throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
     }
 
     /**
