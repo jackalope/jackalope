@@ -843,10 +843,7 @@ class ObjectManager
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
         $this->objectsByPath['Node'][$absPath] = $item;
-        if ($item instanceof \PHPCR\NodeInterface) {
-            //TODO: determine if we have an identifier.
-            $this->objectsByUuid[$item->getIdentifier()] = $absPath;
-        }
+        // a new item never has a uuid, no need to add to objectsByUuid
 
         $this->itemsAdd[$absPath] = 1;
     }
