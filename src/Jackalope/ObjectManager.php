@@ -188,11 +188,6 @@ class ObjectManager
         $data = $this->transport->getNodes($fetchPaths, $class);
         foreach ($data as $fetchPath => $item) {
             $absPath = array_search($fetchPath, $fetchPaths);
-            if (!empty($this->objectsByPath[$class][$absPath])) {
-                $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
-                continue;
-            }
-
             $nodes[$absPath] = $this->factory->get(
                 $class,
                 array(
