@@ -463,6 +463,7 @@ class Request
             $reset = true;
         }
 
+        $json = array();
         foreach ($responses as $key => $response) {
             $json[$key] = json_decode($response);
             if (null === $json[$key] && 'null' !== strtolower($response)) {
