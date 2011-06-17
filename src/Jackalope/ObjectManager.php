@@ -162,11 +162,15 @@ class ObjectManager
     }
 
     /**
-     * Get multiple nodes identified by an absolute paths.
+     * Get multiple nodes identified by an absolute paths. Missing nodes are ignored
+     *
+     * Note uuid's/path's that cannot be found will be ignored
      *
      * @param array $paths Array containing the absolute paths of the nodes to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
-     * @return \ArrayIterator that contains all \PHPCR\Node's
+     * @return \ArrayIterator that contains all \PHPCR\Node's keyed their path
+     *
+     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
     public function getNodesByPath($paths, $class = 'Node')
     {
@@ -403,7 +407,7 @@ class ObjectManager
      * @param string $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
      *
-     * @return \ArrayIterator of \PHPCR\NodeInterface of the specified nodes.
+     * @return \ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
      * 
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
