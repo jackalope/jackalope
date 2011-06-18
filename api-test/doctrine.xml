@@ -13,12 +13,12 @@
         <var name="jcr.pass" value="admin" />
         <var name="jcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="jcr.doctrine.loader" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="jcr.doctrine.commondir" value="/home/benny/code/php/wsnetbeans/dbal/lib/vendor/doctrine-common/lib" />
-        <var name="jcr.doctrine.dbaldir" value="/home/benny/code/php/wsnetbeans/dbal/lib" />
+        <var name="jcr.doctrine.loader" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="jcr.doctrine.commondir" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib" />
+        <var name="jcr.doctrine.dbaldir" value="/var/data/libraries/dbal/lib" />
         <var name="jcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="jcr.doctrine.dbal.host" value="localhost" />
-        <var name="jcr.doctrine.dbal.username" value="root" />
+        <var name="jcr.doctrine.dbal.username" value="admin" />
         <var name="jcr.doctrine.dbal.password" value="" />
         <var name="jcr.doctrine.dbal.dbname" value="jcrtests" />
     </php>
