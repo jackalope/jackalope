@@ -1,6 +1,8 @@
 <?php
+
 namespace Jackalope;
 
+use ArrayIterator;
 use PHPCR\PropertyType;
 
 /**
@@ -576,7 +578,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (!is_array($value)) {
             $value = array($value);
         }
-        return new \ArrayIterator($value);
+        return new ArrayIterator($value);
     }
 
 }

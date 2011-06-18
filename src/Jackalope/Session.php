@@ -1,6 +1,8 @@
 <?php
+
 namespace Jackalope;
 
+use ArrayIterator;
 use PHPCR\PropertyType;
 
 /**
@@ -193,7 +195,7 @@ class Session implements \PHPCR\SessionInterface
         foreach ($nodesByPath as $node) {
             $nodesByUUID[$node->getIdentifier()] = $node;
         }
-        return new \ArrayIterator($nodesByUUID);
+        return new ArrayIterator($nodesByUUID);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to handle nodes and acting as Unit of Work for write operations using
  * the transport interface.
@@ -9,6 +10,8 @@
  */
 
 namespace Jackalope;
+
+use ArrayIterator;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -168,7 +171,7 @@ class ObjectManager
      *
      * @param array $paths Array containing the absolute paths of the nodes to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
-     * @return \ArrayIterator that contains all \PHPCR\Node's keyed their path
+     * @return ArrayIterator that contains all \PHPCR\Node's keyed their path
      *
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
@@ -205,7 +208,7 @@ class ObjectManager
             $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
         }
 
-        return new \ArrayIterator($nodes);
+        return new ArrayIterator($nodes);
     }
 
     /**
@@ -402,7 +405,7 @@ class ObjectManager
      * @param string $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
      *
-     * @return \ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
+     * @return ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
      * 
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
@@ -520,7 +523,7 @@ class ObjectManager
             $props[] = $prop;
         }
 
-        return new \ArrayIterator($props);
+        return new ArrayIterator($props);
     }
 
     /**
