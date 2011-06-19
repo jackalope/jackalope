@@ -45,7 +45,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     {
         $values = array();
         foreach ($this->columns as $column) {
-            $values[] = $column['dcr:value'];
+            $values[$column['dcr:name']] = $column['dcr:value'];
         }
 
         return $values;
