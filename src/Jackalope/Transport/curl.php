@@ -58,7 +58,21 @@ class curl
      */
     public function __construct($url = null)
     {
-        $this->curl = curl_init($url);
+        $this->init($url);
+    }
+
+    /**
+     * Handles the initialization of a curl session.
+     *
+     * @param string $url If provided, sets the CURLOPT_URL
+     *
+     * @see curl_init
+     */
+    public function init($url = null)
+    {
+        if (!is_resource($this->curl)) {
+            $this->curl = curl_init($url);
+        }
     }
 
     /**
@@ -144,12 +158,10 @@ class curl
      */
     public function close()
     {
-        $res = null;
         // This test is to avoid "not a valid cURL handle resource" warnings
         if (is_resource($this->curl)) {
-            $res = curl_close($this->curl);
+            curl_close($this->curl);
         }
-        return $res;
     }
 
     public function readHeader($ch, $header)
