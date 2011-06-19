@@ -207,6 +207,8 @@ class Client implements TransportInterface
 
         if (is_null($this->curl)) {
             $this->curl = new curl();
+        } else {
+            $this->curl->init();
         }
 
         foreach ($uri as $key => $row) {
