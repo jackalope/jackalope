@@ -27,16 +27,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     protected $values;
 
-    protected $callback;
-
     public function __construct($factory, $objectmanager, $columns)
     {
         $this->objectmanager = $objectmanager;
         $this->factory = $factory;
         $this->columns = $columns;
-        $this->callback = function($val) {
-            return str_replace('_x0020_', ' ', $val);
-        };
     }
 
     /**
@@ -55,8 +50,6 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             foreach ($this->columns as $column) {
                 $this->values[$column['dcr:name']] = $column['dcr:value'];
             }
-
-            $this->values = array_map($this->callback, $this->values);
         }
 
         return $this->values;
@@ -158,7 +151,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     public function current()
     {
-        return $this->callback($this->columns[$this->position]['dcr:value']);
+        return $this->columns[$this->position]['dcr:value'];
     }
 
     public function key()
