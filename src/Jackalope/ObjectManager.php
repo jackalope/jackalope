@@ -213,7 +213,7 @@ class ObjectManager
 
     /**
      * Determine the fetch path from a given absolute path
-     * 
+     *
      * Also handles checks for removed or moved items
      *
      * @param string $absPath The absolute path of the node to fetch.
@@ -392,7 +392,6 @@ class ObjectManager
             }
             return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
         }
-
         $path = $this->absolutePath($root, $identifier);
         return $this->getNodeByPath($path, $class);
     }
@@ -406,7 +405,7 @@ class ObjectManager
      * @param string $class optional class name for the factory
      *
      * @return ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
-     * 
+     *
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function getNodes($identifiers, $class = 'Node')
