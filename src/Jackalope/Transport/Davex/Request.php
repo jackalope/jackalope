@@ -414,16 +414,16 @@ class Request
         }
 
         if (404 === $httpCode) {
-            throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} {$this->uri}");
+            throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} ".var_export($this->uri, true));
         } elseif (405 == $httpCode) {
-            throw new \Jackalope\Transport\Davex\HTTPErrorException("HTTP 405 Method Not Allowed: {$this->method} {$this->uri}", 405);
+            throw new \Jackalope\Transport\Davex\HTTPErrorException("HTTP 405 Method Not Allowed: {$this->method} ".var_export($this->uri, true), 405);
         } elseif ($httpCode >= 500) {
-            throw new \PHPCR\RepositoryException("HTTP $httpCode Error from backend on: {$this->method} {$this->uri} \n\n$response");
+            throw new \PHPCR\RepositoryException("HTTP $httpCode Error from backend on: {$this->method} ".var_export($this->uri, true)."\n\n$response");
         }
 
         $curlError = $curl->error();
 
-        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} {$this->uri} \n\n$response";
+        $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} ".var_export($this->uri, true)."\n\n$response";
         throw new \PHPCR\RepositoryException($msg);
     }
 
