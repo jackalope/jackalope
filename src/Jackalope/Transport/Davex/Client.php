@@ -658,8 +658,11 @@ class Client implements TransportInterface
                 foreach ($column->childNodes as $childNode) {
                     $sets[$childNode->tagName] = $childNode->nodeValue;
                 }
-
+                // TODO if this bug is fixed, spaces may be urlencoded instead of the escape sequence: https://issues.apache.org/jira/browse/JCR-2997
+                // the following line fails for nodes with "_x0020 " in their name, changing that part to " x0020_"
+                // other characters like < and > are urlencoded, which seems to be handled by dom already.
                 $sets['dcr:value'] = str_replace('_x0020_', ' ', $sets['dcr:value']);
+
                 $columns[] = $sets;
             }
 

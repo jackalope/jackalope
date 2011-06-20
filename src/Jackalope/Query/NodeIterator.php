@@ -59,7 +59,6 @@ class NodeIterator implements \SeekableIterator, \Countable
                 $path = $column['dcr:value'];
             }
         }
-
         return $this->objectmanager->getNode($path);
     }
 
