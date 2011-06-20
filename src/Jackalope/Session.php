@@ -657,7 +657,7 @@ class Session implements \PHPCR\SessionInterface
         if ($root) {
             $this->exportNamespaceDeclarations($stream);
         }
-        fwrite($stream, ' sv:name="'.($node->getPath() == '/' ? 'jcr:root' : $node->getName()).'">');
+        fwrite($stream, ' sv:name="'.($node->getPath() == '/' ? 'jcr:root' : htmlspecialchars($node->getName())).'">');
 
         // the order MUST be primary type, then mixins, if any, then jcr:uuid if its a referenceable node
         fwrite($stream, '<sv:property sv:name="jcr:primaryType" sv:type="Name"><sv:value>'.htmlspecialchars($node->getPropertyValue('jcr:primaryType')).'</sv:value></sv:property>');
@@ -681,7 +681,7 @@ class Session implements \PHPCR\SessionInterface
                 // do not output binary data in the xml
                 continue;
             }
-            fwrite($stream, "<sv:property sv:name=\"$name\" sv:type=\""
+            fwrite($stream, '<sv:property sv:name="'.htmlentities($name).'" sv:type="'
                                 . PropertyType::nameFromValue($property->getType()).'"'
                                 . ($property->isMultiple() ? ' sv:multiple="true"' : '')
                                 . '>');
