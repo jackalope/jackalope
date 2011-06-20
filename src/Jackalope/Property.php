@@ -133,8 +133,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $this->length = $stat['size'];
         }
 
+        // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
-            //identity check will detect native variable type changes as well
             $this->setModified();
         }
 
