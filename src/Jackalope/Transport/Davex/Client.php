@@ -892,6 +892,8 @@ class Client implements TransportInterface
     protected function propertyToXmlString($value, $type)
     {
         switch ($type) {
+            case \PHPCR\PropertyType::TYPENAME_BOOLEAN:
+                return $value ? 'true' : 'false';
             case \PHPCR\PropertyType::TYPENAME_DATE:
                 return PropertyType::convertType($value, PropertyType::STRING);
             case \PHPCR\PropertyType::TYPENAME_BINARY:
@@ -902,7 +904,6 @@ class Client implements TransportInterface
                 $value = str_replace(']]>',']]]]><![CDATA[>',$value);
                 return '<![CDATA['.$value.']]>';
         }
-        //FIXME: handle boolean correctly. strings true and false?
         return $value;
     }
 
