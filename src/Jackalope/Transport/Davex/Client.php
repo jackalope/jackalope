@@ -659,11 +659,13 @@ class Client implements TransportInterface
                     $sets[$childNode->tagName] = $childNode->nodeValue;
                 }
 
+                $sets['dcr:value'] = str_replace('_x0020_', ' ', $sets['dcr:value']);
                 $columns[] = $sets;
             }
 
             $rows[] = $columns;
         }
+
         return $rows;
     }
 
