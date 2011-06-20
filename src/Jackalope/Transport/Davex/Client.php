@@ -400,7 +400,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::GET, $paths);
         try {
-            return $request->executeJson();
+            return $request->executeJson(true);
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }

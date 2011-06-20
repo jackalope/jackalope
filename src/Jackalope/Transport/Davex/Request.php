@@ -252,9 +252,9 @@ class Request
      *
      * @return string|array of XML representation of the response.
      */
-    public function execute($getCurlObject = false)
+    public function execute($getCurlObject = false, $forceMultiple = false)
     {
-        if (count($this->uri) === 1) {
+        if (!$forceMultiple && count($this->uri) === 1) {
             return $this->singleRequest($getCurlObject);
         }
         return $this->multiRequest($getCurlObject);
@@ -435,9 +435,9 @@ class Request
      *
      * @return DOMDocument The loaded XML response text.
      */
-    public function executeDom()
+    public function executeDom($forceMultiple = false)
     {
-        $xml = $this->execute();
+        $xml = $this->execute(null, $forceMultiple);
 
         // create new DOMDocument and load the response text.
         $dom = new \DOMDocument();
@@ -455,9 +455,9 @@ class Request
      *
      * @throws \PHPCR\RepositoryException if the json response is not valid
      */
-    public function executeJson()
+    public function executeJson($forceMultiple = false)
     {
-        $responses = $this->execute();
+        $responses = $this->execute(null, $forceMultiple);
         if (!is_array($responses)) {
             $responses = array($responses);
             $reset = true;
