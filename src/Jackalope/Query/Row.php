@@ -25,6 +25,8 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     protected $position = 0;
 
+    protected $values;
+
     public function __construct($factory, $objectmanager, $columns)
     {
         $this->objectmanager = $objectmanager;
@@ -43,12 +45,14 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getValues()
     {
-        $values = array();
-        foreach ($this->columns as $column) {
-            $values[$column['dcr:name']] = $column['dcr:value'];
+        if (!isset($this->values)) {
+            $this->values = array();
+            foreach ($this->columns as $column) {
+                $this->values[$column['dcr:name']] = $column['dcr:value'];
+            }
         }
 
-        return $values;
+        return $this->values;
     }
 
     /**
@@ -63,10 +67,9 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getValue($columnName)
     {
-        foreach ($this->columns as $column) {
-            if ($column['dcr:name'] === $columnName) {
-                return $column['dcr:value'];
-            }
+        $values = $this->getValues();
+        if (array_key_exists($columnName, $values)) {
+            return $values[$columnName];
         }
 
         throw new \PHPCR\ItemNotFoundException("Column :$columnName not found");
@@ -84,10 +87,9 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getNode($selectorName = null)
     {
-        //FIXME: implement $selectorName
-        $path = $this->getValue('jcr:path');
+        // TODO: implement $selectorName
 
-        return $this->objectmanager->getNode($path);
+        return $this->objectmanager->getNode($this->getPath());
     }
 
     /**
@@ -105,7 +107,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getPath($selectorName = null)
     {
-        //FIXME: implement $selectorName
+        // TODO: implement $selectorName
 
         return $this->getValue('jcr:path');
     }
@@ -137,7 +139,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getScore($selectorName = null)
     {
-        //FIXME: implement $selectorName
+        // TODO: implement $selectorName
 
         return $this->getValue('jcr:score');
     }
