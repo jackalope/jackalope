@@ -58,21 +58,7 @@ class curl
      */
     public function __construct($url = null)
     {
-        $this->init($url);
-    }
-
-    /**
-     * Handles the initialization of a curl session.
-     *
-     * @param string $url If provided, sets the CURLOPT_URL
-     *
-     * @see curl_init
-     */
-    public function init($url = null)
-    {
-        if (!is_resource($this->curl)) {
-            $this->curl = curl_init($url);
-        }
+        $this->curl = curl_init($url);
     }
 
     /**
