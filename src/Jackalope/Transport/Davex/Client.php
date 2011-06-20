@@ -200,15 +200,16 @@ class Client implements TransportInterface
      */
     protected function getRequest($method, $uri)
     {
-        // init curl
         if (!is_array($uri)) {
             $uri = array($uri => $uri);
         }
 
         if (is_null($this->curl)) {
+            // lazy init curl
             $this->curl = new curl();
-        } else {
-            $this->curl->init();
+        } else if ($this->curl === false) {
+            // but do not re-connect, rather report the error if trying to access a closed connection
+            throw new \LogicException("Tried to start a request on a closed transport ($method for ".var_export($uri,true).")");
         }
 
         foreach ($uri as $key => $row) {
@@ -288,7 +289,8 @@ class Client implements TransportInterface
      */
     public function logout()
     {
-        return $this->curl->close();
+        $this->curl->close();
+        $this->curl = false;
     }
 
     /**
