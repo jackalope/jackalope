@@ -93,7 +93,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if (! is_integer($type)) {
             throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
         }
-        if ($this->new) {
+        if ($this->isNew()) {
             $this->isMultiple = is_array($value);
         }
 
@@ -560,11 +560,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      **/
     public function remove()
     {
-        parent::remove();
-
         $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
         $meth->setAccessible(true);
         $meth->invokeArgs($this->getParent(), array($this->name));
+
+        parent::remove();
     }
 
     /**
@@ -581,4 +581,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return new ArrayIterator($value);
     }
 
+    protected function reload()
+    {
+        // TODO: implement
+    }
 }

@@ -11,6 +11,38 @@ namespace Jackalope;
  */
 abstract class Item implements \PHPCR\ItemInterface
 {
+    /**
+     * Item state constants, see the following image for the workflow:
+     *
+     * https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png
+     */
+
+    /**
+     * The item is new and needs to be saved
+     */
+    const STATE_NEW = 0;
+
+    /**
+     * The item is dirty an needs to be reloaded before using it
+     */
+    const STATE_DIRTY = 1;
+
+    /**
+     * The item is clean (i.e. fully synchronized with the backend)
+     */
+    const STATE_CLEAN = 2;
+
+    /**
+     * The item has been modified and need to be saved
+     */
+    const STATE_MODIFIED = 3;
+
+    /**
+     * The item has been removed and cannot be used anymore
+     */
+    const STATE_DELETED = 4;
+
+
     /** @var Factory   The jackalope object factory for this object */
     protected $factory;
 
@@ -41,6 +73,18 @@ abstract class Item implements \PHPCR\ItemInterface
     /** @var bool   Whether this item is a node  */
     protected $isNode = false;
 
+    /** @var int    The state of the item */
+    protected $state;
+
+    /** @var array  The states an Item can take */
+    protected $available_states = array(
+        self::STATE_NEW,
+        self::STATE_DIRTY,
+        self::STATE_CLEAN,
+        self::STATE_MODIFIED,
+        self::STATE_DELETED,
+    );
+
     /**
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param string    $path   The normalized and absolute path to this item
@@ -54,7 +98,8 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->factory = $factory;
         $this->session = $session;
         $this->objectManager = $objectManager;
-        $this->new = $new;
+
+        $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
 
         $this->setPath($path);
     }
@@ -75,6 +120,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getPath()
     {
+        $this->checkState();
         return $this->path;
     }
 
@@ -88,6 +134,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getName()
     {
+        $this->checkState();
         return $this->name;
     }
 
@@ -114,6 +161,8 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getAncestor($depth)
     {
+        $this->checkState();
+
         if ($depth < 0 || $depth > $this->depth) {
             throw new \PHPCR\ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
@@ -135,6 +184,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getParent()
     {
+        $this->checkState();
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
@@ -152,6 +202,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getDepth()
     {
+        $this->checkState();
         return $this->depth;
     }
 
@@ -164,6 +215,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function getSession()
     {
+        $this->checkState();
         return $this->session;
     }
 
@@ -176,6 +228,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function isNode()
     {
+        $this->checkState();
         return $this->isNode;
     }
 
@@ -197,7 +250,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function isNew()
     {
-        return $this->new;
+        return $this->state === self::STATE_NEW;
     }
 
     /**
@@ -217,7 +270,46 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function isModified()
     {
-        return $this->modified;
+        return $this->state === self::STATE_MODIFIED;
+    }
+
+    /**
+     * Returns true if this Item has been saved but not was not reloaded. The
+     * reprensentation of the item in memory might not reflect all the changes
+     * that the save could have produced (by instance if mix:referenceable has
+     * been added to the item but the item was not yet reloaded and thus has
+     * not its real UUID).
+     *
+     * @return boolean
+     * @private
+     */
+    public function isDirty()
+    {
+        return $this->state === self::STATE_DIRTY;
+    }
+
+    /**
+     * Returns true if this Item has been deleted and cannot be used anymore.
+     *
+     * @return boolean
+     * @private
+     */
+    public function isDeleted()
+    {
+        return $this->state === self::STATE_DELETED;
+    }
+
+    /**
+     * Returns true it this Item is clean (i.e. its state is fully synchronized
+     * with the backend). This occurs if the Item was just loaded or reloaded after
+     * a modification.
+     *
+     * @return boolean
+     * @private
+     */
+    public function isClean()
+    {
+        return $this->state === self::STATE_CLEAN;
     }
 
     /**
@@ -252,6 +344,8 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function isSame(\PHPCR\ItemInterface $otherItem)
     {
+        $this->checkState();
+
         if ($this === $otherItem) { // trivial case
             return true;
         }
@@ -283,6 +377,8 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function accept(\PHPCR\ItemVisitorInterface $visitor)
     {
+        $this->checkState();
+
         $visitor->visit($this);
     }
 
@@ -334,6 +430,8 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function remove()
     {
+        $this->checkState(false); // To avoid the possibility to delete an already deleted node
+
         // sanity checks
         if ($this->getDepth() == 0) {
             throw new \PHPCR\RepositoryException('Cannot remove root node');
@@ -347,6 +445,7 @@ abstract class Item implements \PHPCR\ItemInterface
             $this->objectManager->removeItem($this->path);
         }
         $this->getParent()->setModified();
+        $this->setDeleted();
     }
 
     /**
@@ -357,8 +456,35 @@ abstract class Item implements \PHPCR\ItemInterface
     public function setModified()
     {
         if (! $this->isNew()) {
-            $this->modified = true;
+            $this->setState(self::STATE_MODIFIED);
         }
+    }
+
+    /**
+     * Tell this item that it is dirty and needs to be reloaded
+     * @private
+     */
+    public function setDirty()
+    {
+        $this->setState(self::STATE_DIRTY);
+    }
+
+    /**
+     * Tell this item it has been deleted and cannot be used anymore
+     * @private
+     */
+    public function setDeleted()
+    {
+        $this->setState(self::STATE_DELETED);
+    }
+
+    /**
+     * Tell this item it is clean (i.e. it has been reloaded after a modification)
+     * @private
+     */
+    public function setClean()
+    {
+        $this->setState(self::STATE_CLEAN);
     }
 
     /**
@@ -367,7 +493,80 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function confirmSaved()
     {
-        $this->new = false;
-        $this->modified = false;
+        $this->setState(self::STATE_CLEAN);
     }
+
+    /**
+     * Get the state of the item
+     *
+     * @return int
+     * @private
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Change the state of the item
+     *
+     * @param int $state The new item state
+     * @throws \PHPCR\InvalidItemStateException
+     * @private
+     */
+    private function setState($state)
+    {
+        if (! in_array($state, $this->available_states)) {
+            // TODO: Is that the correct exception to throw?
+            throw new \InvalidArgumentException("Invalid state [$state]");
+        }
+        $this->state = $state;
+    }
+
+    /**
+     * Depending on the type of operation attempted (read/write) this function
+     * will modify the state of the item as well as reload it if necessary (i.e.
+     * if it is DIRTY).
+     *
+     * @param boolean $for_reading true if the attempted operation on the item is
+     *                a read operation, and false if it is a write operation.
+     * @return void
+     * @throws \PHPCR\InvalidItemStateException When an operation is attempted on a deleted item
+     * @private
+     */
+    protected function checkState($for_reading = true)
+    {
+        if ($this->state === self::STATE_DELETED) {
+            // TODO: is that the correct exception?
+            throw new \PHPCR\InvalidItemStateException("The item was deleted");
+        }
+
+        // Dirty items need to be reloaded
+        if ($this->isDirty()) {
+
+            $this->reload();
+
+            if ($for_reading) {
+                $this->setClean();
+            } else {
+                $this->setModified();
+            }
+            return;
+        }
+
+        // Modifying a non new item will mark it as modified
+        if (! ($for_reading || $this->isNew())) {
+            $this->setModified();
+            return;
+        }
+
+        // For all the other cases, the state does not change
+    }
+
+    /**
+     * Reload the current item.
+     * 
+     * @private
+     */
+    protected abstract function reload();
 }

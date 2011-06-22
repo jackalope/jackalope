@@ -294,7 +294,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             unset($this->nodes[$oldpos]);
             array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
         }
-        $this->modified = true;
+        $this->setModified();
         //TODO: do we have to record reorderings specifically for telling the backend?
     }
 
@@ -1083,8 +1083,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function remove()
     {
-        parent::remove();
         $this->getParent()->unsetChildNode($this->name);
+        parent::remove();
     }
 
     /**
@@ -1307,5 +1307,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function getIterator()
     {
         return $this->getNodes();
+    }
+
+    protected function reload()
+    {
+        // TODO: implement
     }
 }
