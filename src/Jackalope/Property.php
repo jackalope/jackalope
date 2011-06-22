@@ -563,6 +563,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      **/
     public function remove()
     {
+
         $this->checkState(false);
 
         $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
