@@ -377,6 +377,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function accept(\PHPCR\ItemVisitorInterface $visitor)
     {
+        // TODO: not sure if this should be: $this->checkState(false);
         $this->checkState();
 
         $visitor->visit($this);
@@ -493,7 +494,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function confirmSaved()
     {
-        $this->setState(self::STATE_CLEAN);
+        $this->setState(self::STATE_DIRTY);
     }
 
     /**

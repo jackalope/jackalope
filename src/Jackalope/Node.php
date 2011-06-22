@@ -351,6 +351,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
     {
+        $this->checkState(false);
+
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
 
         if (is_null($value)) {
@@ -400,6 +402,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getNode($relPath)
     {
+        $this->checkState();
+
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
         } catch (\PHPCR\ItemNotFoundException $e) {
@@ -458,6 +462,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getNodes($filter = null)
     {
+        $this->checkState();
+
         $names = self::filterNames($filter, $this->nodes);
         $paths = $pathNameMap = $result = array();
         if (!empty($names)) {
@@ -489,6 +495,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getProperty($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             if (!isset($this->properties[$relPath])) {
                 throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
@@ -516,6 +524,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPropertyValue($name, $type=null)
     {
+        $this->checkState();
+
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
             $val = PropertyType::convertType($val, $type);
@@ -572,6 +582,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getProperties($filter = null)
     {
+        $this->checkState();
+
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
@@ -596,6 +608,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPropertiesValues($filter=null, $dereference=true)
     {
+        $this->checkState();
+
         // OPTIMIZE: do not create properties in constructor, go over array here
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
@@ -662,6 +676,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIdentifier()
     {
+        $this->checkState();
+
         if (isset($this->properties['jcr:uuid'])) {
             return $this->getPropertyValue('jcr:uuid');
         }
@@ -682,6 +698,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIndex()
     {
+        $this->checkState();
+
         return $this->index;
     }
 
@@ -711,6 +729,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getReferences($name = null)
     {
+        $this->checkState();
+
         return $this->objectManager->getReferences($this->path, $name);
     }
 
@@ -740,6 +760,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getWeakReferences($name = null)
     {
+        $this->checkState();
+
         return $this->objectManager->getWeakReferences($this->path, $name);
     }
 
@@ -755,6 +777,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasNode($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         }
@@ -776,6 +800,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasProperty($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
         }
@@ -796,6 +822,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasNodes()
     {
+        $this->checkState();
+
         return !empty($this->nodes);
     }
 
@@ -809,6 +837,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasProperties()
     {
+        $this->checkState();
+
         return (! empty($this->properties));
     }
 
@@ -823,6 +853,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPrimaryNodeType()
     {
+        $this->checkState();
+
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
         return $ntm->getNodeType($this->primaryType);
     }
@@ -841,6 +873,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getMixinNodeTypes()
     {
+        $this->checkState();
+
         if (!isset($this->properties['jcr:mixinTypes'])) {
             return array();
         }
@@ -864,6 +898,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isNodeType($nodeTypeName)
     {
+        $this->checkState();
+
         return (
             $this->primaryType == $nodeTypeName ||
             (isset($this->properties["jcr:mixinTypes"]) && in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue()))
@@ -890,6 +926,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setPrimaryType($nodeTypeName)
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -925,6 +963,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function addMixin($mixinName)
     {
+        $this->checkState(false);
+
         // Check if mixinName exists as a mixin type
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
         $nodeType = $typemgr->getNodeType($mixinName);
@@ -961,6 +1001,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeMixin($mixinName)
     {
+        $this->checkState(false);
+
         throw new NotImplementedException('Write');
     }
 
@@ -986,6 +1028,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function canAddMixin($mixinName)
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1006,6 +1050,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getDefinition()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1034,6 +1080,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function update($srcWorkspace)
     {
+        $this->checkState(false);
+
         if ($this->isNew()) {
             //no node in workspace
             return;
@@ -1056,6 +1104,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getCorrespondingNodePath($workspaceName)
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1069,6 +1119,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getSharedSet()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1083,6 +1135,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function remove()
     {
+        $this->checkState(false);
+
         $this->getParent()->unsetChildNode($this->name);
         parent::remove();
     }
@@ -1096,6 +1150,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @return void
      **/
     protected function unsetChildNode($name) {
+        $this->checkState(false);
+
         $key = array_search($name, $this->nodes);
         if ($key === false) {
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
@@ -1111,6 +1167,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     protected function addChildNode($name)
     {
+        $this->checkState(false);
+
         $this->nodes[] = $name;
     }
 
@@ -1124,6 +1182,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @return void
      **/
     protected function unsetProperty($name) {
+        $this->checkState(false);
+
         if (!array_key_exists($name, $this->properties)) {
             throw new \PHPCR\ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
@@ -1151,6 +1211,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeSharedSet()
     {
+        $this->checkState(false);
+
         throw new NotImplementedException('Write');
     }
 
@@ -1170,6 +1232,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeShare()
     {
+        $this->checkState(false);
+
         throw new NotImplementedException('Write');
     }
 
@@ -1187,6 +1251,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isCheckedOut()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1202,6 +1268,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isLocked()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1223,6 +1291,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function followLifecycleTransition($transition)
     {
+        $this->checkState(false);
+
         throw new NotImplementedException('Write');
     }
 
@@ -1236,6 +1306,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getAllowedLifecycleTransitions()
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1306,6 +1378,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIterator()
     {
+        $this->checkState();
+
         return $this->getNodes();
     }
 
