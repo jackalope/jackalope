@@ -393,6 +393,27 @@ class DoctrineTransport implements TransportInterface
         return $data;
     }
 
+    /**
+     * Get the nodes from an array of absolute paths
+     *
+     * @param array $path Absolute paths to the nodes.
+     * @return array associative array for the node (decoded from json with associative = true)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodes($paths)
+    {
+        $nodes = array();
+        foreach ($paths as $key => $path) {
+            try {
+                $nodes[$key] = $this->getNode($path);
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                // ignore
+            }
+        }
+
+        return $path;
+    }
 
     /**
      * Check-in item at path.

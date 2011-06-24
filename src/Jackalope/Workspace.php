@@ -134,7 +134,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
     {
-        $this->session->getObjectManager()->copyNodeImmediatly($srcAbsPath, $destAbsPath, $srcWorkspace);
+        $this->session->getObjectManager()->copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace);
     }
 
     /**
@@ -197,7 +197,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function move($srcAbsPath, $destAbsPath)
     {
-        $this->session->getObjectManager()->moveNodeImmediatly($srcAbsPath, $destAbsPath);
+        $this->session->getObjectManager()->moveNodeImmediately($srcAbsPath, $destAbsPath);
     }
 
     /**

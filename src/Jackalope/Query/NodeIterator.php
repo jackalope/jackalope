@@ -59,8 +59,25 @@ class NodeIterator implements \SeekableIterator, \Countable
                 $path = $column['dcr:value'];
             }
         }
-
         return $this->objectmanager->getNode($path);
+    }
+
+    /**
+     * Build nodes based on the paths contained in the result set.
+     *
+     * @return array of \PHPCR\NodeInterface
+     */
+    public function getNodes() {
+        $paths = array();
+        foreach ($this->rows as $row) {
+            foreach ($row as $column) {
+                if ($column['dcr:name'] == 'jcr:path') {
+                    $paths[] = $column['dcr:value'];
+                }
+            }
+        }
+
+        return $this->objectmanager->getNodes($paths);
     }
 
     public function key()
