@@ -20,7 +20,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport\Doctrine;
+namespace Jackalope\Transport\DoctrineDBAL;
 
 use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
@@ -33,7 +33,7 @@ use Jackalope\NodeType\JCR2StandardNodeTypes;
 /**
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DoctrineTransport implements TransportInterface
+class DoctrineDBALTransport implements TransportInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -111,18 +111,39 @@ class DoctrineTransport implements TransportInterface
     }
 
     /**
-     * Create a new workspace.
+     * Creates a new Workspace with the specified name. The new workspace is
+     * empty, meaning it contains only root node.
      *
-     * @param string $workspaceName
+     * If srcWorkspace is given:
+     * Creates a new Workspace with the specified name initialized with a
+     * clone of the content of the workspace srcWorkspace. Semantically,
+     * this method is equivalent to creating a new workspace and manually
+     * cloning srcWorkspace to it; however, this method may assist some
+     * implementations in optimizing subsequent Node.update and Node.merge
+     * calls between the new workspace and its source.
+     *
+     * The new workspace can be accessed through a login specifying its name.
+     *
+     * @param string $name A String, the name of the new workspace.
+     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
      * @return void
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
-    public function createWorkspace($workspaceName)
+    public function createWorkspace($name, $srcWorkspace = null)
     {
-        $workspaceId = $this->getWorkspaceId($workspaceName);
-        if ($workspaceId !== false) {
-            throw new \PHPCR\RepositoryException("Workspace '" . $workspaceName . "' already exists");
+        if (null !== $srcWorkspace) {
+            throw new \Jackalope\NotImplementedException();
         }
-        $this->conn->insert('jcrworkspaces', array('name' => $workspaceName));
+
+        $workspaceId = $this->getWorkspaceId($name);
+        if ($workspaceId !== false) {
+            throw new \PHPCR\RepositoryException("Workspace '" . $name . "' already exists");
+        }
+        $this->conn->insert('jcrworkspaces', array('name' => $name));
         $workspaceId = $this->conn->lastInsertId();
 
         $this->conn->insert("jcrnodes", array(
@@ -157,6 +178,20 @@ class DoctrineTransport implements TransportInterface
 
         $this->loggedIn = true;
         return true;
+    }
+
+    /**
+     * Releases all resources associated with this Session.
+     *
+     * This method is called on $session->logout
+     * Implementations can use it to close database connections and similar.
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        $this->loggedIn = false;
+        $this->conn = null;
     }
 
     private function getWorkspaceId($workspaceName)
@@ -393,6 +428,27 @@ class DoctrineTransport implements TransportInterface
         return $data;
     }
 
+    /**
+     * Get the nodes from an array of absolute paths
+     *
+     * @param array $path Absolute paths to the nodes.
+     * @return array associative array for the node (decoded from json with associative = true)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodes($paths)
+    {
+        $nodes = array();
+        foreach ($paths as $key => $path) {
+            try {
+                $nodes[$key] = $this->getNode($path);
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                // ignore
+            }
+        }
+
+        return $path;
+    }
 
     /**
      * Check-in item at path.

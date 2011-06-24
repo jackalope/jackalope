@@ -1,5 +1,8 @@
 <?php
+
 namespace Jackalope;
+
+use ArrayIterator;
 
 /**
  * Mirrors namespaces with jackarabbit backend
@@ -240,7 +243,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     public function getIterator()
     {
         $this->lazyLoadNamespaces();
-        return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
+        return new ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
     }
 
     /**

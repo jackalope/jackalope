@@ -200,12 +200,22 @@ class Client implements TransportInterface
      */
     protected function getRequest($method, $uri)
     {
-        // init curl
-        if (is_null($this->curl)) {
-            $this->curl = new curl();
+        if (!is_array($uri)) {
+            $uri = array($uri => $uri);
         }
 
-        $uri = $this->addWorkspacePathToUri($uri);
+        if (is_null($this->curl)) {
+            // lazy init curl
+            $this->curl = new curl();
+        } else if ($this->curl === false) {
+            // but do not re-connect, rather report the error if trying to access a closed connection
+            throw new \LogicException("Tried to start a request on a closed transport ($method for ".var_export($uri,true).")");
+        }
+
+        foreach ($uri as $key => $row) {
+            $uri[$key] = $this->addWorkspacePathToUri($row);
+        }
+
 
         $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
@@ -271,6 +281,19 @@ class Client implements TransportInterface
     }
 
     /**
+     * Releases all resources associated with this Session.
+     *
+     * This method should be called when a Session is no longer needed.
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        $this->curl->close();
+        $this->curl = false;
+    }
+
+    /**
      * Change the way Jackalope works when getting a session
      * By default, it sends a PROPFIND to the server, to see if the repository exists
      * You can disable that with setting it to false, then an error only occurs later
@@ -320,6 +343,34 @@ class Client implements TransportInterface
     }
 
     /**
+     * Creates a new Workspace with the specified name. The new workspace is
+     * empty, meaning it contains only root node.
+     *
+     * If srcWorkspace is given:
+     * Creates a new Workspace with the specified name initialized with a
+     * clone of the content of the workspace srcWorkspace. Semantically,
+     * this method is equivalent to creating a new workspace and manually
+     * cloning srcWorkspace to it; however, this method may assist some
+     * implementations in optimizing subsequent Node.update and Node.merge
+     * calls between the new workspace and its source.
+     *
+     * The new workspace can be accessed through a login specifying its name.
+     *
+     * @param string $name A String, the name of the new workspace.
+     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
+     * @return void
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
+     */
+    public function createWorkspace($name, $srcWorkspace = null)
+    {
+        throw new \Jackalope\NotImplementedException();
+    }
+
+    /**
      * Returns the accessible workspace names
      *
      * @return array Set of workspaces to work on.
@@ -352,12 +403,34 @@ class Client implements TransportInterface
     public function getNode($path)
     {
         $path = $this->encodePathForDavex($path);
-
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
         try {
             return $request->executeJson();
+        } catch (\PHPCR\PathNotFoundException $e) {
+            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Get the nodes from an array of absolute paths
+     *
+     * @param array $path Absolute paths to the nodes.
+     * @return array associative array for the node (decoded from json with associative = true)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodes($paths)
+    {
+        foreach ($paths as $key => $path) {
+            $paths[$key] = $this->encodePathForDavex($path);
+            $paths[$key] .= '.0.json';
+        }
+
+        $request = $this->getRequest(Request::GET, $paths);
+        try {
+            return $request->executeJson(true);
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -372,7 +445,6 @@ class Client implements TransportInterface
      */
     public function getProperty($path)
     {
-        $path = $this->encodePathForDavex($path);
         throw new NotImplementedException();
         /*
          * TODO: implement
@@ -403,9 +475,9 @@ class Client implements TransportInterface
                 fwrite($stream, $curl->getResponse());
                 rewind($stream);
                 return $stream;
-            default:
-                throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
         }
+
+        throw new \PHPCR\RepositoryException('Unknown encoding of binary data: '.$curl->getHeader('Content-Type'));
     }
 
     /**
@@ -616,12 +688,17 @@ class Client implements TransportInterface
                 foreach ($column->childNodes as $childNode) {
                     $sets[$childNode->tagName] = $childNode->nodeValue;
                 }
+                // TODO if this bug is fixed, spaces may be urlencoded instead of the escape sequence: https://issues.apache.org/jira/browse/JCR-2997
+                // the following line fails for nodes with "_x0020 " in their name, changing that part to " x0020_"
+                // other characters like < and > are urlencoded, which seems to be handled by dom already.
+                $sets['dcr:value'] = str_replace('_x0020_', ' ', $sets['dcr:value']);
 
                 $columns[] = $sets;
             }
 
             $rows[] = $columns;
         }
+
         return $rows;
     }
 
@@ -848,8 +925,10 @@ class Client implements TransportInterface
     protected function propertyToXmlString($value, $type)
     {
         switch ($type) {
+            case \PHPCR\PropertyType::TYPENAME_BOOLEAN:
+                return $value ? 'true' : 'false';
             case \PHPCR\PropertyType::TYPENAME_DATE:
-                return $value->format(\Jackalope\Helper::DATETIME_FORMAT);
+                return PropertyType::convertType($value, PropertyType::STRING);
             case \PHPCR\PropertyType::TYPENAME_BINARY:
                 return base64_encode(stream_get_contents($value));
             case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
@@ -858,7 +937,6 @@ class Client implements TransportInterface
                 $value = str_replace(']]>',']]]]><![CDATA[>',$value);
                 return '<![CDATA['.$value.']]>';
         }
-        //FIXME: handle boolean correctly. strings true and false?
         return $value;
     }
 
@@ -1233,7 +1311,7 @@ class Client implements TransportInterface
     {
         if (! (strpos($path, '//') === false
               && strpos($path, '/../') === false
-              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
+              && preg_match('/^[\w{}\/#:^+~*\[\]\. <>"\'-]*$/i', $path))
         ) {
             throw new \PHPCR\RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
         }

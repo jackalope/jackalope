@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class to handle nodes and acting as Unit of Work for write operations using
  * the transport interface.
@@ -9,6 +10,8 @@
  */
 
 namespace Jackalope;
+
+use ArrayIterator;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -124,7 +127,7 @@ class ObjectManager
      * Unfortunately there is currently no way to refetch a node once it has been fetched.
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separatly for Version and normal Node?
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
      * @return \PHPCR\Node
      *
      * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
@@ -135,46 +138,115 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
         $absPath = $this->normalizePath($absPath);
 
-        if (!isset($this->objectsByPath[$class])) {
-            $this->objectsByPath[$class] = array();
+        if (!empty($this->objectsByPath[$class][$absPath])) {
+            // Return it from memory if we already have it
+            return $this->objectsByPath[$class][$absPath];
         }
-        if (empty($this->objectsByPath[$class][$absPath])) {
-            if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
-            }
-            // check whether a parent node was removed
-            // OPTIMIZE: this is not very efficient. have a tree structure?
-            foreach ($this->itemsRemove as $path=>$dummy) {
-                if (strpos($absPath, $path) === 0) {
-                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
-                }
-            }
 
-            if (isset($this->nodesMove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+        $fetchPath = $this->getFetchPath($absPath, $class);
+
+        $node = $this->factory->get(
+            $class,
+            array(
+                $this->transport->getNode($fetchPath),
+                $absPath,
+                $this->session,
+                $this
+            )
+        );
+        // TODO: is it always legal to call getIdentifier?
+        if ($uuid = $node->getIdentifier()) {
+            // map even nodes that are not mix:referenceable, as long as they have a uuid
+            $this->objectsByUuid[$uuid] = $absPath;
+        }
+        $this->objectsByPath[$class][$absPath] = $node;
+
+        return $this->objectsByPath[$class][$absPath];
+    }
+
+    /**
+     * Get multiple nodes identified by an absolute paths. Missing nodes are ignored
+     *
+     * Note uuid's/path's that cannot be found will be ignored
+     *
+     * @param array $paths Array containing the absolute paths of the nodes to fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * @return ArrayIterator that contains all \PHPCR\Node's keyed their path
+     *
+     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
+     */
+    public function getNodesByPath($paths, $class = 'Node')
+    {
+        $nodes = $fetchPaths = array();
+
+        foreach ($paths as $absPath) {
+            if (!empty($this->objectsByPath[$class][$absPath])) {
+                // Return it from memory if we already have it
+                $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
+            } else {
+                $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
             }
+        }
 
-            // make sure we fetch the correct path if this node has been moved in a not yet persisted operation
-            $fetchPath = $this->resolveBackendPath($absPath);
-
-            $node = $this->factory->get(
+        $data = $this->transport->getNodes($fetchPaths, $class);
+        foreach ($data as $fetchPath => $item) {
+            $absPath = array_search($fetchPath, $fetchPaths);
+            $nodes[$absPath] = $this->factory->get(
                 $class,
                 array(
-                    $this->transport->getNode($fetchPath),
+                    $item,
                     $absPath,
                     $this->session,
                     $this
                 )
             );
-            // TODO: is it always legal to call getIdentifier?
-            if ($uuid = $node->getIdentifier()) {
-                // map even nodes that are not mix:referenceable, as long as they have a uuid
+
+            if ($uuid = $nodes[$absPath]->getIdentifier()) {
                 $this->objectsByUuid[$uuid] = $absPath;
             }
-            $this->objectsByPath[$class][$absPath] = $node;
+
+            $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
         }
 
-        return $this->objectsByPath[$class][$absPath];
+        return new ArrayIterator($nodes);
+    }
+
+    /**
+     * Determine the fetch path from a given absolute path
+     *
+     * Also handles checks for removed or moved items
+     *
+     * @param string $absPath The absolute path of the node to fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * @return string fetch path
+     */
+    protected function getFetchPath($absPath, $class)
+    {
+        $absPath = $this->normalizePath($absPath);
+        $this->verifyAbsolutePath($absPath);
+
+        if (!isset($this->objectsByPath[$class])) {
+            $this->objectsByPath[$class] = array();
+        }
+
+        if (isset($this->itemsRemove[$absPath])) {
+            throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+        }
+
+        // check whether a parent node was removed
+        foreach ($this->itemsRemove as $path => $dummy) {
+            if (strpos($absPath, $path) === 0) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+            }
+        }
+
+        if (isset($this->nodesMove[$absPath])) {
+            throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+        }
+
+        // The path was the destination of a previous move which isn't yet dispatched to the backend.
+        // I guess an exception would be fine but we can also just fetch the node from the previous path
+        return $this->resolveBackendPath($absPath);
     }
 
     /**
@@ -296,15 +368,15 @@ class ObjectManager
     }
 
     /**
-     * Get the node idenfied by an uuid or path or root path and relative path.
+     * Get the node identified by an uuid or (relative) path.
      *
      * If you have an absolute path use {@link getNodeByPath()}.
      *
-     * @param string $identifier uuid or relative path
+     * @param string $identifier uuid or (relative) path
      * @param string $root optional root if you are in a node context - not used if $identifier is an uuid
      * @param string $class optional class name for the factory
      *
-     * @return \PHPCR\Node The specified Node. if not available, ItemNotFoundException is thrown
+     * @return \PHPCR\NodeInterface The specified Node. if not available, ItemNotFoundException is thrown
      *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
@@ -320,9 +392,41 @@ class ObjectManager
             }
             return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
         }
-
         $path = $this->absolutePath($root, $identifier);
         return $this->getNodeByPath($path, $class);
+    }
+
+    /**
+     * Get the nodes identified by the given uuids or absolute paths.
+     *
+     * Note uuid's/path's that cannot be found will be ignored
+     *
+     * @param string $identifiers uuid's or absolute paths
+     * @param string $class optional class name for the factory
+     *
+     * @return ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
+     *
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     */
+    public function getNodes($identifiers, $class = 'Node')
+    {
+        $paths = array();
+        foreach ($identifiers as $key => $identifier) {
+            if ($this->isUUID($identifier)) {
+                if (empty($this->objectsByUuid[$identifier])) {
+                    try {
+                        $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
+                    } catch (\PHPCR\ItemNotFoundException $e) {
+                        // ignore
+                    }
+                } else {
+                    $paths[$key] = $this->objectsByUuid[$identifier];
+                }
+            } else {
+                $paths[$key] = $identifier;
+            }
+        }
+        return $this->getNodesByPath($paths, $class);
     }
 
     /**
@@ -418,7 +522,7 @@ class ObjectManager
             $props[] = $prop;
         }
 
-        return new \ArrayIterator($props);
+        return new ArrayIterator($props);
     }
 
     /**
@@ -800,14 +904,14 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace move method. It is dispatched immediatly
+     * Implement the workspace move method. It is dispatched immediately
      *
      * @param string $srcAbsPath the path of the node to be moved.
      * @param string $destAbsPath the location to which the node at srcAbsPath is to be moved.
      *
      * @see Workspace::move
      */
-    public function moveNodeImmediatly($srcAbsPath, $destAbsPath)
+    public function moveNodeImmediately($srcAbsPath, $destAbsPath)
     {
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
@@ -817,7 +921,7 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace copy method. It is dispatched immediatly
+     * Implement the workspace copy method. It is dispatched immediately
      *
      * @param string $srcAbsPath the path of the node to be copied.
      * @param string $destAbsPath the location to which the node at srcAbsPath is to be copied in this workspace.
@@ -825,7 +929,7 @@ class ObjectManager
      *
      * @see Workspace::copy
      */
-    public function copyNodeImmediatly($srcAbsPath, $destAbsPath, $srcWorkspace)
+    public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
     {
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
@@ -851,10 +955,7 @@ class ObjectManager
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
         $this->objectsByPath['Node'][$absPath] = $item;
-        if ($item instanceof \PHPCR\NodeInterface) {
-            //TODO: determine if we have an identifier.
-            $this->objectsByUuid[$item->getIdentifier()] = $absPath;
-        }
+        // a new item never has a uuid, no need to add to objectsByUuid
 
         $this->itemsAdd[$absPath] = 1;
     }
