@@ -11,6 +11,7 @@
 
 namespace Jackalope;
 
+use PHPCR\Util\UUIDHelper;
 use ArrayIterator;
 
 /**
@@ -299,7 +300,7 @@ class ObjectManager
             return $path; // edge case that will be eaten away
         }
 
-        if ($this->isUUID($path)) {
+        if (UUIDHelper::isUUID($path)) {
             $uuid = $path;
             if (empty($this->objectsByUuid[$uuid])) {
                 $finalPath = $this->transport->getNodePathForIdentifier($uuid);
@@ -383,7 +384,7 @@ class ObjectManager
      */
     public function getNode($identifier, $root = '/', $class = 'Node')
     {
-        if ($this->isUUID($identifier)) {
+        if (UUIDHelper::isUUID($identifier)) {
             if (empty($this->objectsByUuid[$identifier])) {
                 $path = $this->transport->getNodePathForIdentifier($identifier);
                 $node = $this->getNodeByPath($path, $class);
@@ -412,7 +413,7 @@ class ObjectManager
     {
         $paths = array();
         foreach ($identifiers as $key => $identifier) {
-            if ($this->isUUID($identifier)) {
+            if (UUIDHelper::isUUID($identifier)) {
                 if (empty($this->objectsByUuid[$identifier])) {
                     try {
                         $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
@@ -554,22 +555,6 @@ class ObjectManager
             throw new \PHPCR\RepositoryException('Path is not absolute: ' . $path);
         }
         return true;
-    }
-
-    /**
-     * Checks if the string could be a uuid.
-     *
-     * @param string $id Possible uuid
-     * @return boolean True if the test was passed, else false.
-     */
-    protected function isUUID($id)
-    {
-        // UUDID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
-        if (1 === preg_match('/^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/', $id)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
