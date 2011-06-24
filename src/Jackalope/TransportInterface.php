@@ -76,7 +76,6 @@ interface TransportInterface
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName);
 
-
     /***********************************************************************
      * all methods from here below require that login is called first. the *
      * behaviour of transport is undefined if this is not respected.       *
@@ -96,10 +95,17 @@ interface TransportInterface
      */
     public function logout();
 
-
     /*****************************
      * Methods for read support *
      *****************************/
+
+    /**
+     * Create a new workspace.
+     *
+     * @param string $workspaceName
+     * @return void
+     */
+    public function createWorkspace($workspaceName);
 
     /**
      * Get the registered namespaces mappings from the backend.
@@ -112,7 +118,6 @@ interface TransportInterface
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNamespaces();
-
 
     /**
      * Get the node from an absolute path

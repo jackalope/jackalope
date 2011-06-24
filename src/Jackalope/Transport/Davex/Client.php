@@ -341,6 +341,16 @@ class Client implements TransportInterface
         }
         return $descriptors;
     }
+    /**
+     * Create a new workspace.
+     *
+     * @param string $workspaceName
+     * @return void
+     */
+    public function createWorkspace($workspaceName)
+    {
+        throw new \Jackalope\NotImplementedException();
+    }
 
     /**
      * Returns the accessible workspace names
