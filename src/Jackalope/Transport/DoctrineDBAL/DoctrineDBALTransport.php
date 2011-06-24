@@ -20,7 +20,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport\Doctrine;
+namespace Jackalope\Transport\DoctrineDBAL;
 
 use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
@@ -33,7 +33,7 @@ use Jackalope\NodeType\JCR2StandardNodeTypes;
 /**
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DoctrineTransport implements TransportInterface
+class DoctrineDBALTransport implements TransportInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -157,6 +157,20 @@ class DoctrineTransport implements TransportInterface
 
         $this->loggedIn = true;
         return true;
+    }
+
+    /**
+     * Releases all resources associated with this Session.
+     *
+     * This method is called on $session->logout
+     * Implementations can use it to close database connections and similar.
+     *
+     * @return void
+     */
+    public function logout()
+    {
+        $this->loggedIn = false;
+        $this->conn = null;
     }
 
     private function getWorkspaceId($workspaceName)
