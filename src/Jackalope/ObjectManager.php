@@ -558,23 +558,6 @@ class ObjectManager
     }
 
     /**
-<<<<<<< HEAD
-     * Checks if the string could be a uuid.
-     *
-     * @param string $id Possible uuid
-     * @return boolean True if the test was passed, else false.
-     */
-    protected function isUUID($id)
-    {
-        // UUID is HEX_CHAR{8}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{4}-HEX_CHAR{12}
-        if (1 === preg_match('/^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$/', $id)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Push all recorded changes to the backend.
      *
      * The order is important to avoid conflicts
