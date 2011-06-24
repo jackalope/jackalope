@@ -11,6 +11,9 @@ class NodeTest extends TestCase
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
+        $objectManager->expects($this->any())
+            ->method('getNodesByPath')
+            ->will($this->returnValue(new \ArrayIterator(array())));
         $node = new Node($factory, json_decode($this->JSON), '/jcr:node', $session, $objectManager);
         return $node;
     }

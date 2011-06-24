@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use ArrayIterator;
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
 
@@ -112,7 +113,7 @@ class VersionHistory extends \Jackalope\Node {
             $results[$rootNode->getName()] = $rootNode;
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootNode));
         }
-        return new \ArrayIterator($this->versions);
+        return new ArrayIterator($this->versions);
     }
 
     /**
