@@ -27,23 +27,6 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
 
-    public function testIsUUID()
-    {
-        $factory = new \Jackalope\Factory;
-        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertFalse($om->isUUID(''));
-        $this->assertFalse($om->isUUID('/'));
-        $this->assertFalse($om->isUUID('/foo'));
-        $this->assertFalse($om->isUUID('../foo'));
-        $this->assertFalse($om->isUUID('./foo'));
-        $this->assertFalse($om->isUUID('sdfsafd'));
-        $this->assertFalse($om->isUUID('842e61c0-09aba42a9-87c0-308ccc90e6f4'));
-        $this->assertFalse($om->isUUID('z42e61c0-09ab-a42a9-87c0-308ccc90e6f4'));
-        $this->assertFalse($om->isUUID('842e61c0a-09ab-a42a9-87c0-308ccc90e6f4'));
-        $this->assertTrue($om->isUUID('842e61c0-09ab-42a9-87c0-308ccc90e6f4'));
-        $this->assertTrue($om->isUUID('842E61C0-09AB-A42a-87c0-308ccc90e6f4'));
-    }
-
     public function testNormalizePathUUID()
     {
         $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
@@ -116,11 +99,6 @@ class ObjectManagerTest extends TestCase
 
 class ObjectManagerMock extends ObjectManager
 {
-    public function isUUID($i)
-    {
-        return parent::isUUID($i);
-    }
-
     public function verifyAbsolutePath($path)
     {
         parent::verifyAbsolutePath($path);

@@ -26,7 +26,7 @@ use PHPCR\PropertyType;
 use Jackalope\TransportInterface;
 use PHPCR\RepositoryException;
 use Doctrine\DBAL\Connection;
-use Jackalope\Helper;
+use PHPCR\Util\UUIDHelper;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\JCR2StandardNodeTypes;
 
@@ -150,7 +150,7 @@ class DoctrineDBALTransport implements TransportInterface
             'path' => '',
             'parent' => '-1',
             'workspace_id' => $workspaceId,
-            'identifier' => Helper::generateUUID(),
+            'identifier' => UUIDHelper::generateUUID(),
             'type' => 'nt:unstructured',
         ));
     }
@@ -299,7 +299,7 @@ class DoctrineDBALTransport implements TransportInterface
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $newPath = str_replace($srcAbsPath, $dstAbsPath, $row['path']);
-                $uuid = Helper::generateUUID();
+                $uuid = UUIDHelper::generateUUID();
                 $this->conn->insert("jcrnodes", array(
                     'identifier' => $uuid,
                     'type' => $row['type'],
@@ -698,7 +698,7 @@ class DoctrineDBALTransport implements TransportInterface
         $this->conn->beginTransaction();
 
         try {
-            $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : Helper::generateUUID();
+            $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : UUIDHelper::generateUUID();
             if (!$this->pathExists($path)) {
                 $this->conn->insert("jcrnodes", array(
                     'identifier' => $nodeIdentifier,
