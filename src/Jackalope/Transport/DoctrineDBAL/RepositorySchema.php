@@ -20,7 +20,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport\Doctrine;
+namespace Jackalope\Transport\DoctrineDBAL;
 
 use Doctrine\DBAL\Schema\Schema;
 
