@@ -47,7 +47,7 @@ $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
     'password'  => $GLOBALS['jcr.doctrine.dbal.password'],
     'dbname'    => $GLOBALS['jcr.doctrine.dbal.dbname']
 ));
-$schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
+$schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
 try {
     foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
         $dbConn->exec($sql);
@@ -72,7 +72,7 @@ function getRepository($config) {
     global $dbConn;
     $dbConn->insert("jcrworkspaces", array("name" => "tests"));
     
-    $transport = new \Jackalope\Transport\Doctrine\DoctrineTransport($dbConn);
+    $transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport($dbConn);
     $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
     return new \Jackalope\Repository(null, null, $transport);
 }
