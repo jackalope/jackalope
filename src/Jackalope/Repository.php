@@ -1,5 +1,8 @@
 <?php
+
 namespace Jackalope;
+
+use PHPCR\CredentialsInterface;
 
 /**
  * The entry point into the content repository. The Repository object is
@@ -11,7 +14,6 @@ namespace Jackalope;
  */
 class Repository implements \PHPCR\RepositoryInterface
 {
-
     /**
      * The factory to instantiate objects
      * @var Factory
@@ -32,7 +34,7 @@ class Repository implements \PHPCR\RepositoryInterface
      * @param $uri Location of the server (ignored if $transport is specified)
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct($factory, $uri = null, TransportInterface $transport = null)
+    public function __construct(Factory $factory = null, $uri = null, TransportInterface $transport = null)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         if ($transport == null) {
@@ -71,7 +73,7 @@ class Repository implements \PHPCR\RepositoryInterface
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login($credentials = null, $workspaceName = null)
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
         if ($workspaceName == null) {
             //TODO: can default workspace have other name?
