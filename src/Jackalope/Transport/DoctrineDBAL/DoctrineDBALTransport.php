@@ -93,6 +93,7 @@ class DoctrineDBALTransport implements TransportInterface
         \PHPCR\NamespaceRegistryInterface::PREFIX_NT => true,
         \PHPCR\NamespaceRegistryInterface::PREFIX_MIX => true,
         \PHPCR\NamespaceRegistryInterface::PREFIX_XML => true,
+        'phpcr' => true,
     );
 
     public function __construct(Connection $conn)
