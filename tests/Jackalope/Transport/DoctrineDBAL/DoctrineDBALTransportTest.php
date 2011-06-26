@@ -22,29 +22,25 @@ class DoctrineDBALTransportTest extends TestCase
         $schema = RepositorySchema::create();
         $sql = $schema->toSql($this->conn->getDatabasePlatform());
         foreach ($sql AS $statement) {
-            echo $statement."\n\n";
             $this->conn->exec($statement);
         }
 
-        $this->conn->insert("jcrworkspaces", array("name" => "Test"));
+        $this->conn->insert("phpcr_workspaces", array("name" => "Test"));
         $workspaceId = $this->conn->lastInsertId();
-        $this->conn->insert("jcrnodes", array("path" => "", "workspace_id" => $workspaceId, "type" => "nt:unstructured", "identifier" => 1));
-        $this->conn->insert("jcrnodes", array("path" => "foo", "workspace_id" => $workspaceId, "type" => "nt:unstructured", "identifier" => 2));
-        $this->conn->insert("jcrprops", array(
+        $this->conn->insert("phpcr_nodes", array("path" => "", "workspace_id" => $workspaceId, 'parent' => '-1', "type" => "nt:unstructured", "identifier" => 1));
+        $parentId = $this->conn->lastInsertId();
+        $this->conn->insert("phpcr_nodes", array("path" => "foo", "workspace_id" => $workspaceId, 'parent' => $parentId, "type" => "nt:unstructured", "identifier" => 2));
+        $this->conn->insert("phpcr_props", array(
             "path" => "foo/bar", "workspace_id" => $workspaceId, "type" => \PHPCR\PropertyType::STRING,
             "node_identifier" => 2, "string_data" => "test", "name" => "bar"));
 
-        $this->transport = new \Jackalope\Transport\DoctrineDBAL($this->conn);
+        $this->transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport($this->conn);
     }
 
     public function testStuff()
     {
         $this->transport->login(new \PHPCR\GuestCredentials(), "Test");
-        var_dump($this->transport->getItem("foo"));
-    }
-
-    public function testFunctional()
-    {
-        
+        $foo = $this->transport->getNode("foo");
+        $this->assertEquals(2, $foo->{'jcr:uuid'});
     }
 }
