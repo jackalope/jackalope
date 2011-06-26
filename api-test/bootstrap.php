@@ -21,7 +21,7 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
  */
 
 // Make sure we have the necessary config
-$necessaryConfigValues = array('jcr.url', 'jcr.user', 'jcr.pass', 'jcr.workspace', 'jcr.transport');
+$necessaryConfigValues = array('phpcr.url', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace', 'phpcr.transport');
 foreach ($necessaryConfigValues as $val) {
     if (empty($GLOBALS[$val])) {
         die('Please set '.$val.' in your phpunit.xml.' . "\n");
