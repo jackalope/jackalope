@@ -46,29 +46,19 @@ class DoctrineDBALTransport implements TransportInterface
     private $loggedIn = false;
 
     /**
+     * @var \PHPCR\SimpleCredentials
+     */
+    private $credentials;
+
+    /**
      * @var int|string
      */
     private $workspaceId;
 
     /**
-     * @var array
+     * @var string
      */
-    private $nodeTypes = array(
-        "nt:file" => array(
-            "is_abstract" => false,
-            "properties" => array(
-                "jcr:primaryType" => array('multi_valued' => false),
-                "jcr:mixinTypes" => array('multi_valued' => true),
-            ),
-        ),
-        "nt:folder" => array(
-            "is_abstract" => false,
-            "properties" => array(
-                "jcr:primaryType" => array('multi_valued' => false),
-                "jcr:mixinTypes" => array('multi_valued' => true),
-            ),
-        ),
-    );
+    private $workspaceName;
 
     /**
      * @var array
@@ -85,6 +75,14 @@ class DoctrineDBALTransport implements TransportInterface
      * @var array
      */
     private $userNamespaces = null;
+
+    /**
+     * Check if an initial request on login should be send to check if repository exists
+     * This is according to the JCR specifications and set to true by default
+     * @see setCheckLoginOnServer
+     * @var bool
+     */
+    private $checkLoginOnServer = true;
 
     /**
      * @var array
@@ -171,6 +169,13 @@ class DoctrineDBALTransport implements TransportInterface
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
     {
+        $this->credentials = $credentials;
+        $this->workspaceName = $workspaceName;
+
+        if (!$this->checkLoginOnServer) {
+            return true;
+        }
+
         $this->workspaceId = $this->getWorkspaceId($workspaceName);
         if (!$this->workspaceId) {
             throw new \PHPCR\NoSuchWorkspaceException;
@@ -194,15 +199,35 @@ class DoctrineDBALTransport implements TransportInterface
         $this->conn = null;
     }
 
+    /**
+     * Change the way Jackalope works when getting a session
+     *
+     * @return void
+     */
+    public function setCheckLoginOnServer($bool)
+    {
+        $this->checkLoginOnServer = $bool;
+    }
+
     private function getWorkspaceId($workspaceName)
     {
-        $sql = "SELECT id FROM jcrworkspaces WHERE name = ?";
+        $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
         return $this->conn->fetchColumn($sql, array($workspaceName));
     }
 
     private function assertLoggedIn()
     {
         if (!$this->loggedIn) {
+            if (!$this->checkLoginOnServer && $this->credentials && $this->workspaceName) {
+                $credentials = $this->credentials;
+                $workspaceName = $this->workspaceName;
+                $this->credentials = $this->workspaceName = null;
+                $this->checkLoginOnServer = true;
+                if ($this->login($credentials, $workspaceName)) {
+                    return;
+                }
+            }
+
             throw new RepositoryException();
         }
     }
