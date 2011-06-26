@@ -1,5 +1,5 @@
 <!-- unit level tests for jackalope. please see api-tests for api conformity tests -->
-<phpunit bootstrap="bootstrap_doctrine.php">
+<phpunit bootstrap="bootstrap.php">
     <php>
         <var name="phpcr.url" value="http://localhost:8080/server" />
         <var name="phpcr.user" value="admin" />
