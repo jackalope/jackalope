@@ -12,8 +12,8 @@ class DoctrineDBALTransportTest extends TestCase
 
     public function setUp()
     {
-        if (!isset($GLOBALS['jcr.doctrine.loaded'])) {
-            $this->markTestSkipped('jcr.doctrine.loader and jcr.doctrine.dbaldir are not configured. Skipping Doctrine tests.');
+        if (!isset($GLOBALS['phpcr.doctrine.loaded'])) {
+            $this->markTestSkipped('phpcr.doctrine.loader and phpcr.doctrine.dbaldir are not configured. Skipping Doctrine tests.');
         }
         $this->conn = DriverManager::getConnection(array(
             'driver' => 'pdo_sqlite',

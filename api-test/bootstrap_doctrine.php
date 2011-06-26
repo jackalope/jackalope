@@ -28,12 +28,12 @@ foreach ($necessaryConfigValues as $val) {
     }
 }
 
-require_once($GLOBALS['jcr.doctrine.loader']);
+require_once($GLOBALS['phpcr.doctrine.loader']);
 
-$loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['jcr.doctrine.commondir']);
+$loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['phpcr.doctrine.commondir']);
 $loader->register();
 
-$loader = new \Doctrine\Common\ClassLoader("Doctrine\DBAL", $GLOBALS['jcr.doctrine.dbaldir']);
+$loader = new \Doctrine\Common\ClassLoader("Doctrine\DBAL", $GLOBALS['phpcr.doctrine.dbaldir']);
 $loader->register();
 
 /** autoloader: jackalope-api-tests relies on an autoloader.
@@ -41,11 +41,11 @@ $loader->register();
 require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
 $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
-    'driver'    => $GLOBALS['jcr.doctrine.dbal.driver'],
-    'host'      => $GLOBALS['jcr.doctrine.dbal.host'],
-    'user'      => $GLOBALS['jcr.doctrine.dbal.username'],
-    'password'  => $GLOBALS['jcr.doctrine.dbal.password'],
-    'dbname'    => $GLOBALS['jcr.doctrine.dbal.dbname']
+    'driver'    => $GLOBALS['phpcr.doctrine.dbal.driver'],
+    'host'      => $GLOBALS['phpcr.doctrine.dbal.host'],
+    'user'      => $GLOBALS['phpcr.doctrine.dbal.username'],
+    'password'  => $GLOBALS['phpcr.doctrine.dbal.password'],
+    'dbname'    => $GLOBALS['phpcr.doctrine.dbal.dbname']
 ));
 $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
 try {

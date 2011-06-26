@@ -9,18 +9,18 @@
          syntaxCheck="false"
          bootstrap="bootstrap_doctrine.php">
     <php>
-        <var name="jcr.user" value="admin" />
-        <var name="jcr.pass" value="admin" />
-        <var name="jcr.workspace" value="tests" />
+        <var name="phpcr.user" value="admin" />
+        <var name="phpcr.pass" value="admin" />
+        <var name="phpcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="jcr.doctrine.loader" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="jcr.doctrine.commondir" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib" />
-        <var name="jcr.doctrine.dbaldir" value="/var/data/libraries/dbal/lib" />
-        <var name="jcr.doctrine.dbal.driver" value="pdo_mysql" />
-        <var name="jcr.doctrine.dbal.host" value="localhost" />
-        <var name="jcr.doctrine.dbal.username" value="admin" />
-        <var name="jcr.doctrine.dbal.password" value="" />
-        <var name="jcr.doctrine.dbal.dbname" value="jcrtests" />
+        <var name="phpcr.doctrine.loader" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="/var/data/libraries/dbal/lib" />
+        <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
+        <var name="phpcr.doctrine.dbal.host" value="localhost" />
+        <var name="phpcr.doctrine.dbal.username" value="root" />
+        <var name="phpcr.doctrine.dbal.password" value="" />
+        <var name="phpcr.doctrine.dbal.dbname" value="phpcrtests" />
     </php>
 
     <testsuites>
