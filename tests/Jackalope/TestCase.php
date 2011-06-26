@@ -5,7 +5,7 @@ namespace Jackalope;
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected $config;
-    protected $configKeys = array('jcr.url', 'jcr.user', 'jcr.pass', 'jcr.workspace', 'jcr.transport');
+    protected $configKeys = array('phpcr.url', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace', 'phpcr.transport');
     protected $credentials;
 
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
