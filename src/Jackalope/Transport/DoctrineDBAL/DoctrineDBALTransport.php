@@ -28,7 +28,7 @@ use PHPCR\RepositoryException;
 use Doctrine\DBAL\Connection;
 use PHPCR\Util\UUIDHelper;
 use Jackalope\NodeType\NodeTypeManager;
-use Jackalope\NodeType\JCR2StandardNodeTypes;
+use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 
 /**
  * @author Benjamin Eberlei <kontakt@beberlei.de>
@@ -961,7 +961,7 @@ $/xi";
         // TODO: Filter for the passed nodetypes
         // TODO: Check database for user node-types.
 
-        return JCR2StandardNodeTypes::getNodeTypeData();
+        return PHPCR2StandardNodeTypes::getNodeTypeData();
     }
 
     /**
