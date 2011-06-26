@@ -13,18 +13,18 @@
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="phpcr.doctrine.loader" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="phpcr.doctrine.commondir" value="/var/data/libraries/dbal/lib/vendor/doctrine-common/lib" />
-        <var name="phpcr.doctrine.dbaldir" value="/var/data/libraries/dbal/lib" />
+        <var name="phpcr.doctrine.loader" value="/Users/lsmith/htdocs/symfony-standard/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/Users/lsmith/htdocs/symfony-standard/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="/Users/lsmith/htdocs/symfony-standard/vendor/doctrine-dbal/lib" />
         <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="phpcr.doctrine.dbal.host" value="localhost" />
         <var name="phpcr.doctrine.dbal.username" value="root" />
         <var name="phpcr.doctrine.dbal.password" value="" />
-        <var name="phpcr.doctrine.dbal.dbname" value="phpcrtests" />
+        <var name="phpcr.doctrine.dbal.dbname" value="phpcr_tests" />
     </php>
 
     <testsuites>
-        <testsuite name="phpCR">
+        <testsuite name="phpcr">
             <directory>suite/tests/</directory>
         </testsuite>
     </testsuites>
