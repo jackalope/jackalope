@@ -89,59 +89,12 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         $this->checkState(false);
 
-        if (is_null($value)) {
-            $this->remove();
-        }
-        if (! is_integer($type)) {
-            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
-        }
-        if ($this->isNew()) {
-            $this->isMultiple = is_array($value);
-        }
-
-        if (is_array($value) && !$this->isMultiple) {
-            throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
-        }
-
-        //TODO: check if changing type allowed.
-        /*
-         * if ($type !== null && ! canHaveType($type)) {
-         *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));
-         * }
-         */
-
-        if (PropertyType::UNDEFINED === $type) {
-            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
-        }
-
-        $targettype = $this->type;
-        if ($this->type !== $type) {
-            /* TODO: find out with node type definition if the new type is allowed
-              if (canHaveType($type)) {
-                  */
-                  $targettype = $type;
-                  /*
-              } else {
-                  //convert to property type
-                  $targettype = $this->type;
-              }
-            */
-        }
-
-        $value = PropertyType::convertType($value, $targettype);
-
-        if (PropertyType::BINARY === $targettype) {
-            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
-            $this->length = $stat['size'];
-        }
+        $this->_setValue($value, $type);
 
         if ($this->value !== $value || $this->type !== $type) {
             //identity check will detect native variable type changes as well
             $this->setModified();
         }
-
-        $this->type = $targettype;
-        $this->value = $value;
     }
 
     /**
@@ -621,8 +574,88 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return new ArrayIterator($value);
     }
 
+    /**
+     * Reload the property after an unnotified backend change.
+     */
     protected function reload()
     {
         // TODO: implement
+    }
+
+    /**
+     * Internaly used to get the raw value of the property.
+     *
+     * DO NOT USE.
+     *
+     * @return mixed
+     * @see Property::getValue
+     * @private
+     */
+    public function _getRawValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Internaly used to set the value of the property without any notification
+     * of changes nor state change.
+     *
+     * DO NOT USE.
+     *
+     * @param mixed $value
+     * @param string $type 
+     * @see Property::setValue
+     * @private
+     */
+    public function _setValue($value, $type = PropertyType::UNDEFINED)
+    {
+        if (is_null($value)) {
+            $this->remove();
+        }
+        if (! is_integer($type)) {
+            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
+        }
+        if ($this->isNew()) {
+            $this->isMultiple = is_array($value);
+        }
+
+        if (is_array($value) && !$this->isMultiple) {
+            throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
+        }
+
+        //TODO: check if changing type allowed.
+        /*
+         * if ($type !== null && ! canHaveType($type)) {
+         *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));
+         * }
+         */
+
+        if (PropertyType::UNDEFINED === $type) {
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+        }
+
+        $targettype = $this->type;
+        if ($this->type !== $type) {
+            /* TODO: find out with node type definition if the new type is allowed
+              if (canHaveType($type)) {
+                  */
+                  $targettype = $type;
+                  /*
+              } else {
+                  //convert to property type
+                  $targettype = $this->type;
+              }
+            */
+        }
+
+        $value = PropertyType::convertType($value, $targettype);
+
+        if (PropertyType::BINARY === $targettype) {
+            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
+            $this->length = $stat['size'];
+        }
+
+        $this->type = $targettype;
+        $this->value = $value;
     }
 }

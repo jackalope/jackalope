@@ -1383,8 +1383,88 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         return $this->getNodes();
     }
 
+    /**
+     * Reload the node after an unnotified backend change. Occurs when the state
+     * is DIRTY and the node is accessed.
+     * 
+     * @see Item::checkState
+     */
     protected function reload()
     {
-        // TODO: implement
+        // Get properties and children from backend
+        $json = $this->objectManager->getTransport()->getNode($this->path);
+        $children = array();
+        $props = array();
+
+        foreach($json as $path => $item) {
+            if ($item instanceof \StdClass) {
+                $children[$path] = $item; 
+            } else {
+                $props[$path] = $item;
+            }
+        }
+
+        // Update the children
+        foreach(array_unique($this->nodes + array_keys($children)) as $path) {
+            $exists_in_memory = in_array($path, $this->nodes);
+            $exists_in_backend = array_key_exists($path, $children);
+            if ($exists_in_memory && ! $exists_in_backend) {
+                // Child was deleted
+                unset($this->nodes[$path]);
+            } elseif (! $exists_in_memory && $exists_in_backend) {
+                // Child was added
+                $this->nodes[] = $path; // TODO: is that enough?
+            }
+        }
+
+        // Update the properties
+        foreach(array_unique(array_keys($this->properties) + array_keys($props)) as $path) {
+            $exists_in_memory = array_key_exists($path, $this->properties);
+            $exists_in_backend = array_key_exists($path, $props);
+            if ($exists_in_memory && ! $exists_in_backend) {
+                // Property was deleted
+                unset($this->properties[$path]); // TODO: is it ok not to call prop->remove() ?
+            } elseif (! $exists_in_memory && $exists_in_backend) {
+                // Property was added
+                $this->_addProperty($path, $props[$path]);
+            } else {
+                if ($prop[$path] !== $this->properties[$path]->_getRawValue()) {
+                    // Property has changed value
+                    $this->properties[$path]->_setValue($props[$path]);
+                }
+            }
+        }
     }
+
+    /**
+     * Add a property to the node without anynotification. May occur when the 
+     * backend has a new property that is not yet loaded in memory.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param string $type
+     * @return \Jackalope\Property
+     * @see Node::reload
+     */
+    protected function _addProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
+    {
+        if ($name == '' | false !== strpos($name, '/')) {
+            throw new \InvalidArgumentException("The name '$name' is no valid property name");
+        }
+
+        if (!isset($this->properties[$name])) {
+            $path = $this->getChildPath($name);
+            $property = $this->factory->get(
+                            'Property',
+                            array(array(), $path,
+                                  $this->session, $this->objectManager,
+                                  true));
+            $property->_setValue($value, $type); //do this before adding property, in case of exception
+            $this->properties[$name] = $property;
+        } else {
+            $this->properties[$name]->_setValue($value, $type);
+        }
+        return $this->properties[$name];
+    }
+
 }
