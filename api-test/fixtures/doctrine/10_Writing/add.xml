@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <table name="jcrworkspaces">
+  <table name="phpcr_workspaces">
     <column>id</column>
     <column>name</column>
     <row>
@@ -8,7 +8,7 @@
       <value>tests</value>
     </row>
   </table>
-  <table name="jcrnodes">
+  <table name="phpcr_nodes">
     <column>path</column>
     <column>parent</column>
     <column>workspace_id</column>
@@ -18,63 +18,63 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>92c13441-c702-4a3c-891a-50816d19113d</value>
+      <value>fabd1c34-1259-4b20-bb6c-559ed9de3bae</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add</value>
       <value></value>
       <value>1</value>
-      <value>edffe0b0-7d78-4d2e-9e7c-159de83f4e6b</value>
+      <value>4669233a-85e9-4381-bb6b-758edbfc7193</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>27da281f-f948-456a-9d35-3d3ea48f848f</value>
+      <value>2a8cd6d7-7bb1-4b99-aaad-b17bb84c480d</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
+      <value>84ac04fa-a7de-4da3-b6d7-0afc280a558d</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath/test:namespacedNode</value>
       <value>tests_write_manipulation_add/testAddNodeWithPath</value>
       <value>1</value>
-      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
+      <value>8dfc3443-4446-43eb-8b24-3895df028dc3</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeFileType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
+      <value>fde4c73f-2533-46a8-ba95-cd425c1d75be</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeUnstructuredType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
+      <value>95d2dc31-cf32-4856-ba88-a34ea87a42b3</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeAndChildNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>7bb64d43-14e3-4e9c-a36e-52f5a558d279</value>
+      <value>8442bb7d-d64e-4f95-874c-9a8d2574d13a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddPropertyOnUnstructured</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>5e7a46e9-e5be-4b60-9c61-0e70cf39b93e</value>
+      <value>af7c853a-494f-4b11-a798-67e57ed14896</value>
       <value>nt:unstructured</value>
     </row>
     <row>
@@ -88,81 +88,81 @@
       <value>tests_write_manipulation_add/testAddMultiValuePropertyOnUnstructured</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>dae22a2d-9400-4894-96a7-a3d6e1508c4a</value>
+      <value>8cf55183-55d3-4abd-8a0e-d9e85faf7a3c</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeMissingType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
+      <value>d1bec2af-73f9-4f66-aae0-26da5cd97504</value>
       <value>nt:folder</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithInexistingType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>af1c9e30-8022-4478-9345-c622d0e034fa</value>
+      <value>01af3375-2c2b-4e57-96f3-8475ac0e2691</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeExisting</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>a29d5b92-82b1-43e8-a3fd-e1acbb3dbd2c</value>
+      <value>05e9e704-b0f9-4918-a824-f211b7458bec</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodePathNotFound</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>297a0a9d-c85a-4b28-9829-11065a5c3ba6</value>
+      <value>86663ed1-67d5-4f88-bbd9-6bd54535b9b5</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeToProperty</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>0f6d4705-8d68-42d4-9554-9659ae0b46c8</value>
+      <value>62564049-99aa-45fc-8283-122265d0a7f3</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithIndex</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>393f9d4a-ef3b-48b8-8b12-4fb39396814e</value>
+      <value>c88ffd61-3823-4a7b-83d4-9326905058b7</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddPropertyWrongType</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>22b38c0a-3bdc-4232-9b37-a442eab5176f</value>
+      <value>197c96a5-db6f-4b5b-aa30-ff7af517b270</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeChild</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>088c9072-dc6f-46bb-81d3-0cff3c7a535a</value>
+      <value>29b18388-0fe9-428d-8ab5-27029e4e0999</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnNewNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>75b6fbe6-3f0c-44d1-ae2e-4614d5625890</value>
+      <value>19e72361-4703-4bed-821b-c237b11d474e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddMixinOnExistingNode</value>
       <value>tests_write_manipulation_add</value>
       <value>1</value>
-      <value>4cb66e24-283b-4a59-b239-31faebfc6c97</value>
+      <value>fd096a51-f0d0-4ffa-aa79-587eba8a435e</value>
       <value>nt:unstructured</value>
     </row>
   </table>
-  <table name="jcrprops">
+  <table name="phpcr_props">
     <column>path</column>
     <column>workspace_id</column>
     <column>name</column>
@@ -180,7 +180,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>edffe0b0-7d78-4d2e-9e7c-159de83f4e6b</value>
+      <value>4669233a-85e9-4381-bb6b-758edbfc7193</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -194,21 +194,21 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
+      <value>84ac04fa-a7de-4da3-b6d7-0afc280a558d</value>
       <value>5</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>2011-05-20T08:20:30.108+02:00</value>
+      <value>2011-05-20 06:20:30</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>ede19707-b202-4697-ae9a-4366150b1a88</value>
+      <value>84ac04fa-a7de-4da3-b6d7-0afc280a558d</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -222,21 +222,21 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
+      <value>8dfc3443-4446-43eb-8b24-3895df028dc3</value>
       <value>5</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>2011-05-20T08:20:30.109+02:00</value>
+      <value>2011-05-20 06:20:30</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeWithPath/test:namespacedNode/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>9bf55092-21dc-45f4-9f32-957777e42338</value>
+      <value>8dfc3443-4446-43eb-8b24-3895df028dc3</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -250,21 +250,21 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
+      <value>fde4c73f-2533-46a8-ba95-cd425c1d75be</value>
       <value>5</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>2011-05-20T08:20:30.109+02:00</value>
+      <value>2011-05-20 06:20:30</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeFileType/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>cead4fea-a90e-4dd2-82bd-0ad89a5bf9a2</value>
+      <value>fde4c73f-2533-46a8-ba95-cd425c1d75be</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -278,21 +278,21 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
+      <value>95d2dc31-cf32-4856-ba88-a34ea87a42b3</value>
       <value>5</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>2011-05-20T08:20:30.109+02:00</value>
+      <value>2011-05-20 06:20:30</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeUnstructuredType/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>c7a67d8e-ea78-43a6-8e4f-09a879af2d46</value>
+      <value>95d2dc31-cf32-4856-ba88-a34ea87a42b3</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -320,21 +320,21 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
+      <value>d1bec2af-73f9-4f66-aae0-26da5cd97504</value>
       <value>5</value>
       <value>0</value>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>2011-05-20T08:20:30.110+02:00</value>
+      <value>2011-05-20 06:20:30</value>
     </row>
     <row>
       <value>tests_write_manipulation_add/testAddNodeMissingType/jcr:createdBy</value>
       <value>1</value>
       <value>jcr:createdBy</value>
       <value>0</value>
-      <value>5dbbff8e-545e-4e7e-91ed-b73486ed3c01</value>
+      <value>d1bec2af-73f9-4f66-aae0-26da5cd97504</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -348,7 +348,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>0f6d4705-8d68-42d4-9554-9659ae0b46c8</value>
+      <value>62564049-99aa-45fc-8283-122265d0a7f3</value>
       <value>1</value>
       <value>0</value>
       <null/>

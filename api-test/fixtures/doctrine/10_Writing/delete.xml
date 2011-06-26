@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <table name="jcrworkspaces">
+  <table name="phpcr_workspaces">
     <column>id</column>
     <column>name</column>
     <row>
@@ -8,7 +8,7 @@
       <value>tests</value>
     </row>
   </table>
-  <table name="jcrnodes">
+  <table name="phpcr_nodes">
     <column>path</column>
     <column>parent</column>
     <column>workspace_id</column>
@@ -18,95 +18,95 @@
       <value></value>
       <value>-1</value>
       <value>1</value>
-      <value>1fab8d7c-8300-48eb-83b7-9a3205379613</value>
+      <value>5d9d641d-2f86-4cbc-b71a-d8a8f48fa47e</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete</value>
       <value></value>
       <value>1</value>
-      <value>772ac036-a2d5-49eb-a490-0abc2c0488e4</value>
+      <value>75575653-d557-4b6c-995d-64f487e22cc1</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>2d377daf-8ff6-40bb-b783-df59441b1fc6</value>
+      <value>e136d92d-f9a2-4ea1-9426-743e462950cb</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveItemProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>6d5a1976-675a-46c9-9e64-0f3d7cd64734</value>
+      <value>909194af-b426-490d-b2a2-13004df3a897</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>ee1486e9-ee5d-4e8f-b6d2-06267bbee6c0</value>
+      <value>bc8455a6-dfcb-4670-a3fc-8e86e0ef1c63</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveRemovedNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>cc04c90e-56ca-42e1-982d-8d4972d8c950</value>
+      <value>7ada8e0d-06b2-47a2-9180-f9186a3d768b</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testNodeRemoveProperty</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>c2e28c3f-c935-4a57-912a-ba2b92044bf9</value>
+      <value>d5b966b5-d85f-4c22-bf24-279cbff71b0a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testRemoveNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>90fb999b-ab93-47d0-8cfd-29c2ce719ccc</value>
+      <value>94d3f96c-3df6-4cf3-b7f6-1a2f3b30a1d0</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeSession</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>6e42bdbd-adc6-497d-8c96-e257605edce3</value>
+      <value>feaa3d30-6a2b-4841-ba29-8f08a55009ef</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedNodeNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>d88e5f21-f75f-4359-a7b6-767604060fb9</value>
+      <value>68f461bc-ccec-4912-a802-15fb30587be8</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertySession</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>93345627-08a6-486e-a61f-a09ec388559d</value>
+      <value>591bb0bd-2b86-41f4-8626-457dd71187a7</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testGetRemovedPropertyNode</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>64e1d4a0-2f19-4cd1-a6f2-aa03fee7c4cc</value>
+      <value>c18bac7b-bb49-42fd-b136-7feab8cb4e2a</value>
       <value>nt:unstructured</value>
     </row>
     <row>
       <value>tests_write_manipulation_delete/testAddNodeOverRemoved</value>
       <value>tests_write_manipulation_delete</value>
       <value>1</value>
-      <value>eabcf9c0-a601-4612-9efd-d13d537619a1</value>
+      <value>0831f2de-6943-47f4-b209-5e6eb9b3e597</value>
       <value>nt:unstructured</value>
     </row>
   </table>
-  <table name="jcrprops">
+  <table name="phpcr_props">
     <column>path</column>
     <column>workspace_id</column>
     <column>name</column>
@@ -124,7 +124,7 @@
       <value>1</value>
       <value>jcr:created</value>
       <value>0</value>
-      <value>772ac036-a2d5-49eb-a490-0abc2c0488e4</value>
+      <value>75575653-d557-4b6c-995d-64f487e22cc1</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -138,7 +138,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>6d5a1976-675a-46c9-9e64-0f3d7cd64734</value>
+      <value>909194af-b426-490d-b2a2-13004df3a897</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -152,7 +152,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>ee1486e9-ee5d-4e8f-b6d2-06267bbee6c0</value>
+      <value>bc8455a6-dfcb-4670-a3fc-8e86e0ef1c63</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -166,7 +166,7 @@
       <value>1</value>
       <value>longNumber</value>
       <value>0</value>
-      <value>c2e28c3f-c935-4a57-912a-ba2b92044bf9</value>
+      <value>d5b966b5-d85f-4c22-bf24-279cbff71b0a</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -180,7 +180,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>93345627-08a6-486e-a61f-a09ec388559d</value>
+      <value>591bb0bd-2b86-41f4-8626-457dd71187a7</value>
       <value>1</value>
       <value>0</value>
       <null/>
@@ -194,7 +194,7 @@
       <value>1</value>
       <value>prop</value>
       <value>0</value>
-      <value>64e1d4a0-2f19-4cd1-a6f2-aa03fee7c4cc</value>
+      <value>c18bac7b-bb49-42fd-b136-7feab8cb4e2a</value>
       <value>1</value>
       <value>0</value>
       <null/>

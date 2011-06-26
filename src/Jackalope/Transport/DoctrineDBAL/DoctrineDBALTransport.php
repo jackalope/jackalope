@@ -142,10 +142,10 @@ class DoctrineDBALTransport implements TransportInterface
         if ($workspaceId !== false) {
             throw new \PHPCR\RepositoryException("Workspace '" . $name . "' already exists");
         }
-        $this->conn->insert('jcrworkspaces', array('name' => $name));
+        $this->conn->insert('phpcr_workspaces', array('name' => $name));
         $workspaceId = $this->conn->lastInsertId();
 
-        $this->conn->insert("jcrnodes", array(
+        $this->conn->insert("phpcr_nodes", array(
             'path' => '',
             'parent' => '-1',
             'workspace_id' => $workspaceId,
@@ -255,7 +255,7 @@ class DoctrineDBALTransport implements TransportInterface
     public function getNamespaces()
     {
         if ($this->userNamespaces === null) {
-            $data = $this->conn->fetchAll('SELECT * FROM jcrnamespaces');
+            $data = $this->conn->fetchAll('SELECT * FROM phpcr_namespaces');
             $this->userNamespaces = array();
 
             foreach ($data AS $row) {
@@ -320,13 +320,13 @@ class DoctrineDBALTransport implements TransportInterface
 
         try {
 
-            $sql = "SELECT * FROM jcrnodes WHERE path LIKE ? AND workspace_id = ?";
+            $sql = "SELECT * FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
             $stmt = $this->conn->executeQuery($sql, array($srcAbsPath . "%", $workspaceId));
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $newPath = str_replace($srcAbsPath, $dstAbsPath, $row['path']);
                 $uuid = UUIDHelper::generateUUID();
-                $this->conn->insert("jcrnodes", array(
+                $this->conn->insert("phpcr_nodes", array(
                     'identifier' => $uuid,
                     'type' => $row['type'],
                     'path' => $newPath,
@@ -334,13 +334,13 @@ class DoctrineDBALTransport implements TransportInterface
                     'workspace_id' => $this->workspaceId,
                 ));
 
-                $sql = "SELECT * FROM jcrprops WHERE node_identifier = ?";
+                $sql = "SELECT * FROM phpcr_props WHERE node_identifier = ?";
                 $propStmt = $this->conn->executeQuery($sql, array($row['identifier']));
 
                 while ($propRow = $propStmt->fetch(\PDO::FETCH_ASSOC)) {
                     $propRow['node_identifier'] = $uuid;
                     $propRow['path'] = str_replace($srcAbsPath, $dstAbsPath, $propRow['path']);
-                    $this->conn->insert('jcrprops', $propRow);
+                    $this->conn->insert('phpcr_props', $propRow);
                 }
             }
             $this->conn->commit();
@@ -358,7 +358,7 @@ class DoctrineDBALTransport implements TransportInterface
     public function getAccessibleWorkspaceNames()
     {
         $workspaceNames = array();
-        foreach ($this->conn->fetchAll("SELECT name FROM jcrworkspaces") AS $row) {
+        foreach ($this->conn->fetchAll("SELECT name FROM phpcr_workspaces") AS $row) {
             $workspaceNames[] = $row['name'];
         }
         return $workspaceNames;
@@ -379,7 +379,7 @@ class DoctrineDBALTransport implements TransportInterface
         $this->assertLoggedIn();
         $path = $this->trimPath($path);
 
-        $sql = "SELECT * FROM jcrnodes WHERE path = ? AND workspace_id = ?";
+        $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
         if (!$row) {
             throw new \PHPCR\ItemNotFoundException("Item /".$path." not found.");
@@ -391,7 +391,7 @@ class DoctrineDBALTransport implements TransportInterface
         $data->{'jcr:primaryType'} = $row['type'];
         $this->nodeIdentifiers[$path] = $row['identifier'];
 
-        $sql = "SELECT path FROM jcrnodes WHERE parent = ? AND workspace_id = ?";
+        $sql = "SELECT path FROM phpcr_nodes WHERE parent = ? AND workspace_id = ?";
         $children = $this->conn->fetchAll($sql, array($path, $this->workspaceId));
 
         foreach ($children AS $child) {
@@ -400,7 +400,7 @@ class DoctrineDBALTransport implements TransportInterface
             $data->{$childName} = new \stdClass();
         }
 
-        $sql = "SELECT * FROM jcrprops WHERE node_identifier = ?";
+        $sql = "SELECT * FROM phpcr_props WHERE node_identifier = ?";
         $props = $this->conn->fetchAll($sql, array($data->{'jcr:uuid'}));
 
         foreach ($props AS $prop) {
@@ -473,7 +473,7 @@ class DoctrineDBALTransport implements TransportInterface
             }
         }
 
-        return $path;
+        return $nodes;
     }
 
     /**
@@ -521,7 +521,7 @@ class DoctrineDBALTransport implements TransportInterface
 
     private function pathExists($path)
     {
-        $query = "SELECT identifier FROM jcrnodes WHERE path = ? AND workspace_id = ?";
+        $query = "SELECT identifier FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
         if (!$this->conn->fetchColumn($query, array($path, $this->workspaceId))) {
             return false;
         }
@@ -542,7 +542,7 @@ class DoctrineDBALTransport implements TransportInterface
         $this->assertLoggedIn();
 
         $match = $path."%";
-        $query = "SELECT node_identifier FROM jcrprops WHERE type = ? AND string_data LIKE ? AND workspace_id = ?";
+        $query = "SELECT node_identifier FROM phpcr_props WHERE type = ? AND string_data LIKE ? AND workspace_id = ?";
         if ($ident = $this->conn->fetchColumn($query, array(\PHPCR\PropertyType::REFERENCE, $match, $this->workspaceId))) {
             throw new \PHPCR\ReferentialIntegrityException(
                 "Cannot delete item at path '".$path."', there is at least one item (ident ".$ident.") with ".
@@ -557,10 +557,10 @@ class DoctrineDBALTransport implements TransportInterface
         $this->conn->beginTransaction();
 
         try {
-            $query = "DELETE FROM jcrprops WHERE path LIKE ? AND workspace_id = ?";
+            $query = "DELETE FROM phpcr_props WHERE path LIKE ? AND workspace_id = ?";
             $this->conn->executeUpdate($query, array($match, $this->workspaceId));
 
-            $query = "DELETE FROM jcrnodes WHERE path LIKE ? AND workspace_id = ?";
+            $query = "DELETE FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
             $this->conn->executeUpdate($query, array($match, $this->workspaceId));
 
             $this->conn->commit();
@@ -585,7 +585,7 @@ class DoctrineDBALTransport implements TransportInterface
         $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
-        $query = "DELETE FROM jcrprops WHERE path = ? AND workspace_id = ?";
+        $query = "DELETE FROM phpcr_props WHERE path = ? AND workspace_id = ?";
         $this->conn->executeUpdate($query, array($path, $this->workspaceId));
 
         return true;
@@ -726,7 +726,7 @@ class DoctrineDBALTransport implements TransportInterface
         try {
             $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getNativeValue() : UUIDHelper::generateUUID();
             if (!$this->pathExists($path)) {
-                $this->conn->insert("jcrnodes", array(
+                $this->conn->insert("phpcr_nodes", array(
                     'identifier' => $nodeIdentifier,
                     'type' => isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured",
                     'path' => $path,
@@ -792,7 +792,7 @@ class DoctrineDBALTransport implements TransportInterface
             throw new \PHPCR\ValueFormatException('Node ' . $property->getNode()->getPath() . ' is not referencable');
         }
 
-        $this->conn->delete('jcrprops', array(
+        $this->conn->delete('phpcr_props', array(
             'path' => $path,
             'workspace_id' => $this->workspaceId,
         ));
@@ -888,18 +888,18 @@ class DoctrineDBALTransport implements TransportInterface
 
                 $data[$dataFieldName] = $value;
                 $data['idx'] = $idx++;
-                $this->conn->insert('jcrprops', $data);
+                $this->conn->insert('phpcr_props', $data);
             }
         } else {
             $this->assertValidPropertyValue($data['type'], $values, $path);
 
             $data[$dataFieldName] = $values;
-            $this->conn->insert('jcrprops', $data);
+            $this->conn->insert('phpcr_props', $data);
         }
 
         if ($binaryData) {
             foreach ($binaryData AS $idx => $data)
-            $this->conn->insert('jcrbinarydata', array(
+            $this->conn->insert('phpcr_binarydata', array(
                 'path'          => $path,
                 'workspace_id'  => $this->workspaceId,
                 'idx'           => $idx,
@@ -925,7 +925,7 @@ class DoctrineDBALTransport implements TransportInterface
 
                 $this->getNamespaces();
                 if (!isset($this->validNamespacePrefixes[$prefix])) {
-                    throw new \PHPCR\ValueFormatException("Invalid JCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
+                    throw new \PHPCR\ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
                 }
             }
         } else if ($type === \PHPCR\PropertyType::PATH) {
@@ -969,7 +969,7 @@ $/xi";
     {
         $this->assertLoggedIn();
 
-        $path = $this->conn->fetchColumn("SELECT path FROM jcrnodes WHERE identifier = ? AND workspace_id = ?", array($uuid, $this->workspaceId));
+        $path = $this->conn->fetchColumn("SELECT path FROM phpcr_nodes WHERE identifier = ? AND workspace_id = ?", array($uuid, $this->workspaceId));
         if (!$path) {
             throw new \PHPCR\ItemNotFoundException("no item found with uuid ".$uuid);
         }
@@ -1030,7 +1030,7 @@ $/xi";
         $this->assertLoggedIn();
 
         $data = $this->conn->fetchAll(
-            'SELECT data, idx FROM jcrbinarydata WHERE path = ? AND workspace_id = ?',
+            'SELECT data, idx FROM phpcr_binarydata WHERE path = ? AND workspace_id = ?',
             array($this->trimPath($path, "/"), $this->workspaceId)
         );
 
@@ -1058,7 +1058,7 @@ $/xi";
 
     public function registerNamespace($prefix, $uri)
     {
-        $this->conn->insert('jcrnamespaces', array(
+        $this->conn->insert('phpcr_namespaces', array(
             'prefix' => $prefix,
             'uri' => $uri,
         ));
@@ -1066,7 +1066,7 @@ $/xi";
 
     public function unregisterNamespace($prefix)
     {
-        $this->conn->delete('jcrnamespaces', array('prefix' => $prefix));
+        $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
     }
 
     /**
@@ -1106,8 +1106,8 @@ $/xi";
         $path = $this->trimPath($path);
         $type = $weak_reference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
 
-        $sql = "SELECT p.path, p.name FROM jcrprops p " .
-               "INNER JOIN jcrnodes r ON r.identifier = p.string_data AND p.workspace_id = ? AND r.workspace_id = ?" .
+        $sql = "SELECT p.path, p.name FROM phpcr_props p " .
+               "INNER JOIN phpcr_nodes r ON r.identifier = p.string_data AND p.workspace_id = ? AND r.workspace_id = ?" .
                "WHERE r.path = ? AND p.type = ?";
         $properties = $this->conn->fetchAll($sql, array($this->workspaceId, $this->workspaceId, $path, $type));
 
