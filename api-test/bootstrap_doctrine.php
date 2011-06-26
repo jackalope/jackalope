@@ -21,7 +21,7 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
  */
 
 // Make sure we have the necessary config
-$necessaryConfigValues = array('jcr.doctrine.loader', 'jcr.doctrine.commondir', 'jcr.doctrine.dbaldir');
+$necessaryConfigValues = array('phpcr.doctrine.loader', 'phpcr.doctrine.commondir', 'phpcr.doctrine.dbaldir');
 foreach ($necessaryConfigValues as $val) {
     if (empty($GLOBALS[$val])) {
         die('Please set '.$val.' in your phpunit.xml.' . "\n");

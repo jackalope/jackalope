@@ -1,15 +1,15 @@
 <!-- unit level tests for jackalope. please see api-tests for api conformity tests -->
 <phpunit bootstrap="bootstrap.php">
     <php>
-        <var name="jcr.url" value="http://localhost:8080/server" />
-        <var name="jcr.user" value="admin" />
-        <var name="jcr.pass" value="admin" />
-        <var name="jcr.workspace" value="tests" />
-        <var name="jcr.transport" value="davex" />
+        <var name="phpcr.url" value="http://localhost:8080/server" />
+        <var name="phpcr.user" value="admin" />
+        <var name="phpcr.pass" value="admin" />
+        <var name="phpcr.workspace" value="tests" />
+        <var name="phpcr.transport" value="davex" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="jcr.doctrine.loader" value="" />
-        <var name="jcr.doctrine.commondir" value="" />
-        <var name="jcr.doctrine.dbaldir" value="" />
+        <var name="phpcr.doctrine.loader" value="" />
+        <var name="phpcr.doctrine.commondir" value="" />
+        <var name="phpcr.doctrine.dbaldir" value="" />
     </php>
 
     <testsuites>
