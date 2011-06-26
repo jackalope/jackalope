@@ -24,6 +24,17 @@ Please see the file LICENSE in this folder.
 
 See https://github.com/jackalope/jackalope/wiki/Downloads
 
+# Usage
+
+The entry point is to create the repository factory. The factory specifies the
+storage backend as well.
+
+    $factoryclass = 'Jackalope\RepositoryFactoryJackrabbit';
+    $factory = new $factoryclass;
+    $repository = $factory->getRepository(array('jackalope.jackrabbit_uri' => 'http://localhost:8080/server'));
+    $credentials = new SimpleCredentials('username', 'password');
+    $session = $repository->login($credentials, 'default');
+
 
 # Tests
 
