@@ -12,7 +12,7 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
  * This file does some basic stuff that's project specific.
  *
  * function getRepository(config) which returns the repository
- * function getJCRSession(config) which returns the session
+ * function getPHPCRSession(config) which returns the session
  *
  * TODO: remove the following once it has been moved to a base file
  * function getSimpleCredentials(user, password) which returns simpleCredentials
@@ -48,19 +48,19 @@ $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
     'dbname'    => $GLOBALS['phpcr.doctrine.dbal.dbname']
 ));
 $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
-try {
-    foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
+foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
+    try {
         $dbConn->exec($sql);
+    } catch(PDOException $e) {
+        echo $e->getMessage();
     }
-} catch(PDOException $e) {
-
 }
-try {
-    foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
-        $dbConn->exec($sql);
+foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+    try {
+    $dbConn->exec($sql);
+    } catch(PDOException $e) {
+        echo $e->getMessage();
     }
-} catch(PDOException $e) {
-    echo $e->getMessage();
 }
 
 /**
@@ -70,7 +70,7 @@ try {
  */
 function getRepository($config) {
     global $dbConn;
-    $dbConn->insert("jcrworkspaces", array("name" => "tests"));
+    $dbConn->insert("phpcr_workspaces", array("name" => "tests"));
     
     $transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport($dbConn);
     $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
@@ -92,7 +92,7 @@ function getSimpleCredentials($user, $password) {
  * @param credentials The credentials to log into the repository. If omitted, $config['user'] and $config['pass'] is used with getSimpleCredentials
  * @return A session resulting from logging into the repository found at the $config path
  */
-function getJCRSession($config, $credentials = null) {
+function getPHPCRSession($config, $credentials = null) {
     $repository = getRepository($config);
     if (isset($config['pass']) || isset($credentials)) {
         if (empty($config['workspace'])) {

@@ -44,14 +44,14 @@ foreach ($ri AS $file) {
 
     echo "Importing " . str_replace($srcDir, "", $file->getPathname())."\n";
     $dataSetBuilder = new PHPUnit_Extensions_Database_XmlDataSetBuilder();
-    $dataSetBuilder->addRow('jcrworkspaces', array('id' => 1, 'name' => 'tests'));
+    $dataSetBuilder->addRow('phpcr_workspaces', array('id' => 1, 'name' => 'tests'));
 
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
     $seenPaths = array();
     if ($nodes->length > 0) {
         $id = \Jackalope\Helper::generateUUID();
         // system-view
-        $dataSetBuilder->addRow("jcrnodes", array(
+        $dataSetBuilder->addRow("phpcr_nodes", array(
             'path' => '',
             'parent' => '-1',
             'workspace_id' => 1,
@@ -95,7 +95,7 @@ foreach ($ri AS $file) {
                 $id = \Jackalope\Helper::generateUUID();
             }
 
-            $dataSetBuilder->addRow('jcrnodes', array(
+            $dataSetBuilder->addRow('phpcr_nodes', array(
                 'path' => $path,
                 'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
                 'workspace_id' => 1,
@@ -164,7 +164,7 @@ foreach ($ri AS $file) {
     } else {
         $id = \Jackalope\Helper::generateUUID();
         // document-view
-        $dataSetBuilder->addRow("jcrnodes", array(
+        $dataSetBuilder->addRow("phpcr_nodes", array(
             'path' => '',
             'parent' => '-1',
             'workspace_id' => 1,
@@ -201,7 +201,7 @@ foreach ($ri AS $file) {
                 }
 
                 if (!isset($seenPaths[$path])) {
-                    $dataSetBuilder->addRow('jcrnodes', array(
+                    $dataSetBuilder->addRow('phpcr_nodes', array(
                         'path' => $path,
                         'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
                         'workspace_id' => 1,
@@ -215,7 +215,7 @@ foreach ($ri AS $file) {
                 
                 unset($attrs['jcr:primaryType']);
                 foreach ($attrs AS $attr => $valueData) {
-                    $dataSetBuilder->addRow('jcrprops', array(
+                    $dataSetBuilder->addRow('phpcr_props', array(
                         'path' => $path . '/' . $attr,
                         'workspace_id' => 1,
                         'name' => $attr,

@@ -29,17 +29,17 @@ class RepositorySchema
     static public function create()
     {
         $schema = new Schema();
-        $namespace = $schema->createTable('jcrnamespaces');
+        $namespace = $schema->createTable('phpcr_namespaces');
         $namespace->addColumn('prefix', 'string');
         $namespace->addColumn('uri', 'string');
         $namespace->setPrimaryKey(array('prefix'));
 
-        $workspace = $schema->createTable('jcrworkspaces');
+        $workspace = $schema->createTable('phpcr_workspaces');
         $workspace->addColumn('id', 'integer', array('autoincrement' => true));
         $workspace->addColumn('name', 'string');
         $workspace->setPrimaryKey(array('id'));
 
-        $nodes = $schema->createTable('jcrnodes');
+        $nodes = $schema->createTable('phpcr_nodes');
         $nodes->addColumn('path', 'string');
         $nodes->addColumn('parent', 'string');
         $nodes->addColumn('workspace_id', 'integer');
@@ -49,7 +49,7 @@ class RepositorySchema
         $nodes->addUniqueIndex(array('identifier'));
         $nodes->addIndex(array('parent'));
         
-        $properties = $schema->createTable('jcrprops');
+        $properties = $schema->createTable('phpcr_props');
         $properties->addColumn('path', 'string');
         $properties->addColumn('workspace_id', 'integer');
         $properties->addColumn('idx', 'integer', array('default' => 0));
@@ -66,14 +66,14 @@ class RepositorySchema
         $properties->addIndex(array('node_identifier'));
         $properties->addIndex(array('string_data'));
 
-        $binary = $schema->createTable('jcrbinarydata');
+        $binary = $schema->createTable('phpcr_binarydata');
         $binary->addColumn('path', 'string');
         $binary->addColumn('workspace_id', 'integer');
         $binary->addColumn('idx', 'integer', array('default' => 0));
         $binary->addColumn('data', 'text'); // TODO BLOB!
         $binary->setPrimaryKey(array('path', 'workspace_id', 'idx'));
 
-        $types = $schema->createTable('jcrtype_nodes');
+        $types = $schema->createTable('phpcr_type_nodes');
         $types->addColumn('node_type_id', 'integer', array('autoincrement' => true));
         $types->addColumn('name', 'string');
         $types->addColumn('supertypes', 'string');
@@ -84,7 +84,7 @@ class RepositorySchema
         $types->addColumn('primary_item', 'string');
         $types->setPrimaryKey(array('node_type_id'));
 
-        $propTypes = $schema->createTable('jcrtype_props');
+        $propTypes = $schema->createTable('phpcr_type_props');
         $propTypes->addColumn('node_type_id', 'integer');
         $propTypes->addColumn('name', 'string');
         $propTypes->addColumn('protected', 'boolean');
@@ -93,9 +93,9 @@ class RepositorySchema
         $propTypes->addColumn('property_type', 'integer');
         $propTypes->setPrimaryKey(array('node_type_id', 'name'));
 
-        #$propContraints = $schema->createTable('jcrtype_props_contraints');
+        #$propContraints = $schema->createTable('phpcr_type_props_contraints');
 
-        $childTypes = $schema->createTable('jcrtype_childs');
+        $childTypes = $schema->createTable('phpcr_type_childs');
         $childTypes->addColumn('node_type_id', 'integer');
         $childTypes->addColumn('name', 'string');
         $childTypes->addColumn('primary_types', 'string');
