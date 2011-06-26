@@ -125,11 +125,26 @@ foreach ($ri AS $file) {
                     $data['type'] = $jcrTypeConst;
                     $data['multi_valued'] = $valueData['multiValued'] ? "1" : "0";
                     foreach ($valueData['value'] AS $value) {
-                        $data[$jcrTypeDbField] = ($jcrTypeConst == 2) ? strlen(base64_decode($value)) : $value;
-                        $dataSetBuilder->addRow('jcrprops', $data);
+                        switch ($valueData['type']) {
+                            case 'binary':
+                                $data[$jcrTypeDbField] = strlen(base64_decode($value));
+                                break;
+                            case 'boolean':
+                                $data[$jcrTypeDbField] = 'true' === $value ? '1' : '0';
+                                break;
+                            case 'date':
+                                $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $value);
+                                $datetime->setTimezone(new DateTimeZone('UTC'));
+                                $data[$jcrTypeDbField] = $datetime->format('Y-m-d H:i:s');
+                                break;
+                            default:
+                                $data[$jcrTypeDbField] = $value;
+                                break;
+                        }
+                        $dataSetBuilder->addRow('phpcr_props', $data);
 
-                        if ($jcrTypeConst == 2) {
-                            $dataSetBuilder->addRow('jcrbinarydata', array(
+                        if ('binary' === $valueData['type']) {
+                            $dataSetBuilder->addRow('phpcr_binarydata', array(
                                 'path' => $data['path'],
                                 'workspace_id' => 1,
                                 'idx' => $data['idx'],
