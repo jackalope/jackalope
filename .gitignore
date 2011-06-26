@@ -6,3 +6,7 @@ test-reports
 cscope.out
 doc/config/phpdoc.ini
 doc/html
+
+/tests/doctrine.xml
+/api-test/phpunit.xml
+/api-test/doctrine.xml
