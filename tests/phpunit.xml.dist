@@ -1,0 +1,31 @@
+<!-- unit level tests for jackalope. please see api-tests for api conformity tests -->
+<phpunit bootstrap="bootstrap.php">
+    <php>
+        <var name="phpcr.url" value="http://localhost:8080/server" />
+        <var name="phpcr.user" value="admin" />
+        <var name="phpcr.pass" value="admin" />
+        <var name="phpcr.workspace" value="tests" />
+        <var name="phpcr.transport" value="davex" />
+        <!-- Path to Doctrine stuff for transport -->
+        <var name="phpcr.doctrine.loader" value="" />
+        <var name="phpcr.doctrine.commondir" value="" />
+        <var name="phpcr.doctrine.dbaldir" value="" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Jackalope Unit Tests">
+            <directory>.</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>../src</directory>
+        </whitelist>
+        <blacklist>
+            <directory>.</directory>
+            <directory>../lib</directory>
+            <file>../src/Jackalope/autoloader.php</file>
+            <file>../src/Jackalope/Transport/curl.php</file>
+        </blacklist>
+    </filter>
+</phpunit>
