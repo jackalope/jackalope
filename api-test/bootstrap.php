@@ -38,6 +38,23 @@ require __DIR__.'/../tests/Jackalope/TestCase.php';
 require __DIR__.'/../tests/Framework/ProxyObject.php';
 
 /**
+ * @return string classname of the repository factory
+ */
+function getRepositoryFactoryClass()
+{
+    return 'Jackalope\RepositoryFactoryJackrabbit';
+}
+
+/**
+ * @return hashmap to be used with the repository factory
+ */
+function getRepositoryFactoryParameters($config)
+{
+    return array('jackalope.jackrabbit_uri' => $config['url']);
+}
+
+
+/**
  * Repository lookup is implementation specific.
  * @param config The configuration where to find the repository
  * @return the repository instance
