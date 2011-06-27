@@ -950,6 +950,7 @@ class Session implements \PHPCR\SessionInterface
     /**
      * Implementation specific: The object manager is also used by other components, i.e. the QueryManager.
      * DO NOT USE if you are a consumer of the api
+     * @private
      */
     public function getObjectManager()
     {
@@ -958,6 +959,7 @@ class Session implements \PHPCR\SessionInterface
 
     /**
      * Implementation specific: The transport implementation is also used by other components, i.e. the NamespaceRegistry
+     * @private
      */
     public function getTransport()
     {
@@ -966,6 +968,7 @@ class Session implements \PHPCR\SessionInterface
 
     /**
      * Implementation specific: register session in session registry
+     * @private
      */
     protected static function registerSession(Session $session)
     {
@@ -975,6 +978,7 @@ class Session implements \PHPCR\SessionInterface
 
     /**
      * Implementation specific: unregister session in session registry
+     * @private
      */
     protected static function unregisterSession(Session $session)
     {
@@ -984,6 +988,8 @@ class Session implements \PHPCR\SessionInterface
 
     /**
      * Implementation specific: create an id for the session registry
+     * @private
+     * @return an id for this session
      */
     public function getRegistryKey()
     {
@@ -993,6 +999,7 @@ class Session implements \PHPCR\SessionInterface
     /**
      * Implementation specific: get a session from the session registry
      *
+     * @private
      * @param $key key for the session
      * @return the session or null if none is registered with the given key
      */
