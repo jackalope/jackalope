@@ -82,6 +82,20 @@ interface TransportInterface
      * behaviour of transport is undefined if this is not respected.       *
      ***********************************************************************/
 
+    /******************************************
+     * Methods for session management support *
+     ******************************************/
+
+    /**
+     * Releases all resources associated with this Session.
+     *
+     * This method is called on $session->logout
+     * Implementations can use it to close database connections and similar.
+     *
+     * @return void
+     */
+    public function logout();
+
 
     /*****************************
      * Methods for read support *
@@ -101,7 +115,7 @@ interface TransportInterface
 
 
     /**
-     * Get the node that is stored at an absolute path
+     * Get the node from an absolute path
      *
      * Returns a json_decode stdClass structure that contains two fields for
      * each property and one field for each child.
@@ -153,14 +167,23 @@ interface TransportInterface
      *   ['foo', 'bar'] and {0: 'foo', 1: 'bar'}
      * The first are properties, but the later is a list of children nodes.
      *
-     * @param string $path Absolute path to identify a special item.
-     *
-     * @return stdClass a json struct for the node (as decoded from json with associative = false)
+     * @param string $path Absolute path to the node.
+     * @return array associative array for the node (decoded from json with associative = true)
      *
      * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNode($path);
+
+    /**
+     * Get the nodes from an array of absolute paths
+     *
+     * @param array $path Absolute paths to the nodes.
+     * @return array associative array for the node (decoded from json with associative = true)
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodes($paths);
 
     /**
      * Get the property stored at an absolute path.

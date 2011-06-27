@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackalope;
 
 use ArrayIterator;
+use PHPCR\PropertyType;
 
 /**
  * The Node interface represents a node in a workspace.
@@ -11,6 +13,7 @@ use ArrayIterator;
 class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 {
     protected $index = 1;
+
     /** @var string */
     protected $primaryType;
 
@@ -117,7 +120,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : Helper::determineType(is_array($value) ? reset($value) : $value);
+                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : PropertyType::determineType(is_array($value) ? reset($value) : $value);
                         $this->properties[$key] = $this->factory->get(
                             'Property',
                             array(
@@ -456,11 +459,21 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function getNodes($filter = null)
     {
         $names = self::filterNames($filter, $this->nodes);
-        $result = array();
-        foreach ($names as $name) {
-            //OPTIMIZE: batch get nodes
-            $result[$name] = $this->getNode($name);
+        $paths = $pathNameMap = $result = array();
+        if (!empty($names)) {
+            foreach ($names as $name) {
+                $result[$name] = $this->getNode($name);
+                $path = $this->objectManager->absolutePath($this->path, $name);
+                $paths[] = $path;
+                $pathNameMap[$path] = $name;
+            }
+
+            $nodes = $this->objectManager->getNodesByPath($paths);
+            foreach ($nodes as $path => $node) {
+                $result[$pathNameMap[$path]] = $node;
+            }
         }
+
         return new ArrayIterator($result);
     }
 
@@ -505,7 +518,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
-            $val = Helper::convertType($val, $type);
+            $val = PropertyType::convertType($val, $type);
         }
         return $val;
     }
@@ -565,7 +578,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         foreach ($names as $name) {
             $result[$name] = $this->properties[$name]; //we know for sure the properties exist, as they come from the array keys of the array we are accessing
         }
-        return new \ArrayIterator($result);
+        return new ArrayIterator($result);
     }
 
     /**
