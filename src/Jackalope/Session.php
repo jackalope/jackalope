@@ -22,6 +22,14 @@ class Session implements \PHPCR\SessionInterface
 {
 
     /**
+     * A registry for all created sessions to be able to reference them by id in
+     * the stream wrapper for lazy laoding binary properties.
+     *
+     * Keys are spl_object_hash'es for the sessions which are the values
+     */
+    protected static $sessionRegistry = array();
+
+    /**
      * The factory to instantiate objects
      * @var Factory
      */
@@ -58,6 +66,7 @@ class Session implements \PHPCR\SessionInterface
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
+        self::registerSession($this);
     }
 
     /**
@@ -895,6 +904,7 @@ class Session implements \PHPCR\SessionInterface
         //OPTIMIZATION: flush object manager
         $this->logout = true;
         $this->getTransport()->logout();
+        self::unregisterSession($this);
     }
 
     /**
@@ -952,5 +962,46 @@ class Session implements \PHPCR\SessionInterface
     public function getTransport()
     {
         return $this->objectManager->getTransport();
+    }
+
+    /**
+     * Implementation specific: register session in session registry
+     */
+    protected static function registerSession(Session $session)
+    {
+        $key = $session->getRegistryKey();
+        self::$sessionRegistry[$key] = $session;
+    }
+
+    /**
+     * Implementation specific: unregister session in session registry
+     */
+    protected static function unregisterSession(Session $session)
+    {
+        $key = $session->getRegistryKey();
+        unset(self::$sessionRegistry[$key]);
+    }
+
+    /**
+     * Implementation specific: create an id for the session registry
+     */
+    public function getRegistryKey()
+    {
+        return spl_object_hash($this);
+    }
+
+    /**
+     * Implementation specific: get a session from the session registry
+     *
+     * @param $key key for the session
+     * @return the session or null if none is registered with the given key
+     */
+    public static function getSessionFromRegistry($key)
+    {
+        if (isset(self::$sessionRegistry[$key])) {
+            return self::$sessionRegistry[$key];
+        } else {
+            return null;
+        }
     }
 }
