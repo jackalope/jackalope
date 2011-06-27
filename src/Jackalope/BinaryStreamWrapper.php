@@ -15,6 +15,9 @@ namespace Jackalope;
  *
  * The loading from the backend is deferred until the stream is accessed. Then it is loaded and all
  * stream functions are passed on to the underlying stream.
+ *
+ * @package jackalope
+ * @private
  */
 class BinaryStreamWrapper
 {
@@ -23,6 +26,7 @@ class BinaryStreamWrapper
 
     private $path = null;
     private $stream = null;
+    private $session = null;
 
     /**
      * Parse the url and store the information.
@@ -90,12 +94,17 @@ class BinaryStreamWrapper
      *
      * Multivalued properties have a special handling since the backend returns all
      * streams in a single call.
+     *
+     * Always checks that the current session is still alive.
      */
     private function init_stream()
     {
+        if ($this->session && !$this->session->isLive()) {
+            throw new \LogicException("Trying to read a stream from a closed transport.");
+        }
         if (null === $this->stream) {
             $url = parse_url($this->path);
-            $session = Session::getSessionFromRegistry($url['host']);
+            $this->session = Session::getSessionFromRegistry($url['host']);
             $property_path = $url['path'];
             $token = null;
             if (isset($url['user'])) {
@@ -104,18 +113,14 @@ class BinaryStreamWrapper
             if (isset($url['port'])) {
                 $index = $url['port'] - 1;
             }
-            if ($session->isLive()) {
-                if (null === $token) {
-                    $this->stream = $session->getObjectManager()->getBinaryStream($property_path);
-                } else {
-                    // check if streams have been loaded for multivalued properties
-                    if (!isset(self::$multiValueMap[$token])) {
-                        self::$multiValueMap[$token] = $session->getObjectManager()->getBinaryStream($property_path);
-                    }
-                    $this->stream = self::$multiValueMap[$token][$index];
-                }
+            if (null === $token) {
+                $this->stream = $this->session->getObjectManager()->getBinaryStream($property_path);
             } else {
-                // TODO proper exception?
+                // check if streams have been loaded for multivalued properties
+                if (!isset(self::$multiValueMap[$token])) {
+                    self::$multiValueMap[$token] = $this->session->getObjectManager()->getBinaryStream($property_path);
+                }
+                $this->stream = self::$multiValueMap[$token][$index];
             }
         }
     }
