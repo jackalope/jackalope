@@ -263,9 +263,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             self::$binaryStreamWrapperRegistered = true;
         }
         // return wrapped stream
-        if (!$this->isMultiple()) {
-            return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
-        } else {
+        if ($this->isMultiple()) {
             $results = array();
             // identifies all streams loaded by one backend call
             $token = md5(uniqid(mt_rand(), true));
@@ -275,6 +273,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             }
             return $results;
         }
+        // single property case
+        return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
    }
 
     /**
