@@ -61,8 +61,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
         $this->type = $type;
 
-        #var_dump($path);
-        #var_dump($data);
         if ($type == PropertyType::BINARY) {
             if (is_array($data['value'])) {
                 $this->isMultiple = true;
