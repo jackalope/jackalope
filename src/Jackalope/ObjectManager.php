@@ -754,7 +754,7 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove) || count($this->itemsRemove)) {
+        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove))) {
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
@@ -804,8 +804,6 @@ class ObjectManager
         if (isset($this->itemsAdd[$absPath])) {
             //this is a new unsaved node
             unset($this->itemsAdd[$absPath]);
-        } else if ($propertyName) {
-            $this->itemsRemove[$absPath] = 1;
         } else {
             $this->itemsRemove[$absPath] = 1;
         }
