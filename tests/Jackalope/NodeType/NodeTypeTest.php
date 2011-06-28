@@ -87,7 +87,6 @@ class NodeTypeTest extends TestCase
 
     public function testGetDefinedChildNodesAndNodeDefinitions()
     {
-        xdebug_start_Trace("/tmp/jcr");
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
