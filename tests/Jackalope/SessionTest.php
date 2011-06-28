@@ -30,4 +30,19 @@ class SessionTest extends TestCase
         $this->markTestSkipped();
         //TODO: test flush object manager with the help of mock objects
     }
+
+    public function testSessionRegistry()
+    {
+        $factory = new \Jackalope\Factory;
+        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
+        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport->expects($this->any())
+            ->method('getNamespaces')
+            ->will($this->returnValue(array()));
+        $s = new Session($factory, $repository, 'workspaceName', new \PHPCR\SimpleCredentials('foo', 'bar'), $transport);
+
+        $this->assertSame(Session::getSessionFromRegistry($s->getRegistryKey()), $s);
+        $s->logout();
+        $this->assertNull(Session::getSessionFromRegistry($s->getRegistryKey()));
+    }
 }
