@@ -35,7 +35,7 @@ class SessionTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
