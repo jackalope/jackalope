@@ -395,14 +395,26 @@ class Client implements TransportInterface
      */
     public function getNodes($paths)
     {
-        foreach ($paths as $key => $path) {
-            $paths[$key] = $this->encodePathForDavex($path);
-            $paths[$key] .= '.0.json';
+        $body = array();
+        
+        $url = array_shift($paths);
+        $url = $this->encodePathForDavex($url).".0.json";
+        foreach ($paths as $path) {
+            $body[] = http_build_query(array(":get"=>$path));
         }
-
-        $request = $this->getRequest(Request::GET, $paths);
+        $body = implode("&",$body);
+        $request = $this->getRequest(Request::POST, $url);
+        $request->setBody($body);
+        $request->setContentType('application/x-www-form-urlencoded');
         try {
-            return $request->executeJson(true);
+            $nodes = $request->executeJson();
+            //FIXME: will change, once I changed the server side, to
+            // return $data['nodes'];
+            $data[] = array();
+            foreach($nodes as $node) {
+                $data[$node->{"jcr:path"}] = $node;
+            }
+            return $data;
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
