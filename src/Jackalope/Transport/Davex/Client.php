@@ -407,14 +407,8 @@ class Client implements TransportInterface
         $request->setBody($body);
         $request->setContentType('application/x-www-form-urlencoded');
         try {
-            $nodes = $request->executeJson();
-            //FIXME: will change, once I changed the server side, to
-            // return $data['nodes'];
-            $data[] = array();
-            foreach($nodes as $node) {
-                $data[$node->{"jcr:path"}] = $node;
-            }
-            return $data;
+            $data = $request->executeJson();
+            return $data->nodes;
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         } catch (\PHPCR\RepositoryException $e) {
