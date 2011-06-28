@@ -398,6 +398,10 @@ class Client implements TransportInterface
         $body = array();
         
         $url = array_shift($paths);
+        if (count($paths) == 0) {
+            $paths[$url] = $url;
+        }
+            
         $url = $this->encodePathForDavex($url).".0.json";
         foreach ($paths as $path) {
             $body[] = http_build_query(array(":get"=>$path));
