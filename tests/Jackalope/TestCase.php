@@ -5,15 +5,16 @@ namespace Jackalope;
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected $config;
-    protected $configKeys = array('jcr.url', 'jcr.user', 'jcr.pass', 'jcr.workspace', 'jcr.transport');
     protected $credentials;
 
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
     protected function setUp()
     {
-        foreach ($this->configKeys as $cfgKey) {
-            $this->config[substr($cfgKey, 4)] = $GLOBALS[$cfgKey];
+        foreach ($GLOBALS as $cfgKey => $value) {
+            if ('phpcr.' === substr($cfgKey, 0, 6)) {
+                $this->config[substr($cfgKey, 6)] = $value;
+            }
         }
         $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
     }

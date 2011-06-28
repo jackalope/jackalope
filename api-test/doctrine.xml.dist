@@ -1,0 +1,42 @@
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="bootstrap_doctrine.php">
+    <php>
+        <var name="phpcr.user" value="admin" />
+        <var name="phpcr.pass" value="admin" />
+        <var name="phpcr.workspace" value="tests" />
+        <!-- Path to Doctrine stuff for transport -->
+        <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value=/path/to/Doctrine/dbal/lib" />
+        <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
+        <var name="phpcr.doctrine.dbal.host" value="localhost" />
+        <var name="phpcr.doctrine.dbal.username" value="root" />
+        <var name="phpcr.doctrine.dbal.password" value="" />
+        <var name="phpcr.doctrine.dbal.dbname" value="phpcr_tests" />
+    </php>
+
+    <testsuites>
+        <testsuite name="phpcr">
+            <directory>suite/tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>../</directory>
+            <exclude>
+                <directory>../tests</directory>
+                <directory>.</directory>
+                <file>../src/jackalope/transport/curl.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

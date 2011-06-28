@@ -21,38 +21,47 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
  */
 
 // Make sure we have the necessary config
-$necessaryConfigValues = array('phpcr.url', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace', 'phpcr.transport');
+$necessaryConfigValues = array('phpcr.doctrine.loader', 'phpcr.doctrine.commondir', 'phpcr.doctrine.dbaldir');
 foreach ($necessaryConfigValues as $val) {
     if (empty($GLOBALS[$val])) {
         die('Please set '.$val.' in your phpunit.xml.' . "\n");
     }
 }
 
-/**
- * autoloader: tests rely on an autoloader.
+require_once($GLOBALS['phpcr.doctrine.loader']);
+
+$loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['phpcr.doctrine.commondir']);
+$loader->register();
+
+$loader = new \Doctrine\Common\ClassLoader("Doctrine\DBAL", $GLOBALS['phpcr.doctrine.dbaldir']);
+$loader->register();
+
+/** autoloader: jackalope-api-tests relies on an autoloader.
  */
 require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
-### Load two classes needed for jackalope unit tests ###
-require __DIR__.'/../tests/Jackalope/TestCase.php';
-require __DIR__.'/../tests/Framework/ProxyObject.php';
-
-/**
- * @return string classname of the repository factory
- */
-function getRepositoryFactoryClass()
-{
-    return 'Jackalope\RepositoryFactoryJackrabbit';
+$dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
+    'driver'    => $GLOBALS['phpcr.doctrine.dbal.driver'],
+    'host'      => $GLOBALS['phpcr.doctrine.dbal.host'],
+    'user'      => $GLOBALS['phpcr.doctrine.dbal.username'],
+    'password'  => $GLOBALS['phpcr.doctrine.dbal.password'],
+    'dbname'    => $GLOBALS['phpcr.doctrine.dbal.dbname']
+));
+$schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
+foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
+    try {
+        $dbConn->exec($sql);
+    } catch(PDOException $e) {
+        echo $e->getMessage();
+    }
 }
-
-/**
- * @return hashmap to be used with the repository factory
- */
-function getRepositoryFactoryParameters($config)
-{
-    return array('jackalope.jackrabbit_uri' => $config['url']);
+foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+    try {
+    $dbConn->exec($sql);
+    } catch(PDOException $e) {
+        echo $e->getMessage();
+    }
 }
-
 
 /**
  * Repository lookup is implementation specific.
@@ -60,13 +69,12 @@ function getRepositoryFactoryParameters($config)
  * @return the repository instance
  */
 function getRepository($config) {
-    if (empty($config['url']) || empty($config['transport'])) {
-        return false;
-    }
-    if ($config['transport'] != 'davex') {
-        throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
-    }
-    return new \Jackalope\Repository(null, $config['url'], null); //let jackalope factory create the transport
+    global $dbConn;
+    $dbConn->insert("phpcr_workspaces", array("name" => "tests"));
+    
+    $transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport($dbConn);
+    $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
+    return new \Jackalope\Repository(null, null, $transport);
 }
 
 /**
@@ -105,8 +113,41 @@ function getPHPCRSession($config, $credentials = null) {
 
 function getFixtureLoader($config)
 {
-    require_once "suite/inc/importexport.php";
-    return new jackrabbit_importexport(__DIR__."/suite/fixtures/", (isset($config['jackalope_jar']) ? $config['jackalope_jar'] : null));
+    return new DoctrineFixtureLoader($GLOBALS['pdo'], __DIR__ . "/fixtures/doctrine/");
+}
+
+require_once "suite/inc/importexport.php";
+class DoctrineFixtureLoader implements phpcrApiTestSuiteImportExportFixtureInterface
+{
+    private $testConn;
+    private $fixturePath;
+
+    public function __construct($conn, $fixturePath)
+    {
+        $this->testConn = new PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection($conn, "tests");
+        $this->fixturePath = $fixturePath;
+    }
+
+    public function import($file)
+    {
+        $file = $this->fixturePath . $file . ".xml";
+
+        if (!file_exists($file)) {
+            throw new PHPUnit_Framework_SkippedTestSuiteError();
+        }
+
+        $dataSet = new PHPUnit_Extensions_Database_DataSet_XmlDataSet($file);
+
+        $tester = new PHPUnit_Extensions_Database_DefaultTester($this->testConn);
+        $tester->setSetUpOperation(PHPUnit_Extensions_Database_Operation_Factory::CLEAN_INSERT());
+        $tester->setTearDownOperation(PHPUnit_Extensions_Database_Operation_Factory::NONE());
+        $tester->setDataSet($dataSet);
+        try {
+            $tester->onSetUp();
+        } catch(PHPUnit_Extensions_Database_Operation_Exception $e) {
+            throw new RuntimeException("Could not load fixture ".$file.": ".$e->getMessage());
+        }
+    }
 }
 
 /** some constants */
@@ -126,4 +167,3 @@ define('OPTION_LOCKING_SUPPORTED', 'option.locking.supported');
 define('OPTION_QUERY_SQL_SUPPORTED', 'option.query.sql.supported');
 define('QUERY_XPATH_POS_INDEX', 'query.xpath.pos.index');
 define('QUERY_XPATH_DOC_ORDER', 'query.xpath.doc.order');
-

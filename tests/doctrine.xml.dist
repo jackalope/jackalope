@@ -7,9 +7,9 @@
         <var name="phpcr.workspace" value="tests" />
         <var name="phpcr.transport" value="davex" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="phpcr.doctrine.loader" value="" />
-        <var name="phpcr.doctrine.commondir" value="" />
-        <var name="phpcr.doctrine.dbaldir" value="" />
+        <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="/path/to/Doctrine/dbal/lib" />
     </php>
 
     <testsuites>
