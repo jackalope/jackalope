@@ -15,6 +15,9 @@ use PHPCR\PropertyType;
  */
 class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
+    /** flag to call stream_wrapper_register only once */
+    protected static $binaryStreamWrapperRegistered = false;
+
     protected $value;
     /** length (only used for binary property */
     protected $length;
@@ -240,12 +243,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return PropertyType::convertType($this->value, PropertyType::BINARY);
         }
-        /*
-        OPTIMIZE: store and clone the stream? or is re-fetch from backend faster?
-        if (null == $this->value) {
-            $this->value = $this->objectManager->getBinaryStream($this->path);
-        }
-        */
         if ($this->value != null) {
             // new or updated property
             $val = is_array($this->value) ? $this->value : array($this->value);
@@ -259,8 +256,25 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             }
             return is_array($this->value) ? $ret : $ret[0];
         }
-        return $this->objectManager->getBinaryStream($this->path);
-    }
+        // register a stream wrapper to lazily load binary property values
+        if (!self::$binaryStreamWrapperRegistered) {
+            stream_wrapper_register('jackalope', 'Jackalope\\BinaryStreamWrapper');
+            self::$binaryStreamWrapperRegistered = true;
+        }
+        // return wrapped stream
+        if ($this->isMultiple()) {
+            $results = array();
+            // identifies all streams loaded by one backend call
+            $token = md5(uniqid(mt_rand(), true));
+            // start with part = 1 since 0 will not be parsed properly by parse_url
+            for ($i = 1; $i <= count($this->length); $i++) {
+                $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
+            }
+            return $results;
+        }
+        // single property case
+        return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
+   }
 
     /**
      * Returns an integer representation of the value of this property. A shortcut
