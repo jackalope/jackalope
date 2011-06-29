@@ -395,6 +395,9 @@ class Client implements TransportInterface
      */
     public function getNodes($paths)
     {
+        if (count($paths) == 0) {
+            return array();
+        }
         $url = array_shift($paths);
 
         if (count($paths) == 0) {
