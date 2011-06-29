@@ -395,13 +395,17 @@ class Client implements TransportInterface
      */
     public function getNodes($paths)
     {
+        $url = array_shift($paths);
+
+        if (count($paths) == 0) {
+            try {
+                return array($url => $this->getNode($url));
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                return array();
+            }
+        }
         $body = array();
         
-        $url = array_shift($paths);
-        if (count($paths) == 0) {
-            $paths[$url] = $url;
-        }
-            
         $url = $this->encodePathForDavex($url).".0.json";
         foreach ($paths as $path) {
             $body[] = http_build_query(array(":get"=>$path));
