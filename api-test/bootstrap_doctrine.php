@@ -64,17 +64,41 @@ foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
 }
 
 /**
+ * @return string classname of the repository factory
+ */
+function getRepositoryFactoryClass()
+{
+    return 'Jackalope\RepositoryFactoryDoctrineDBAL';
+}
+
+/**
+ * @return hashmap to be used with the repository factory
+ */
+function getRepositoryFactoryParameters($config)
+{
+    global $dbConn;
+    return array('jackalope.doctrine_dbal_connection' => $dbConn);
+}
+
+/**
  * Repository lookup is implementation specific.
  * @param config The configuration where to find the repository
  * @return the repository instance
  */
 function getRepository($config) {
     global $dbConn;
-    $dbConn->insert("phpcr_workspaces", array("name" => "tests"));
-    
-    $transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport($dbConn);
+
+    if (!$dbConn instanceof \Doctrine\DBAL\Connection || empty($config['transport'])) {
+        return false;
+    }
+    if ($config['transport'] != 'doctrinedbal') {
+        throw new Exception("Don't know how to handle transport other than doctrinedbal. (".$config['transport'].')');
+    }
+
+    $dbConn->insert('phpcr_workspaces', array('name' => 'tests'));
+    $transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport(new \Jackalope\Factory, $dbConn);
     $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
-    return new \Jackalope\Repository(null, null, $transport);
+    return new \Jackalope\Repository(null, null, $transport); //let jackalope factory create the transport
 }
 
 /**

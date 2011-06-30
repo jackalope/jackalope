@@ -95,8 +95,9 @@ class DoctrineDBALTransport implements TransportInterface
         'phpcr' => true,
     );
 
-    public function __construct(Connection $conn)
+    public function __construct($factory, Connection $conn)
     {
+        $this->factory = $factory;
         $this->conn = $conn;
     }
 

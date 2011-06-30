@@ -12,6 +12,7 @@
         <var name="phpcr.user" value="admin" />
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
+        <var name="phpcr.transport" value="doctrinedbal" />
         <!-- Path to Doctrine stuff for transport -->
         <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
         <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />
