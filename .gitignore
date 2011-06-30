@@ -10,3 +10,4 @@ doc/html
 /tests/doctrine.xml
 /api-test/phpunit.xml
 /api-test/doctrine.xml
+/api-test/fixtures/
