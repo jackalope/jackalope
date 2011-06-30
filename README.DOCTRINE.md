@@ -34,7 +34,7 @@ You need both Jackalope with the DoctrineDBAL branch and Doctrine Common+DBAL in
     }
 
     // Create Jackalope
-    $transport = new \Jackalope\Transport\Doctrine\DoctrineTransport($dbConn);
+    $transport = new \Jackalope\Transport\Doctrine\DoctrineDBALTransport(new \Jackalope\Factory(), $dbConn);
     $repository = new \Jackalope\Repository(null, null, $transport);
 
 ## Creating your first Workspace
