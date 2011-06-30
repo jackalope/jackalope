@@ -593,9 +593,6 @@ class ObjectManager
             $this->transport->deleteNode($path);
             $last = $path;
         }
-        foreach ($this->itemsRemove AS $path => $dummy) {
-            $this->transport->deleteProperty($path);
-        }
 
         // move nodes/properties
         foreach ($this->nodesMove as $src => $dst) {
