@@ -754,7 +754,7 @@ class ObjectManager
      */
     public function hasPendingChanges()
     {
-        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove))) {
+        if (count($this->itemsAdd) || count($this->nodesMove) || count($this->itemsRemove)) {
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
