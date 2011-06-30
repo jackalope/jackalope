@@ -124,7 +124,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function setModified()
     {
         parent::setModified();
-        $this->getParent()->setModified();
+        $parent = $this->getParent();
+        if (!is_null($parent)) {
+            $parent->setModified();
+        }
     }
 
     /**
