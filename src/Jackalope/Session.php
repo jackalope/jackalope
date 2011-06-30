@@ -903,6 +903,7 @@ class Session implements \PHPCR\SessionInterface
         //TODO anything to do on logout?
         //OPTIMIZATION: flush object manager
         $this->logout = true;
+        self::unregisterSession($this);
         $this->getTransport()->logout();
         self::unregisterSession($this);
     }

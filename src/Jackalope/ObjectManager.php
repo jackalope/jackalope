@@ -271,7 +271,7 @@ class ObjectManager
         $n = $this->getNodeByPath($nodep);
         try {
             return $n->getProperty($name); //throws PathNotFoundException if there is no such property
-        } catch(\PHPCR\PahNotFoundException $e) {
+        } catch(\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
