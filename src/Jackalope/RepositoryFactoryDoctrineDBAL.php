@@ -54,7 +54,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 
         $dbConn = $parameters['jackalope.doctrine_dbal_connection'];
 
-        $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport', array($dbConn));
+        $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\Client', array($dbConn));
 
         return new Repository($factory, null, $transport);
     }

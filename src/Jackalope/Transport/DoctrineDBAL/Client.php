@@ -32,7 +32,7 @@ use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 /**
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DoctrineDBALTransport implements TransportInterface
+class Client implements TransportInterface
 {
     /**
      * @var Doctrine\DBAL\Connection

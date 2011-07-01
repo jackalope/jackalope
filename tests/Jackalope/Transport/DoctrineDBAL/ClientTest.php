@@ -5,7 +5,7 @@ namespace Jackalope\Transport\DoctrineDBAL;
 use Jackalope\TestCase;
 use Doctrine\DBAL\DriverManager;
 
-class DoctrineDBALTransportTest extends TestCase
+class ClientTest extends TestCase
 {
     private $conn;
     private $transport;
@@ -34,7 +34,7 @@ class DoctrineDBALTransportTest extends TestCase
             "path" => "foo/bar", "workspace_id" => $workspaceId, "type" => \PHPCR\PropertyType::STRING,
             "node_identifier" => 2, "string_data" => "test", "name" => "bar"));
 
-        $this->transport = new \Jackalope\Transport\DoctrineDBAL\DoctrineDBALTransport(new \Jackalope\Factory(), $this->conn);
+        $this->transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory(), $this->conn);
     }
 
     public function testStuff()
