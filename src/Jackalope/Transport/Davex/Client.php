@@ -423,16 +423,38 @@ class Client implements TransportInterface
      */
     public function getNodes($paths)
     {
-        foreach ($paths as $key => $path) {
-            $paths[$key] = $this->encodePathForDavex($path);
-            $paths[$key] .= '.0.json';
+        if (count($paths) == 0) {
+            return array();
         }
+        $url = array_shift($paths);
 
-        $request = $this->getRequest(Request::GET, $paths);
+        if (count($paths) == 0) {
+            try {
+                return array($url => $this->getNode($url));
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                return array();
+            }
+        }
+        $body = array();
+        
+        $url = $this->encodePathForDavex($url).".0.json";
+        foreach ($paths as $path) {
+            $body[] = http_build_query(array(":get"=>$path));
+        }
+        $body = implode("&",$body);
+        $request = $this->getRequest(Request::POST, $url);
+        $request->setBody($body);
+        $request->setContentType('application/x-www-form-urlencoded');
         try {
-            return $request->executeJson(true);
+            $data = $request->executeJson();
+            return $data->nodes;
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (\PHPCR\RepositoryException $e) {
+            if ($e->getMessage() == 'HTTP 403: Prefix must not be empty (org.apache.jackrabbit.spi.commons.conversion.IllegalNameException)') {
+                throw new \PHPCR\UnsupportedRepositoryOperationException("Jackalope currently needs a patched jackrabbit for Session->getNodes() to work. Until our patches make it into the official distribution, see https://github.com/jackalope/jackrabbit/blob/2.2-jackalope/README.jackalope.patches.md for details and downloads."); 
+            } 
+            throw $e;
         }
     }
 
