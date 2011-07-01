@@ -280,7 +280,7 @@ class Client implements TransportInterface
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
         $this->assertLoggedIn();
-        
+
         $srcAbsPath = $this->trimPath($srcAbsPath);
         $dstAbsPath = $this->trimPath($dstAbsPath);
 
@@ -609,7 +609,7 @@ class Client implements TransportInterface
 
     /**
      * Get parent path of a path.
-     * 
+     *
      * @param  string $path
      * @return string
      */
@@ -820,7 +820,7 @@ class Client implements TransportInterface
                 // TODO: Validate constraints
             }
         }
-        
+
         $data = array(
             'path'              => $path,
             'workspace_id'      => $this->workspaceId,

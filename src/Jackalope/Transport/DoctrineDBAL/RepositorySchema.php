@@ -48,7 +48,7 @@ class RepositorySchema
         $nodes->setPrimaryKey(array('path', 'workspace_id'));
         $nodes->addUniqueIndex(array('identifier'));
         $nodes->addIndex(array('parent'));
-        
+
         $properties = $schema->createTable('phpcr_props');
         $properties->addColumn('path', 'string');
         $properties->addColumn('workspace_id', 'integer');
