@@ -43,6 +43,11 @@ class Request
     const GET = 'GET';
 
     /**
+     * Identifier of the 'POST' http request method.
+     * @var string
+     */
+    const POST = 'POST';
+    /**
      * Identifier of the 'PUT' http request method.
      * @var string
      */
@@ -412,7 +417,6 @@ class Request
                 }
             }
         }
-
         if (404 === $httpCode) {
             throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} ".var_export($this->uri, true));
         } elseif (405 == $httpCode) {
