@@ -673,7 +673,7 @@ class ObjectManager
             }
         }
 
-        $this->itemsAdd = array();
+        $this->itemsRemove = $this->nodesMove =  $this->itemsAdd = array();
     }
 
     /**

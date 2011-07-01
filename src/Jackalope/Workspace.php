@@ -341,7 +341,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function createWorkspace($name, $srcWorkspace = null)
     {
-        throw new \PHPCR\UnsupportedRepositoryOperationException();
+        return $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
     }
 
     /**
