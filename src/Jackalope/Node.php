@@ -1430,7 +1430,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             } else {
                 if ($prop[$path] !== $this->properties[$path]->_getRawValue()) {
                     // Property has changed value
-                    $this->properties[$path]->_setValue($props[$path]);
+                    $this->properties[$path]->_setValue($props[$path], $this->properties[$path]->getType());
                 }
             }
         }
