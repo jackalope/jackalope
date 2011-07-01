@@ -53,7 +53,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
 
         $type = $data['type'];
-
         if (is_string($type)) {
             $type = PropertyType::valueFromName($type);
         } elseif (!is_numeric($type)) {

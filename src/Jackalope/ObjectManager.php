@@ -673,15 +673,7 @@ class ObjectManager
             }
         }
 
-<<<<<<< HEAD
-        $this->nodesRemove =
-        $this->propertiesRemove =
-=======
-        $this->itemsRemove =
-        $this->itemsRemove =
->>>>>>> Fix merge error with jackalope master, pick the right winner.
-        $this->nodesMove = 
-        $this->itemsAdd = array();
+        $this->itemsRemove = $this->nodesMove =  $this->itemsAdd = array();
     }
 
     /**
