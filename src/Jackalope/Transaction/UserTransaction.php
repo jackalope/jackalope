@@ -50,7 +50,6 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
         $this->session = $session;
     }
 
-
     /**
      * Begin new transaction associated with current session.
      *
@@ -85,7 +84,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
      *      transaction has been rolled back rather than committed.
      * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
      *      session is not allowed to commit the transaction.
-     * @throws LogicException Thrown if the current
+     * @throws \LogicException Thrown if the current
      *      session is not associated with a transaction.
      * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
      *      encounters an unexpected error condition.
@@ -93,7 +92,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     public function commit()
     {
         if (! $this->inTransaction) {
-            throw new LogicException("No transaction to commit.");
+            throw new \LogicException("No transaction to commit.");
         }
 
         $this->transport->commitTransaction();
@@ -125,7 +124,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
      *
      * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
      *      application is not allowed to roll back the transaction.
-     * @throws LogicException Thrown if the current
+     * @throws \LogicException Thrown if the current
      *      session is not associated with a transaction.
      * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
      *      encounters an unexpected error condition.
@@ -133,7 +132,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     public function rollback()
     {
         if (! $this->inTransaction) {
-            throw new LogicException("No transaction to rollback.");
+            throw new \LogicException("No transaction to rollback.");
         }
 
         $this->transport->rollbackTransaction();

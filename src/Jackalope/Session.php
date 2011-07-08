@@ -465,8 +465,7 @@ class Session implements \PHPCR\SessionInterface
      */
     public function save()
     {
-        if (! $this->utx->inTransaction())
-        {
+        if (! $this->utx->inTransaction()) {
             $this->utx->begin();
             $this->objectManager->save();
             $this->utx->commit();

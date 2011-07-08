@@ -1162,8 +1162,6 @@ class Client implements TransportInterface
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
 
-
-
     /**
      * Initiates a «local transaction» on the root node
      *
@@ -1196,7 +1194,8 @@ class Client implements TransportInterface
      *
      * @param string $tag Either 'commit' or 'rollback'
      */
-    protected function endTransaction($tag) {
+    protected function endTransaction($tag)
+    {
 
         if ($tag != 'commit' && $tag != 'rollback') {
             throw new \InvalidArgumentException('Expected \'commit\' or \'rollback\' as argument');
@@ -1216,14 +1215,16 @@ class Client implements TransportInterface
     /**
      * Commits a transaction started with {@link beginTransaction()}
      */
-    public function commitTransaction() {
+    public function commitTransaction()
+    {
         $this->endTransaction('commit');
     }
 
     /**
      * Rollbacks a transaction started with {@link beginTransaction()}
      */
-    public function rollbackTransaction() {
+    public function rollbackTransaction()
+    {
         $this->endTransaction('rollback');
     }
 
@@ -1232,7 +1233,8 @@ class Client implements TransportInterface
      *
      * @param int $seconds The value of the timeout in seconds
      */
-    public function setTransactionTimeout($seconds) {
+    public function setTransactionTimeout($seconds)
+    {
         throw new NotImplementedException();
     }
 
