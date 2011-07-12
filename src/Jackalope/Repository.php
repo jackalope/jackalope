@@ -57,13 +57,14 @@ class Repository implements \PHPCR\RepositoryInterface
     *
     * @param \PHPCR\CredentialsInterface $credentials The credentials of the user
     * @param string $workspaceName the name of a workspace
+    * @param bool $transactions if to enable transactions
     * @return \PHPCR\SessionInterface a valid session for the user to access the repository
     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null)
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null, $transactions = true)
     {
         if ($workspaceName == null) {
             //TODO: can default workspace have other name?
@@ -72,7 +73,11 @@ class Repository implements \PHPCR\RepositoryInterface
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
-        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
+
+        $utx = $transactions && $this->transport instanceOf TransactionalTransportInterface
+            ? $this->factory->get('Transaction\\UserTransaction', array($this->transport, $this))
+            : null;
+        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport, $utx));
         return $session;
     }
 
