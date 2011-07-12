@@ -21,6 +21,9 @@ class Repository implements \PHPCR\RepositoryInterface
     protected $factory;
 
     protected $transport;
+
+    protected $transactions;
+
     /** Array of descriptors. Each is either a string or an array of strings. */
     protected $descriptors;
 
@@ -31,12 +34,14 @@ class Repository implements \PHPCR\RepositoryInterface
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      *                If this is null, the \Jackalope\Factory is instantiated
      *                Note that the repository is the only class accepting null as factory
+     * @param bool $transactions if to enable transactions
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct(Factory $factory = null, TransportInterface $transport = null)
+    public function __construct(Factory $factory = null, TransportInterface $transport = null, $transactions = true)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
+        $this->transactions = $transactions;
     }
 
     /**
@@ -57,14 +62,13 @@ class Repository implements \PHPCR\RepositoryInterface
     *
     * @param \PHPCR\CredentialsInterface $credentials The credentials of the user
     * @param string $workspaceName the name of a workspace
-    * @param bool $transactions if to enable transactions
     * @return \PHPCR\SessionInterface a valid session for the user to access the repository
     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
     * @throws \PHPCR\RepositoryException if another error occurs
     * @api
     */
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null, $transactions = true)
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
         if ($workspaceName == null) {
             //TODO: can default workspace have other name?
@@ -74,7 +78,7 @@ class Repository implements \PHPCR\RepositoryInterface
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
 
-        $utx = $transactions && $this->transport instanceOf TransactionalTransportInterface
+        $utx = $this->transactions && $this->transport instanceOf TransactionalTransportInterface
             ? $this->factory->get('Transaction\\UserTransaction', array($this->transport, $this))
             : null;
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport, $utx));
