@@ -238,8 +238,6 @@ interface TransportInterface
      */
     public function getBinaryStream($path);
 
-
-
     /*****************************
      * Methods for write support *
      *****************************/

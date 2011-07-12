@@ -229,8 +229,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
-        $node = $this->factory->get('Node', array($data, $path,
-                $this->session, $this->objectManager, true));
+        $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
         //by definition, adding a node sets the parent to modified
