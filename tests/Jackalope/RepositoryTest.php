@@ -21,7 +21,7 @@ class RepositoryTest extends TestCase
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
 
-        $repo = new \Jackalope\Repository($factory, null, $transport);
+        $repo = new \Jackalope\Repository($factory, $transport);
         $session = $repo->login($credentials, $workspaceName);
         $this->assertInstanceOf('Jackalope\Session', $session);
 

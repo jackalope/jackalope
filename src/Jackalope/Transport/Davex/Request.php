@@ -90,6 +90,19 @@ class Request
     const PROPPATCH = 'PROPPATCH';
 
     /**
+     * Identifier of the 'LOCK' http request method
+     * @var string
+     */
+    const LOCK = 'LOCK';
+
+
+    /**
+     * Identifier of the 'UNLOCK' http request method
+     * @var string
+     */
+    const UNLOCK = 'UNLOCK';
+
+    /**
      * Identifier of the 'COPY' http request method.
      * @var string
      */
@@ -167,6 +180,19 @@ class Request
     protected $additionalHeaders = array();
 
     /**
+     * The lock token active for this request otherwise FALSE for no locking
+     * @var string|FALSE
+     */
+    protected $lockToken = false;
+
+    /**
+     * The transaction id active for this request otherwise FALSE for not
+     * performing a transaction
+     * @var string|FALSE
+     */
+    protected $transactionId = false;
+
+    /**
      * Initiaties the NodeTypes request object.
      *
      * @param object $factory Ignored for now, as this class does not create objects
@@ -221,6 +247,16 @@ class Request
         $this->additionalHeaders[] = $header;
     }
 
+    public function setLockToken($lockToken)
+    {
+        $this->lockToken = (string) $lockToken;
+    }
+
+    public function setTransactionId($transactionId)
+    {
+        $this->transactionId = (string) $transactionId;
+    }
+
     protected function prepareCurl($curl, $getCurlObject)
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
@@ -235,6 +271,14 @@ class Request
             'User-Agent: '.self::USER_AGENT
         );
         $headers = array_merge($headers, $this->additionalHeaders);
+
+        if ($this->lockToken) {
+            $headers[] = 'Lock-Token: <'.$this->lockToken.'>';
+        }
+
+        if ($this->transactionId) {
+            $headers[] = 'TransactionId: <'.$this->transactionId.'>';
+        }
 
         $curl->setopt(CURLOPT_RETURNTRANSFER, true);
         $curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
@@ -338,6 +382,14 @@ class Request
         );
         $headers = array_merge($headers, $this->additionalHeaders);
 
+        if ($this->lockToken) {
+            $headers[] = 'Lock-Token: <'.$this->lockToken.'>';
+        }
+
+        if ($this->transactionId) {
+            $headers[] = 'TransactionId: <'.$this->transactionId.'>';
+        }
+
         $this->curl->setopt(CURLOPT_RETURNTRANSFER, true);
         $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
         $this->curl->setopt(CURLOPT_URL, reset($this->uri));
@@ -400,6 +452,9 @@ class Request
                         throw new \PHPCR\ItemNotFoundException($exceptionMsg);
                     case 'javax.jcr.nodetype.ConstraintViolationException':
                         throw new \PHPCR\NodeType\ConstraintViolationException($exceptionMsg);
+                    //TODO: Two more errors needed for Transactions. How does the corresponding Jackrabbit response look like?
+                    // javax.transaction.RollbackException => \PHPCR\Transaction\RollbackException
+                    // java.lang.SecurityException => \PHPCR\AccessDeniedException
 
                     //TODO: map more errors here?
                     default:

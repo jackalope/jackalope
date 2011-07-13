@@ -38,6 +38,7 @@ class Session implements \PHPCR\SessionInterface
     protected $repository;
     protected $workspace;
     protected $objectManager;
+    protected $utx = null;
     protected $credentials;
     protected $logout = false;
     /**
@@ -58,15 +59,21 @@ class Session implements \PHPCR\SessionInterface
     //protected $localNamespaces;
 
     /** creates the corresponding workspace */
-    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
+    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport, \PHPCR\Transaction\UserTransactionInterface $utx = null)
     {
         $this->factory = $factory;
         $this->repository = $repository;
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
+        $this->utx = $utx;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
+    }
+
+    public function getTransactionManager()
+    {
+        return $this->utx;
     }
 
     /**
@@ -458,7 +465,13 @@ class Session implements \PHPCR\SessionInterface
      */
     public function save()
     {
-        $this->objectManager->save();
+        if ($this->utx && !$this->utx->inTransaction()) {
+            $this->utx->begin();
+            $this->objectManager->save();
+            $this->utx->commit();
+        } else {
+            $this->objectManager->save();
+        }
     }
 
     /**

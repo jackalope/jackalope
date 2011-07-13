@@ -67,7 +67,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
 
-        return new Repository($factory, null, $transport);
+        return new Repository($factory, $transport);
     }
 
     /**
