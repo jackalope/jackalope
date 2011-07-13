@@ -59,16 +59,20 @@ class Session implements \PHPCR\SessionInterface
     //protected $localNamespaces;
 
     /** creates the corresponding workspace */
-    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport, \PHPCR\Transaction\UserTransactionInterface $utx = null)
+    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->repository = $repository;
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
-        $this->utx = $utx;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
+    }
+
+    public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
+    {
+        $this->utx = $utx;
     }
 
     public function getTransactionManager()

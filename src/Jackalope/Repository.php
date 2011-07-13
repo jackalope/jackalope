@@ -41,7 +41,7 @@ class Repository implements \PHPCR\RepositoryInterface
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
-        $this->transactions = $transactions;
+        $this->transactions = $transactions && $transport instanceof TransactionalTransportInterface;
     }
 
     /**
@@ -78,10 +78,12 @@ class Repository implements \PHPCR\RepositoryInterface
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
 
-        $utx = $this->transactions && $this->transport instanceOf TransactionalTransportInterface
-            ? $this->factory->get('Transaction\\UserTransaction', array($this->transport, $this))
-            : null;
-        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport, $utx));
+        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        if ($this->transactions) {
+            $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session));
+            $session->setTransactionManager($utx);
+        }
+
         return $session;
     }
 
