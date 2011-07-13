@@ -1196,7 +1196,6 @@ class Client implements TransactionalTransportInterface
      */
     protected function endTransaction($tag)
     {
-
         if ($tag != 'commit' && $tag != 'rollback') {
             throw new \InvalidArgumentException('Expected \'commit\' or \'rollback\' as argument');
         }
@@ -1237,7 +1236,6 @@ class Client implements TransactionalTransportInterface
     {
         throw new NotImplementedException();
     }
-
 
     /**
      * Register namespaces and new node types or update node types based on a
