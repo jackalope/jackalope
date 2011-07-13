@@ -24,7 +24,7 @@ namespace Jackalope\Transport\Davex;
 
 use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
-use Jackalope\TransportInterface;
+use Jackalope\TransactionalTransportInterface;
 use Jackalope\NotImplementedException;
 use DOMDocument;
 use Jackalope\NodeType\NodeTypeManager;
@@ -37,7 +37,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * @package jackalope
  * @subpackage transport
  */
-class Client implements TransportInterface
+class Client implements TransactionalTransportInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.
