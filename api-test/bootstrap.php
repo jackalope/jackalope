@@ -35,7 +35,6 @@ require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
 ### Load two classes needed for jackalope unit tests ###
 require __DIR__.'/../tests/Jackalope/TestCase.php';
-require __DIR__.'/../tests/Framework/ProxyObject.php';
 
 /**
  * @return string classname of the repository factory
