@@ -1111,7 +1111,17 @@ $/xi";
 
     public function query(\PHPCR\Query\QueryInterface $query)
     {
-            throw new \Jackalope\NotImplementedException("Not implemented yet");
+        switch ($query->getLanguage()) {
+            case \PHPCR\Query\QueryInterface::JCR_SQL2:
+                $parser = new Query\SQL2Parser($query);
+                $parser->parse();
+                
+                throw new \Jackalope\NotImplementedException("JCQ-SQL cannot hydrate yet.");
+                break;
+            case \PHPCR\Query\QueryInterface::JCR_JQOM:
+                throw new \Jackalope\NotImplementedException("JCQ-JQOM not yet implemented.");
+                break;
+        }
     }
 
     public function registerNamespace($prefix, $uri)
