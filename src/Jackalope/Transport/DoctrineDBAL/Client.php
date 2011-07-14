@@ -179,6 +179,14 @@ class Client implements TransportInterface
 
         $this->workspaceId = $this->getWorkspaceId($workspaceName);
         if (!$this->workspaceId) {
+            // create default workspace if it not exists
+            if ($workspaceName === "default") {
+                $this->createWorkspace($workspaceName);
+                $this->workspaceId = $this->getWorkspaceId($workspaceName);
+            }
+        }
+        
+        if (!$this->workspaceId) {
             throw new \PHPCR\NoSuchWorkspaceException;
         }
 
