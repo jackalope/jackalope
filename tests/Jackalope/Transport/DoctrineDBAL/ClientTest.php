@@ -2,19 +2,17 @@
 
 namespace Jackalope\Transport\DoctrineDBAL;
 
-use Jackalope\TestCase;
 use Doctrine\DBAL\DriverManager;
 
-class ClientTest extends TestCase
+class ClientTest extends DoctrineDBALTestCase
 {
     private $conn;
     private $transport;
 
     public function setUp()
     {
-        if (!isset($GLOBALS['phpcr.doctrine.loaded'])) {
-            $this->markTestSkipped('phpcr.doctrine.loader and phpcr.doctrine.dbaldir are not configured. Skipping Doctrine tests.');
-        }
+        parent::setUp();
+        
         $this->conn = DriverManager::getConnection(array(
             'driver' => 'pdo_sqlite',
             'memory' => true,
