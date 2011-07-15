@@ -46,7 +46,9 @@ class SQL2Parser
     
     public function parse()
     {
-        $this->getAST();
+        $AST = $this->getAST();
+        
+        
     }
     
     public function getAST()
@@ -176,15 +178,18 @@ class SQL2Parser
             $item['children'] = $this->Constraint();
             
             $this->match(SQL2Lexer::T_CLOSE_PARENTHESIS);
-        } else if($this->lexer->isNextToken(SQL2Lexer::T_NOT)) {
-            $item['type'] = SQL2Lexer::T_NOT;
-            $this->lexer->moveNext();
-            $item['children'] = $this->Constraint();
         } else {
+            if($this->lexer->isNextToken(SQL2Lexer::T_NOT)) {
+                $item['type'] = SQL2Lexer::T_NOT;
+                $this->lexer->moveNext();
+                $item['not'] = true;
+            }
+            
             $this->lexer->moveNext();
             if ($this->lexer->token['type'] == SQL2Lexer::T_IDENTIFIER) {
                 $item['terms'][] = array('type' => SQL2Lexer::T_IDENTIFIER, 'value' => $this->lexer->token['value']);
-            } else {
+            } else {                
+                // TODO: Handle quotes
                 $item['terms'][] = array('type' => SQL2Lexer::T_LITERAL, 'value' => $this->lexer->token['value']);
             }
             
