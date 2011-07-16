@@ -40,38 +40,42 @@ class RepositorySchema
         $workspace->setPrimaryKey(array('id'));
 
         $nodes = $schema->createTable('phpcr_nodes');
-        $nodes->addColumn('path', 'string');
-        $nodes->addColumn('parent', 'string');
+        $nodes->addColumn('id', 'integer', array('autoincrement' => true));
+        $nodes->addColumn('path', 'string', array('length' => 500));
+        $nodes->addColumn('parent', 'string', array('length' => 500));
         $nodes->addColumn('workspace_id', 'integer');
         $nodes->addColumn('identifier', 'string');
         $nodes->addColumn('type', 'string');
-        $nodes->setPrimaryKey(array('path', 'workspace_id'));
+        $nodes->addColumn('props', 'text');
+        $nodes->setPrimaryKey(array('id'));
+        $nodes->addUniqueIndex(array('path', 'workspace_id'));
         $nodes->addUniqueIndex(array('identifier'));
         $nodes->addIndex(array('parent'));
-
-        $properties = $schema->createTable('phpcr_props');
-        $properties->addColumn('path', 'string');
-        $properties->addColumn('workspace_id', 'integer');
-        $properties->addColumn('idx', 'integer', array('default' => 0));
-        $properties->addColumn('name', 'string');
-        $properties->addColumn('node_identifier', 'string');
-        $properties->addColumn('type', 'integer');
-        $properties->addColumn('multi_valued', 'integer', array('default' => 0));
-        $properties->addColumn('string_data', 'string', array('notnull' => false, 'length' => 4000));
-        $properties->addColumn('int_data', 'integer', array('notnull' => false));
-        $properties->addColumn('float_data', 'float', array('notnull' => false));
-        $properties->addColumn('clob_data', 'text', array('notnull' => false));
-        $properties->addColumn('datetime_data', 'datetime', array('notnull' => false));
-        $properties->setPrimaryKey(array('path', 'workspace_id', 'idx'));
-        $properties->addIndex(array('node_identifier'));
-        $properties->addIndex(array('string_data'));
+        $nodes->addIndex(array('type'));
+        
+        $indexJcrTypes = $schema->createTable('phpcr_internal_index_types');
+        $indexJcrTypes->addColumn('type', 'string');
+        $indexJcrTypes->addColumn('node_id', 'integer');
+        $indexJcrTypes->setPrimaryKey(array('type', 'node_id'));
 
         $binary = $schema->createTable('phpcr_binarydata');
-        $binary->addColumn('path', 'string');
+        $binary->addColumn('id', 'integer', array('autoincrement' => true));
+        $binary->addColumn('node_id', 'integer');
+        $binary->addColumn('property_name', 'string');
         $binary->addColumn('workspace_id', 'integer');
         $binary->addColumn('idx', 'integer', array('default' => 0));
         $binary->addColumn('data', 'text'); // TODO BLOB!
-        $binary->setPrimaryKey(array('path', 'workspace_id', 'idx'));
+        $binary->setPrimaryKey(array('id'));
+        $binary->addUniqueIndex(array('node_id', 'property_name', 'workspace_id', 'idx'));
+        
+        $foreignKeys = $schema->createTable('phpcr_nodes_foreignkeys');
+        $foreignKeys->addColumn('source_id', 'integer');
+        $foreignKeys->addColumn('source_property_name', 'string');
+        $foreignKeys->addColumn('target_id', 'integer');
+        $foreignKeys->addColumn('type', 'smallint');
+        $foreignKeys->setPrimaryKey(array('source_id', 'source_property_name', 'target_id'));
+        $foreignKeys->addIndex(array('target_id'));
+        // TODO: Add Foreign Keys to phpcr_nodes table
 
         $types = $schema->createTable('phpcr_type_nodes');
         $types->addColumn('node_type_id', 'integer', array('autoincrement' => true));
