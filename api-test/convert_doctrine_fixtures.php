@@ -139,6 +139,10 @@ foreach ($ri AS $file) {
 
             $binaryData = null;
             foreach ($attrs AS $attr => $valueData) {
+                if ($attr == "jcr:uuid") {
+                    continue;
+                }
+                
                 $idx = 0;
                 if (isset($jcrTypes[$valueData['type']])) {
                     $jcrTypeConst = $jcrTypes[$valueData['type']][0];
