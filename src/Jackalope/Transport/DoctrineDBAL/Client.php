@@ -805,7 +805,7 @@ class Client implements TransportInterface
                 // no we really don't know that path
                 throw new \PHPCR\ItemNotFoundException("No item found at ".$path);
             }
-            $propertyName = str_replace($nodePath . "/", "", $path);
+            $propertyName = str_replace($nodePath, "", $path);
 
             $query = "SELECT props FROM phpcr_nodes WHERE id = ?";
             $xml = $this->conn->fetchColumn($query, array($nodeId));
@@ -887,7 +887,11 @@ class Client implements TransportInterface
      */
     private function getParentPath($path)
     {
-        return implode("/", array_slice(explode("/", $path), 0, -1));
+        $parent = implode("/", array_slice(explode("/", $path), 0, -1));
+        if (!$parent) {
+            return "/";
+        }
+        return $parent;
     }
 
     private function validateNode(\PHPCR\NodeInterface $node, \PHPCR\NodeType\NodeTypeDefinitionInterface $def)
@@ -1147,8 +1151,7 @@ $/xi";
         $this->assertLoggedIn();
 
         $nodePath = $this->getParentPath($path);
-        $propertyName = str_replace($nodePath . "/", "", $path);
-        
+        $propertyName = ltrim(str_replace($nodePath, "", $path), "/"); // i dont know why trim here :/
         $nodeId = $this->pathExists($nodePath);
 
         $data = $this->conn->fetchAll(
