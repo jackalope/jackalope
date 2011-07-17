@@ -55,8 +55,8 @@ foreach ($ri AS $file) {
         $id = \PHPCR\Util\UUIDHelper::generateUUID();
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'id' => $nodeId++,
-            'path' => '',
-            'parent' => '-1',
+            'path' => '/',
+            'parent' => '',
             'workspace_id' => 1,
             'identifier' => $id,
             'type' => 'nt:unstructured',
@@ -88,7 +88,6 @@ foreach ($ri AS $file) {
                 }
                 $parent = $parent->parentNode;
             } while ($parent instanceof DOMElement);
-            $path = ltrim($path, '/');
 
             $attrs = array();
             foreach ($node->childNodes AS $child) {
@@ -200,11 +199,15 @@ foreach ($ri AS $file) {
                     throw new InvalidArgumentException("No type ".$valueData['type']);
                 }          
             }
-            
+
+            $parent = implode("/", array_slice(explode("/", $path), 0, -1));
+            if (!$parent) {
+                $parent = '/';
+            }
             $dataSetBuilder->addRow('phpcr_nodes', array(
                 'id' => $nodeId,
                 'path' => $path,
-                'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
+                'parent' => $parent,
                 'workspace_id' => 1,
                 'identifier' => $id,
                 'type' => $attrs['jcr:primaryType']['value'][0],

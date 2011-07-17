@@ -347,9 +347,6 @@ class Client implements TransportInterface
     {
         $this->assertLoggedIn();
 
-        $srcAbsPath = $this->trimPath($srcAbsPath);
-        $dstAbsPath = $this->trimPath($dstAbsPath);
-
         $workspaceId = $this->workspaceId;
         if (null !== $srcWorkspace) {
             $workspaceId = $this->getWorkspaceId($srcWorkspace);
@@ -506,7 +503,7 @@ class Client implements TransportInterface
                 $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
                 foreach ($values AS $value) {
-                    $targetId = $this->pathExists($this->trimPath($this->getNodePathForIdentifier($value)));
+                    $targetId = $this->pathExists($this->getNodePathForIdentifier($value));
                     if (!$targetId) {
                         if ($type == \PHPCR\PropertyType::REFERENCE) {
                             throw new \PHPCR\ReferentialIntegrityException(
@@ -638,7 +635,6 @@ class Client implements TransportInterface
     public function getNode($path)
     {
         $this->assertLoggedIn();
-        $path = $this->trimPath($path);
 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
@@ -778,11 +774,6 @@ class Client implements TransportInterface
         throw new \Jackalope\NotImplementedException();
     }
 
-    public function querySQL($query, $limit = null, $offset = null)
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
     private function pathExists($path)
     {
         $query = "SELECT id FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
@@ -802,7 +793,6 @@ class Client implements TransportInterface
      */
     public function deleteNode($path)
     {
-        $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
         $nodeId = $this->pathExists($path);
@@ -970,7 +960,6 @@ class Client implements TransportInterface
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
-        $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
         // This is very slow i believe :-(
@@ -1093,7 +1082,7 @@ $/xi";
         if (!$path) {
             throw new \PHPCR\ItemNotFoundException("no item found with uuid ".$uuid);
         }
-        return "/" . $path;
+        return $path;
     }
 
     /**
@@ -1104,10 +1093,18 @@ $/xi";
      */
     public function getNodeTypes($nodeTypes = array())
     {
+        $nodeTypes = array_flip($nodeTypes);
+
         // TODO: Filter for the passed nodetypes
         // TODO: Check database for user node-types.
-
-        return PHPCR2StandardNodeTypes::getNodeTypeData();
+        $data = PHPCR2StandardNodeTypes::getNodeTypeData();
+        $filteredData = array();
+        foreach ($data AS $nodeTypeData) {
+            if (isset($nodeTypes[$nodeTypeData['name']])) {
+                $filteredData[] = $nodeTypeData;
+            }
+        }
+        return $filteredData;
     }
 
     /**
@@ -1149,7 +1146,6 @@ $/xi";
     {
         $this->assertLoggedIn();
 
-        $path = $this->trimPath($path);
         $nodePath = $this->getParentPath($path);
         $propertyName = str_replace($nodePath . "/", "", $path);
         
@@ -1239,8 +1235,6 @@ $/xi";
      */
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
-        $path = $this->trimPath($path);
-
         $targetId = $this->pathExists($path);
         
         $type = $weakReference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
@@ -1253,7 +1247,7 @@ $/xi";
         $references = array();
         foreach ($properties AS $property) {
             if ($name === null || $property['source_property_name'] == $name) {
-                $references[] = "/" . $property['path'];
+                $references[] = $property['path'];
             }
         }
         return $references;
@@ -1276,14 +1270,7 @@ $/xi";
             \PHPCR\SessionInterface::ACTION_SET_PROPERTY);
     }
 
-    protected function trimPath($path)
-    {
-        $this->ensureValidPath($path);
-
-        return ltrim($path, "/");
-    }
-
-    protected function ensureValidPath($path)
+    private function assertValidPath($path)
     {
         if (! (strpos($path, '//') === false
               && strpos($path, '/../') === false
