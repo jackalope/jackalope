@@ -445,11 +445,13 @@ class Client implements TransportInterface
                 foreach ($propsData['binaryData'] AS $propertyName => $binaryValues) {
                     foreach ($binaryValues AS $idx => $data) {
                         $this->conn->delete('phpcr_binarydata', array(
-                            'path'          => $path . "/" . $propertyName,
+                            'node_id'       => $nodeId,
+                            'property_name' => $propertyName,
                             'workspace_id'  => $this->workspaceId,
                         ));
                         $this->conn->insert('phpcr_binarydata', array(
-                            'path'          => $path . "/" . $propertyName,
+                            'node_id'       => $nodeId,
+                            'property_name' => $propertyName,
                             'workspace_id'  => $this->workspaceId,
                             'idx'           => $idx,
                             'data'          => $data,
@@ -467,7 +469,7 @@ class Client implements TransportInterface
                     $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
                     foreach ($values AS $value) {
-                        $targetId = $this->pathExists($value);
+                        $targetId = $this->pathExists($this->trimPath($this->getNodePathForIdentifier($value)));
                         if (!$targetId) {
                             if ($type == \PHPCR\PropertyType::REFERENCE) {
                                 throw new \PHPCR\ReferentialIntegrityException(
@@ -780,15 +782,42 @@ class Client implements TransportInterface
 
         $match = $path."%";
 
-        if (!$this->pathExists($path)) {
-            throw new \PHPCR\ItemNotFoundException("No item found at ".$path);
+        $nodeId = $this->pathExists($path);
+        
+        if (!$nodeId) {
+            $nodePath = $this->getParentPath($path);
+            $nodeId = $this->pathExists($nodePath);
+            if (!$nodeId) {
+                throw new \PHPCR\ItemNotFoundException("No item found at ".$path);
+            }
+            $propertyName = str_replace($nodePath . "/", "", $path);
+            
+            $query = "SELECT props FROM phpcr_nodes WHERE id = ?";
+            $xml = $this->conn->fetchColumn($query, array($nodeId));
+            
+            $dom = new \DOMDocument('1.0', 'UTF-8');
+            $dom->loadXml($xml);
+            
+            foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') AS $propertyNode) {
+                if ($propertyName == $propertyNode->getAttribute('sv:name')) {
+                    $propertyNode->parentNode->removeChild($propertyNode);
+                    break;
+                }
+            }
+            $xml = $dom->saveXML();
+            
+            $query = "UPDATE phpcr_nodes SET props = ? WHERE id = ?";
+            $params = array($xml, $nodeId);
+            
+        } else {
+            $query = "DELETE FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
+            $params = array($path."%", $this->workspaceId);
         }
-
+        
         $this->conn->beginTransaction();
 
         try {
-            $query = "DELETE FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
-            $this->conn->executeUpdate($query, array($match, $this->workspaceId));
+            $this->conn->executeUpdate($query, $params);
 
             $this->conn->commit();
 
