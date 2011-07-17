@@ -412,6 +412,9 @@ class Client implements TransportInterface
     
     private function syncNode($uuid, $path, $parent, $type, $props = array(), $propsData = array())
     {
+        // TODO: Not sure if there are always ALL props in $props, should be grab the online data here?
+        // TODO: Binary data is handled very inefficiently here, UPSERT will really be necessary here aswell as lzy handling
+
         $this->conn->beginTransaction();
 
         try {
@@ -442,58 +445,17 @@ class Client implements TransportInterface
             $this->nodeIdentifiers[$path] = $uuid;
 
             if (isset($propsData['binaryData'])) {
-                foreach ($propsData['binaryData'] AS $propertyName => $binaryValues) {
-                    foreach ($binaryValues AS $idx => $data) {
-                        $this->conn->delete('phpcr_binarydata', array(
-                            'node_id'       => $nodeId,
-                            'property_name' => $propertyName,
-                            'workspace_id'  => $this->workspaceId,
-                        ));
-                        $this->conn->insert('phpcr_binarydata', array(
-                            'node_id'       => $nodeId,
-                            'property_name' => $propertyName,
-                            'workspace_id'  => $this->workspaceId,
-                            'idx'           => $idx,
-                            'data'          => $data,
-                        ));
-                    }
-                }
+                $this->syncBinaryData($nodeId, $propsData['binaryData']);
             }
 
-            $this->conn->delete('phpcr_nodes_foreignkeys', array(
-                'source_id' => $nodeId,
-            ));
-            foreach ($props AS $property) {
-                $type = $property->getType();
-                if ($type == \PHPCR\PropertyType::REFERENCE || $type == \PHPCR\PropertyType::WEAKREFERENCE) {
-                    $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
-
-                    foreach ($values AS $value) {
-                        $targetId = $this->pathExists($this->trimPath($this->getNodePathForIdentifier($value)));
-                        if (!$targetId) {
-                            if ($type == \PHPCR\PropertyType::REFERENCE) {
-                                throw new \PHPCR\ReferentialIntegrityException(
-                                    "Trying to store reference to non-existant node with path '" . $value . "' in " . 
-                                    "node " . $path . " property " . $property->getName()
-                                );
-                            }
-                            // skip otherwise
-                        } else {
-                            $this->conn->insert('phpcr_nodes_foreignkeys', array(
-                                'source_id' => $nodeId,
-                                'source_property_name' => $property->getName(),
-                                'target_id' => $targetId,
-                                'type' => $type
-                            ));
-                        }
-                    }
-                }
-            }
+            // update foreign keys (references)
+            $this->syncForeignKeys($nodeId, $path, $props);
 
             // Update internal indexes
-
+            $this->syncInternalIndexes();
             // Update user indexes
-            
+            $this->syncUserIndexes();
+
             $this->conn->commit();
         } catch(\Exception $e) {
             $this->conn->rollback();
@@ -501,6 +463,69 @@ class Client implements TransportInterface
         }
         
         return $nodeId;
+    }
+
+    private function syncInternalIndexes()
+    {
+        // TODO:
+    }
+
+    private function syncUserIndexes()
+    {
+        
+    }
+
+    private function syncBinaryData($nodeId, $binaryData)
+    {
+        foreach ($binaryData AS $propertyName => $binaryValues) {
+            foreach ($binaryValues AS $idx => $data) {
+                $this->conn->delete('phpcr_binarydata', array(
+                    'node_id'       => $nodeId,
+                    'property_name' => $propertyName,
+                    'workspace_id'  => $this->workspaceId,
+                ));
+                $this->conn->insert('phpcr_binarydata', array(
+                    'node_id'       => $nodeId,
+                    'property_name' => $propertyName,
+                    'workspace_id'  => $this->workspaceId,
+                    'idx'           => $idx,
+                    'data'          => $data,
+                ));
+            }
+        }
+    }
+
+    private function syncForeignKeys($nodeId, $path, $props)
+    {
+        $this->conn->delete('phpcr_nodes_foreignkeys', array(
+            'source_id' => $nodeId,
+        ));
+        foreach ($props AS $property) {
+            $type = $property->getType();
+            if ($type == \PHPCR\PropertyType::REFERENCE || $type == \PHPCR\PropertyType::WEAKREFERENCE) {
+                $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
+
+                foreach ($values AS $value) {
+                    $targetId = $this->pathExists($this->trimPath($this->getNodePathForIdentifier($value)));
+                    if (!$targetId) {
+                        if ($type == \PHPCR\PropertyType::REFERENCE) {
+                            throw new \PHPCR\ReferentialIntegrityException(
+                                "Trying to store reference to non-existant node with path '" . $value . "' in " .
+                                "node " . $path . " property " . $property->getName()
+                            );
+                        }
+                        // skip otherwise
+                    } else {
+                        $this->conn->insert('phpcr_nodes_foreignkeys', array(
+                            'source_id' => $nodeId,
+                            'source_property_name' => $property->getName(),
+                            'target_id' => $targetId,
+                            'type' => $type
+                        ));
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -780,24 +805,24 @@ class Client implements TransportInterface
         $path = $this->trimPath($path);
         $this->assertLoggedIn();
 
-        $match = $path."%";
-
         $nodeId = $this->pathExists($path);
-        
+
         if (!$nodeId) {
+            // This might still be a property
             $nodePath = $this->getParentPath($path);
             $nodeId = $this->pathExists($nodePath);
             if (!$nodeId) {
+                // no we really don't know that path
                 throw new \PHPCR\ItemNotFoundException("No item found at ".$path);
             }
             $propertyName = str_replace($nodePath . "/", "", $path);
-            
+
             $query = "SELECT props FROM phpcr_nodes WHERE id = ?";
             $xml = $this->conn->fetchColumn($query, array($nodeId));
-            
+
             $dom = new \DOMDocument('1.0', 'UTF-8');
             $dom->loadXml($xml);
-            
+
             foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') AS $propertyNode) {
                 if ($propertyName == $propertyNode->getAttribute('sv:name')) {
                     $propertyNode->parentNode->removeChild($propertyNode);
@@ -805,20 +830,27 @@ class Client implements TransportInterface
                 }
             }
             $xml = $dom->saveXML();
-            
+
             $query = "UPDATE phpcr_nodes SET props = ? WHERE id = ?";
             $params = array($xml, $nodeId);
-            
+
         } else {
-            $query = "DELETE FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
             $params = array($path."%", $this->workspaceId);
+
+            $query = "SELECT count(*) FROM phpcr_nodes_foreignkeys fk INNER JOIN phpcr_nodes n ON n.id = fk.target_id " .
+                     "WHERE n.path LIKE ? AND workspace_id = ? AND fk.type = " . \PHPCR\PropertyType::REFERENCE;
+            $fkReferences = $this->conn->fetchColumn($query, $params);
+            if ($fkReferences > 0) {
+                throw new \PHPCR\ReferentialIntegrityException("Cannot delete " . $path . ": A reference points to this node or a subnode.");
+            }
+
+            $query = "DELETE FROM phpcr_nodes WHERE path LIKE ? AND workspace_id = ?";
         }
-        
+
         $this->conn->beginTransaction();
 
         try {
             $this->conn->executeUpdate($query, $params);
-
             $this->conn->commit();
 
             return true;
@@ -973,7 +1005,7 @@ class Client implements TransportInterface
 
         $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getValue() : UUIDHelper::generateUUID();
         $type = isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured";
-        $this->syncNode($nodeIdentifier, $path, $this->getParentPath($path), $type, $properties);            
+        $this->syncNode($nodeIdentifier, $path, $this->getParentPath($path), $type, $properties);
 
         return true;
     }
@@ -990,7 +1022,7 @@ class Client implements TransportInterface
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $this->assertLoggedIn();
-        
+
         $node = $property->getParent();
         $this->storeNode($node);
         return true;
@@ -1208,7 +1240,7 @@ $/xi";
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
         $path = $this->trimPath($path);
-        
+
         $targetId = $this->pathExists($path);
         
         $type = $weakReference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
