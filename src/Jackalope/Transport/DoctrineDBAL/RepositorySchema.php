@@ -43,6 +43,8 @@ class RepositorySchema
         $nodes->addColumn('id', 'integer', array('autoincrement' => true));
         $nodes->addColumn('path', 'string', array('length' => 500));
         $nodes->addColumn('parent', 'string', array('length' => 500));
+        $nodes->addColumn('local_name', 'string');
+        $nodes->addColumn('namespace', 'string');
         $nodes->addColumn('workspace_id', 'integer');
         $nodes->addColumn('identifier', 'string');
         $nodes->addColumn('type', 'string');
@@ -52,6 +54,7 @@ class RepositorySchema
         $nodes->addUniqueIndex(array('identifier'));
         $nodes->addIndex(array('parent'));
         $nodes->addIndex(array('type'));
+        $nodes->addIndex(array('local_name', 'namespace'));
         
         $indexJcrTypes = $schema->createTable('phpcr_internal_index_types');
         $indexJcrTypes->addColumn('type', 'string');
