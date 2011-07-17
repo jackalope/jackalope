@@ -47,11 +47,12 @@ foreach ($ri AS $file) {
     $dataSetBuilder->addRow('phpcr_workspaces', array('id' => 1, 'name' => 'tests'));
 
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
-    $seenPaths = array();
     $nodeId = 1;
-    if ($nodes->length > 0) {
+    $nodeIds = array();
+    
+    // is this a system-view?
+    if ($nodes->length > 0) {        
         $id = \PHPCR\Util\UUIDHelper::generateUUID();
-        // system-view
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'id' => $nodeId++,
             'path' => '',
@@ -75,6 +76,8 @@ foreach ($ri AS $file) {
          xmlns:sv="http://www.jcp.org/jcr/sv/1.0"
          xmlns:rep="internal" />'
         ));
+        $nodeIds[$id] = $nodeId;
+        
         foreach ($nodes AS $node) {
             /* @var $node DOMElement */
             $parent = $node;
@@ -107,9 +110,15 @@ foreach ($ri AS $file) {
 
             if (isset($attrs['jcr:uuid']['value'][0])) {
                 $id = (string)$attrs['jcr:uuid']['value'][0];
-                unset($attrs['jcr:uuid']['value'][0]);
             } else {
                 $id = \PHPCR\Util\UUIDHelper::generateUUID();
+            }
+            
+            if (isset($nodeIds[$id])) {
+                $nodeId = $nodeIds[$id];
+            } else {
+                $nodeId = count($nodeIds)+1;
+                $nodeIds[$id] = $nodeId;
             }
 
             $namespaces = array(
@@ -129,8 +138,8 @@ foreach ($ri AS $file) {
             $dom->appendChild($rootNode);
 
             $binaryData = null;
-            $idx = 0;
             foreach ($attrs AS $attr => $valueData) {
+                $idx = 0;
                 if (isset($jcrTypes[$valueData['type']])) {
                     $jcrTypeConst = $jcrTypes[$valueData['type']][0];
                     
@@ -139,18 +148,34 @@ foreach ($ri AS $file) {
                     $propertyNode->setAttribute('sv:type', $jcrTypeConst); // TODO: Name! not int
                     $propertyNode->setAttribute('sv:multi-valued', $valueData['multiValued'] ? "1" : "0");
 
-                     foreach ($valueData['value'] AS $value) {
+                    foreach ($valueData['value'] AS $value) {
                         switch ($valueData['type']) {
                             case 'binary':
-                                $value = strlen(base64_decode($value));
+                                $binaryData = base64_decode($value);
+                                $value = strlen($binaryData);
                                 break;
                             case 'boolean':
                                 $value = 'true' === $value ? '1' : '0';
                                 break;
                             case 'date':
                                 $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $value);
-                                $datetime->setTimezone(new DateTimeZone('UTC'));
                                 $value = $datetime->format('Y-m-d\TH:i:s.uP');
+                                break;
+                            case 'weakreference':
+                            case 'reference':
+                                if (isset($nodeIds[$value])) {
+                                    $targetId = $nodeIds[$value];
+                                } else {
+                                    $targetUUID = \PHPCR\Util\UUIDHelper::generateUUID();
+                                    $nodeIds[$targetUUID] = count($nodeIds)+1;
+                                }
+                                
+                                $dataSetBuilder->addRow('phpcr_nodes_foreignkeys', array(
+                                    'source_id' => $nodeId,
+                                    'source_property_name' => $attr,
+                                    'target_id' => $targetId,
+                                    'type' => $jcrTypeConst,
+                                ));
                                 break;
                         }
                         $propertyNode->appendChild($dom->createElement('sv:value', $value));
@@ -161,7 +186,7 @@ foreach ($ri AS $file) {
                                 'property_name' => $attr,
                                 'workspace_id' => 1,
                                 'idx' => $idx++,
-                                'data' => $value,
+                                'data' => $binaryData,
                             ));
                         }
                     }
@@ -181,9 +206,6 @@ foreach ($ri AS $file) {
                 'type' => $attrs['jcr:primaryType']['value'][0],
                 'props' => $dom->saveXML(),
             ));
-
-            
-            $nodeId++;
         }
     } else {
         continue; // document view not supported
