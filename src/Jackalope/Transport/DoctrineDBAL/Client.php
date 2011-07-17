@@ -1196,6 +1196,9 @@ $/xi";
 
     public function query(\PHPCR\Query\QueryInterface $query)
     {
+        $limit = $query->getLimit();
+        $offset = $query->getOffset();
+
         switch ($query->getLanguage()) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
                 $parser = new \PHPCR\Util\QOM\Sql2ToQomQueryConverter(new \Jackalope\Query\QOM\QueryObjectModelFactory());
@@ -1203,6 +1206,8 @@ $/xi";
 
                 $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform());
                 $sql = $qomWalker->walkQOMQuery($qom);
+
+                $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
 
                 $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
