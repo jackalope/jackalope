@@ -73,7 +73,7 @@ class Client implements TransportInterface
     /**
      * @var array
      */
-    private $userNamespaces = null;
+    private $fetchedUserNamespaces = false;
 
     /**
      * Check if an initial request on login should be send to check if repository exists
@@ -86,13 +86,13 @@ class Client implements TransportInterface
     /**
      * @var array
      */
-    private $validNamespacePrefixes = array(
-        \PHPCR\NamespaceRegistryInterface::PREFIX_EMPTY => true,
-        \PHPCR\NamespaceRegistryInterface::PREFIX_JCR => true,
-        \PHPCR\NamespaceRegistryInterface::PREFIX_NT => true,
-        \PHPCR\NamespaceRegistryInterface::PREFIX_MIX => true,
-        \PHPCR\NamespaceRegistryInterface::PREFIX_XML => true,
-        'phpcr' => true,
+    private $namespaces = array(
+        \PHPCR\NamespaceRegistryInterface::PREFIX_EMPTY => \PHPCR\NamespaceRegistryInterface::NAMESPACE_EMPTY,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_JCR => \PHPCR\NamespaceRegistryInterface::NAMESPACE_JCR,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_NT => \PHPCR\NamespaceRegistryInterface::NAMESPACE_NT,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_MIX => \PHPCR\NamespaceRegistryInterface::NAMESPACE_MIX,
+        \PHPCR\NamespaceRegistryInterface::PREFIX_XML => \PHPCR\NamespaceRegistryInterface::NAMESPACE_XML,
+        'phpcr' => 'http://github.com/jackalope/jackalope', // TODO: Namespace?
     );
     
     /**
@@ -320,16 +320,15 @@ class Client implements TransportInterface
      */
     public function getNamespaces()
     {
-        if ($this->userNamespaces === null) {
+        if ($this->fetchedUserNamespaces === false) {
             $data = $this->conn->fetchAll('SELECT * FROM phpcr_namespaces');
-            $this->userNamespaces = array();
+            $this->fetchedUserNamespaces = true;
 
             foreach ($data AS $row) {
-                $this->validNamespacePrefixes[$row['prefix']] = true;
-                $this->userNamespaces[$row['prefix']] = $row['uri'];
+                $this->namespaces[$row['prefix']] = $row['uri'];
             }
         }
-        return $this->userNamespaces;
+        return $this->namespaces;
     }
 
     /**
@@ -406,6 +405,22 @@ class Client implements TransportInterface
             throw $e;
         }
     }
+
+    /**
+     * @param  string $path
+     * @return array
+     */
+    private function getJcrName($path)
+    {
+        $name = implode("", array_slice(explode("/", $path), -1, 1));
+        if (strpos($name, ":") === false) {
+            $alias = "";
+        } else {
+            list($alias, $name) = explode(":", $name);
+        }
+        $namespaces = $this->getNamespaces();
+        return array($namespaces[$alias], $name);
+    }
     
     private function syncNode($uuid, $path, $parent, $type, $props = array(), $propsData = array())
     {
@@ -424,10 +439,13 @@ class Client implements TransportInterface
             }
             $nodeId = $this->pathExists($path);
             if (!$nodeId) {
+                list($namespace, $localName) = $this->getJcrName($path);
                 $this->conn->insert("phpcr_nodes", array(
                     'identifier'    => $uuid,
                     'type'          => $type,
                     'path'          => $path,
+                    'local_name'    => $localName,
+                    'namespace'     => $namespace,
                     'parent'        => $parent,
                     'workspace_id'  => $this->workspaceId,
                     'props'         => $propsData['dom']->saveXML(),
@@ -1037,7 +1055,7 @@ class Client implements TransportInterface
                 list($prefix, $localName) = explode(":", $value);
 
                 $this->getNamespaces();
-                if (!isset($this->validNamespacePrefixes[$prefix])) {
+                if (!isset($this->namespaces[$prefix])) {
                     throw new \PHPCR\ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
                 }
             }
