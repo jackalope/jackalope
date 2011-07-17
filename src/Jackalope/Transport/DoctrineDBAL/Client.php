@@ -392,16 +392,6 @@ class Client implements TransportInterface
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $newPath = str_replace($srcAbsPath, $dstAbsPath, $row['path']);
-                $uuid = UUIDHelper::generateUUID();
-                $this->conn->insert("phpcr_nodes", array(
-                    'identifier' => $uuid,
-                    'type' => $row['type'],
-                    'path' => $newPath,
-                    'parent' => $this->getParentPath($newPath),
-                    'workspace_id' => $this->workspaceId,
-                    'props' => $row['props'],
-                    
-                ));
                 
                 $dom = new \DOMDocument('1.0', 'UTF-8');
                 $dom->loadXML($row['props']);
@@ -410,7 +400,7 @@ class Client implements TransportInterface
                 
                 $query = "INSERT INTO phpcr_binarydata (node_id, property_name, workspace_id, idx, data) " .
                          "SELECT ?, b.property_name, ?, b.idx, b.data " .
-                         "FROM phpcr_binarydata b. WHERE b.node_id = ?";
+                         "FROM phpcr_binarydata b WHERE b.node_id = ?";
                 $this->conn->executeUpdate($query, array($newNodeId, $this->workspaceId, $srcNodeId));
             }
             $this->conn->commit();
