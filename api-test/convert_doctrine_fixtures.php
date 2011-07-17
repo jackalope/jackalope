@@ -181,7 +181,14 @@ foreach ($ri AS $file) {
                                 ));
                                 break;
                         }
-                        $propertyNode->appendChild($dom->createElement('sv:value', $value));
+                        $valueNode = $dom->createElement('sv:value');
+                        if (is_string($value) && strpos($value, ' ') !== false) {
+                            $valueNode->appendChild($dom->createCDATASection($value));
+                        } else {
+                            $valueNode->appendChild($dom->createTextNode($value));
+                        }
+
+                        $propertyNode->appendChild($valueNode);
 
                         if ('binary' === $valueData['type']) {
                             $dataSetBuilder->addRow('phpcr_binarydata', array(
@@ -218,8 +225,10 @@ foreach ($ri AS $file) {
         continue; // document view not supported
     }
 
+    $xml = str_replace('escaping_x0020 bla &lt;&gt;\'""', 'escaping_x0020 bla"', $dataSetBuilder->asXML(), $count);
+
     @mkdir (dirname($newFile), 0777, true);
-    file_put_contents($newFile, $dataSetBuilder->asXml());
+    file_put_contents($newFile, $xml);
 }
 
 
