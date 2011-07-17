@@ -1198,12 +1198,26 @@ $/xi";
     {
         switch ($query->getLanguage()) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
-                $parser = new Query\SQL2Parser($query);
-                $parser->parse();
-                
-                throw new \Jackalope\NotImplementedException("JCQ-SQL cannot hydrate yet.");
-                break;
+                $parser = new \PHPCR\Util\QOM\Sql2ToQomQueryConverter(new \Jackalope\Query\QOM\QueryObjectModelFactory());
+                $qom = $parser->parse($query->getStatement());
+
+                $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform());
+                $sql = $qomWalker->walkQOMQuery($qom);
+
+                $data = $this->conn->fetchAll($sql, array($this->workspaceId));
+
+                $result = array();
+                foreach ($data AS $row) {
+                    $result[] = array(
+                        array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
+                        array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
+                        array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
+                    );
+                }
+
+                return $result;
             case \PHPCR\Query\QueryInterface::JCR_JQOM:
+                // How do we extrct the QOM from a QueryInterface? We need a non-interface method probably
                 throw new \Jackalope\NotImplementedException("JCQ-JQOM not yet implemented.");
                 break;
         }
