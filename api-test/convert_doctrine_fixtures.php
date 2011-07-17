@@ -171,6 +171,7 @@ foreach ($ri AS $file) {
                                 } else {
                                     $targetUUID = \PHPCR\Util\UUIDHelper::generateUUID();
                                     $nodeIds[$targetUUID] = count($nodeIds)+1;
+                                    $targetId = $nodeIds[$targetUUID];
                                 }
                                 
                                 $dataSetBuilder->addRow('phpcr_nodes_foreignkeys', array(

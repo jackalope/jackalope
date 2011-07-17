@@ -154,11 +154,15 @@ class Client implements TransportInterface
         $workspaceId = $this->conn->lastInsertId();
 
         $this->conn->insert("phpcr_nodes", array(
-            'path' => '',
-            'parent' => '-1',
-            'workspace_id' => $workspaceId,
-            'identifier' => UUIDHelper::generateUUID(),
-            'type' => 'nt:unstructured',
+            'path'          => '/',
+            'parent'        => '',
+            'workspace_id'  => $workspaceId,
+            'identifier'    => UUIDHelper::generateUUID(),
+            'type'          => 'nt:unstructured',
+            'local_name'    => '',
+            'namespace'     => '',
+            'props' => '<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns:rep="internal" />'
         ));
     }
 
@@ -1208,7 +1212,6 @@ $/xi";
                 $sql = $qomWalker->walkQOMQuery($qom);
 
                 $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
-
                 $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
                 $result = array();

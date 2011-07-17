@@ -148,7 +148,7 @@ class QOMWalker
      */
     public function walkPropertyExistanceConstraint(QOM\PropertyExistenceInterface $constraint)
     {
-        return "EXTRACTVALUE(".$this->getTableAlias($constraint->getSelectorName()).".props, 'count(//sv:property[sv:name=\"".$constraint->getPropertyName() . "\"])') = 1";
+        return "EXTRACTVALUE(".$this->getTableAlias($constraint->getSelectorName()).".props, 'count(//sv:property[sv:name=\"".$constraint->getPropertyName() . "\"]/sv:value[1])') = 1";
     }
 
     /**
@@ -247,7 +247,7 @@ class QOMWalker
         } else if ($operand instanceof QOM\UpperCaseInterface) {
             return $this->platform->getUpperExpression($this->walkOperand($operand->getOperand()));
         } else if ($operand instanceof QOM\LiteralInterface) {
-            return "'" . $operand->getLiteralValue() . "'";
+            return "'" . trim($operand->getLiteralValue(), '"') . "'";
         } else if ($operand instanceof QOM\PropertyValueInterface) {
             $alias = $this->getTableAlias($operand->getSelectorName());
             $property = $operand->getPropertyName();
@@ -257,7 +257,7 @@ class QOMWalker
                 return $alias . ".identifier";
             } else {
                 // TODO: Abstract this from MySQL
-                return "EXTRACTVALUE($alias.props, '//sv:property[sv:name=\"" . $property . "\"]')";
+                return "EXTRACTVALUE($alias.props, '//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]')";
             }
         } else if ($operand instanceof QOM\LengthInterface) {
 
@@ -269,7 +269,7 @@ class QOMWalker
                 return $alias . ".identifier";
             } else {
                 // TODO: Abstract this from MySQL
-                return "EXTRACTVALUE($alias.props, 'count(//sv:property[sv:name=\"" . $property . "\"])')";
+                return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])')";
             }
 
         } else {
