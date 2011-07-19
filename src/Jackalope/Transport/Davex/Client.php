@@ -1309,7 +1309,6 @@ class Client implements TransportInterface
                '</D:href></dcr:locate-by-uuid>';
     }
 
-    //TODO: this seems unused - and its never set anyways
     public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;

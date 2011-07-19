@@ -35,16 +35,33 @@ class Session implements \PHPCR\SessionInterface
      */
     protected $factory;
 
+    /**
+     * @var Repository
+     */
     protected $repository;
+    /**
+     * @var Workspace
+     */
     protected $workspace;
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
+    /**
+     * @var \PHPCR\SimpleCredentials
+     */
     protected $credentials;
+    /**
+     * @var bool
+     */
     protected $logout = false;
     /**
      * The namespace registry.
      *
      * It is only used to check prefixes and at setup.
      * Session remapping must be handled locally.
+     *
+     * @var NamespaceRegistry
      */
     protected $namespaceRegistry;
 
@@ -67,6 +84,8 @@ class Session implements \PHPCR\SessionInterface
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
+
+        $transport->setNodeTypeManager($this->workspace->getNodeTypeManager());
     }
 
     /**
