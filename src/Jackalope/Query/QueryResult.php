@@ -82,18 +82,17 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
      *
      * The nodes are returned according to the ordering specified in the query.
      *
-     * @param  bool     If the iterator should pre-fetch all nodes
-     * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                  Keys are the Node names, values the corresponding NodeInterface instances.
+     * @param  bool|int $prefetch If to prefetch or not (int < 0/true means all, 0/false means none, int > 0 means the prefetch chunk size or none)
+     * @return ArrayIterator that contains all \PHPCR\Node's keyed by their path
      *
      * @throws \PHPCR\RepositoryException if the query contains more than one selector, if this call is
      *                                    the second time either getRows() or getNodes() has been called on the
      *                                    same QueryResult object or if another error occurs.
      * @api
      */
-    public function getNodes($fetchAll = false)
+    public function getNodes($prefetch = false)
     {
-        if (!$fetchAll) {
+        if ($prefetch !== true) {
             return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
         }
 
@@ -106,7 +105,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
             }
         }
 
-        return $this->objectmanager->getNodes($paths);
+        return $this->objectmanager->getNodesByPath($paths);
     }
 
     /**
