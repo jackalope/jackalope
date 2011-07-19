@@ -41,7 +41,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
      * @api
      */
     function getRepository(array $parameters = null) {
-        if (null == $parameters) {
+        if (null === $parameters) {
             return null;
         }
         // TODO: check if all required parameters specified
@@ -67,7 +67,8 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
 
-        return new Repository($factory, $transport);
+        $transactions = !empty($parameters['jackalope.transactions']);
+        return new Repository($factory, $transport, $transactions);
     }
 
     /**
