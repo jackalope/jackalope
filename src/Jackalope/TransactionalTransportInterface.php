@@ -23,7 +23,7 @@ interface TransactionalTransportInterface extends TransportInterface
 {
 
     /**
-     * Initiates a «local transaction» on the root node
+     * Initiates a "local transaction" on the root node
      *
      * @return string The received transaction token
      * @throws \PHPCR\RepositoryException If no transaction token received
