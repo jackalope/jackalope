@@ -53,22 +53,25 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function current()
     {
-        // TODO: add a default for $path or handle case when no $path is found
-        foreach ($this->rows[$this->position] as $column) {
-            if ($column['dcr:name'] == 'jcr:path') {
-                $path = $column['dcr:value'];
-            }
+        $path = $this->key();
+        if (!isset($path)) {
+            return null;
         }
+
         return $this->objectmanager->getNode($path);
     }
 
     public function key()
     {
-        // TODO: add a default for $path or handle case when no $path is found
         foreach ($this->rows[$this->position] as $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 $path = $column['dcr:value'];
+                break;
             }
+        }
+
+        if (!isset($path)) {
+            return null;
         }
 
         return $path;
