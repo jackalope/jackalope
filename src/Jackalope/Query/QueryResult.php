@@ -7,7 +7,7 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * A QueryResult object. Returned by Query->execute().
  *
  * The \Traversable interface enables the implementation to be addressed with
- * <b>foreach</b>. QueryResults have to implement einther \RecursiveIterator or
+ * <b>foreach</b>. QueryResults have to implement either \RecursiveIterator or
  * \Iterator.
  * The iterator is equivalent to <b>getRows()</b> returning a list of the rows.
  * The iterator keys have no significant meaning.
@@ -29,10 +29,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
 
     public function __construct($factory, $rawData, $objectmanager)
     {
-        $this->objectmanager = $objectmanager;
         $this->factory = $factory;
-
         $this->rows = $rawData;
+        $this->objectmanager = $objectmanager;
     }
 
     public function getIterator()
