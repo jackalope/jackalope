@@ -470,9 +470,17 @@ class Session implements \PHPCR\SessionInterface
     public function save()
     {
         if ($this->utx && !$this->utx->inTransaction()) {
+            // do the operation in a short transaction
             $this->utx->begin();
-            $this->objectManager->save();
-            $this->utx->commit();
+            try {
+                $this->objectManager->save();
+                $this->utx->commit();
+            } catch(\Exception $e) {
+                // if anything goes wrong, rollback this mess
+                $this->utx->rollback();
+                // but do not eat the exception
+                throw $e;
+            }
         } else {
             $this->objectManager->save();
         }
