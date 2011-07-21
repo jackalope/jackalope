@@ -49,7 +49,7 @@ foreach ($ri AS $file) {
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
     $seenPaths = array();
     if ($nodes->length > 0) {
-        $id = \Jackalope\Helper::generateUUID();
+        $id = \PHPCR\Util\UUIDHelper::generateUUID();
         // system-view
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'path' => '',
@@ -92,7 +92,7 @@ foreach ($ri AS $file) {
                 $id = (string)$attrs['jcr:uuid']['value'][0];
                 unset($attrs['jcr:uuid']['value'][0]);
             } else {
-                $id = \Jackalope\Helper::generateUUID();
+                $id = \PHPCR\Util\UUIDHelper::generateUUID();
             }
 
             $dataSetBuilder->addRow('phpcr_nodes', array(
@@ -162,7 +162,7 @@ foreach ($ri AS $file) {
             }
         }
     } else {
-        $id = \Jackalope\Helper::generateUUID();
+        $id = \PHPCR\Util\UUIDHelper::generateUUID();
         // document-view
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'path' => '',
@@ -197,7 +197,7 @@ foreach ($ri AS $file) {
                     $id = $attrs['jcr:uuid'];
                     unset($attrs['jcr:uuid']);
                 } else {
-                    $id = \Jackalope\Helper::generateUUID();
+                    $id = \PHPCR\Util\UUIDHelper::generateUUID();
                 }
 
                 if (!isset($seenPaths[$path])) {

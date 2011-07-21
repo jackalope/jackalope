@@ -31,11 +31,11 @@ foreach ($necessaryConfigValues as $val) {
 /**
  * autoloader: tests rely on an autoloader.
  */
-require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
+require __DIR__.'/../src/Jackalope/autoloader.php';
 
 ### Load two classes needed for jackalope unit tests ###
 require __DIR__.'/../tests/Jackalope/TestCase.php';
-require __DIR__.'/../tests/Framework/ProxyObject.php';
+require __DIR__.'/../tests/Jackalope/Transport/DoctrineDBAL/DoctrineDBALTestCase.php';
 
 /**
  * @return string classname of the repository factory
