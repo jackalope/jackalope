@@ -653,9 +653,10 @@ class Client implements TransactionalTransportInterface
             $request->execute();
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
-                throw new \PHPCR\UnsupportedRepositoryOperationException();
+                // TODO: when checking out a non-versionable node, we get here too. in that case the exception is very wrong
+                throw new \PHPCR\UnsupportedRepositoryOperationException($e->getMessage());
             }
-            throw new \PHPCR\RepositoryException();
+            throw new \PHPCR\RepositoryException($e->getMessage());
         }
         return;
     }
