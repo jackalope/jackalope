@@ -23,15 +23,14 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
     );
     private $optional = array(
         'jackalope.factory' => 'string or object: Use a custom factory class for Jackalope objects',
-        'jackalope.default_header' => 'string: Set a default header to send on each request to the backend',
+        'jackalope.default_header' => 'string: Set a default header to send on each request to the backend (i.e. for load balancers to identify sessions)',
         'jackalope.jackrabbit_expect' => 'boolean: Send the "Expect: 100-continue" header on larger PUT and POST requests',
+        'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled',
     );
 
     /**
      * Attempts to establish a connection to a repository using the given
      * parameters.
-     *
-     *
      *
      * @param array|null $parameters string key/value pairs as repository arguments or null if a client wishes
      *                               to connect to a default repository.
@@ -44,7 +43,15 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         if (null === $parameters) {
             return null;
         }
-        // TODO: check if all required parameters specified
+        // check if we have all required keys
+        $present = array_intersect_key($this->required, $parameters);
+        if (count(array_diff_key($this->required, $present))) {
+            return null;
+        }
+        $defined = array_intersect_key(array_merge($this->required, $this->optional), $parameters);
+        if (count(array_diff_key($defined, $parameters))) {
+            return null;
+        }
 
         if (isset($parameters['jackalope.factory'])) {
             $factory = is_object($parameters['jackalope.factory']) ?
@@ -67,7 +74,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
 
-        $transactions = !empty($parameters['jackalope.transactions']);
+        $transactions = empty($parameters['jackalope.disable_transactions']);
         return new Repository($factory, $transport, $transactions);
     }
 
