@@ -21,6 +21,9 @@ class Repository implements \PHPCR\RepositoryInterface
     protected $factory;
 
     protected $transport;
+
+    protected $transactions;
+
     /** Array of descriptors. Each is either a string or an array of strings. */
     protected $descriptors;
 
@@ -31,22 +34,14 @@ class Repository implements \PHPCR\RepositoryInterface
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      *                If this is null, the \Jackalope\Factory is instantiated
      *                Note that the repository is the only class accepting null as factory
-     * @param $uri Location of the server (ignored if $transport is specified)
+     * @param bool $transactions if to enable transactions
      * @param $transport Optional transport implementation. If specified, $uri is ignored
      */
-    public function __construct(Factory $factory = null, $uri = null, TransportInterface $transport = null)
+    public function __construct(Factory $factory = null, TransportInterface $transport = null, $transactions = true)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
-        if ($transport == null) {
-            if ($uri === null) {
-                throw new \PHPCR\RepositoryException('You have to pass either a uri or a transport argument');
-            }
-            if ('/' !== substr($uri, -1, 1)) {
-                $uri .= '/';
-            }
-            $transport = $this->factory->get('Transport\Davex\Client', array($uri)); //default if not specified
-        }
         $this->transport = $transport;
+        $this->transactions = $transactions && $transport instanceof TransactionalTransportInterface;
     }
 
     /**
@@ -82,7 +77,13 @@ class Repository implements \PHPCR\RepositoryInterface
         if (! $this->transport->login($credentials, $workspaceName)) {
             throw new \PHPCR\RepositoryException('transport failed to login without telling why');
         }
+
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        if ($this->transactions) {
+            $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session));
+            $session->setTransactionManager($utx);
+        }
+
         return $session;
     }
 

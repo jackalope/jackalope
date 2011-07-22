@@ -76,7 +76,6 @@ interface TransportInterface
      */
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName);
 
-
     /***********************************************************************
      * all methods from here below require that login is called first. the *
      * behaviour of transport is undefined if this is not respected.       *
@@ -96,10 +95,34 @@ interface TransportInterface
      */
     public function logout();
 
-
     /*****************************
      * Methods for read support *
      *****************************/
+
+    /**
+     * Creates a new Workspace with the specified name. The new workspace is
+     * empty, meaning it contains only root node.
+     *
+     * If srcWorkspace is given:
+     * Creates a new Workspace with the specified name initialized with a
+     * clone of the content of the workspace srcWorkspace. Semantically,
+     * this method is equivalent to creating a new workspace and manually
+     * cloning srcWorkspace to it; however, this method may assist some
+     * implementations in optimizing subsequent Node.update and Node.merge
+     * calls between the new workspace and its source.
+     *
+     * The new workspace can be accessed through a login specifying its name.
+     *
+     * @param string $name A String, the name of the new workspace.
+     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
+     * @return void
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
+     */
+    public function createWorkspace($name, $srcWorkspace = null);
 
     /**
      * Get the registered namespaces mappings from the backend.
@@ -112,7 +135,6 @@ interface TransportInterface
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNamespaces();
-
 
     /**
      * Get the node from an absolute path
@@ -215,8 +237,6 @@ interface TransportInterface
      * @return resource with binary data
      */
     public function getBinaryStream($path);
-
-
 
     /*****************************
      * Methods for write support *

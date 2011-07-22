@@ -20,8 +20,8 @@ class NodeIterator implements \SeekableIterator, \Countable
     public function __construct($factory, $objectmanager, $rows)
     {
         // OPTIMIZE: we could pre-fetch several nodes here, assuming the user wants more than one node
-        $this->objectmanager = $objectmanager;
         $this->factory = $factory;
+        $this->objectmanager = $objectmanager;
         $this->rows = $rows;
     }
 
@@ -53,40 +53,25 @@ class NodeIterator implements \SeekableIterator, \Countable
 
     public function current()
     {
-        // TODO: add a default for $path or handle case when no $path is found
-        foreach ($this->rows[$this->position] as $column) {
-            if ($column['dcr:name'] == 'jcr:path') {
-                $path = $column['dcr:value'];
-            }
+        $path = $this->key();
+        if (!isset($path)) {
+            return null;
         }
+
         return $this->objectmanager->getNode($path);
-    }
-
-    /**
-     * Build nodes based on the paths contained in the result set.
-     *
-     * @return array of \PHPCR\NodeInterface
-     */
-    public function getNodes() {
-        $paths = array();
-        foreach ($this->rows as $row) {
-            foreach ($row as $column) {
-                if ($column['dcr:name'] == 'jcr:path') {
-                    $paths[] = $column['dcr:value'];
-                }
-            }
-        }
-
-        return $this->objectmanager->getNodes($paths);
     }
 
     public function key()
     {
-        // TODO: add a default for $path or handle case when no $path is found
         foreach ($this->rows[$this->position] as $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 $path = $column['dcr:value'];
+                break;
             }
+        }
+
+        if (!isset($path)) {
+            return null;
         }
 
         return $path;

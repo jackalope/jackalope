@@ -7,7 +7,7 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * A QueryResult object. Returned by Query->execute().
  *
  * The \Traversable interface enables the implementation to be addressed with
- * <b>foreach</b>. QueryResults have to implement einther \RecursiveIterator or
+ * <b>foreach</b>. QueryResults have to implement either \RecursiveIterator or
  * \Iterator.
  * The iterator is equivalent to <b>getRows()</b> returning a list of the rows.
  * The iterator keys have no significant meaning.
@@ -29,12 +29,22 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
 
     public function __construct($factory, $rawData, $objectmanager)
     {
-        $this->objectmanager = $objectmanager;
         $this->factory = $factory;
-
         $this->rows = $rawData;
+        $this->objectmanager = $objectmanager;
     }
 
+    /**
+     * Returns an iterator over the Rows of the result table.
+     *
+     * The rows are returned according to the ordering specified in the query.
+     *
+     * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                  Keys are the row position in this result set, Values are the RowInterface instances.
+     * @throws \PHPCR\RepositoryException if this call is the second time either getRows() or getNodes()
+     *                                    has been called on the same QueryResult object or if another error occurs.
+     * @api
+    */
     public function getIterator()
     {
         return $this->getRows();
@@ -80,19 +90,32 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     /**
      * Returns an iterator over all nodes that match the query.
      *
-     * The nodes are returned according to the ordering specified in the query.
-     *
+     * @param  bool|int $prefetch If to prefetch or not
+     *                              int < 0/true means all, 0/false means none, int > 0 means the prefetch chunk size or none
      * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                  Keys are the Node names, values the corresponding NodeInterface instances.
+     *                  Keys are the paths, Values the given Node instances.
      *
      * @throws \PHPCR\RepositoryException if the query contains more than one selector, if this call is
      *                                    the second time either getRows() or getNodes() has been called on the
      *                                    same QueryResult object or if another error occurs.
      * @api
      */
-    public function getNodes()
+    public function getNodes($prefetch = false)
     {
-        return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
+        if ($prefetch !== true) {
+            return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
+        }
+
+        $paths = array();
+        foreach ($this->rows as $row) {
+            foreach ($row as $column) {
+                if ('jcr:path' === $column['dcr:name']) {
+                    $paths[] = $column['dcr:value'];
+                }
+            }
+        }
+
+        return $this->objectmanager->getNodesByPath($paths);
     }
 
     /**

@@ -303,14 +303,6 @@ class Workspace implements \PHPCR\WorkspaceInterface
     /**
      * not implemented
      */
-    public function getImportContentHandler($parentAbsPath, $uuidBehavior)
-    {
-        throw new NotImplementedException('Write');
-    }
-
-    /**
-     * not implemented
-     */
     public function importXML($parentAbsPath, $in, $uuidBehavior)
     {
         throw new NotImplementedException('Write');
@@ -341,7 +333,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function createWorkspace($name, $srcWorkspace = null)
     {
-        throw new \PHPCR\UnsupportedRepositoryOperationException();
+        return $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
     }
 
     /**

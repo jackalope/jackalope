@@ -73,16 +73,18 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     ) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
-                        $this->properties[$key] = $this->factory->get(
-                            'Property',
-                            array(
-                                array('type' => \PHPCR\PropertyType::BINARY, 'value' => $value),
-                                $this->getChildPath($key),
-                                $this->session,
-                                $this->objectManager,
-                            )
-                        );
-                    } //else this is a type declaration for a type that has a value. values are processed below and read the :type field
+                        if (!isset($rawData->$key)) {
+                            $this->properties[$key] = $this->factory->get(
+                                'Property',
+                                array(
+                                    array('type' => \PHPCR\PropertyType::BINARY, 'value' => $value),
+                                    $this->getChildPath($key),
+                                    $this->session,
+                                    $this->objectManager,
+                                )
+                            );
+                        }
+                    } //else this is a type declaration
 
                     //skip this entry (if its binary, its already processeed
                     continue;
@@ -227,8 +229,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
-        $node = $this->factory->get('Node', array($data, $path,
-                $this->session, $this->objectManager, true));
+        $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
         //by definition, adding a node sets the parent to modified

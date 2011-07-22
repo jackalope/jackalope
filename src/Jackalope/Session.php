@@ -38,6 +38,7 @@ class Session implements \PHPCR\SessionInterface
     protected $repository;
     protected $workspace;
     protected $objectManager;
+    protected $utx = null;
     protected $credentials;
     protected $logout = false;
     /**
@@ -67,6 +68,16 @@ class Session implements \PHPCR\SessionInterface
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
+    }
+
+    public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
+    {
+        $this->utx = $utx;
+    }
+
+    public function getTransactionManager()
+    {
+        return $this->utx;
     }
 
     /**
@@ -458,7 +469,21 @@ class Session implements \PHPCR\SessionInterface
      */
     public function save()
     {
-        $this->objectManager->save();
+        if ($this->utx && !$this->utx->inTransaction()) {
+            // do the operation in a short transaction
+            $this->utx->begin();
+            try {
+                $this->objectManager->save();
+                $this->utx->commit();
+            } catch(\Exception $e) {
+                // if anything goes wrong, rollback this mess
+                $this->utx->rollback();
+                // but do not eat the exception
+                throw $e;
+            }
+        } else {
+            $this->objectManager->save();
+        }
     }
 
     /**

@@ -24,7 +24,7 @@ namespace Jackalope\Transport\Davex;
 
 use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
-use Jackalope\TransportInterface;
+use Jackalope\TransactionalTransportInterface;
 use Jackalope\NotImplementedException;
 use DOMDocument;
 use Jackalope\NodeType\NodeTypeManager;
@@ -37,7 +37,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * @package jackalope
  * @subpackage transport
  */
-class Client implements TransportInterface
+class Client implements TransactionalTransportInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.
@@ -148,6 +148,14 @@ class Client implements TransportInterface
     protected $checkLoginOnServer = true;
 
     /**
+      * The transaction token received by a LOCKing request
+      *
+      * Is FALSE while no transaction running.
+      * @var string|FALSE
+      */
+    protected $transactionToken = false;
+
+    /**
      * Create a transport pointing to a server url.
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
@@ -196,7 +204,7 @@ class Client implements TransportInterface
     /**
      * Opens a cURL session if not yet one open.
      *
-     * @return null|false False in case there is already an open connection, else null;
+     * @return Jackalope\Transport\Davex\Request The Request
      */
     protected function getRequest($method, $uri)
     {
@@ -343,6 +351,34 @@ class Client implements TransportInterface
     }
 
     /**
+     * Creates a new Workspace with the specified name. The new workspace is
+     * empty, meaning it contains only root node.
+     *
+     * If srcWorkspace is given:
+     * Creates a new Workspace with the specified name initialized with a
+     * clone of the content of the workspace srcWorkspace. Semantically,
+     * this method is equivalent to creating a new workspace and manually
+     * cloning srcWorkspace to it; however, this method may assist some
+     * implementations in optimizing subsequent Node.update and Node.merge
+     * calls between the new workspace and its source.
+     *
+     * The new workspace can be accessed through a login specifying its name.
+     *
+     * @param string $name A String, the name of the new workspace.
+     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
+     * @return void
+     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
+     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
+     */
+    public function createWorkspace($name, $srcWorkspace = null)
+    {
+        throw new \Jackalope\NotImplementedException();
+    }
+
+    /**
      * Returns the accessible workspace names
      *
      * @return array Set of workspaces to work on.
@@ -378,6 +414,7 @@ class Client implements TransportInterface
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
+        $request->setTransactionId($this->transactionToken);
         try {
             return $request->executeJson();
         } catch (\PHPCR\PathNotFoundException $e) {
@@ -395,16 +432,39 @@ class Client implements TransportInterface
      */
     public function getNodes($paths)
     {
-        foreach ($paths as $key => $path) {
-            $paths[$key] = $this->encodePathForDavex($path);
-            $paths[$key] .= '.0.json';
+        if (count($paths) == 0) {
+            return array();
         }
+        $url = array_shift($paths);
 
-        $request = $this->getRequest(Request::GET, $paths);
+        if (count($paths) == 0) {
+            try {
+                return array($url => $this->getNode($url));
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                return array();
+            }
+        }
+        $body = array();
+
+        $url = $this->encodePathForDavex($url).".0.json";
+        foreach ($paths as $path) {
+            $body[] = http_build_query(array(":get"=>$path));
+        }
+        $body = implode("&",$body);
+        $request = $this->getRequest(Request::POST, $url);
+        $request->setBody($body);
+        $request->setContentType('application/x-www-form-urlencoded');
+        $request->setTransactionId($this->transactionToken);
         try {
-            return $request->executeJson(true);
+            $data = $request->executeJson();
+            return $data->nodes;
         } catch (\PHPCR\PathNotFoundException $e) {
             throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (\PHPCR\RepositoryException $e) {
+            if ($e->getMessage() == 'HTTP 403: Prefix must not be empty (org.apache.jackrabbit.spi.commons.conversion.IllegalNameException)') {
+                throw new \PHPCR\UnsupportedRepositoryOperationException("Jackalope currently needs a patched jackrabbit for Session->getNodes() to work. Until our patches make it into the official distribution, see https://github.com/jackalope/jackrabbit/blob/2.2-jackalope/README.jackalope.patches.md for details and downloads.");
+            }
+            throw $e;
         }
     }
 
@@ -437,6 +497,7 @@ class Client implements TransportInterface
     {
         $path = $this->encodePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path);
+        $request->setTransactionId($this->transactionToken);
         $curl = $request->execute(true);
         switch($curl->getHeader('Content-Type')) {
             case 'text/xml; charset=utf-8':
@@ -525,6 +586,7 @@ class Client implements TransportInterface
         $path = $this->encodePathForDavex($path);
         $identifier = $weak_reference ? 'weakreferences' : 'references';
         $request = $this->getRequest(Request::PROPFIND, $path);
+        $request->setTransactionId($this->transactionToken);
         $request->setBody($this->buildPropfindRequest(array('dcr:'.$identifier)));
         $request->setDepth(0);
         $dom = $request->executeDom();
@@ -557,6 +619,7 @@ class Client implements TransportInterface
         $path = $this->encodePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKIN, $path);
+            $request->setTransactionId($this->transactionToken);
             $curl = $request->execute(true);
             if ($curl->getHeader("Location")) {
                 return $this->stripServerRootFromUri(urldecode($curl->getHeader("Location")));
@@ -586,12 +649,14 @@ class Client implements TransportInterface
         $path = $this->encodePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKOUT, $path);
+            $request->setTransactionId($this->transactionToken);
             $request->execute();
         } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
             if ($e->getCode() == 405) {
-                throw new \PHPCR\UnsupportedRepositoryOperationException();
+                // TODO: when checking out a non-versionable node, we get here too. in that case the exception is very wrong
+                throw new \PHPCR\UnsupportedRepositoryOperationException($e->getMessage());
             }
-            throw new \PHPCR\RepositoryException();
+            throw new \PHPCR\RepositoryException($e->getMessage());
         }
         return;
     }
@@ -611,6 +676,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::UPDATE, $path);
         $request->setBody($body);
+        $request->setTransactionId($this->transactionToken);
         $request->execute(); // errors are checked in request
     }
 
@@ -618,6 +684,7 @@ class Client implements TransportInterface
     {
         $path = $this->encodePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path."/jcr:versionHistory");
+        $request->setTransactionId($this->transactionToken);
         $resp = $request->execute();
         return $resp;
     }
@@ -645,6 +712,7 @@ class Client implements TransportInterface
 
         $path = $this->addWorkspacePathToUri('/');
         $request = $this->getRequest(Request::SEARCH, $path);
+        $request->setTransactionId($this->transactionToken);
         $request->setBody($body);
 
         $rawData = $request->execute();
@@ -687,6 +755,7 @@ class Client implements TransportInterface
         $path = $this->encodePathForDavex($path);
 
         $request = $this->getRequest(Request::DELETE, $path);
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
         return true;
     }
@@ -701,7 +770,7 @@ class Client implements TransportInterface
      */
     public function deleteProperty($path)
     {
-        return $this->deleteItem($path);
+        return $this->deleteNode($path);
     }
 
     /**
@@ -727,6 +796,7 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::COPY, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
         $request->addHeader('Destination: '.$this->addWorkspacePathToUri($dstAbsPath));
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
     }
 
@@ -747,6 +817,7 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::MOVE, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
         $request->addHeader('Destination: '.$this->addWorkspacePathToUri($dstAbsPath));
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
     }
 
@@ -777,12 +848,14 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::MKCOL, $path);
         $request->setBody($body);
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
 
         // store single-valued multivalue properties separately
         foreach ($buffer as $path => $body) {
             $request = $this->getRequest(Request::PUT, $path);
             $request->setBody($body);
+            $request->setTransactionId($this->transactionToken);
             $request->execute();
         }
 
@@ -882,6 +955,7 @@ class Client implements TransportInterface
             $request->setContentType('jcr-value/'.strtolower($type));
         }
         $request->setBody($body);
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
 
         return true;
@@ -947,6 +1021,7 @@ class Client implements TransportInterface
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
         $request->setBody($this->buildLocateRequest($uuid));
+        $request->setTransactionId($this->transactionToken);
         $dom = $request->executeDom();
 
         /* answer looks like
@@ -981,6 +1056,7 @@ class Client implements TransportInterface
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
         $request->setBody($this->buildReportRequest('dcr:registerednamespaces'));
+        $request->setTransactionId($this->transactionToken);
         $dom = $request->executeDom();
 
         if ($dom->firstChild->localName != 'registerednamespaces-report'
@@ -1031,6 +1107,7 @@ class Client implements TransportInterface
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
         $namespaces[$prefix] = $uri;
         $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
         return true;
     }
@@ -1054,6 +1131,7 @@ class Client implements TransportInterface
         $namespaces = $this->getNamespaces();
         unset($namespaces[$prefix]);
         $request->setBody($this->buildRegisterNamespaceRequest($namespaces));
+        $request->setTransactionId($this->transactionToken);
         $request->execute();
         return true;
         */
@@ -1071,6 +1149,7 @@ class Client implements TransportInterface
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUriRoot);
         $request->setBody($this->buildNodeTypesRequest($nodeTypes));
+        $request->setTransactionId($this->transactionToken);
         $dom = $request->executeDom();
 
         if ($dom->firstChild->localName != 'nodeTypes') {
@@ -1082,6 +1161,81 @@ class Client implements TransportInterface
         }
 
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
+    }
+
+    /**
+     * Initiates a "local transaction" on the root node
+     *
+     * @return string The received transaction token
+     * @throws \PHPCR\RepositoryException If no transaction token received
+     */
+    public function beginTransaction()
+    {
+        $request = $this->getRequest(Request::LOCK, $this->workspaceUriRoot);
+        $request->setDepth('infinity');
+        $request->setTransactionId($this->transactionToken);
+        $request->setBody('<?xml version="1.0" encoding="utf-8"?>'.
+            '<D:lockinfo xmlns:D="'.self::NS_DAV.'" xmlns:jcr="'.self::NS_DCR.'">'.
+            ' <D:lockscope><jcr:local /></D:lockscope>'.
+            ' <D:locktype><jcr:transaction /></D:locktype>'.
+            '</D:lockinfo>');
+
+        $dom = $request->executeDom();
+        $hrefs = $dom->getElementsByTagNameNS(self::NS_DAV, 'href');
+
+        if (!$hrefs->length) {
+            throw new \PHPCR\RepositoryException('No transaction token received');
+        }
+        $this->transactionToken = $hrefs->item(0)->textContent;
+        return $this->transactionToken;
+    }
+
+    /**
+     * Ends the transaction started with {@link beginTransaction()}
+     *
+     * @param string $tag Either 'commit' or 'rollback'
+     */
+    protected function endTransaction($tag)
+    {
+        if ($tag != 'commit' && $tag != 'rollback') {
+            throw new \InvalidArgumentException('Expected \'commit\' or \'rollback\' as argument');
+        }
+
+        $request = $this->getRequest(Request::UNLOCK, $this->workspaceUriRoot);
+        $request->setLockToken($this->transactionToken);
+        $request->setBody('<?xml version="1.0" encoding="utf-8"?>'.
+            '<jcr:transactioninfo xmlns:jcr="'.self::NS_DCR.'">'.
+            ' <jcr:transactionstatus><jcr:'.$tag.' /></jcr:transactionstatus>'.
+            '</jcr:transactioninfo>');
+
+        $request->execute();
+        $this->transactionToken = false;
+    }
+
+    /**
+     * Commits a transaction started with {@link beginTransaction()}
+     */
+    public function commitTransaction()
+    {
+        $this->endTransaction('commit');
+    }
+
+    /**
+     * Rollbacks a transaction started with {@link beginTransaction()}
+     */
+    public function rollbackTransaction()
+    {
+        $this->endTransaction('rollback');
+    }
+
+    /**
+     * Sets the default transaction timeout
+     *
+     * @param int $seconds The value of the timeout in seconds
+     */
+    public function setTransactionTimeout($seconds)
+    {
+        throw new NotImplementedException();
     }
 
     /**
@@ -1099,6 +1253,7 @@ class Client implements TransportInterface
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
+        $request->setTransactionId($this->transactionToken);
         $request->setBody($this->buildRegisterNodeTypeRequest($cnd, $allowUpdate));
         $request->execute();
         return true;
@@ -1140,6 +1295,7 @@ class Client implements TransportInterface
 
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
         $request->setBody($body);
+        $request->setTransactionId($this->transactionToken);
         $dom = $request->executeDom();
 
         foreach($dom->getElementsByTagNameNS(self::NS_DAV, 'current-user-privilege-set') as $node) {

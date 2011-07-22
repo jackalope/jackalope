@@ -10,18 +10,15 @@ class RowIterator implements \SeekableIterator, \Countable
 
     protected $factory;
 
-    public $rows;
+    protected $rows;
 
     protected $position = 0;
 
     public function __construct($factory, $objectmanager, $rows)
     {
-        $this->objectmanager = $objectmanager;
         $this->factory = $factory;
-
-        foreach ($rows as $row) {
-            $this->rows[] = $this->factory->get('Query\Row', array($this->objectmanager, $row));
-        }
+        $this->objectmanager = $objectmanager;
+        $this->rows = $rows;
     }
 
     public function seek($position)
@@ -45,7 +42,7 @@ class RowIterator implements \SeekableIterator, \Countable
 
     public function current()
     {
-        return $this->rows[$this->position];
+        return $this->factory->get('Query\Row', array($this->objectmanager, $this->rows[$this->position]));
     }
 
     public function key()

@@ -172,7 +172,7 @@ class ObjectManager
      *
      * @param array $paths Array containing the absolute paths of the nodes to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
-     * @return ArrayIterator that contains all \PHPCR\Node's keyed their path
+     * @return ArrayIterator that contains all \PHPCR\Node's keyed by their path
      *
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
@@ -189,24 +189,26 @@ class ObjectManager
             }
         }
 
-        $data = $this->transport->getNodes($fetchPaths, $class);
-        foreach ($data as $fetchPath => $item) {
-            $absPath = array_search($fetchPath, $fetchPaths);
-            $nodes[$absPath] = $this->factory->get(
-                $class,
-                array(
-                    $item,
-                    $absPath,
-                    $this->session,
-                    $this
-                )
-            );
+        if (!empty($fetchPaths)) {
+            $data = $this->transport->getNodes($fetchPaths, $class);
+            foreach ($data as $fetchPath => $item) {
+                $absPath = array_search($fetchPath, $fetchPaths);
+                $nodes[$absPath] = $this->factory->get(
+                    $class,
+                    array(
+                        $item,
+                        $absPath,
+                        $this->session,
+                        $this
+                    )
+                );
 
-            if ($uuid = $nodes[$absPath]->getIdentifier()) {
-                $this->objectsByUuid[$uuid] = $absPath;
+                if ($uuid = $nodes[$absPath]->getIdentifier()) {
+                    $this->objectsByUuid[$uuid] = $absPath;
+                }
+
+                $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
             }
-
-            $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
         }
 
         return new ArrayIterator($nodes);
@@ -673,7 +675,7 @@ class ObjectManager
             }
         }
 
-        $this->itemsAdd = array();
+        $this->itemsRemove = $this->nodesMove =  $this->itemsAdd = array();
     }
 
     /**
