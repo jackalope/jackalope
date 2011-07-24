@@ -610,6 +610,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             ) {
                 $result[$name] = $this->properties[$name]->getString();
             } else {
+                // OPTIMIZE: collect the paths and call objectmanager->getNodesByPath once
                 $result[$name] = $this->properties[$name]->getValue();
             }
         }
