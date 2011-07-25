@@ -18,7 +18,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
 
     protected $session;
     protected $nodeTypeManager;
-    protected $utx;
+    protected $utx = null;
     protected $name;
     protected $namespaceRegistry;
 
