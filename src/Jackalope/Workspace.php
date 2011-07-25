@@ -18,6 +18,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
 
     protected $session;
     protected $nodeTypeManager;
+    protected $utx;
     protected $name;
     protected $namespaceRegistry;
 
@@ -224,6 +225,28 @@ class Workspace implements \PHPCR\WorkspaceInterface
     {
         return $this->factory->get('Query\QueryManager', array($this->session->getObjectManager()));
     }
+
+    /**
+     * Sets the TransactionManager
+     *
+     * @param \PHPCR\Transaction\UserTransactionInterface $utx A UserTransaction object
+     */
+    public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
+    {
+        $this->utx = $utx;
+    }
+
+    /**
+     * Returns the TransactionManager object
+     *
+     * @return \PHPCR\Transaction\UserTransactionInterface A UserTransaction object
+     * @api
+     */
+    public function getTransactionManager()
+    {
+        return $this->utx;
+    }
+
 
     /**
      * Returns the NamespaceRegistry object, which is used to access the mapping
