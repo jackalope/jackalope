@@ -18,6 +18,7 @@ use PHPCR\RepositoryFactoryInterface;
  */
 class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 {
+    // TODO: would be nice if alternatively one could also specify the parameters to let the factory build the connection
     private $required = array(
         'jackalope.doctrine_dbal_connection' => 'Doctrine\DBAL\Connection (required): connection instance',
     );
