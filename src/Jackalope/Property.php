@@ -659,8 +659,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
                   $targettype = $type;
                   /*
               } else {
-                  //convert to property type
-                  $targettype = $this->type;
+                  //convert to an allowed type. if the current type is defined $targettype = $this->type;
               }
             */
         }
