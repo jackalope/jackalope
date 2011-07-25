@@ -81,7 +81,7 @@ class Repository implements \PHPCR\RepositoryInterface
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
         if ($this->transactions) {
             $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session));
-            $session->setTransactionManager($utx);
+            $session->getWorkspace()->setTransactionManager($utx);
         }
 
         return $session;

@@ -85,21 +85,12 @@ class Session implements \PHPCR\SessionInterface
         $this->repository = $repository;
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
+        $this->utx = $this->workspace->getTransactionManager();
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
 
         $transport->setNodeTypeManager($this->workspace->getNodeTypeManager());
-    }
-
-    public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
-    {
-        $this->utx = $utx;
-    }
-
-    public function getTransactionManager()
-    {
-        return $this->utx;
     }
 
     /**
