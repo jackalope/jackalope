@@ -534,8 +534,8 @@ class Client implements TransactionalTransportInterface
             throw new \PHPCR\RepositoryException("Failed to load xml data:\n\n$xml");
         }
         $ret = array();
-        foreach($dom->getElementsByTagNameNS(self::NS_DCR, 'values') as $node) {
-            foreach($node->getElementsByTagNameNS(self::NS_DCR, 'value') as $value) {
+        foreach ($dom->getElementsByTagNameNS(self::NS_DCR, 'values') as $node) {
+            foreach ($node->getElementsByTagNameNS(self::NS_DCR, 'value') as $value) {
                 if ($value->getAttributeNS(self::NS_DCR, 'type') != \PHPCR\PropertyType::TYPENAME_BINARY) {
                     throw new \PHPCR\RepositoryException('Expected binary value but got '.$value->getAttributeNS(self::NS_DCR, 'type'));
                 }
@@ -593,8 +593,8 @@ class Client implements TransactionalTransportInterface
 
         $references = array();
 
-        foreach($dom->getElementsByTagNameNS(self::NS_DCR, $identifier) as $node) {
-            foreach($node->getElementsByTagNameNS(self::NS_DAV, 'href') as $ref) {
+        foreach ($dom->getElementsByTagNameNS(self::NS_DCR, $identifier) as $node) {
+            foreach ($node->getElementsByTagNameNS(self::NS_DAV, 'href') as $ref) {
                 $refpath = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
                 if ($name === null || basename($refpath) === $name) {
                     $references[] = str_replace($this->workspaceUriRoot, '',  urldecode($ref->textContent));
@@ -1298,9 +1298,9 @@ class Client implements TransactionalTransportInterface
         $request->setTransactionId($this->transactionToken);
         $dom = $request->executeDom();
 
-        foreach($dom->getElementsByTagNameNS(self::NS_DAV, 'current-user-privilege-set') as $node) {
-            foreach($node->getElementsByTagNameNS(self::NS_DAV, 'privilege') as $privilege) {
-                foreach($privilege->childNodes as $child) {
+        foreach ($dom->getElementsByTagNameNS(self::NS_DAV, 'current-user-privilege-set') as $node) {
+            foreach ($node->getElementsByTagNameNS(self::NS_DAV, 'privilege') as $privilege) {
+                foreach ($privilege->childNodes as $child) {
                     $permission = str_replace('dcr:', '', $child->tagName);
                     if (! in_array($permission, $valid_permissions)) {
                         throw new \PHPCR\RepositoryException("Invalid permission '$permission'");

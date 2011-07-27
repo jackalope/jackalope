@@ -520,7 +520,7 @@ class ObjectManager
         $props = array();
 
         //OPTIMIZE: get all the properties in one request?
-        foreach($array as $path) {
+        foreach ($array as $path) {
             $prop = $this->getPropertyByPath($path); //FIXME: this will break if we have non-persisted move
             $props[] = $prop;
         }
