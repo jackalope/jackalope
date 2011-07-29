@@ -229,8 +229,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
-        $node = $this->factory->get('Node', array($data, $path,
-                $this->session, $this->objectManager, true));
+        $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->nodes[] = $relPath;
         //by definition, adding a node sets the parent to modified
@@ -611,6 +610,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             ) {
                 $result[$name] = $this->properties[$name]->getString();
             } else {
+                // OPTIMIZE: collect the paths and call objectmanager->getNodesByPath once
                 $result[$name] = $this->properties[$name]->getValue();
             }
         }
@@ -936,14 +936,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
-            $values = $this->properties['jcr:mixinTypes']->getValue();
-            $values[] = $mixinName;
-            $values = array_unique($values);
-            $this->properties['jcr:mixinTypes']->setValue($values);
+            if (array_search($mixinName, $this->properties['jcr:mixinTypes']->getValue()) === false) {
+                $this->properties['jcr:mixinTypes']->addValue($mixinName);
+                $this->setModified();
+            }
         } else {
-            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::STRING);
+            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::NAME);
+            $this->setModified();
         }
-        $this->setModified();
     }
 
     /**

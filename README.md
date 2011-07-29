@@ -35,6 +35,22 @@ storage backend as well.
     $credentials = new SimpleCredentials('username', 'password');
     $session = $repository->login($credentials, 'default');
 
+    $rootNode = $session->getNode("/");
+    $whitewashing = $rootNode->addNode("www-whitewashing-de");
+    $session->save();
+
+    $posts = $whitewashing->addNode("posts");
+    $session->save();
+
+    $post = $posts->addNode("welcome-to-blog");
+    $post->addMixin("mix:title");
+    $post->setProperty("jcr:title", "Welcome to my Blog!");
+    $post->setProperty("jcr:description", "This is the first post on my blog! Do you like it?");
+
+    $session->save();
+
+
+See https://github.com/phpcr/phpcr/blob/master/doc/Tutorial.md for how to use the PHPCR API
 
 # Tests
 

@@ -18,6 +18,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
 
     protected $session;
     protected $nodeTypeManager;
+    protected $utx = null;
     protected $name;
     protected $namespaceRegistry;
 
@@ -226,6 +227,28 @@ class Workspace implements \PHPCR\WorkspaceInterface
     }
 
     /**
+     * Sets the TransactionManager
+     *
+     * @param \PHPCR\Transaction\UserTransactionInterface $utx A UserTransaction object
+     */
+    public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
+    {
+        $this->utx = $utx;
+    }
+
+    /**
+     * Returns the TransactionManager object
+     *
+     * @return \PHPCR\Transaction\UserTransactionInterface A UserTransaction object
+     * @api
+     */
+    public function getTransactionManager()
+    {
+        return $this->utx;
+    }
+
+
+    /**
      * Returns the NamespaceRegistry object, which is used to access the mapping
      * between prefixes and namespaces.
      *
@@ -298,14 +321,6 @@ class Workspace implements \PHPCR\WorkspaceInterface
     public function getAccessibleWorkspaceNames()
     {
         return $this->session->getTransport()->getAccessibleWorkspaceNames();
-    }
-
-    /**
-     * not implemented
-     */
-    public function getImportContentHandler($parentAbsPath, $uuidBehavior)
-    {
-        throw new NotImplementedException('Write');
     }
 
     /**

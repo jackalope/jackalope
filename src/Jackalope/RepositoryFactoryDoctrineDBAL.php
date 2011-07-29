@@ -18,6 +18,7 @@ use PHPCR\RepositoryFactoryInterface;
  */
 class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 {
+    // TODO: would be nice if alternatively one could also specify the parameters to let the factory build the connection
     private $required = array(
         'jackalope.doctrine_dbal_connection' => 'Doctrine\DBAL\Connection (required): connection instance',
     );
@@ -39,7 +40,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
      * @api
      */
     function getRepository(array $parameters = null) {
-        if (null == $parameters) {
+        if (null === $parameters) {
             return null;
         }
         // TODO: check if all required parameters specified
@@ -56,7 +57,8 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 
         $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\Client', array($dbConn));
 
-        return new Repository($factory, null, $transport);
+        $transactions = !empty($parameters['jackalope.transactions']);
+        return new Repository($factory, $transport, $transactions);
     }
 
     /**

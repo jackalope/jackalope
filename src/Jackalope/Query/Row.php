@@ -29,8 +29,8 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     public function __construct($factory, $objectmanager, $columns)
     {
-        $this->objectmanager = $objectmanager;
         $this->factory = $factory;
+        $this->objectmanager = $objectmanager;
         $this->columns = $columns;
     }
 

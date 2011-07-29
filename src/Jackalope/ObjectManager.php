@@ -172,7 +172,7 @@ class ObjectManager
      *
      * @param array $paths Array containing the absolute paths of the nodes to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
-     * @return ArrayIterator that contains all \PHPCR\Node's keyed their path
+     * @return ArrayIterator that contains all \PHPCR\Node's keyed by their path
      *
      * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
      */
@@ -520,7 +520,7 @@ class ObjectManager
         $props = array();
 
         //OPTIMIZE: get all the properties in one request?
-        foreach($array as $path) {
+        foreach ($array as $path) {
             $prop = $this->getPropertyByPath($path); //FIXME: this will break if we have non-persisted move
             $props[] = $prop;
         }

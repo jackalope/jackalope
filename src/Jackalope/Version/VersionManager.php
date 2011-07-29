@@ -260,11 +260,16 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     public function restore($removeExisting, $version, $absPath = null)
     {
         //FIXME: This does not handle all cases
+        if (! $absPath) {
+            throw new NotImplementedException();
+        }
+        if (! is_string($version)) {
+            throw new NotImplementedException();
+        }
         $vh = $this->getVersionHistory($absPath);
         $version = $vh->getVersion($version);
         $vpath = $version->getPath();
         $this->objectmanager->restore($removeExisting, $vpath, $absPath);
-        return;
     }
 
     /**

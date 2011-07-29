@@ -34,15 +34,17 @@ You need both Jackalope with the DoctrineDBAL branch and Doctrine Common+DBAL in
     }
 
     // Create Jackalope
-    $transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory(), $dbConn);
-    $repository = new \Jackalope\Repository(null, null, $transport);
+    $factory = new \Jackalope\RepositoryFactoryDoctrineDBAL();
+    $repository = $factory->getRepository(array('jackalope.doctrine_dbal_connection' => $dbConn));
 
 ## Creating your first Workspace
 
-Using $transport from above you have to create the initial workspace:
+The default workspace is automatically created when you first try to access it
 
     <?php
-    $transport->createWorkspace('default');
+    $session = $repository->login(null, 'default'); //credentials where in dbConn, don't matter here
+    $workspace = $session->getWorkspace();
+    $workspace->createWorkspace('myworkspace');
 
 ## Getting started
 
@@ -50,7 +52,7 @@ Now you have a 'default' workspace and can start changing stuff:
 
     <?php
 
-    $session = $repository->login(new \PHPCR\SimpleCredentials("foo", "bar"), "default"); // credentials dont matter
+    $session = $repository->login(null, "default"); // credentials dont matter
     $rootNode = $session->getNode("/");
     $whitewashing = $rootNode->addNode("www-whitewashing-de");
     $session->save();
@@ -61,7 +63,8 @@ Now you have a 'default' workspace and can start changing stuff:
     $post = $posts->addNode("welcome-to-blog");
     $post->addMixin("mix:title");
     $post->setProperty("jcr:title", "Welcome to my Blog!");
-    $post->setProperty("jcr:description", "This is the first post on my blog!Do you like it?");
+    $post->setProperty("jcr:description", "This is the first post on my blog! Do you like it?");
 
     $session->save();
 
+See https://github.com/phpcr/phpcr/blob/master/doc/Tutorial.md for how to use the PHPCR API

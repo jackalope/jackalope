@@ -180,7 +180,7 @@ class Client implements TransportInterface
      * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
+    public function login(\PHPCR\CredentialsInterface $credentials = null, $workspaceName = 'default')
     {
         $this->credentials = $credentials;
         $this->workspaceName = $workspaceName;
@@ -239,7 +239,7 @@ class Client implements TransportInterface
     private function assertLoggedIn()
     {
         if (!$this->loggedIn) {
-            if (!$this->checkLoginOnServer && $this->credentials && $this->workspaceName) {
+            if (!$this->checkLoginOnServer && $this->workspaceName) {
                 $credentials = $this->credentials;
                 $workspaceName = $this->workspaceName;
                 $this->credentials = $this->workspaceName = null;

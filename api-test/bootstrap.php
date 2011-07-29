@@ -31,10 +31,11 @@ foreach ($necessaryConfigValues as $val) {
 /**
  * autoloader: tests rely on an autoloader.
  */
-require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
+require __DIR__.'/../src/Jackalope/autoloader.php';
 
 ### Load two classes needed for jackalope unit tests ###
 require __DIR__.'/../tests/Jackalope/TestCase.php';
+require __DIR__.'/../tests/Jackalope/Transport/DoctrineDBAL/DoctrineDBALTestCase.php';
 
 /**
  * @return string classname of the repository factory
@@ -65,7 +66,8 @@ function getRepository($config) {
     if ($config['transport'] != 'davex') {
         throw new Exception("Don't know how to handle transport other than davex. (".$config['transport'].')');
     }
-    return new \Jackalope\Repository(null, $config['url'], null); //let jackalope factory create the transport
+    $transport = new \Jackalope\Transport\Davex\Client(new \Jackalope\Factory, $config['url']);
+    return new \Jackalope\Repository(null, $transport);
 }
 
 /**

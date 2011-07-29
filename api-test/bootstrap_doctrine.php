@@ -98,7 +98,7 @@ function getRepository($config) {
     $dbConn->insert('phpcr_workspaces', array('name' => 'tests'));
     $transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory, $dbConn);
     $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
-    return new \Jackalope\Repository(null, null, $transport); //let jackalope factory create the transport
+    return new \Jackalope\Repository(null, $transport);
 }
 
 /**
