@@ -148,7 +148,7 @@ class QOMWalker
      */
     public function walkPropertyExistanceConstraint(QOM\PropertyExistenceInterface $constraint)
     {
-        return "EXTRACTVALUE(".$this->getTableAlias($constraint->getSelectorName()).".props, 'count(//sv:property[sv:name=\"".$constraint->getPropertyName() . "\"]/sv:value[1])') = 1";
+        return $this->sqlXpathValueExists($this->getTableAlias($constraint->getSelectorName()), $constraint->getPropertyName());
     }
 
     /**
@@ -269,7 +269,7 @@ class QOMWalker
                 return $alias . ".identifier";
             } else {
                 // TODO: Abstract this from MySQL
-                return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])')";
+                return $this->sqlXpathExtractValue($alias, $property);
             }
 
         } else {
@@ -290,5 +290,29 @@ class QOMWalker
     {
         return $this->walkOperand($ordering->getOperand()) . " " .
                (($ordering->getOrder() == QOM\QueryObjectModelConstantsInterface::JCR_ORDER_ASCENDING) ? "ASC" : "DESC");
+    }
+
+    /**
+     * SQL to execute an XPATH expression checking if the property exist on the node with the given alias.
+     * 
+     * @param string $alias
+     * @param string $property
+     * @return string
+     */
+    private function sqlXpathValueExists($alias, $property)
+    {
+        return $this->sqlXpathExtractValue($alias, $property) . ' = 1';
+    }
+
+    /**
+     * SQL to execute an XPATH expression extracting the property value on the node with the given alias.
+     *
+     * @param string $alias
+     * @param string $property
+     * @return string
+     */
+    private function sqlXpathExtractValue($alias, $property)
+    {
+        return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])')";
     }
 }
