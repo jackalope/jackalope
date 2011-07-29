@@ -47,17 +47,37 @@ foreach ($ri AS $file) {
     $dataSetBuilder->addRow('phpcr_workspaces', array('id' => 1, 'name' => 'tests'));
 
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
-    $seenPaths = array();
-    if ($nodes->length > 0) {
+    $nodeId = 1;
+    $nodeIds = array();
+    
+    // is this a system-view?
+    if ($nodes->length > 0) {        
         $id = \PHPCR\Util\UUIDHelper::generateUUID();
-        // system-view
         $dataSetBuilder->addRow("phpcr_nodes", array(
-            'path' => '',
-            'parent' => '-1',
+            'id' => $nodeId++,
+            'path' => '/',
+            'parent' => '',
             'workspace_id' => 1,
             'identifier' => $id,
             'type' => 'nt:unstructured',
+            'props' => '<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:crx="http://www.day.com/crx/1.0"
+         xmlns:lx="http://flux-cms.org/2.0"
+         xmlns:test="http://liip.to/jackalope"
+         xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+         xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+         xmlns:fn_old="http://www.w3.org/2004/10/xpath-functions"
+         xmlns:fn="http://www.w3.org/2005/xpath-functions"
+         xmlns:vlt="http://www.day.com/jcr/vault/1.0"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:new_prefix="http://a_new_namespace"
+         xmlns:jcr="http://www.jcp.org/jcr/1.0"
+         xmlns:sv="http://www.jcp.org/jcr/sv/1.0"
+         xmlns:rep="internal" />'
         ));
+        $nodeIds[$id] = $nodeId;
+        
         foreach ($nodes AS $node) {
             /* @var $node DOMElement */
             $parent = $node;
@@ -68,7 +88,6 @@ foreach ($ri AS $file) {
                 }
                 $parent = $parent->parentNode;
             } while ($parent instanceof DOMElement);
-            $path = ltrim($path, '/');
 
             $attrs = array();
             foreach ($node->childNodes AS $child) {
@@ -90,151 +109,127 @@ foreach ($ri AS $file) {
 
             if (isset($attrs['jcr:uuid']['value'][0])) {
                 $id = (string)$attrs['jcr:uuid']['value'][0];
-                unset($attrs['jcr:uuid']['value'][0]);
             } else {
                 $id = \PHPCR\Util\UUIDHelper::generateUUID();
             }
+            
+            if (isset($nodeIds[$id])) {
+                $nodeId = $nodeIds[$id];
+            } else {
+                $nodeId = count($nodeIds)+1;
+                $nodeIds[$id] = $nodeId;
+            }
 
-            $dataSetBuilder->addRow('phpcr_nodes', array(
-                'path' => $path,
-                'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
-                'workspace_id' => 1,
-                'identifier' => $id,
-                'type' => $attrs['jcr:primaryType']['value'][0])
+            $namespaces = array(
+                'mix' => "http://www.jcp.org/jcr/mix/1.0",
+                'nt' => "http://www.jcp.org/jcr/nt/1.0",
+                'xs' => "http://www.w3.org/2001/XMLSchema",
+                'jcr' => "http://www.jcp.org/jcr/1.0",
+                'sv' => "http://www.jcp.org/jcr/sv/1.0",
+                'rep' => "internal"
             );
 
-            unset($attrs['jcr:primaryType']);
+            $dom = new \DOMDocument('1.0', 'UTF-8');
+            $rootNode = $dom->createElement('sv:node');
+            foreach ($namespaces as $namespace => $uri) {
+                $rootNode->setAttribute('xmlns:' . $namespace, $uri);
+            }
+            $dom->appendChild($rootNode);
+
+            $binaryData = null;
             foreach ($attrs AS $attr => $valueData) {
+                if ($attr == "jcr:uuid") {
+                    continue;
+                }
+                
                 $idx = 0;
-                $data = array(
-                    'path' => $path . '/' . $attr,
-                    'workspace_id' => 1,
-                    'name' => $attr,
-                    'idx' => $idx,
-                    'node_identifier' => $id,
-                    'type' => 0,
-                    'multi_valued' => 0,
-                    'string_data' => null,
-                    'int_data' => null,
-                    'float_data' => null,
-                    'clob_data' => null,
-                    'datetime_data' => null,
-                );
                 if (isset($jcrTypes[$valueData['type']])) {
-                    list($jcrTypeConst, $jcrTypeDbField) = $jcrTypes[$valueData['type']];
-                    $data['type'] = $jcrTypeConst;
-                    $data['multi_valued'] = $valueData['multiValued'] ? "1" : "0";
+                    $jcrTypeConst = $jcrTypes[$valueData['type']][0];
+                    
+                    $propertyNode = $dom->createElement('sv:property');
+                    $propertyNode->setAttribute('sv:name', $attr);
+                    $propertyNode->setAttribute('sv:type', $jcrTypeConst); // TODO: Name! not int
+                    $propertyNode->setAttribute('sv:multi-valued', $valueData['multiValued'] ? "1" : "0");
+
                     foreach ($valueData['value'] AS $value) {
                         switch ($valueData['type']) {
                             case 'binary':
-                                $data[$jcrTypeDbField] = strlen(base64_decode($value));
+                                $binaryData = base64_decode($value);
+                                $value = strlen($binaryData);
                                 break;
                             case 'boolean':
-                                $data[$jcrTypeDbField] = 'true' === $value ? '1' : '0';
+                                $value = 'true' === $value ? '1' : '0';
                                 break;
                             case 'date':
                                 $datetime = \DateTime::createFromFormat('Y-m-d\TH:i:s.uP', $value);
-                                $datetime->setTimezone(new DateTimeZone('UTC'));
-                                $data[$jcrTypeDbField] = $datetime->format('Y-m-d H:i:s');
+                                $value = $datetime->format('Y-m-d\TH:i:s.uP');
                                 break;
-                            default:
-                                $data[$jcrTypeDbField] = $value;
+                            case 'weakreference':
+                            case 'reference':
+                                if (isset($nodeIds[$value])) {
+                                    $targetId = $nodeIds[$value];
+                                } else {
+                                    $targetUUID = \PHPCR\Util\UUIDHelper::generateUUID();
+                                    $nodeIds[$targetUUID] = count($nodeIds)+1;
+                                    $targetId = $nodeIds[$targetUUID];
+                                }
+                                
+                                $dataSetBuilder->addRow('phpcr_nodes_foreignkeys', array(
+                                    'source_id' => $nodeId,
+                                    'source_property_name' => $attr,
+                                    'target_id' => $targetId,
+                                    'type' => $jcrTypeConst,
+                                ));
                                 break;
                         }
-                        $dataSetBuilder->addRow('phpcr_props', $data);
+                        $valueNode = $dom->createElement('sv:value');
+                        if (is_string($value) && strpos($value, ' ') !== false) {
+                            $valueNode->appendChild($dom->createCDATASection($value));
+                        } else {
+                            $valueNode->appendChild($dom->createTextNode($value));
+                        }
+
+                        $propertyNode->appendChild($valueNode);
 
                         if ('binary' === $valueData['type']) {
                             $dataSetBuilder->addRow('phpcr_binarydata', array(
-                                'path' => $data['path'],
+                                'node_id' => $nodeId,
+                                'property_name' => $attr,
                                 'workspace_id' => 1,
-                                'idx' => $data['idx'],
-                                'data' => base64_decode($value),
+                                'idx' => $idx++,
+                                'data' => $binaryData,
                             ));
                         }
-
-                        $data['idx'] = ++$idx;
                     }
+
+                    $rootNode->appendChild($propertyNode);
                 } else {
                     throw new InvalidArgumentException("No type ".$valueData['type']);
-                }
-
-                
+                }          
             }
+
+            $parent = implode("/", array_slice(explode("/", $path), 0, -1));
+            if (!$parent) {
+                $parent = '/';
+            }
+            $dataSetBuilder->addRow('phpcr_nodes', array(
+                'id' => $nodeId,
+                'path' => $path,
+                'parent' => $parent,
+                'workspace_id' => 1,
+                'identifier' => $id,
+                'type' => $attrs['jcr:primaryType']['value'][0],
+                'props' => $dom->saveXML(),
+            ));
         }
     } else {
-        $id = \PHPCR\Util\UUIDHelper::generateUUID();
-        // document-view
-        $dataSetBuilder->addRow("phpcr_nodes", array(
-            'path' => '',
-            'parent' => '-1',
-            'workspace_id' => 1,
-            'identifier' => $id,
-            'type' => 'nt:unstructured',
-        ));
-
-        $nodes = $srcDom->getElementsByTagName('*');
-        foreach ($nodes AS $node) {
-            if ($node instanceof DOMElement) {
-                $parent = $node;
-                $path = "";
-                do {
-                    $path = "/" . $parent->tagName . $path;
-                    $parent = $parent->parentNode;
-                } while ($parent instanceof DOMElement);
-                $path = ltrim($path, '/');
-
-                $attrs = array();
-                foreach ($node->attributes AS $attr) {
-                    $name = ($attr->prefix) ? $attr->prefix.":".$attr->name : $attr->name;
-                    $attrs[$name] = $attr->value;
-                }
-
-                if (!isset($attrs['jcr:primaryType'])) {
-                    $attrs['jcr:primaryType'] = 'nt:unstructured';
-                }
-
-                if (isset($attrs['jcr:uuid'])) {
-                    $id = $attrs['jcr:uuid'];
-                    unset($attrs['jcr:uuid']);
-                } else {
-                    $id = \PHPCR\Util\UUIDHelper::generateUUID();
-                }
-
-                if (!isset($seenPaths[$path])) {
-                    $dataSetBuilder->addRow('phpcr_nodes', array(
-                        'path' => $path,
-                        'parent' => implode("/", array_slice(explode("/", $path), 0, -1)),
-                        'workspace_id' => 1,
-                        'identifier' => $id,
-                        'type' => $attrs['jcr:primaryType'])
-                    );
-                    $seenPaths[$path] = $id;
-                } else {
-                    $id = $seenPaths[$path];
-                }
-                
-                unset($attrs['jcr:primaryType']);
-                foreach ($attrs AS $attr => $valueData) {
-                    $dataSetBuilder->addRow('phpcr_props', array(
-                        'path' => $path . '/' . $attr,
-                        'workspace_id' => 1,
-                        'name' => $attr,
-                        'node_identifier' => $id,
-                        'type' => 1,
-                        'multi_valued' => (in_array($attr, array('jcr:mixinTypes'))),
-                        'string_data' => null,
-                        'int_data' => null,
-                        'float_data' => null,
-                        'clob_data' => $valueData,
-                        'datetime_data' => null,
-                    ));
-                }
-            }
-        }
+        continue; // document view not supported
     }
 
+    $xml = str_replace('escaping_x0020 bla &lt;&gt;\'""', 'escaping_x0020 bla"', $dataSetBuilder->asXML(), $count);
+
     @mkdir (dirname($newFile), 0777, true);
-    file_put_contents($newFile, $dataSetBuilder->asXml());
+    file_put_contents($newFile, $xml);
 }
 
 

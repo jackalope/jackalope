@@ -6,39 +6,60 @@ use Doctrine\DBAL\DriverManager;
 
 class ClientTest extends DoctrineDBALTestCase
 {
-    private $conn;
     private $transport;
+    /**
+     * @var \Jackalope\Repository
+     */
+    private $repository;
+    /**
+     * @var \Jackalope\Session
+     */
+    private $session;
 
     public function setUp()
     {
         parent::setUp();
         
-        $this->conn = DriverManager::getConnection(array(
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        ));
+        $conn = $this->getConnection();
         $schema = RepositorySchema::create();
-        $sql = $schema->toSql($this->conn->getDatabasePlatform());
-        foreach ($sql AS $statement) {
-            $this->conn->exec($statement);
+
+        foreach ($schema->toDropSql($conn->getDatabasePlatform()) AS $statement) {
+            try {
+                $conn->exec($statement);
+            } catch(\Exception $e) {
+
+            }
         }
 
-        $this->conn->insert("phpcr_workspaces", array("name" => "Test"));
-        $workspaceId = $this->conn->lastInsertId();
-        $this->conn->insert("phpcr_nodes", array("path" => "", "workspace_id" => $workspaceId, 'parent' => '-1', "type" => "nt:unstructured", "identifier" => 1));
-        $parentId = $this->conn->lastInsertId();
-        $this->conn->insert("phpcr_nodes", array("path" => "foo", "workspace_id" => $workspaceId, 'parent' => $parentId, "type" => "nt:unstructured", "identifier" => 2));
-        $this->conn->insert("phpcr_props", array(
-            "path" => "foo/bar", "workspace_id" => $workspaceId, "type" => \PHPCR\PropertyType::STRING,
-            "node_identifier" => 2, "string_data" => "test", "name" => "bar"));
+        foreach ($schema->toSql($conn->getDatabasePlatform()) AS $statement) {
+            $conn->exec($statement);
+        }
 
         $this->transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory(), $this->conn);
+        $this->transport->createWorkspace('default');
+
+        $this->repository = new \Jackalope\Repository(null, $this->transport);
+        $this->session = $this->repository->login(new \PHPCR\SimpleCredentials("user", "passwd"), "default");
     }
 
-    public function testStuff()
+    public function testFunctional()
     {
-        $this->transport->login(new \PHPCR\GuestCredentials(), "Test");
-        $foo = $this->transport->getNode("foo");
-        $this->assertEquals(2, $foo->{'jcr:uuid'});
+        $root = $this->session->getNode('/');
+        $article = $root->addNode('article');
+        $article->setProperty('foo', 'bar');
+        $article->setProperty('bar', 'baz');
+
+        $this->session->save();
+
+        $qm = $this->session->getWorkspace()->getQueryManager();
+        $query = $qm->createQuery('SELECT * FROM [nt:unstructured]', \PHPCR\Query\QueryInterface::JCR_SQL2);
+        $result = $query->execute();
+
+        $this->assertEquals(2, count($result->getNodes()));
+
+        $query = $qm->createQuery('SELECT * FROM [nt:unstructured] WHERE foo = "bar"', \PHPCR\Query\QueryInterface::JCR_SQL2);
+        $result = $query->execute();
+
+        $this->assertEquals(1, count($result->getNodes()));
     }
 }
