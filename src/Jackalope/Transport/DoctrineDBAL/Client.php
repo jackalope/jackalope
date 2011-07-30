@@ -102,11 +102,22 @@ class Client implements TransportInterface
      */
     private $indexes;
 
+    /**
+     * @var string|null
+     */
+    private $sequenceWorkspaceName;
+    /**
+     * @var string|null
+     */
+    private $sequenceNodeName;
+
     public function __construct($factory, Connection $conn, array $indexes = array())
     {
         $this->factory = $factory;
         $this->conn = $conn;
         $this->indexes = $indexes;
+        $this->sequenceWorkspaceName = ($conn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) ? 'phpcr_workspaces_id_seq' : null;
+        $this->sequenceNodeName = ($conn->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) ? 'phpcr_nodes_id_seq' : null;
     }
 
     /**
@@ -151,7 +162,10 @@ class Client implements TransportInterface
             throw new \PHPCR\RepositoryException("Workspace '" . $name . "' already exists");
         }
         $this->conn->insert('phpcr_workspaces', array('name' => $name));
-        $workspaceId = $this->conn->lastInsertId();
+        $workspaceId = $this->conn->lastInsertId($this->sequenceWorkspaceName);
+        if (!$workspaceId) {
+            throw new \PHPCR\RepositoryException("Workspace creation fails.");
+        }
 
         $this->conn->insert("phpcr_nodes", array(
             'path'          => '/',
@@ -455,7 +469,7 @@ class Client implements TransportInterface
                     'props'         => $propsData['dom']->saveXML(),
                 ));
 
-                $nodeId = $this->conn->lastInsertId();
+                $nodeId = $this->conn->lastInsertId($this->sequenceNodeName);
             } else {
                 $this->conn->update('phpcr_nodes', array(
                     'props' => $propsData['dom']->saveXML(),
@@ -1208,7 +1222,7 @@ $/xi";
                 $parser = new \PHPCR\Util\QOM\Sql2ToQomQueryConverter(new \Jackalope\Query\QOM\QueryObjectModelFactory());
                 $qom = $parser->parse($query->getStatement());
 
-                $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform());
+                $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
                 $sql = $qomWalker->walkQOMQuery($qom);
 
                 $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);

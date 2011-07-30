@@ -65,8 +65,7 @@ class QOMWalkerTest extends DoctrineDBALTestCase
         );
         $sql = $this->walker->walkQOMQuery($query);
 
-        $this->assertEquals(
-            "SELECT * FROM phpcr_nodes n WHERE n.workspace_id = ? AND n.type IN ('nt:unstructured') AND EXTRACTVALUE(n.props, '//sv:property[@sv:name=\"jcr:createdBy\"]/sv:value[1]') = 'beberlei'",
+        $this->assertContains('//sv:property[@sv:name="jcr:createdBy"]/sv:value[1]',
             $sql
         );
     }

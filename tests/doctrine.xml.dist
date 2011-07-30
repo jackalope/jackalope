@@ -6,6 +6,11 @@
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
         <var name="phpcr.transport" value="davex" />
+        <var name="phpcr.dbal.driver" value="pdo_mysql" />
+        <var name="phpcr.dbal.host" value="localhost" />
+        <var name="phpcr.dbal.user" value="admin" />
+        <var name="phpcr.dbal.pass" value="admin" />
+        <var name="phpcr.dbal.dbname" value="phpcr_tests" />
         <!-- Path to Doctrine stuff for transport -->
         <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
         <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />

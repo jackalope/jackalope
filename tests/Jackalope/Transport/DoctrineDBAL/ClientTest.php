@@ -35,7 +35,7 @@ class ClientTest extends DoctrineDBALTestCase
             $conn->exec($statement);
         }
 
-        $this->transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory(), $this->conn);
+        $this->transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory(), $conn);
         $this->transport->createWorkspace('default');
 
         $this->repository = new \Jackalope\Repository(null, $this->transport);
