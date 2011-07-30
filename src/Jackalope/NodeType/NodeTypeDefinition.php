@@ -78,8 +78,8 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
         $this->primaryItemName = $ntd->getPrimaryItemName();
         $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
-        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions());
-        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions());
+        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions() ?: array());
+        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: array());
     }
 
     protected function fromArray(array $data)

@@ -42,7 +42,7 @@ class ClientTest extends DoctrineDBALTestCase
         $this->session = $this->repository->login(new \PHPCR\SimpleCredentials("user", "passwd"), "default");
     }
 
-    public function testFunctional()
+    public function testQueryNodes()
     {
         $root = $this->session->getNode('/');
         $article = $root->addNode('article');
@@ -61,5 +61,33 @@ class ClientTest extends DoctrineDBALTestCase
         $result = $query->execute();
 
         $this->assertEquals(1, count($result->getNodes()));
+    }
+
+    public function testAddNodeTypes()
+    {
+        $workspace = $this->session->getWorkspace();
+        $ntm = $workspace->getNodeTypeManager();
+        $template = $ntm->createNodeTypeTemplate();
+        $template->setName('phpcr:article');
+        
+        $propertyDefs = $template->getPropertyDefinitionTemplates();
+        $propertyTemplate = $ntm->createPropertyDefinitionTemplate();
+        $propertyTemplate->setName('headline');
+        $propertyTemplate->setRequiredType(\PHPCR\PropertyType::STRING);
+        $propertyDefs[] = $propertyTemplate;
+
+        $childDefs = $template->getNodeDefinitionTemplates();
+        $nodeTemplate = $ntm->createNodeDefinitionTemplate();
+        $nodeTemplate->setName('article_content');
+        $nodeTemplate->setDefaultPrimaryTypeName('nt:unstructured');
+        $nodeTemplate->setMandatory(true);
+        $childDefs[] = $nodeTemplate;
+
+        $ntm->registerNodeTypes(array($template), true);
+        
+        $def = $ntm->getNodeType('phpcr:article');
+        $this->assertEquals("phpcr:article", $def->getName());
+        $this->assertEquals(1, count($def->getDeclaredPropertyDefinitions()));
+        $this->assertEquals(1, count($def->getDeclaredChildNodeDefinitions()));
     }
 }
