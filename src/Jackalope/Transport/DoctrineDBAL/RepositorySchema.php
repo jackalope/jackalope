@@ -82,13 +82,13 @@ class RepositorySchema
 
         $types = $schema->createTable('phpcr_type_nodes');
         $types->addColumn('node_type_id', 'integer', array('autoincrement' => true));
-        $types->addColumn('name', 'string');
+        $types->addColumn('name', 'string', array('unique' => true));
         $types->addColumn('supertypes', 'string');
         $types->addColumn('is_abstract', 'boolean');
-        $types->addColumn('protected', 'boolean');
         $types->addColumn('is_mixin', 'boolean');
         $types->addColumn('queryable', 'boolean');
-        $types->addColumn('primary_item', 'string');
+        $types->addColumn('orderable_child_nodes', 'boolean');
+        $types->addColumn('primary_item', 'string', array('notnull' => false));
         $types->setPrimaryKey(array('node_type_id'));
 
         $propTypes = $schema->createTable('phpcr_type_props');
@@ -97,16 +97,24 @@ class RepositorySchema
         $propTypes->addColumn('protected', 'boolean');
         $propTypes->addColumn('auto_created', 'boolean');
         $propTypes->addColumn('mandatory', 'boolean');
-        $propTypes->addColumn('property_type', 'integer');
+        $propTypes->addColumn('on_parent_version', 'integer');
+        $propTypes->addcolumn('multiple', 'boolean');
+        $propTypes->addColumn('fulltext_searchable', 'boolean');
+        $propTypes->addcolumn('query_orderable', 'boolean');
+        $propTypes->addColumn('required_type', 'integer');
+        $propTypes->addColumn('query_operators', 'integer'); // BITMASK
+        $propTypes->addColumn('default_value', 'string', array('notnull' => false));
         $propTypes->setPrimaryKey(array('node_type_id', 'name'));
-
-        #$propContraints = $schema->createTable('phpcr_type_props_contraints');
 
         $childTypes = $schema->createTable('phpcr_type_childs');
         $childTypes->addColumn('node_type_id', 'integer');
         $childTypes->addColumn('name', 'string');
+        $childTypes->addColumn('protected', 'boolean');
+        $childTypes->addColumn('auto_created', 'boolean');
+        $childTypes->addColumn('mandatory', 'boolean');
+        $childTypes->addColumn('on_parent_version', 'integer');
         $childTypes->addColumn('primary_types', 'string');
-        $childTypes->addColumn('default_type', 'string');
+        $childTypes->addColumn('default_type', 'string', array('notnull' => false));
 
         return $schema;
     }
