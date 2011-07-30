@@ -323,7 +323,7 @@ class QOMWalker
         if ($this->platform instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
             return "EXTRACTVALUE($alias.props, '//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]')";
         } else if ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            return "array_to_string(xpath('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces()."), '')";
+            return "(xpath('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]/text()', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces()."))[1]::text";
         } else {
             throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
         }
