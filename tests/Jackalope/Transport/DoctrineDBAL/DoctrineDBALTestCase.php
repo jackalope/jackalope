@@ -20,11 +20,11 @@ abstract class DoctrineDBALTestCase extends TestCase
     {
         if ($this->conn === null) {
             $this->conn = DriverManager::getConnection(array(
-                'driver' => 'pdo_mysql',
-                'user' => $GLOBALS['phpcr.user'],
-                'password' => $GLOBALS['phpcr.pass'],
-                'dbname' => 'phpcr_tests',
-                'host' => 'localhost'
+                'driver'    => $GLOBALS['phpcr.dbal.driver'],
+                'user'      => $GLOBALS['phpcr.dbal.user'],
+                'password'  => $GLOBALS['phpcr.dbal.pass'],
+                'dbname'    => $GLOBALS['phpcr.dbal.dbname'],
+                'host'      => $GLOBALS['phpcr.dbal.host'],
             ));
         }
         return $this->conn;

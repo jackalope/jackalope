@@ -42,11 +42,14 @@ class QOMWalker
      * @var AbstractPlatform
      */
     private $platform;
+
+    private $namespaces;
     
-    public function __construct(NodeTypeManagerInterface $manager, AbstractPlatform $platform)
+    public function __construct(NodeTypeManagerInterface $manager, AbstractPlatform $platform, array $namespaces = array())
     {
         $this->nodeTypeManager = $manager;
         $this->platform = $platform;
+        $this->namespaces = $namespaces;
     }
 
     private function getTableAlias($selectorName)
@@ -256,8 +259,7 @@ class QOMWalker
             } else if ($property == "jcr:uuid") {
                 return $alias . ".identifier";
             } else {
-                // TODO: Abstract this from MySQL
-                return "EXTRACTVALUE($alias.props, '//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]')";
+                return $this->sqlXpathExtractValue($alias, $property);
             }
         } else if ($operand instanceof QOM\LengthInterface) {
 
@@ -268,7 +270,6 @@ class QOMWalker
             } else if ($property == "jcr:uuid") {
                 return $alias . ".identifier";
             } else {
-                // TODO: Abstract this from MySQL
                 return $this->sqlXpathExtractValue($alias, $property);
             }
 
@@ -301,7 +302,13 @@ class QOMWalker
      */
     private function sqlXpathValueExists($alias, $property)
     {
-        return $this->sqlXpathExtractValue($alias, $property) . ' = 1';
+        if ($this->platform instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
+            return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])') = 1";
+        } else if ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            return "xpath_exists('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces().") = 't'";
+        } else {
+            throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
+        }
     }
 
     /**
@@ -313,6 +320,18 @@ class QOMWalker
      */
     private function sqlXpathExtractValue($alias, $property)
     {
-        return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])')";
+        if ($this->platform instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
+            return "EXTRACTVALUE($alias.props, '//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]')";
+        } else if ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            return "array_to_string(xpath('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces()."), '')";
+        } else {
+            throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
+        }
+    }
+
+    private function sqlXpathPostgreSQLNamespaces()
+    {
+        $namespaces = "ARRAY[ARRAY['sv', 'http://www.jcp.org/jcr/sv/1.0']]";
+        return $namespaces;
     }
 }
