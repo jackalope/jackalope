@@ -297,7 +297,9 @@ class Client implements TransactionalTransportInterface
      */
     public function logout()
     {
-        $this->curl->close();
+        if (false !== $this->curl) {
+            $this->curl->close();
+        }
         $this->curl = false;
     }
 
