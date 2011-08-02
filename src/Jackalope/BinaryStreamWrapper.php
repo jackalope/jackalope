@@ -115,7 +115,7 @@ class BinaryStreamWrapper
                 if (!isset(self::$multiValueMap[$token])) {
                     self::$multiValueMap[$token] = $this->session->getObjectManager()->getBinaryStream($property_path);
                 }
-                $token = isset($url['port']) ? $url['port'] - 1 : 0;
+                $index = isset($url['port']) ? $url['port'] - 1 : 0;
                 $this->stream = self::$multiValueMap[$token][$index];
             }
         }
