@@ -29,19 +29,18 @@ which features are skipped for what backend.
 ## Troubleshooting
 
 If you get :
-```bash
-FPHP Fatal error:  Uncaught exception 'PHPCR\NoSuchWorkspaceException' with message 'HTTP 409: tests' in /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php:393
-Stack trace:
-#0 /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php(104): jackalope\transport\DavexClient->getDomFromBackend('PROPFIND', 'http://localhos...', '<?xml version="...')
-#1 /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/Repository.php(57): jackalope\transport\DavexClient->login(Object(PHPCR_SimpleCredentials), 'tests')
-#2 /home/fabriceb/dev/sfcmf/jackalope/api-test/bootstrap.php(67): jackalope\Repository->login(Object(PHPCR_SimpleCredentials), 'tests')
-#3 /home/fabriceb/dev/sfcmf/jackalope/api-test/suite/inc/baseCase.php(25): getJCRSession(Array)
-#4 [internal function]: jackalope_baseCase::setupBeforeClass()
-#5 /usr/share/php/PHPUnit/Framework/TestSuite.php(648): call_user_func(Array)
-#6 /usr/share/php/PHPUnit/Framework/TestSuite.php(688): PHPUnit_Framework_TestSuite->run(Object(PHPUnit_Framework_TestResult), fa in /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php on line 393
-```
-Check that you have copied correctly the tests workspace into your jackrabbit/workspace directory *and* that you restarted the jackrabbit server afterwards
 
+    FPHP Fatal error:  Uncaught exception 'PHPCR\NoSuchWorkspaceException' with message 'HTTP 409: tests' in /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php:393
+    Stack trace:
+    #0 /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php(104): jackalope\transport\DavexClient->getDomFromBackend('PROPFIND', 'http://localhos...', '<?xml version="...')
+    #1 /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/Repository.php(57): jackalope\transport\DavexClient->login(Object(PHPCR_SimpleCredentials), 'tests')
+    #2 /home/fabriceb/dev/sfcmf/jackalope/api-test/bootstrap.php(67): jackalope\Repository->login(Object(PHPCR_SimpleCredentials), 'tests')
+    #3 /home/fabriceb/dev/sfcmf/jackalope/api-test/suite/inc/baseCase.php(25): getJCRSession(Array)
+    #4 [internal function]: jackalope_baseCase::setupBeforeClass()
+    #5 /usr/share/php/PHPUnit/Framework/TestSuite.php(648): call_user_func(Array)
+    #6 /usr/share/php/PHPUnit/Framework/TestSuite.php(688): PHPUnit_Framework_TestSuite->run(Object(PHPUnit_Framework_TestResult), fa in /home/fabriceb/dev/sfcmf/jackalope/src/jackalope/transport/DavexClient.php on line 393
+
+Check that you have copied correctly the tests workspace into your jackrabbit/workspace directory *and* that you restarted the jackrabbit server afterwards
 
 
 ## Using JackrabbitFixtureLoader for load your own fixtures
@@ -53,12 +52,12 @@ inc/JackrabbitFixtureLoader.php to import fixtures in the JCR XML formats.
 It relies on jack.jar. The class can be plugged in Symfony2 autoload mechanism
 through autoload.php, which can be used to feed a MapFileClassLoader istance. E.g:
 
-```php
-$phpcr_loader = new MapFileClassLoader(
-  __DIR__.'/../vendor/doctrine-phpcr-odm/lib/vendor/jackalope/inc/JackrabbitFixtureLoader.php'
-);
-$phpcr_loader->register();
-```
+
+    $phpcr_loader = new MapFileClassLoader(
+    __DIR__.'/../vendor/doctrine-phpcr-odm/lib/vendor/jackalope/inc/JackrabbitFixtureLoader.php'
+    );
+    $phpcr_loader->register();
+
 
 ## Note on JCR
 
