@@ -1,12 +1,12 @@
 # Jackalope
 
-Implementation of a PHP client for the Jackrabbit server, an implementation of
-the Java Content Repository JCR.
+A powerful implementation of the [PHPCR API](http://phpcr.github.com).
 
-Implements the PHPCR interface
-(see http://phpcr.github.com for more about PHPCR).
+You can use Jackalope with different storage backends. For now, we support
+relational databases with the DoctrineDBAL backend, and the Jackrabbit server
+with the Jackrabbit backend.
+There is a different factory for each backend, see below for an introduction.
 
-[http://liip.to/jackalope](http://liip.to/jackalope)
 
 Discuss on jackalope-dev@googlegroups.com
 or visit #jackalope on irc.freenode.net
@@ -20,17 +20,25 @@ Please see the file LICENSE in this folder.
 * libxml version >= 2.7.0 (due to a bug in libxml [http://bugs.php.net/bug.php?id=36501](http://bugs.php.net/bug.php?id=36501))
 * phpunit >= 3.5 (if you want to run the tests)
 
+
 # Setup
 
 See https://github.com/jackalope/jackalope/wiki/Downloads
+
+
+## Tests
+
+See the wiki pages for how to set up testing: [DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) | [Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
+
 
 # Usage
 
 The entry point is to create the repository factory. The factory specifies the
 storage backend as well.
 
-    $factoryclass = 'Jackalope\RepositoryFactoryJackrabbit';
+    $factoryclass = 'Jackalope\RepositoryFactoryJackrabbit'; // or 'Jackalope\RepositoryFactoryDoctrineDBAL'
     $factory = new $factoryclass;
+    // see the Doctrine factory for available parameters for the doctrine backend
     $repository = $factory->getRepository(array('jackalope.jackrabbit_uri' => 'http://localhost:8080/server'));
     $credentials = new SimpleCredentials('username', 'password');
     $session = $repository->login($credentials, 'default');
@@ -51,30 +59,6 @@ storage backend as well.
 
 
 See https://github.com/phpcr/phpcr/blob/master/doc/Tutorial.md for how to use the PHPCR API
-
-# Tests
-
-Our continuos integration server with coverage reports at:
-[http://bamboo.liip.ch/browse/JACK](http://bamboo.liip.ch/browse/JACK)
-
-
-## Running the api tests
-
-Run phpunit with the configuration in api-tests
-phpunit -c /path/to/jackalope/api-tests
-
-You should see mostly success, but there might be the odd error or failure
-
-There are two kind of tests. The folder *api-tests* contains the
-phpcr-api-tests suite to test against the specification.
-This is what you want to look at when using jackalope as a PHPCR implementation.
-
-The folder *tests* contains unit tests for the jackalope implementation.
-You should only need those if you want to debug jackalope itselves or implement
-new features. Again, make sure you have the test workspace in jackrabbit.
-
-The phpunit.xml in api-tests runs all tests, both the unit and the api tests.
-The phpunit.xml in tests runs only the unit tests.
 
 
 # Contributors

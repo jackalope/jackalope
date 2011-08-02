@@ -1,0 +1,92 @@
+<?php
+
+require_once __DIR__.'/../phpcr-api/inc/AbstractLoader.php';
+
+/**
+ * Implementation loader for jackalope-jackrabbit
+ */
+class ImplementationLoader extends \PHPCR\Test\AbstractLoader
+{
+    private static $instance = null;
+
+    private $necessaryConfigValues = array('jackrabbit.uri', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace');
+
+    protected function __construct()
+    {
+        // Make sure we have the necessary config
+        foreach ($this->necessaryConfigValues as $val) {
+            if (empty($GLOBALS[$val])) {
+                die('Please set '.$val.' in your phpunit.xml.' . "\n");
+            }
+        }
+        parent::__construct('Jackalope\RepositoryFactoryJackrabbit');
+
+        $this->unsupportedChapters = array(
+                    'PermissionsAndCapabilities',
+                    'Import',
+                    'Observation',
+                    'WorkspaceManagement',
+                    'ShareableNodes',
+                    'AccessControlManagement',
+                    'Locking',
+                    'LifecycleManagement',
+                    'RetentionAndHold',
+                    'SameNameSiblings',
+                    'OrderableChildNodes',
+        );
+
+        $this->unsupportedTests = array(
+                    'Connecting\\RepositoryTest::testLoginException', //TODO: figure out what would be invalid credentials
+                    'Connecting\\RepositoryTest::testNoLogin',
+                    'Connecting\\RepositoryTest::testNoLoginAndWorkspace',
+
+                    'Reading\\SessionReadMethodsTest::testImpersonate', //TODO: Check if that's implemented in newer jackrabbit versions.
+                    'Reading\\SessionNamespaceRemappingTest::testSetNamespacePrefix',
+                    'Reading\\NodeReadMethodsTest::testGetSharedSetUnreferenced', // TODO: should this be moved to 14_ShareableNodes
+
+                    'Query\QueryManagerTest::testGetQuery',
+                    'Query\QueryManagerTest::testGetQueryInvalid',
+
+                    'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
+                    'Writing\\CopyMethodsTest::testCopyUpdateOnCopy',
+        );
+
+    }
+
+    public static function getInstance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new ImplementationLoader();
+        }
+        return self::$instance;
+    }
+
+    public function getRepositoryFactoryParameters()
+    {
+        return array('jackalope.jackrabbit_uri' => $GLOBALS['jackrabbit.uri']);
+    }
+
+    public function getCredentials() {
+        return new \PHPCR\SimpleCredentials($GLOBALS['phpcr.user'], $GLOBALS['phpcr.pass']);
+    }
+
+    public function getInvalidCredentials() {
+        return new \PHPCR\SimpleCredentials('nonexistinguser', '');
+    }
+
+    public function getRestrictedCredentials()
+    {
+        return new \PHPCR\SimpleCredentials('anonymous', 'abc');
+    }
+
+    public function getUserId()
+    {
+        return $GLOBALS['phpcr.user'];
+    }
+
+    function getFixtureLoader()
+    {
+        require_once "JackrabbitFixtureLoader.php";
+        return new JackrabbitFixtureLoader(__DIR__.'/../phpcr-api/fixtures/', (isset($GLOBALS['jackrabbit.jar']) ? $config['jackrabbit.jar'] : null));
+    }
+}

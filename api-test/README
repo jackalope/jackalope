@@ -1,8 +1,0 @@
-We use jackalope-api-tests to run api level tests. If you intend to use
-jackalope as a phpCR implementation, you should only look at the api-tests
-here.
-The tests folder in root contains unit tests to implementation specific
-details. It is only of interest for debugging jackalope itselves.
-
-Please see the README in root folder how to run the tests.
-

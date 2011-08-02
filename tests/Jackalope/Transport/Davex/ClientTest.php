@@ -7,7 +7,10 @@ use Jackalope\TestCase;
 use DOMDocument;
 use DOMXPath;
 
-class ClientTest extends TestCase
+/**
+ * TODO: this unit test contains some functional tests. we should separate functional and unit tests.
+ */
+class ClientTest extends DavexTestCase
 {
     public function getTransportMock($args = 'testuri', $changeMethods = array())
     {
@@ -66,7 +69,7 @@ class ClientTest extends TestCase
         $factory = new \Jackalope\Factory;
         $transport = new ClientMock($factory, 'testuri');
         $transport->__destruct();
-        $this->assertSame(null, $transport->curl);
+        $this->assertNull($transport->curl);
     }
 
     /**
