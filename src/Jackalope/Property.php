@@ -15,8 +15,8 @@ use PHPCR\PropertyType;
  */
 class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
-    /** flag to call stream_wrapper_register only once */
-    protected static $binaryStreamWrapperRegistered = false;
+    /** flag to call stream_get_wrappers only once */
+    protected static $binaryStreamWrapperRegistered;
 
     protected $value;
     /** length (only used for binary property */
@@ -47,6 +47,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function __construct($factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
+
+        if (null === self::$binaryStreamWrapperRegistered) {
+            self::$binaryStreamWrapperRegistered = in_array('jackalope', stream_get_wrappers());
+        }
 
         if (empty($data) && $new == true) {
             return;
@@ -242,6 +246,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return PropertyType::convertType($this->value, PropertyType::BINARY);
         }
+        if (!self::$binaryStreamWrapperRegistered && null == $this->value) {
+            $this->value = $this->objectManager->getBinaryStream($this->path);
+        }
         if ($this->value != null) {
             // new or updated property
             $val = is_array($this->value) ? $this->value : array($this->value);
@@ -255,10 +262,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             }
             return is_array($this->value) ? $ret : $ret[0];
         }
-        // register a stream wrapper to lazily load binary property values
         if (!self::$binaryStreamWrapperRegistered) {
-            stream_wrapper_register('jackalope', 'Jackalope\\BinaryStreamWrapper');
-            self::$binaryStreamWrapperRegistered = true;
+            throw new \LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not registered");
         }
         // return wrapped stream
         if ($this->isMultiple()) {

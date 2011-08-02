@@ -14,17 +14,29 @@ use PHPCR\CredentialsInterface;
  */
 class Repository implements \PHPCR\RepositoryInterface
 {
+    /** flag to call stream_wrapper_register only once */
+    protected static $binaryStreamWrapperRegistered;
+
     /**
      * The factory to instantiate objects
      * @var Factory
      */
     protected $factory;
 
+    /**
+     * @var TransportInterface
+     */
     protected $transport;
 
-    protected $transactions;
+    protected $options = array(
+        'transactions' => true,
+        'stream_wrapper' => false,
+    );
 
-    /** Array of descriptors. Each is either a string or an array of strings. */
+    /**
+     * Array of descriptors. Each is either a string or an array of strings.
+     * @var array
+     */
     protected $descriptors;
 
     /**
@@ -34,14 +46,22 @@ class Repository implements \PHPCR\RepositoryInterface
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      *                If this is null, the \Jackalope\Factory is instantiated
      *                Note that the repository is the only class accepting null as factory
-     * @param bool $transactions if to enable transactions
-     * @param $transport Optional transport implementation. If specified, $uri is ignored
+     * @param $transport transport implementation
+     * @param array $options defines optional features to enable/disable (see $options property)
      */
-    public function __construct(Factory $factory = null, TransportInterface $transport = null, $transactions = true)
+    public function __construct(Factory $factory = null, TransportInterface $transport = null, array $options = null)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
-        $this->transactions = $transactions && $transport instanceof TransactionalTransportInterface;
+        $this->options = array_merge((array)$options, $this->options);
+        $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionalTransportInterface;
+        // register a stream wrapper to lazily load binary property values
+        if (null === self::$binaryStreamWrapperRegistered) {
+            self::$binaryStreamWrapperRegistered = $this->options['stream_wrapper'];
+            if (self::$binaryStreamWrapperRegistered) {
+                stream_wrapper_register('jackalope', 'Jackalope\\BinaryStreamWrapper');
+            }
+        }
     }
 
     /**
@@ -79,7 +99,7 @@ class Repository implements \PHPCR\RepositoryInterface
         }
 
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
-        if ($this->transactions) {
+        if ($this->options['transactions']) {
             $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session));
             $session->getWorkspace()->setTransactionManager($utx);
         }

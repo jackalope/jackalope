@@ -74,8 +74,9 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
 
-        $transactions = empty($parameters['jackalope.disable_transactions']);
-        return new Repository($factory, $transport, $transactions);
+        $options['transactions'] = empty($parameters['jackalope.disable_transactions']);
+        $options['stream_wrapper'] = empty($parameters['jackalope.disable_stream_wrapper']);
+        return new Repository($factory, $transport, $options);
     }
 
     /**
