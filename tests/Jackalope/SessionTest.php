@@ -13,7 +13,7 @@ class SessionTest extends TestCase
         $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport = $this->getMock('Jackalope\Transport\Jackrabbit\Client', array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
@@ -35,7 +35,7 @@ class SessionTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\Transport\Davex\Client', array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport = $this->getMock('Jackalope\Transport\Jackrabbit\Client', array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));

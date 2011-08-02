@@ -35,7 +35,7 @@ require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
-require 'Jackalope/Transport/Davex/DavexTestCase.php';
+require 'Jackalope/Transport/Jackrabbit/DavexTestCase.php';
 require 'Jackalope/Transport/DoctrineDBAL/DoctrineDBALTestCase.php';
 
 ### Load the implementation loader class ###

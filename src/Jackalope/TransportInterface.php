@@ -26,7 +26,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * and backend specific restrictions.
  *
  * This interface is now synchronized with what we had for davex as per 2011-04-13
- * TODO: keep this in sync with Transport/Davex/Client.php
+ * TODO: keep this in sync with Transport/Jackrabbit/Client.php
  * TODO: add references to all phpcr api methods that use each transport method for additional doc
  * TODO: add methods for all features. split into one interface per feature and transport implements just does it actually supports
  *

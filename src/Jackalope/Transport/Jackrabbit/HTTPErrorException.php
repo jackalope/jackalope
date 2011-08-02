@@ -1,6 +1,6 @@
 <?php
 
-namespace Jackalope\Transport\Davex;
+namespace Jackalope\Transport\Jackrabbit;
 
 class HTTPErrorException extends \RuntimeException {
     
