@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class to handle the communication between Jackalope and Jackrabbit via Davex.
+ * Class to handle setup the RDBMS tables for the Doctrine DBAL transport.
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *   Licensed under the Apache License, Version 2.0 (the "License") {}
