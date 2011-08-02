@@ -29,6 +29,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
      */
     static private $optional = array(
         'jackalope.factory' => 'string or object: Use a custom factory class for Jackalope objects',
+        'jackalope.check_login_on_server' => 'boolean: If to check if an initial PROPFIND should be send to check if repository exist',
         'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled',
         'jackalope.disable_stream_wrapper' => 'boolean: if set and not empty, stream wrapper is disabled, otherwise the stream wrapper is enabled',
     );
@@ -73,6 +74,9 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
         $dbConn = $parameters['jackalope.doctrine_dbal_connection'];
 
         $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\Client', array($dbConn));
+        if (isset($parameters['jackalope.check_login_on_server'])) {
+            $transport->setCheckLoginOnServer($parameters['jackalope.check_login_on_server']);
+        }
 
         $options['transactions'] = empty($parameters['jackalope.disable_transactions']);
         $options['stream_wrapper'] = empty($parameters['jackalope.disable_stream_wrapper']);

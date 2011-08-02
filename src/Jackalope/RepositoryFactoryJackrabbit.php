@@ -30,7 +30,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         'jackalope.factory' => 'string or object: Use a custom factory class for Jackalope objects',
         'jackalope.default_header' => 'string: Set a default header to send on each request to the backend (i.e. for load balancers to identify sessions)',
         'jackalope.jackrabbit_expect' => 'boolean: Send the "Expect: 100-continue" header on larger PUT and POST requests',
-        'jackalope.jackrabbit_check_login_on_server' => 'boolean: If to check if an initial PROPFIND should be send to check if repository exist',
+        'jackalope.check_login_on_server' => 'boolean: If to check if an initial PROPFIND should be send to check if repository exist',
         'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled',
         'jackalope.disable_stream_wrapper' => 'boolean: if set and not empty, stream wrapper is disabled, otherwise the stream wrapper is enabled',
     );
