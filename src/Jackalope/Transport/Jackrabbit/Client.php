@@ -20,7 +20,7 @@
  * @subpackage transport
  */
 
-namespace Jackalope\Transport\Davex;
+namespace Jackalope\Transport\Jackrabbit;
 
 use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
@@ -204,7 +204,7 @@ class Client implements TransactionalTransportInterface
     /**
      * Opens a cURL session if not yet one open.
      *
-     * @return Jackalope\Transport\Davex\Request The Request
+     * @return Jackalope\Transport\Jackrabbit\Request The Request
      */
     protected function getRequest($method, $uri)
     {
@@ -225,7 +225,7 @@ class Client implements TransactionalTransportInterface
         }
 
 
-        $request = $this->factory->get('Transport\Davex\Request', array($this->curl, $method, $uri));
+        $request = $this->factory->get('Transport\Jackrabbit\Request', array($this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
         foreach ($this->defaultHeaders as $header) {
             $request->addHeader($header);
@@ -626,7 +626,7 @@ class Client implements TransactionalTransportInterface
             if ($curl->getHeader("Location")) {
                 return $this->stripServerRootFromUri(urldecode($curl->getHeader("Location")));
             }
-        } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
+        } catch (HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 throw new \PHPCR\UnsupportedRepositoryOperationException();
             }
@@ -653,7 +653,7 @@ class Client implements TransactionalTransportInterface
             $request = $this->getRequest(Request::CHECKOUT, $path);
             $request->setTransactionId($this->transactionToken);
             $request->execute();
-        } catch (\Jackalope\Transport\Davex\HTTPErrorException $e) {
+        } catch (HTTPErrorException $e) {
             if ($e->getCode() == 405) {
                 // TODO: when checking out a non-versionable node, we get here too. in that case the exception is very wrong
                 throw new \PHPCR\UnsupportedRepositoryOperationException($e->getMessage());

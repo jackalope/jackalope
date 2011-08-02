@@ -75,7 +75,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
             $uri .= '/';
         }
 
-        $transport = $factory->get('Transport\Davex\Client', array($uri));
+        $transport = $factory->get('Transport\Jackrabbit\Client', array($uri));
         if (isset($parameters['jackalope.default_header'])) {
             $transport->setDefaultHeader($parameters['jackalope.default_header']);
         }
