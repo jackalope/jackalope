@@ -7,7 +7,6 @@ cscope.out
 doc/config/phpdoc.ini
 doc/html
 
+/tests/phpunit.xml
 /tests/doctrine.xml
-/api-test/phpunit.xml
-/api-test/doctrine.xml
-/api-test/fixtures/
+/tests/fixtures/doctrine

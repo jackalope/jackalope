@@ -8,24 +8,24 @@
          stopOnFailure="false"
          syntaxCheck="true"
          strict="true"
-         bootstrap="bootstrap.php">
+         bootstrap="bootstrap_jackrabbit.php">
     <php>
-        <var name="phpcr.url" value="http://localhost:8080/server" />
+        <var name="jackrabbit.uri" value="http://localhost:8080/server" />
         <var name="phpcr.user" value="admin" />
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
-        <var name="phpcr.transport" value="davex" />
     </php>
 
     <testsuites>
-        <testsuite name="all">
-            <directory>suite/tests/</directory>
-            <directory>../tests/</directory>
+        <testsuite name="Jackalope Jackrabbit Tests">
+            <directory>.</directory>
         </testsuite>
-        <!-- if phpunit would actually allow to use its config, we could add
-            this one and let the caller specify what they want to test
-        <testsuite name="api">
-            <directory>suite/tests/</directory>
+        <!-- if phpunit would support the full power of its config format, we
+             could add more test suites to allow the user to specify which
+             tests to run. as it is, you can specify the directy you want to
+             limit tests to on the command line.
+        <testsuite name="Jackalope API Tests">
+            <directory>phpcr-api/</directory>
         </testsuite>
         -->
     </testsuites>
@@ -33,14 +33,13 @@
     <!-- configuration for code coverage report -->
     <filter>
         <whitelist>
-            <directory>../</directory>
+            <directory>../src</directory>
+            <directory>../lib/phpcr</directory>
 
             <exclude>
-                <!-- ignore the unit tests -->
-                <directory>../tests</directory>
-
-                <!-- ignore the api tests -->
-                <directory>.</directory>
+                <!-- ignore helpers -->
+                <file>../src/Jackalope/autoloader.php</file>
+                <file>../src/Jackalope/Transport/curl.php</file>
 
                 <!-- ignore whats not implemented yet -->
                 <directory>../lib/phpcr/src/PHPCR/Lock</directory>

@@ -12,7 +12,7 @@ abstract class DoctrineDBALTestCase extends TestCase
     public function setUp()
     {
         if (!isset($GLOBALS['phpcr.doctrine.loaded'])) {
-            $this->markTestSkipped('phpcr.doctrine.loader and phpcr.doctrine.dbaldir are not configured. Skipping Doctrine tests.');
+            $this->markTestSkipped('phpcr.doctrine.loaded is not set. Skipping Doctrine tests.');
         }
     }
 
@@ -20,11 +20,11 @@ abstract class DoctrineDBALTestCase extends TestCase
     {
         if ($this->conn === null) {
             $this->conn = DriverManager::getConnection(array(
-                'driver'    => $GLOBALS['phpcr.dbal.driver'],
-                'user'      => $GLOBALS['phpcr.dbal.user'],
-                'password'  => $GLOBALS['phpcr.dbal.pass'],
-                'dbname'    => $GLOBALS['phpcr.dbal.dbname'],
-                'host'      => $GLOBALS['phpcr.dbal.host'],
+                'driver'    => $GLOBALS['phpcr.doctrine.dbal.driver'],
+                'user'      => $GLOBALS['phpcr.doctrine.dbal.username'],
+                'password'  => $GLOBALS['phpcr.doctrine.dbal.password'],
+                'dbname'    => $GLOBALS['phpcr.doctrine.dbal.dbname'],
+                'host'      => $GLOBALS['phpcr.doctrine.dbal.host'],
             ));
         }
         return $this->conn;

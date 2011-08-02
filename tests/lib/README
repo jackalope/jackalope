@@ -1,0 +1,4 @@
+The jackrabbit-*.jar and DavexClient.jar libraries are used by Jack to reset 
+the jackrabbit repository to a known state. We do this with a Java library 
+to avoid errors in the import method of the tested implementation creating 
+failed tests that have nothing to do with import.

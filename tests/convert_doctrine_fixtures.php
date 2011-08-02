@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Convert Jackalope Document or System Views into PHPUnit DBUnit Fixture XML files
@@ -7,7 +8,7 @@
 
 require_once __DIR__ . "/../lib/phpcr/src/PHPCR/Util/UUIDHelper.php";
 
-$srcDir = __DIR__ . "/suite/fixtures";
+$srcDir = __DIR__ . "/phpcr-api/fixtures";
 $destDir = __DIR__ . "/fixtures/doctrine";
 
 $jcrTypes = array(
@@ -49,9 +50,9 @@ foreach ($ri AS $file) {
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
     $nodeId = 1;
     $nodeIds = array();
-    
+
     // is this a system-view?
-    if ($nodes->length > 0) {        
+    if ($nodes->length > 0) {
         $id = \PHPCR\Util\UUIDHelper::generateUUID();
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'id' => $nodeId++,
@@ -77,7 +78,7 @@ foreach ($ri AS $file) {
          xmlns:rep="internal" />'
         ));
         $nodeIds[$id] = $nodeId;
-        
+
         foreach ($nodes AS $node) {
             /* @var $node DOMElement */
             $parent = $node;
@@ -112,7 +113,7 @@ foreach ($ri AS $file) {
             } else {
                 $id = \PHPCR\Util\UUIDHelper::generateUUID();
             }
-            
+
             if (isset($nodeIds[$id])) {
                 $nodeId = $nodeIds[$id];
             } else {
@@ -141,11 +142,11 @@ foreach ($ri AS $file) {
                 if ($attr == "jcr:uuid") {
                     continue;
                 }
-                
+
                 $idx = 0;
                 if (isset($jcrTypes[$valueData['type']])) {
                     $jcrTypeConst = $jcrTypes[$valueData['type']][0];
-                    
+
                     $propertyNode = $dom->createElement('sv:property');
                     $propertyNode->setAttribute('sv:name', $attr);
                     $propertyNode->setAttribute('sv:type', $jcrTypeConst); // TODO: Name! not int
@@ -173,7 +174,7 @@ foreach ($ri AS $file) {
                                     $nodeIds[$targetUUID] = count($nodeIds)+1;
                                     $targetId = $nodeIds[$targetUUID];
                                 }
-                                
+
                                 $dataSetBuilder->addRow('phpcr_nodes_foreignkeys', array(
                                     'source_id' => $nodeId,
                                     'source_property_name' => $attr,
@@ -205,7 +206,7 @@ foreach ($ri AS $file) {
                     $rootNode->appendChild($propertyNode);
                 } else {
                     throw new InvalidArgumentException("No type ".$valueData['type']);
-                }          
+                }
             }
 
             $parent = implode("/", array_slice(explode("/", $path), 0, -1));

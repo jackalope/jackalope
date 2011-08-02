@@ -12,11 +12,10 @@
         <var name="phpcr.user" value="admin" />
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
-        <var name="phpcr.transport" value="doctrinedbal" />
         <!-- Path to Doctrine stuff for transport -->
         <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
         <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />
-        <var name="phpcr.doctrine.dbaldir" value=/path/to/Doctrine/dbal/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="/path/to/Doctrine/dbal/lib" />
         <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="phpcr.doctrine.dbal.host" value="localhost" />
         <var name="phpcr.doctrine.dbal.username" value="root" />
@@ -25,18 +24,27 @@
     </php>
 
     <testsuites>
-        <testsuite name="phpcr">
-            <directory>suite/tests/</directory>
+        <testsuite name="Jackalope Doctrine DBAL Tests">
+            <directory>.</directory>
         </testsuite>
     </testsuites>
 
+    <!-- configuration for code coverage report -->
     <filter>
         <whitelist>
-            <directory>../</directory>
+            <directory>../src</directory>
+            <directory>../lib/phpcr</directory>
+
             <exclude>
-                <directory>../tests</directory>
-                <directory>.</directory>
-                <file>../src/jackalope/transport/curl.php</file>
+                <!-- ignore helpers -->
+                <file>../src/Jackalope/autoloader.php</file>
+                <file>../src/Jackalope/Transport/curl.php</file>
+
+                <!-- ignore whats not implemented yet -->
+                <directory>../lib/phpcr/src/PHPCR/Lock</directory>
+                <directory>../lib/phpcr/src/PHPCR/Observation</directory>
+                <directory>../lib/phpcr/src/PHPCR/Retention</directory>
+                <directory>../lib/phpcr/src/PHPCR/Security</directory>
             </exclude>
         </whitelist>
     </filter>
