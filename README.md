@@ -61,6 +61,12 @@ storage backend as well.
 See https://github.com/phpcr/phpcr/blob/master/doc/Tutorial.md for how to use the PHPCR API
 
 
+# Implementation
+
+See (doc/architecture.md) for an introduction how Jackalope is built. Have a
+look at the source files and generate the phpdoc.
+
+
 # Contributors
 
 * Christian Stocker <chregu@liip.ch>
