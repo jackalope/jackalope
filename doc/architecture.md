@@ -1,5 +1,4 @@
-Architecture
-============
+# Architecture
 
 Components
 * PHPCR API Interfaces - defining the API
@@ -9,41 +8,69 @@ Components
   * Storage layer
 
 
-phpCR API Interfaces
-----
-
-These interfaces should be implemented by all projects providing a JCR programming interface in PHP. These interface definitions are project-independent and are developed in close collaboration with the [[FLOW3|http://flow3.typo3.org/]] project, who initially provided the source code.
-
-PHP code: https://github.com/jackalope/phpcr
+## PHPCR API Interfaces
 
 
-Jackalope API Tests
-----
+These interfaces have to be implemented by all projects providing the API in
+PHP. These interface definitions are adapted from the Java Content Repository
+JCR standard. The API is implementation-independent and improved in cooperation
+with all implementors of PHPCR and the JCR community.
 
-A suite of functional tests for testing if your implementation works correctly. It tests against the phpCR API and is meant to be used in any project implementing the phpCR API interfaces.
-
-PHP code: http://github.com/jackalope/jackalope-api-tests
+PHP code: https://github.com/phpcr/phpcr
 
 
-Storage independent layer
-----
+## PHPCR API Tests
 
-PHP code: http://github.com/jackalope/jackalope
 
-This layer implements the phpCR interfaces in pure, framework-agnostic PHP. It provides all the necessary code needed for making a JCR client work in PHP only, without storage- or vendor-specific additions. This mechanism, similar to Jackrabbit's [[SPI|http://jackrabbit.apache.org/jackrabbit-spi.html]], allows for easy adaptation to different content stores, handling implementation details such as transport layers not covered by the standard. The underlying content store can thus be switched or updated without having to rewrite any higher level features.
+A suite of functional tests for testing if your implementation is correctly
+following the specification. Have a look at the README in the git repository
+to see how to set the tests up.
+
+PHP code: http://github.com/phpcr/phpcr-api-tests
+
+
+## Storage independent layer
+
+This layer implements the PHPCR interfaces in pure, framework-agnostic PHP
+without dependencies on any third-party libraries. It provides all the
+necessary code for a PHPCR library without the data storage layer.
+
+This mechanism, similar to Jackrabbit's [SPI](http://jackrabbit.apache.org/jackrabbit-spi.html),
+allows for easy adaptation to different storage backends, handling
+implementation details such as transport layers not covered by the PHPCR
+standard.
 
 See the README files in the main folder for how to set up the project.
 
-In the src folder, you find mainly classes with the names as defined by the PHPCR API. The two important classes not defined by the API are the ObjectManager and TransportInterface.
- * ObjectManager caches nodes and talks to Transport. For write operations, it acts as "Unit of Work" handler.
- * Transport is again capsulated with an interface. (See below)
+In the src folder, you find mainly classes with the names as defined by the
+PHPCR API. The two important classes not defined by the API are the
+``ObjectManager`` and ``Transport``.
+
+* ObjectManager caches nodes and talks to Transport. For write operations, it
+   acts as "Unit of Work" handler.
+* Transport is separated from the implementation by Interfaces (see below)
+
+PHP code: http://github.com/jackalope/jackalope
 
 
-Storage layer using the WebDAV/davex protocol to talk to Jackrabbit
-----
+## Storage layers: The transport interfaces
 
-This layer handles the communication with an Apache Jackrabbit server. It uses the WebDAV/davex remoting feature and is implemented in pure, framework-agnostic PHP.
+The storage layer is separated from the Jackalope application code by
+interfaces. These interfaces define the basic operations needed to implement
+the PHPCR operations. Implementing PHPCR support for a new storage engine is
+easiest done by just implementing a new transport.
 
-Transport/Davex/Client implements the HTTP communication with Jackrabbit. To implement other storage backends, it would probably be enough to implement a new Transport class.
+### DoctrineDBAL: All SQL databases supported by doctrine
+
+The doctrine transport uses the doctrine database abstraction layer to talk to
+any SQL database supported by doctrine.
+
+PHP code: http://github.com/jackalope/jackalope (see Transport folder)
+
+
+### Jackrabbit: WebDAV/davex protocol to talk to Jackrabbit
+
+The jackrabbit transport stores data into an Apache Jackrabbit server using
+a pure PHP implementation of the WebDAV/davex remoting protocol.
 
 PHP code: http://github.com/jackalope/jackalope (see Transport folder)
