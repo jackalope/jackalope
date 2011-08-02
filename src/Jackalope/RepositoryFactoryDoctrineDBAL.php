@@ -57,8 +57,9 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 
         $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\Client', array($dbConn));
 
-        $transactions = !empty($parameters['jackalope.transactions']);
-        return new Repository($factory, $transport, $transactions);
+        $options['transactions'] = empty($parameters['jackalope.disable_transactions']);
+        $options['stream_wrapper'] = empty($parameters['jackalope.disable_stream_wrapper']);
+        return new Repository($factory, $transport, $options);
     }
 
     /**

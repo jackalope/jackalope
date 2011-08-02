@@ -99,20 +99,15 @@ class BinaryStreamWrapper
      */
     private function init_stream()
     {
-        if ($this->session && !$this->session->isLive()) {
-            throw new \LogicException("Trying to read a stream from a closed transport.");
-        }
         if (null === $this->stream) {
+            if ($this->session && !$this->session->isLive()) {
+                throw new \LogicException("Trying to read a stream from a closed transport.");
+            }
+
             $url = parse_url($this->path);
             $this->session = Session::getSessionFromRegistry($url['host']);
             $property_path = $url['path'];
-            $token = null;
-            if (isset($url['user'])) {
-                $token = $url['user'];
-            }
-            if (isset($url['port'])) {
-                $index = $url['port'] - 1;
-            }
+            $token = isset($url['user']) ? $url['user'] : null;
             if (null === $token) {
                 $this->stream = $this->session->getObjectManager()->getBinaryStream($property_path);
             } else {
@@ -120,6 +115,7 @@ class BinaryStreamWrapper
                 if (!isset(self::$multiValueMap[$token])) {
                     self::$multiValueMap[$token] = $this->session->getObjectManager()->getBinaryStream($property_path);
                 }
+                $token = isset($url['port']) ? $url['port'] - 1 : 0;
                 $this->stream = self::$multiValueMap[$token][$index];
             }
         }
