@@ -9,23 +9,30 @@ use PHPCR\RepositoryFactoryInterface;
  *
  * Use repository factory based on parameters (the parameters below are examples):
  *
- *    $factory = new \Jackalope\RepositoryFactoryJackrabbit;
- *
  *    $parameters = array('' => 'http://localhost:8080/server/');
- *    $repo = $factory->getRepository($parameters);
+ *    $repo = \Jackalope\RepositoryFactoryJackrabbit::getRepository($parameters);
  *
  * @api
  */
 class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
 {
-    private $required = array(
+    /**
+     * @var array
+     */
+    static private $required = array(
         'jackalope.jackrabbit_uri' => 'string (required): Path to the jackrabbit server',
     );
-    private $optional = array(
+
+    /**
+     * @var array
+     */
+    static private $optional = array(
         'jackalope.factory' => 'string or object: Use a custom factory class for Jackalope objects',
         'jackalope.default_header' => 'string: Set a default header to send on each request to the backend (i.e. for load balancers to identify sessions)',
         'jackalope.jackrabbit_expect' => 'boolean: Send the "Expect: 100-continue" header on larger PUT and POST requests',
+        'jackalope.jackrabbit_check_login_on_server' => 'boolean: If to check if an initial PROPFIND should be send to check if repository exist',
         'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled',
+        'jackalope.disable_stream_wrapper' => 'boolean: if set and not empty, stream wrapper is disabled, otherwise the stream wrapper is enabled',
     );
 
     /**
@@ -39,16 +46,18 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
      * @throws \PHPCR\RepositoryException if no suitable repository is found or another error occurs.
      * @api
      */
-    function getRepository(array $parameters = null) {
+    static public function getRepository(array $parameters = null)
+    {
         if (null === $parameters) {
             return null;
         }
+
         // check if we have all required keys
-        $present = array_intersect_key($this->required, $parameters);
-        if (count(array_diff_key($this->required, $present))) {
+        $present = array_intersect_key(self::$required, $parameters);
+        if (count(array_diff_key(self::$required, $present))) {
             return null;
         }
-        $defined = array_intersect_key(array_merge($this->required, $this->optional), $parameters);
+        $defined = array_intersect_key(array_merge(self::$required, self::$optional), $parameters);
         if (count(array_diff_key($defined, $parameters))) {
             return null;
         }
@@ -73,6 +82,9 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         if (isset($parameters['jackalope.jackrabbit_expect'])) {
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
+        if (isset($parameters['jackalope.jackrabbit_check_login_on_server'])) {
+            $transport->setCheckLoginOnServer($parameters['jackalope.jackrabbit_check_login_on_server']);
+        }
 
         $options['transactions'] = empty($parameters['jackalope.disable_transactions']);
         $options['stream_wrapper'] = empty($parameters['jackalope.disable_stream_wrapper']);
@@ -87,7 +99,8 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
      *
      * @return array hash map of configuration key => english description
      */
-    function getConfigurationKeys() {
-        return array_merge($this->required, $this->optional);
+    static public function getConfigurationKeys()
+    {
+        return array_merge(self::$required, self::$optional);
     }
 }

@@ -36,10 +36,9 @@ See the wiki pages for how to set up testing: [DoctrineDBAL](https://github.com/
 The entry point is to create the repository factory. The factory specifies the
 storage backend as well.
 
-    $factoryclass = 'Jackalope\RepositoryFactoryJackrabbit'; // or 'Jackalope\RepositoryFactoryDoctrineDBAL'
-    $factory = new $factoryclass;
     // see the Doctrine factory for available parameters for the doctrine backend
-    $repository = $factory->getRepository(array('jackalope.jackrabbit_uri' => 'http://localhost:8080/server'));
+    // alternatively use \Jackalope\RepositoryFactoryDoctrineDBAL
+    $repository = \Jackalope\RepositoryFactoryJackrabbit::getRepository(array('jackalope.jackrabbit_uri' => 'http://localhost:8080/server'));
     $credentials = new SimpleCredentials('username', 'password');
     $session = $repository->login($credentials, 'default');
 
