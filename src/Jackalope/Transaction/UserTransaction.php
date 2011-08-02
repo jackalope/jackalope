@@ -137,7 +137,6 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
 
         $this->transport->rollbackTransaction();
         $this->inTransaction = false;
-        $this->session->clear();
     }
 
     /**
