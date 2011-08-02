@@ -30,7 +30,7 @@ class Repository implements \PHPCR\RepositoryInterface
 
     protected $options = array(
         'transactions' => true,
-        'stream_wrapper' => false,
+        'stream_wrapper' => true,
     );
 
     /**
