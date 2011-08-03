@@ -84,6 +84,17 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
         return $GLOBALS['phpcr.user'];
     }
 
+    public function getTestSupported($chapter, $case, $name)
+    {
+        // this seems a bug in php with arrayiterator - and jackalope is using
+        // arrayiterator for the search result
+        // https://github.com/phpcr/phpcr-api-tests/issues/22
+        if ('Query\\NodeViewTest::testSeekable' == $name && PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION <= 3 && PHP_RELEASE_VERSION <= 3) {
+            return false;
+        }
+        return parent::getTestSupported($chapter, $case, $name);
+    }
+
     function getFixtureLoader()
     {
         require_once "JackrabbitFixtureLoader.php";
