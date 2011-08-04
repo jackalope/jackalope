@@ -77,7 +77,7 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
 
         $transport = $factory->get('Transport\Jackrabbit\Client', array($uri));
         if (isset($parameters['jackalope.default_header'])) {
-            $transport->setDefaultHeader($parameters['jackalope.default_header']);
+            $transport->addDefaultHeader($parameters['jackalope.default_header']);
         }
         if (isset($parameters['jackalope.jackrabbit_expect'])) {
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
