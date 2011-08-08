@@ -10,3 +10,5 @@ doc/html
 /tests/phpunit_jackrabbit.xml
 /tests/phpunit_doctrinedbal.xml
 /tests/fixtures/doctrine
+/tests/phpunit.xml
+
