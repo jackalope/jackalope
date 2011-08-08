@@ -965,8 +965,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function addMixin($mixinName)
     {
-        $this->checkState(false);
-
         // Check if mixinName exists as a mixin type
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
         $nodeType = $typemgr->getNodeType($mixinName);
@@ -977,10 +975,12 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
             if (array_search($mixinName, $this->properties['jcr:mixinTypes']->getValue()) === false) {
+                $this->checkState(false);
                 $this->properties['jcr:mixinTypes']->addValue($mixinName);
                 $this->setModified();
             }
         } else {
+            $this->checkState(false);
             $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::NAME);
             $this->setModified();
         }
