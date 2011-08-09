@@ -144,7 +144,7 @@ class ObjectManager
             return $this->objectsByPath[$class][$absPath];
         }
 
-        $fetchPath = $this->getFetchPath($absPath, $class);
+        $fetchPath = $this->getFetchPath($absPath, $class); // will throw error if path is deleted
 
         $node = $this->factory->get(
             $class,
@@ -568,14 +568,15 @@ class ObjectManager
      * 3. add new nodes
      * 4. commit any other changes
      *
+     * If transactions are enabled but we are not currently inside a
+     * transaction, the session is responsible to start a transaction to make
+     * sure the backend state does not get messed up in case of error.
+     *
      * @return void
      */
     public function save()
     {
-        // TODO: start transaction (see transaction branch)
-        // TODO: or even better, adjust transport to accept lists and do a diff request instead of single requests
-        // this is extremly unspecific: http://jackrabbit.apache.org/frequently-asked-questions.html#FrequentlyAskedQuestions-HowdoIusetransactionswithJCR?
-        // or do we have to bundle everything into one request, make transport layer capable of transaction? http://jackrabbit.apache.org/api/2.1/org/apache/jackrabbit/server/remoting/davex/JcrRemotingServlet.html
+        // TODO: adjust transport to accept lists and do a diff request instead of single requests
 
         /* remove nodes/properties
          *
@@ -645,8 +646,6 @@ class ObjectManager
                 }
             }
         }
-
-        // TODO: have a davex client method to commit transaction
 
         // commit changes to the local state
         foreach ($this->itemsRemove as $path => $dummy) {
@@ -961,7 +960,7 @@ class ObjectManager
      *
      * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
      *
-     * TODO: this will screw up major, as the user of the api can still have references to nodes
+     * @depricated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
     public function clear()
     {
