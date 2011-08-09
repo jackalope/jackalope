@@ -29,9 +29,9 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
      */
     static private $optional = array(
         'jackalope.factory' => 'string or object: Use a custom factory class for Jackalope objects',
-        'jackalope.check_login_on_server' => 'boolean: If to check if an initial PROPFIND should be send to check if repository exist',
-        'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled',
-        'jackalope.disable_stream_wrapper' => 'boolean: if set and not empty, stream wrapper is disabled, otherwise the stream wrapper is enabled',
+        'jackalope.check_login_on_server' => 'boolean: if set to empty or false, skip initial check whether repository exists. Enabled by default, disable to gain a few milliseconds off each repository instantiation.',
+        'jackalope.disable_transactions' => 'boolean: if set and not empty, transactions are disabled, otherwise transactions are enabled. If transactions are enabled but not actively used, every save operation is wrapped into a transaction.',
+        'jackalope.disable_stream_wrapper' => 'boolean: if set and not empty, stream wrapper is disabled, otherwise the stream wrapper is enabled and streams are only fetched when reading from for the first time. If your code always uses all binary properties it reads, you can disable this for a small performance gain.',
     );
 
     /**
