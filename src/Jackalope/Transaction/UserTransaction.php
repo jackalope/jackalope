@@ -26,9 +26,16 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
 
     /**
      * Instance of an implementation of the TransportInterface
+     * TODO: try to remove direct access to the TransportInterface and use methods wrapped into the ObjectManager instead
      * @var TransportInterface
      */
     protected $transport;
+
+    /**
+     * Instance of the ObjectManager
+     * @var \Jackalope\ObjectManager
+     */
+    protected $objectManager;
 
     /**
      * Stores the actual state if the application is inside a transaction or not
@@ -48,6 +55,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
+        $this->objectManager = $session->getObjectManager();
     }
 
     /**
@@ -68,7 +76,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
             throw new \PHPCR\UnsupportedRepositoryOperationException("Nested transactions are not supported.");
         }
 
-        $this->transport->beginTransaction();
+        $this->objectManager->beginTransaction();
         $this->inTransaction = true;
     }
 
@@ -95,7 +103,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
             throw new \LogicException("No transaction to commit.");
         }
 
-        $this->transport->commitTransaction();
+        $this->objectManager->commitTransaction();
         $this->inTransaction = false;
     }
 
@@ -135,7 +143,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
             throw new \LogicException("No transaction to rollback.");
         }
 
-        $this->transport->rollbackTransaction();
+        $this->objectManager->rollbackTransaction();
         $this->inTransaction = false;
     }
 

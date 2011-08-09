@@ -983,4 +983,53 @@ class ObjectManager
     {
         return $this->transport;
     }
+
+    /**
+     * Begin new transaction associated with current session.
+     *
+     * @return void
+     *
+     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function beginTransaction()
+    {
+        $this->transport->beginTransaction();
+    }
+
+    /**
+     * Complete the transaction associated with the current session.
+     * TODO: Make shure RollbackException and AccessDeniedException are thrown by the transport
+     * if corresponding problems occure
+     *
+     * @return void
+     *
+     * @throws \PHPCR\Transaction\RollbackException Thrown to indicate that the
+     *      transaction has been rolled back rather than committed.
+     * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
+     *      session is not allowed to commit the transaction.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function commitTransaction()
+    {
+        $this->transport->commitTransaction();
+    }
+
+    /**
+     * Roll back the transaction associated with the current session.
+     * TODO: Make shure AccessDeniedException is thrown by the transport
+     * if corresponding problems occure
+     *
+     * @return void
+     *
+     * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
+     *      application is not allowed to roll back the transaction.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function rollbackTransaction()
+    {
+        $this->transport->rollbackTransaction();
+    }
 }
