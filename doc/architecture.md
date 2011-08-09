@@ -1,6 +1,7 @@
 # Architecture
 
 Components
+
 * PHPCR API Interfaces - defining the API
 * API Tests - testing conformity of the implementation to the PHPCR API
 * Jackalope
@@ -17,6 +18,8 @@ JCR standard. The API is implementation-independent and improved in cooperation
 with all implementors of PHPCR and the JCR community.
 
 PHP code: https://github.com/phpcr/phpcr
+
+Documentation: https://phpcr.github.com/
 
 
 ## PHPCR API Tests
@@ -56,6 +59,8 @@ documentation according to doc/config/README to have a combined doc of the API
 and implementation details.
 
 PHP code: http://github.com/jackalope/jackalope
+
+Documentation: https://jackalope.github.com/
 
 
 ## Storage layers: The transport interfaces
