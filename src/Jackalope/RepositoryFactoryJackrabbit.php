@@ -82,8 +82,8 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         if (isset($parameters['jackalope.jackrabbit_expect'])) {
             $transport->sendExpect($parameters['jackalope.jackrabbit_expect']);
         }
-        if (isset($parameters['jackalope.jackrabbit_check_login_on_server'])) {
-            $transport->setCheckLoginOnServer($parameters['jackalope.jackrabbit_check_login_on_server']);
+        if (isset($parameters['jackalope.check_login_on_server'])) {
+            $transport->setCheckLoginOnServer($parameters['jackalope.check_login_on_server']);
         }
 
         $options['transactions'] = empty($parameters['jackalope.disable_transactions']);
