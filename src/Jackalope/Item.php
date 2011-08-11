@@ -4,10 +4,7 @@ namespace Jackalope;
 /**
  * {@inheritDoc}
  *
- * TODO: we should have a state concept: NEW, MODIFIED, DIRTY, DELETED.
- * modified needs to be saved
- * dirty needs to refresh from backend when accessed (it was saved and should check with backend). should be set on confirmSaved
- * deleted can not be used anymore at all
+ * TODO: Document Item state and the interractions with the transaction manager.
  */
 abstract class Item implements \PHPCR\ItemInterface
 {
@@ -15,6 +12,8 @@ abstract class Item implements \PHPCR\ItemInterface
      * Item state constants, see the following image for the workflow:
      *
      * https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png
+     *
+     * ITEM STATE AND TRANSACTIONS: see phpdoc of function rollbackTransaction()
      */
 
     /**
@@ -75,6 +74,9 @@ abstract class Item implements \PHPCR\ItemInterface
 
     /** @var int    The state of the item */
     protected $state;
+
+    /** @var int    The state of the item saved when a transaction is started */
+    protected $savedState;
 
     /** @var array  The states an Item can take */
     protected $available_states = array(
@@ -522,6 +524,20 @@ abstract class Item implements \PHPCR\ItemInterface
             throw new \InvalidArgumentException("Invalid state [$state]");
         }
         $this->state = $state;
+
+        // -------------------------------------------------------------------------------------
+        // see the phpdoc of rollbackTransaction()
+        //
+        // In the cases 6 and 7, when the state is CLEAN before the TRX and CLEAN at the end of
+        // the TRX, the final state will be different if the item has been modified during
+        // the TRX or not.
+        //
+        // The following test covers that special case, if the item is modified during the TRX,
+        // we set the saved state to MODIFIED so that it can be restored as it is when the TRX
+        // is rolled back.
+        if ($state === self::STATE_MODIFIED && $this->savedState === self::STATE_CLEAN) {
+            $this->savedState = self::STATE_MODIFIED;
+        }
     }
 
     /**
@@ -562,6 +578,122 @@ abstract class Item implements \PHPCR\ItemInterface
         }
 
         // For all the other cases, the state does not change
+    }
+
+    /**
+     * Must be called when a transaction begins in order to manage item state correctly if a rollback occurs
+     * @return void
+     * @private
+     */
+    public function beginTransaction()
+    {
+        // Save the item state
+        $this->savedState = $this->state;
+    }
+
+    /**
+     * Must be called when a transaction is committed in order to manage item state correctly if a rollback occurs
+     * @return void
+     * @private
+     */
+    public function commitTransaction()
+    {
+        // Unset the stored state
+        $this->savedState = null;
+    }
+
+    /**
+     * Must be called when a transaction is rolled back in order to correctly manage item state
+     * @return void
+     * @throws \LogicException
+     * @private
+     *
+     * ITEM STATE AND TRANSACTIONS
+     * ---------------------------
+     *
+     * There is an issue with item state and transactions.
+     *
+     * Item state represent the state of an in-memory item. This has nothing to do
+     * with the state of the item in the backend.
+     *
+     * Referring to the JCR spec (21.3 Save vs. Commit) a transaction rollback or
+     * commit will not change the in-memory state of items, but only the backend.
+     *
+     * When a transaction is rolled back the in-memory state of an item must be
+     * adapted.
+     *
+     * This is how it is implemented in Jackalope:
+     *
+     * (the first line matching takes the precendence over the other lines)
+     * (the star represent any item state)
+     *
+     *      $savedState         $state              New state
+     *      (state before TRX)  (at the end of TRX) (after the rollback)
+     *      --------------------------------------------------------------------
+     *  1)  DELETED             *                   DELETED
+     *  2)  *                   DELETED             DELETED
+     *
+     *  3)  NEW                 *                   NEW
+     *
+     *  4)  *                   MODIFIED            MODIFIED
+     *
+     *  5)  MODIFIED            *                   MODIFIED
+     *
+     *  6)  CLEAN               CLEAN               CLEAN    (if the item was not modified in the TRX)
+     *  7)                      CLEAN               MODIFIED (if the item was modified in the TRX)
+     *  8)  CLEAN               DIRTY               DIRTY
+     *
+     *  9)  DIRTY               *                   DIRTY
+     */
+    public function rollbackTransaction()
+    {
+        if (is_null($this->savedState)) {
+            return;
+        }
+
+        if ($this->state === self::STATE_DELETED || $this->savedState === self::STATE_DELETED) {
+
+            // Case 1) and 2)
+            $this->state = self::STATE_DELETED;
+
+        } elseif ($this->savedState === self::STATE_NEW) {
+
+            // Case 3)
+            $this->state = self::STATE_NEW;
+
+        } elseif ($this->state === self::STATE_MODIFIED || $this->savedState = self::STATE_MODIFIED) {
+
+            // Case 4) and 5)
+            $this->state = self::STATE_MODIFIED;
+
+        } elseif ($this->savedState === self::STATE_CLEAN) {
+
+            if ($this->state === self::STATE_CLEAN) {
+
+                // Case 6) and 7), see the comment in the function setState()
+                $this->state = $this->savedState;
+
+            } elseif ($this->state === self::STATE_DIRTY) {
+
+                // Case 8)
+                $this->state = self::STATE_DIRTY;
+            }
+
+        } elseif ($this->savedState === self::STATE_DIRTY) {
+
+            // Case 9)
+            $this->state = self::STATE_DIRTY;
+
+        } else {
+
+            // There is some special case we didn't think of, for the moment throw an exception
+            // TODO: figure out if this might happen or not
+            throw new \LogicException("There was an unexpected state transition during the transaction: " .
+                                      "old state = {$this->savedState}, new state = {$this->state}");
+        }
+
+        // Reset the saved state
+        $this->savedState = null;
     }
 
     /**

@@ -1469,4 +1469,43 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         return $this->properties[$name];
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function beginTransaction()
+    {
+        parent::beginTransaction();
+
+        // Notify the children properties
+        foreach($this->properties as $prop) {
+            $prop->beginTransaction();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function commitTransaction()
+    {
+        parent::commitTransaction();
+
+        // Notify the children properties
+        foreach($this->properties as $prop) {
+            $prop->commitTransaction();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function rollbackTransaction()
+    {
+        parent::rollbackTransaction();
+
+        // Notify the children properties
+        foreach($this->properties as $prop) {
+            $prop->rollbackTransaction();
+        }
+    }
+
 }

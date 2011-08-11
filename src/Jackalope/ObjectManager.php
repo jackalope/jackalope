@@ -994,6 +994,7 @@ class ObjectManager
      */
     public function beginTransaction()
     {
+        $this->notifyItems('beginTransaction');
         $this->transport->beginTransaction();
     }
 
@@ -1013,6 +1014,7 @@ class ObjectManager
      */
     public function commitTransaction()
     {
+        $this->notifyItems('commitTransaction');
         $this->transport->commitTransaction();
     }
 
@@ -1031,5 +1033,36 @@ class ObjectManager
     public function rollbackTransaction()
     {
         $this->transport->rollbackTransaction();
+        $this->notifyItems('rollbackTransaction');
+    }
+
+    /**
+     * Notifies the given node and all of its children and properties that a transaction has begun,
+     * was committed or rolled back so that the item has a chance to save or restore his internal state.
+     *
+     * @param $method string The method to call on each item for the notification (should be beginTransaction, commitTransaction or rollbackTransaction)
+     * @return void
+     *
+     * @throws \InvalidArgumentException When the passed $method is not valid
+     */
+    protected function notifyItems($method)
+    {
+        if (! in_array($method, array('beginTransaction', 'commitTransaction', 'rollbackTransaction'))) {
+            throw new \InvalidArgumentException("Unknown notification method '$method'");
+        }
+
+        // Notify the loaded nodes
+        foreach($this->objectsByPath['Node'] as $node) {
+            $node->$method();
+        }
+
+        // Notify the deleted nodes
+        foreach($this->itemsRemove as $node) {
+            $node->$method();
+
+            if ($method === 'rollbackTransaction') {
+                // TODO: check if a node is no longer deleted, and recreate it if necessary
+            }
+        }
     }
 }
