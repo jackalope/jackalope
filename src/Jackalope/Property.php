@@ -575,6 +575,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function remove()
     {
         $this->checkState(false);
+        $this->setDeleted();
 
         $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
         $meth->setAccessible(true);
@@ -604,7 +605,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     protected function reload()
     {
-        // TODO: implement
+        // Tell the parent node to reload
+        $this->objectManager->getNodeByPath($this->parentPath)->reload();
     }
 
     /**

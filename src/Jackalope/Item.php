@@ -539,17 +539,14 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Depending on the type of operation attempted (read/write) this function
-     * will modify the state of the item as well as reload it if necessary (i.e.
+     * This function will modify the state of the item as well as reload it if necessary (i.e.
      * if it is DIRTY).
      *
-     * @param boolean $for_reading true if the attempted operation on the item is
-     *                a read operation, and false if it is a write operation.
      * @return void
      * @throws \PHPCR\InvalidItemStateException When an operation is attempted on a deleted item
      * @private
      */
-    protected function checkState($for_reading = true)
+    protected function checkState()
     {
         if ($this->state === self::STATE_DELETED) {
             throw new \PHPCR\InvalidItemStateException("The item was deleted");
@@ -559,19 +556,7 @@ abstract class Item implements \PHPCR\ItemInterface
         if ($this->isDirty()) {
 
             $this->reload();
-
-            if ($for_reading) {
-                $this->setClean();
-            } else {
-                $this->setModified();
-            }
-            return;
-        }
-
-        // Modifying a non new item will mark it as modified
-        if (! ($for_reading || $this->isNew())) {
-            $this->setModified();
-            return;
+            $this->setClean();
         }
 
         // For all the other cases, the state does not change

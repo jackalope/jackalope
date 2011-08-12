@@ -650,6 +650,7 @@ class ObjectManager
         // commit changes to the local state
         foreach ($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
+            // TODO: unset the node in $this->objectsByUuid if necessary
         }
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
@@ -1062,5 +1063,30 @@ class ObjectManager
         foreach ($this->itemsRemove as $node) {
             $node->$method();
         }
+    }
+
+    /**
+     * Purge an item given by path from the cache and returns the item.
+     * If the item is not in the cache, returns null.
+     *
+     * @param $absPath string The absolute path of the item
+     * @return void
+     */
+    public function purgeDeleted($absPath)
+    {
+        if (array_key_exists($absPath, $this->objectsByPath)) {
+            $item = $this->objectsByPath[$absPath];
+            $uuid = $item->getIdentifier();
+
+            unset($this->objectsByPath[$absPath]);
+
+            if (array_key_exists($uuid, $this->objectsByUuid)) {
+                unset($this->objectsByUuid[$uuid]);
+            }
+
+            return $item;
+        }
+
+        return null;
     }
 }
