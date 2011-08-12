@@ -648,7 +648,7 @@ abstract class Item implements \PHPCR\ItemInterface
     public function rollbackTransaction()
     {
         if (is_null($this->savedState)) {
-            return;
+            $this->savedState = self::STATE_NEW;
         }
 
         if ($this->state === self::STATE_DELETED || $this->savedState === self::STATE_DELETED) {
@@ -661,7 +661,7 @@ abstract class Item implements \PHPCR\ItemInterface
             // Case 3)
             $this->state = self::STATE_NEW;
 
-        } elseif ($this->state === self::STATE_MODIFIED || $this->savedState = self::STATE_MODIFIED) {
+        } elseif ($this->state === self::STATE_MODIFIED || $this->savedState === self::STATE_MODIFIED) {
 
             // Case 4) and 5)
             $this->state = self::STATE_MODIFIED;

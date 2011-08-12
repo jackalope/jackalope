@@ -1022,6 +1022,9 @@ class ObjectManager
      * Roll back the transaction associated with the current session.
      * TODO: Make shure AccessDeniedException is thrown by the transport
      * if corresponding problems occure
+     * TODO: check the save() method.
+     * TODO: restore the in-memory state as it has to be if save() was never
+     * called during the transaction.
      *
      * @return void
      *
@@ -1059,10 +1062,6 @@ class ObjectManager
         // Notify the deleted nodes
         foreach($this->itemsRemove as $node) {
             $node->$method();
-
-            if ($method === 'rollbackTransaction') {
-                // TODO: check if a node is no longer deleted, and recreate it if necessary
-            }
         }
     }
 }
