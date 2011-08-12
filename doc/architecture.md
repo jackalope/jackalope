@@ -24,11 +24,6 @@ Documentation: https://phpcr.github.com/
 
 ## PHPCR API Tests
 
-A suite of functional tests for testing if your implementation is correctly
-following the specification. Have a look at the README in the git repository
-to see how to set the tests up.
-
-PHP code: http://github.com/phpcr/phpcr-api-tests
 
 A suite of functional tests for testing if your implementation is correctly
 following the specification. Have a look at the README in the git repository
@@ -58,16 +53,6 @@ PHPCR API. The two important classes not defined by the API are the
    acts as "Unit of Work" handler.
 * Transport is separated from the implementation by Interfaces (see below)
 
-PHP code: http://github.com/jackalope/jackalope
-
-
-## Storage layers: The transport interfaces
-
-The storage layer is separated from the Jackalope application code by
-interfaces. These interfaces define the basic operations needed to implement
-the PHPCR operations. Implementing PHPCR support for a new storage engine is
-easiest done by just implementing a new transport.
-
 Please read the phpdoc comments for implementation details. Note that the
 methods implementing PHPCR interfaces are documented there. Generate the html
 documentation according to doc/config/README to have a combined doc of the API
@@ -77,6 +62,13 @@ PHP code: http://github.com/jackalope/jackalope
 
 Documentation: https://jackalope.github.com/
 
+
+## Storage layers: The transport interfaces
+
+The storage layer is separated from the Jackalope application code by
+interfaces. These interfaces define the basic operations needed to implement
+the PHPCR operations. Implementing PHPCR support for a new storage engine is
+easiest done by just implementing a new transport.
 
 ### DoctrineDBAL: All SQL databases supported by doctrine
 
