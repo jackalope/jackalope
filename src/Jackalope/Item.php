@@ -277,8 +277,8 @@ abstract class Item implements \PHPCR\ItemInterface
 
     /**
      * Returns true if this Item has been saved but not was not reloaded. The
-     * reprensentation of the item in memory might not reflect all the changes
-     * that the save could have produced (by instance if mix:referenceable has
+     * representation of the item in memory might not reflect all the changes
+     * that the save could have produced (for instance if mix:referenceable has
      * been added to the item but the item was not yet reloaded and thus has
      * not its real UUID).
      *
@@ -379,7 +379,6 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function accept(\PHPCR\ItemVisitorInterface $visitor)
     {
-        // TODO: not sure if this should be: $this->checkState(false);
         $this->checkState();
 
         $visitor->visit($this);
@@ -520,8 +519,7 @@ abstract class Item implements \PHPCR\ItemInterface
     private function setState($state)
     {
         if (! in_array($state, $this->available_states)) {
-            // TODO: Is that the correct exception to throw?
-            throw new \InvalidArgumentException("Invalid state [$state]");
+            throw new \PHPCR\RepositoryException("Invalid state [$state]");
         }
         $this->state = $state;
 
@@ -554,7 +552,6 @@ abstract class Item implements \PHPCR\ItemInterface
     protected function checkState($for_reading = true)
     {
         if ($this->state === self::STATE_DELETED) {
-            // TODO: is that the correct exception?
             throw new \PHPCR\InvalidItemStateException("The item was deleted");
         }
 
@@ -611,8 +608,6 @@ abstract class Item implements \PHPCR\ItemInterface
      * ITEM STATE AND TRANSACTIONS
      * ---------------------------
      *
-     * There is an issue with item state and transactions.
-     *
      * Item state represent the state of an in-memory item. This has nothing to do
      * with the state of the item in the backend.
      *
@@ -641,6 +636,10 @@ abstract class Item implements \PHPCR\ItemInterface
      *
      *  6)  CLEAN               CLEAN               CLEAN    (if the item was not modified in the TRX)
      *  7)                      CLEAN               MODIFIED (if the item was modified in the TRX)
+     *
+     *      note: this case (7) is handled in setState by changing savedState to MODIFIED if it was CLEAN
+     *            and current state changes to MODIFIED
+     *
      *  8)  CLEAN               DIRTY               DIRTY
      *
      *  9)  DIRTY               *                   DIRTY
