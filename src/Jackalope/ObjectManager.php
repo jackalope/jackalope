@@ -960,7 +960,7 @@ class ObjectManager
      *
      * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
      *
-     * @depricated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
+     * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
     public function clear()
     {
