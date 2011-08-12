@@ -49,11 +49,10 @@ class Session implements \PHPCR\SessionInterface
     protected $objectManager;
 
     protected $utx = null;
-    
+
     /**
      * @var \PHPCR\SimpleCredentials
      */
-    
     protected $credentials;
     /**
      * @var bool
