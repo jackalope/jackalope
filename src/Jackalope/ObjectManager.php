@@ -1054,12 +1054,12 @@ class ObjectManager
         }
 
         // Notify the loaded nodes
-        foreach($this->objectsByPath['Node'] as $node) {
+        foreach ($this->objectsByPath['Node'] as $node) {
             $node->$method();
         }
 
         // Notify the deleted nodes
-        foreach($this->itemsRemove as $node) {
+        foreach ($this->itemsRemove as $node) {
             $node->$method();
         }
     }
