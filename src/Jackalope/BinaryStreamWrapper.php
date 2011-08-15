@@ -84,9 +84,9 @@ class BinaryStreamWrapper
     {
         if ($this->stream) {
             return fflush($this->stream);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -116,6 +116,9 @@ class BinaryStreamWrapper
                     self::$multiValueMap[$token] = $this->session->getObjectManager()->getBinaryStream($property_path);
                 }
                 $index = isset($url['port']) ? $url['port'] - 1 : 0;
+                if (!isset(self::$multiValueMap[$token][$index])) {
+                    throw new \LogicException("Trying to read a stream from a non existant token '$token' or token index '$index'.");
+                }
                 $this->stream = self::$multiValueMap[$token][$index];
             }
         }
