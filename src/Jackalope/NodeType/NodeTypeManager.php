@@ -358,8 +358,6 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * For full documentation of the format, see
      * http://jackrabbit.apache.org/node-type-notation.html
      *
-     * This is Jackalope specific and not part of the PHPCR API!
-     *
      * @param $cnd a string with cnd information
      * @param boolean $allowUpdate whether to fail if node already exists or to update it
      * @return Iterator over the registered \PHPCR\NodeType\NodeTypeIteratorInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
@@ -370,6 +368,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * @throws \PHPCR\RepositoryException if another error occurs.
      *
      * @author david at liip.ch
+     *
+     * @private
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {

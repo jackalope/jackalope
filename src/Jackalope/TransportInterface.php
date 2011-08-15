@@ -1,12 +1,4 @@
 <?php
-/**
- * Definition of the interface to be used for implementing a transport.
- *
- * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
- *
- * @package jackalope
- * @subpackage transport
- */
 namespace Jackalope;
 
 use Jackalope\NodeType\NodeTypeManager;
@@ -30,8 +22,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * TODO: add references to all phpcr api methods that use each transport method for additional doc
  * TODO: add methods for all features. split into one interface per feature and transport implements just does it actually supports
  *
- * @package jackalope
- * @subpackage transport
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
 interface TransportInterface
 {

@@ -1,14 +1,4 @@
 <?php
-
-/**
- * Class to handle nodes and acting as Unit of Work for write operations using
- * the transport interface.
- *
- * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
- *
- * @package jackalope
- */
-
 namespace Jackalope;
 
 use PHPCR\Util\UUIDHelper;
@@ -22,7 +12,8 @@ use ArrayIterator;
  * it keeps track which nodes are dirty and updates them with the transport
  * interface.
  *
- * @package jackalope
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ *
  * @private
  */
 class ObjectManager

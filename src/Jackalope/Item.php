@@ -2,7 +2,7 @@
 namespace Jackalope;
 
 /**
- * {@inheritDoc}
+ * Item base class with common functionality
  *
  * TODO: we should have a state concept: NEW, MODIFIED, DIRTY, DELETED.
  * modified needs to be saved

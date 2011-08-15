@@ -1,12 +1,10 @@
 <?php
-
 namespace Jackalope\Transaction;
 
-use Jackalope;
-use PHPCR;
-
 /**
+ * Implement the user transaction manager
  *
+ * @author Johannes Stark <starkj@gmx.de>
  *
  * @api
  */
@@ -14,7 +12,7 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
 {
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var \Jackalope\Factory
      */
     protected $factory;
 
@@ -26,21 +24,23 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
 
     /**
      * Instance of an implementation of the TransportInterface
-     * @var TransportInterface
+     * @var \Jackalope\TransportInterface
      */
     protected $transport;
 
     /**
-     * Stores the actual state if the application is inside a transaction or not
-     * @var inTransaction
+     * Stores the current state of the application, whether it is inside a
+     * transaction or not
+     * @var bool
      */
     protected $inTransaction = false;
 
     /**
      * Registers the provided parameters as attribute to the instance.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
-     * @param TransportInterface $transport
+     * @param object $factory  an object factory implementing get() as
+     *      described in \Jackalope\Factory
+     * @param \Jackalope\TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
     public function __construct($factory, \Jackalope\TransportInterface $transport, \PHPCR\SessionInterface $session)
@@ -55,12 +55,12 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
      *
      * @return void
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException Thrown if a transaction
-     *      is already started and the transaction implementation or backend does not
-     *      support nested transactions.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException Thrown if a
+     *      transaction is already started. Jackalope does not support nested
+     *      transactions.
      *
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
-     *      encounters an unexpected error condition.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction
+     *      implementation encounters an unexpected error condition.
      */
     public function begin()
     {
@@ -73,10 +73,11 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     }
 
     /**
+     * Commit the transaction associated with the current session to store it
+     * persistently.
      *
-     * Complete the transaction associated with the current session.
-     * TODO: Make shure RollbackException and AccessDeniedException are thrown by the transport
-     * if corresponding problems occure
+     * TODO: Make sure RollbackException and AccessDeniedException are thrown
+     * by the transport if corresponding problems occur
      *
      * @return void
      *
@@ -86,8 +87,8 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
      *      session is not allowed to commit the transaction.
      * @throws \LogicException Thrown if the current
      *      session is not associated with a transaction.
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
-     *      encounters an unexpected error condition.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction
+     *      implementation encounters an unexpected error condition.
      */
     public function commit()
     {
@@ -100,13 +101,13 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     }
 
     /**
-     *
-     * Obtain the status if the current session is inside of a transaction or not.
+     * Obtain the status if the current session is inside of a transaction or
+     * not.
      *
      * @return boolean
      *
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
-     *      encounters an unexpected error condition.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction
+     *      implementation encounters an unexpected error condition.
      */
     public function inTransaction()
     {
@@ -115,10 +116,10 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     }
 
     /**
+     * Rollback the transaction associated with the current session.
      *
-     * Roll back the transaction associated with the current session.
-     * TODO: Make shure AccessDeniedException is thrown by the transport
-     * if corresponding problems occure
+     * TODO: Make sure AccessDeniedException is thrown by the transport if
+     * corresponding problems occur
      *
      * @return void
      *
@@ -126,8 +127,8 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
      *      application is not allowed to roll back the transaction.
      * @throws \LogicException Thrown if the current
      *      session is not associated with a transaction.
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
-     *      encounters an unexpected error condition.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction
+     *      implementation encounters an unexpected error condition.
      */
     public function rollback()
     {
@@ -140,20 +141,21 @@ class UserTransaction implements \PHPCR\Transaction\UserTransactionInterface
     }
 
     /**
+     * Set a timeout for the transaction.
      *
      * Modify the timeout value that is associated with transactions started by
-     * the current application with the begin method. If an application has not
-     * called this method, the transaction service uses some default value for the
-     * transaction timeout.
+     * the current application with the begin() method. If not explicitly set,
+     * the transaction service uses some default value for the transaction
+     * timeout.
      *
-     * @param int $seconds The value of the timeout in seconds. If the value is zero,
-     *      the transaction service restores the default value. If the value is
-     *      negative a RepositoryException is thrown.
+     * @param int $seconds The value of the timeout in seconds. If the value is
+     *      zero, the transaction service restores the default value. If the
+     *      value is negative a RepositoryException is thrown.
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
-     *      encounters an unexpected error condition.
+     * @throws \PHPCR\RepositoryException Thrown if the transaction
+     *      implementation encounters an unexpected error condition.
      */
     public function setTransactionTimeout($seconds = 0)
     {

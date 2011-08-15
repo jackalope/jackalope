@@ -1,25 +1,4 @@
 <?php
-
-/**
- * Class to handle the communication between Jackalope and Jackrabbit via Davex.
- *
- * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- * @package jackalope
- * @subpackage transport
- */
-
 namespace Jackalope\Transport\Jackrabbit;
 
 use PHPCR\PropertyType;
@@ -32,10 +11,11 @@ use Jackalope\NodeType\NodeTypeManager;
 /**
  * Connection to one Jackrabbit server.
  *
+ * This class handles the communication between Jackalope and Jackrabbit over
+ * Davex.
  * Once the login method has been called, the workspace is set and can not be changed anymore.
  *
- * @package jackalope
- * @subpackage transport
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  */
 class Client implements TransactionalTransportInterface
 {

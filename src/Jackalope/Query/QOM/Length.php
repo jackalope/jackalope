@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\LengthInterface;
@@ -13,8 +12,6 @@ use PHPCR\Query\QOM\PropertyValueInterface;
  *
  * If propertyValue evaluates to null, the Length operand also evaluates to null.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class Length implements LengthInterface

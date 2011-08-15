@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\EquiJoinConditionInterface;
@@ -13,8 +12,6 @@ use PHPCR\Query\QOM\EquiJoinConditionInterface;
  *  selector2 has a property named property2, and
  *  the value of property1 equals the value of property2
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class EquiJoinCondition implements EquiJoinConditionInterface

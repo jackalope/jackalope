@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope;
 
 /**
@@ -16,7 +15,6 @@ namespace Jackalope;
  * The loading from the backend is deferred until the stream is accessed. Then it is loaded and all
  * stream functions are passed on to the underlying stream.
  *
- * @package jackalope
  * @private
  */
 class BinaryStreamWrapper

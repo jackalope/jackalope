@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
@@ -14,8 +13,6 @@ use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
  * is the node for descendantSelector and ancestorSelectorNode is the node for
  * ancestorSelector.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterface
@@ -34,7 +31,7 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      * Constructor
      *
      * @param string $descendantSelectorName
-     * @param string $ancestorSelectorName 
+     * @param string $ancestorSelectorName
      */
     public function __construct($descendantSelectorName, $ancestorSelectorName)
     {
