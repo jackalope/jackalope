@@ -967,8 +967,6 @@ class ObjectManager
      * Implementation specific: Transport is used elsewhere, provide it here for Session
      *
      * @return TransportInterface
-     *
-     * @private
      */
     public function getTransport()
     {
@@ -980,7 +978,7 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     * @throws \PHPCR\RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function beginTransaction()
@@ -991,16 +989,17 @@ class ObjectManager
 
     /**
      * Complete the transaction associated with the current session.
-     * TODO: Make shure RollbackException and AccessDeniedException are thrown by the transport
-     * if corresponding problems occure
+     *
+     * TODO: Make sure RollbackException and AccessDeniedException are thrown
+     * by the transport if corresponding problems occur.
      *
      * @return void
      *
-     * @throws \PHPCR\Transaction\RollbackException Thrown to indicate that the
-     *      transaction has been rolled back rather than committed.
-     * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
-     *      session is not allowed to commit the transaction.
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     * @throws \PHPCR\Transaction\RollbackException if the transaction failed
+     *      and was rolled back rather than committed.
+     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     *      commit the transaction.
+     * @throws \PHPCR\RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function commitTransaction()
@@ -1011,17 +1010,18 @@ class ObjectManager
 
     /**
      * Roll back the transaction associated with the current session.
-     * TODO: Make shure AccessDeniedException is thrown by the transport
-     * if corresponding problems occure
-     * TODO: check the save() method.
-     * TODO: restore the in-memory state as it has to be if save() was never
-     * called during the transaction.
+     *
+     * TODO: Make sure AccessDeniedException is thrown by the transport
+     * if corresponding problems occur
+     * TODO: restore the in-memory state as it would be if save() was never
+     * called during the transaction. The save() method will need to track some
+     * undo information for this to be possible.
      *
      * @return void
      *
-     * @throws \PHPCR\AccessDeniedException Thrown to indicate that the
-     *      application is not allowed to roll back the transaction.
-     * @throws \PHPCR\RepositoryException Thrown if the transaction implementation
+     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     *      roll back the transaction.
+     * @throws \PHPCR\RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function rollbackTransaction()
@@ -1031,13 +1031,16 @@ class ObjectManager
     }
 
     /**
-     * Notifies the given node and all of its children and properties that a transaction has begun,
-     * was committed or rolled back so that the item has a chance to save or restore his internal state.
+     * Notifies the given node and all of its children and properties that a
+     * transaction has begun, was committed or rolled back so that the item has
+     * a chance to save or restore his internal state.
      *
-     * @param $method string The method to call on each item for the notification (should be beginTransaction, commitTransaction or rollbackTransaction)
+     * @param $method string The method to call on each item for the
+     *      notification (must be beginTransaction, commitTransaction or
+     *      rollbackTransaction)
      * @return void
      *
-     * @throws \InvalidArgumentException When the passed $method is not valid
+     * @throws \InvalidArgumentException if the passed $method is not valid
      */
     protected function notifyItems($method)
     {
@@ -1057,11 +1060,15 @@ class ObjectManager
     }
 
     /**
-     * Purge an item given by path from the cache and returns the item.
-     * If the item is not in the cache, returns null.
+     * Purge an item given by path from the cache and returns the Node.
+     *
+     * If the item is not cached, returns null.
+     *
+     * This is used by Node::reload() to notify the object manager if the node
+     * realizes it is deleted or has deleted child nodes.
      *
      * @param $absPath string The absolute path of the item
-     * @return \PHPCR\NodeInterface or null
+     * @return \PHPCR\IodeInterface or null
      */
     public function purgeDeleted($absPath)
     {

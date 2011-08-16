@@ -4,43 +4,68 @@ namespace Jackalope;
 /**
  * Item base class with common functionality
  *
- * TODO: Document Item state and the interractions with the transaction manager.
+ * Implementation: The item has a state machine to track in what state it
+ * currently is. All API exposed methods must call Item::checkState() before
+ * doing anything.
+ * Most important is that everything that is in state deleted can not be used
+ * anymore (will detect logic errors in client code) and that if the item needs
+ * to be reloaded from the backend, this can be postponed until the item is
+ * actually accessed again.
+ *
+ * <img src="https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png" />
+ * <em>Figure: workflow state transitions</em>
+ *
+ * For the special case of Item state after a failed transaction, see Item::rollbackTransaction()
  */
 abstract class Item implements \PHPCR\ItemInterface
 {
     /**
-     * Item state constants, see the following image for the workflow:
+     * The item needs to be created in the backend on Session::save()
      *
-     * https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png
-     *
-     * ITEM STATE AND TRANSACTIONS: see phpdoc of function rollbackTransaction()
-     */
-
-    /**
-     * The item is new and needs to be saved
+     * Item::isNew() returns true.
      */
     const STATE_NEW = 0;
 
     /**
-     * The item is dirty an needs to be reloaded before using it
+     * The item needs to be reloaded before using it the next time.
+     * Item::checkState will reload it and set the state to clean.
      */
     const STATE_DIRTY = 1;
 
     /**
-     * The item is clean (i.e. fully synchronized with the backend)
+     * The item is fully synchronized with the backend and usable.
      */
     const STATE_CLEAN = 2;
 
     /**
-     * The item has been modified and need to be saved
+     * The item has been modified locally and needs to be saved to the backend
+     * on Session::save()
      */
     const STATE_MODIFIED = 3;
 
     /**
-     * The item has been removed and cannot be used anymore
+     * The item has been deleted and may not be accessed in any way anymore
      */
     const STATE_DELETED = 4;
 
+    /** @var int    The state of the item, one of the STATE_ constants */
+    protected $state;
+
+    /**
+     * @var int    The state of the item saved when a transaction is started
+     *
+     * @see Item::rollbackTransaction()
+     */
+    protected $savedState;
+
+    /** @var array  The states an Item can take */
+    protected $available_states = array(
+        self::STATE_NEW,
+        self::STATE_DIRTY,
+        self::STATE_CLEAN,
+        self::STATE_MODIFIED,
+        self::STATE_DELETED,
+    );
 
     /** @var Factory   The jackalope object factory for this object */
     protected $factory;
@@ -54,47 +79,31 @@ abstract class Item implements \PHPCR\ItemInterface
     /** @var bool   false if item is read from backend, true if created locally in this session */
     protected $new;
 
-    /** @var bool   True if modified otherwise false */
-    protected $modified = false;
-
-    /** @var string */
+    /** @var string     the node or property name*/
     protected $name;
 
     /** @var string     Normalized and absolute path to this item. */
     protected $path;
 
-    /** @var string     Normalized and absolute path to the parent item. */
+    /** @var string     Normalized and absolute path to the parent item for convenience. */
     protected $parentPath;
 
     /** @var int    Depth in the workspace graph */
     protected $depth;
 
-    /** @var bool   Whether this item is a node  */
+    /** @var bool   Whether this item is a node (otherwise it is a property) */
     protected $isNode = false;
 
-    /** @var int    The state of the item */
-    protected $state;
-
-    /** @var int    The state of the item saved when a transaction is started */
-    protected $savedState;
-
-    /** @var array  The states an Item can take */
-    protected $available_states = array(
-        self::STATE_NEW,
-        self::STATE_DIRTY,
-        self::STATE_CLEAN,
-        self::STATE_MODIFIED,
-        self::STATE_DELETED,
-    );
-
     /**
+     * Initialize basic information common to nodes and properties
+     *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param string    $path   The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager
      * @param boolean $new can be set to true to tell the object that it has been created locally
      */
-    public function __construct($factory, $path,  Session $session,
+    protected function __construct($factory, $path,  Session $session,
                                 ObjectManager $objectManager, $new = false)
     {
         $this->factory = $factory;
@@ -276,11 +285,14 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Returns true if this Item has been saved but not was not reloaded. The
-     * representation of the item in memory might not reflect all the changes
-     * that the save could have produced (for instance if mix:referenceable has
-     * been added to the item but the item was not yet reloaded and thus has
-     * not its real UUID).
+     * Whether this item is in state dirty.
+     *
+     * Returns true if this Item has been marked dirty (i.e. being saved) and
+     * has not been reloaded since.
+     *
+     * The in-memory representation of the item in memory might not reflect the
+     * current state in the backend (for instance if mix:referenceable mixin
+     * type has been added to the item the backend creates a UUID on save).
      *
      * @return boolean
      * @private
@@ -291,7 +303,7 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Returns true if this Item has been deleted and cannot be used anymore.
+     * Whether this item has been deleted and can not be used anymore.
      *
      * @return boolean
      * @private
@@ -302,9 +314,8 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Returns true it this Item is clean (i.e. its state is fully synchronized
-     * with the backend). This occurs if the Item was just loaded or reloaded after
-     * a modification.
+     * Whether this item is in STATE_CLEAN (meaning its data is fully
+     * synchronized with the backend)
      *
      * @return boolean
      * @private
@@ -432,7 +443,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function remove()
     {
-        $this->checkState(false); // To avoid the possibility to delete an already deleted node
+        $this->checkState(); // To avoid the possibility to delete an already deleted node
 
         // sanity checks
         if ($this->getDepth() == 0) {
@@ -446,7 +457,6 @@ abstract class Item implements \PHPCR\ItemInterface
         } else {
             $this->objectManager->removeItem($this->path);
         }
-        $this->getParent()->setModified();
         $this->setDeleted();
     }
 
@@ -563,9 +573,14 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Must be called when a transaction begins in order to manage item state correctly if a rollback occurs
+     * Manage item state when transaction starts. This method is called on
+     * every cached item by the ObjectManager.
+     *
+     * Saves the current item state in case a rollback occurs.
+     *
      * @return void
      * @private
+     * @see Item::rollbackTransaction
      */
     public function beginTransaction()
     {
@@ -574,9 +589,12 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Must be called when a transaction is committed in order to manage item state correctly if a rollback occurs
+     * Clean up state after a transaction. This method is called on every
+     * cached item by the ObjectManager.
+     *
      * @return void
      * @private
+     * @see Item::rollbackTransaction
      */
     public function commitTransaction()
     {
@@ -585,49 +603,49 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Must be called when a transaction is rolled back in order to correctly manage item state
+     * Adjust the correct item state after a transaction rollback. This method
+     * is called on every cached item by the ObjectManager.
+     *
+     * Item state represents the state of an in-memory item. This has nothing
+     * to do with the state of the item in the backend.
+     *
+     * Referring to the JCR spec (21.3 Save vs. Commit) a transaction rollback
+     * or commit will not change the in-memory state of items, but only the
+     * backend.
+     *
+     * When a transaction is rolled back, we try to correct the state of
+     * in-memory items so that the session could be correctly saved if no more
+     * constraint violations remain. Note that this does not fully work yet.
+     *
+     *
+     * On Item::beginTransaction() we save the current state into savedState.
+     * On a rollback, we basically go back to the saved state, with a couple of
+     * exceptions. The following table shows an ordered list of rules - the
+     * first match is used. The * denotes any state.
+     *
+     * <table>
+     * <tr><th>#</th><th>$savedState</th><th>$state  </th><th>Resulting $state</th></tr>
+     * <tr><td>1</td><td>DELETED    </td><td>*       </td><td>DELETED</td></tr>
+     * <tr><td>2</td><td>*          </td><td>DELETED </td><td>DELETED</td></tr>
+     * <tr><td>3</td><td>NEW        </td><td>*       </td><td>NEW</td></tr>
+     * <tr><td>4</td><td>*          </td><td>MODIFIED</td><td>MODIFIED</td></tr>
+     * <tr><td>5</td><td>MODIFIED   </td><td>*       </td><td>MODIFIED</td></tr>
+     * <tr><td>6</td><td>CLEAN      </td><td>CLEAN   </td><td>CLEAN    (if the item was not modified in the TRX)</td></tr>
+     * <tr><td>7</td><td>CLEAN      </td><td>CLEAN   </td><td>MODIFIED (if the item was modified in the TRX)</td></tr>
+     * <tr><td colspan="4">
+     *      note: case 7 is handled in Item::setState() by changing $savedState to MODIFIED if $savedState is CLEAN and
+     *      current state changes to MODIFIED Without this special case, we would miss the situation where a clean node is
+     *      modified after transaction start and successfully saved, endeding up with clean state again. it has to be
+     *      modified as its different from the backend value.
+     * </td></tr>
+     * <tr><td>8</td><td>CLEAN      </td><td>DIRTY   </td><td>   DIRTY</td></tr>
+     * <tr><td>9</td><td>DIRTY      </td><td>*       </td><td>   DIRTY</td></tr>
+     * </table>
+     *
      * @return void
-     * @throws \LogicException
+     * @throws \LogicException if an unexpected state transition is encountered
      * @private
-     *
-     * ITEM STATE AND TRANSACTIONS
-     * ---------------------------
-     *
-     * Item state represent the state of an in-memory item. This has nothing to do
-     * with the state of the item in the backend.
-     *
-     * Referring to the JCR spec (21.3 Save vs. Commit) a transaction rollback or
-     * commit will not change the in-memory state of items, but only the backend.
-     *
-     * When a transaction is rolled back the in-memory state of an item must be
-     * adapted.
-     *
-     * This is how it is implemented in Jackalope:
-     *
-     * (the first line matching takes the precendence over the other lines)
-     * (the star represent any item state)
-     *
-     *      $savedState         $state              New state
-     *      (state before TRX)  (at the end of TRX) (after the rollback)
-     *      --------------------------------------------------------------------
-     *  1)  DELETED             *                   DELETED
-     *  2)  *                   DELETED             DELETED
-     *
-     *  3)  NEW                 *                   NEW
-     *
-     *  4)  *                   MODIFIED            MODIFIED
-     *
-     *  5)  MODIFIED            *                   MODIFIED
-     *
-     *  6)  CLEAN               CLEAN               CLEAN    (if the item was not modified in the TRX)
-     *  7)                      CLEAN               MODIFIED (if the item was modified in the TRX)
-     *
-     *      note: this case (7) is handled in setState by changing savedState to MODIFIED if it was CLEAN
-     *            and current state changes to MODIFIED
-     *
-     *  8)  CLEAN               DIRTY               DIRTY
-     *
-     *  9)  DIRTY               *                   DIRTY
+     * @see ObjectManager::rollbackTransaction()
      */
     public function rollbackTransaction()
     {
@@ -681,8 +699,8 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Reload the current item.
-     * 
+     * Reload the current item from the backend.
+     *
      * @private
      */
     protected abstract function reload();

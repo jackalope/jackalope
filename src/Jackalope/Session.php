@@ -46,9 +46,10 @@ class Session implements \PHPCR\SessionInterface
      * @var ObjectManager
      */
     protected $objectManager;
-
+    /**
+     * @var \PHPCR\Transaction\UserTransactionInterface
+     */
     protected $utx = null;
-
     /**
      * @var \PHPCR\SimpleCredentials
      */
@@ -941,7 +942,6 @@ class Session implements \PHPCR\SessionInterface
         $this->logout = true;
         self::unregisterSession($this);
         $this->getTransport()->logout();
-        self::unregisterSession($this);
     }
 
     /**

@@ -94,7 +94,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function setValue($value, $type = PropertyType::UNDEFINED)
     {
-        $this->checkState(false);
+        $this->checkState();
 
         // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
@@ -113,7 +113,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function addValue($value)
     {
-        $this->checkState(false);
+        $this->checkState();
 
         if (!$this->isMultiple()) {
             throw new \PHPCR\ValueFormatException('You can not add values to non-multiple properties');
@@ -575,7 +575,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      **/
     public function remove()
     {
-        $this->checkState(false);
+        $this->checkState();
 
         $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
         $meth->setAccessible(true);
@@ -602,20 +602,23 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
     /**
      * Reload the property after an unnotified backend change.
+     *
+     * Triggers a reload of the containing node, as a property can only ever be
+     * loaded attached to a node.
+     *
+     * TODO: refactor this if we implement loading single properties
      */
     protected function reload()
     {
-        // Tell the parent node to reload
+        // Tell the node this property is part of to reload
         $this->objectManager->getNodeByPath($this->parentPath)->reload();
     }
 
     /**
-     * Internaly used to get the raw value of the property.
-     *
-     * DO NOT USE.
+     * Internaly used to get the raw value of the property without any checks.
      *
      * @return mixed
-     * @see Property::getValue
+     * @see Property::getValue()
      * @private
      */
     public function _getRawValue()
@@ -627,11 +630,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * Internaly used to set the value of the property without any notification
      * of changes nor state change.
      *
-     * DO NOT USE.
-     *
      * @param mixed $value
-     * @param string $type 
-     * @see Property::setValue
+     * @param string $type
+     * @see Property::setValue()
      * @private
      */
     public function _setValue($value, $type = PropertyType::UNDEFINED)
@@ -665,9 +666,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type !== $type) {
             /* TODO: find out with node type definition if the new type is allowed
               if (canHaveType($type)) {
-                  */
-                  $targettype = $type;
-                  /*
+            */
+            $targettype = $type;
+            /*
               } else {
                   //convert to an allowed type. if the current type is defined $targettype = $this->type;
               }
