@@ -1137,7 +1137,6 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function remove()
     {
         $this->checkState(false);
-        $this->setDeleted();
 
         $this->getParent()->unsetChildNode($this->name);
         parent::remove();
@@ -1155,11 +1154,13 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         $this->checkState(false);
         $this->setModified();
 
+        // TODO: we probably don't need this test anymore, unless we keep it
+        // to test the child node existence
         $key = array_search($name, $this->nodes);
         if ($key === false) {
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
         }
-        $this->nodes[$key]->setDeleted();
+
         unset($this->nodes[$key]);
     }
 
@@ -1192,8 +1193,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         if (!array_key_exists($name, $this->properties)) {
             throw new \PHPCR\ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
-        $this->properties[$name]->setDeleted();
-        $this->setModified();
+
         unset($this->properties[$name]);
     }
 
