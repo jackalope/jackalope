@@ -111,6 +111,12 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->objectManager = $objectManager;
 
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
+        if (! $new && $utx = $session->getWorkspace()->getTransactionManager()) {
+            if ($utx->inTransaction()) {
+                // properly set previous state in case we get into a rollback
+                $this->savedState = self::STATE_CLEAN;
+            }
+        }
 
         $this->setPath($path);
     }

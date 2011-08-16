@@ -44,7 +44,30 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function getSessionMock()
     {
         $factory = new \Jackalope\Factory;
-        return $this->getMock('\Jackalope\Session', array(), array($factory), '', false);
+        $mock = $this->getMock('\Jackalope\Session', array('getWorkspace'), array($factory), '', false);
+        $mock->expects($this->any())
+             ->method('getWorkspace')
+             ->will($this->returnValue($this->getWorkspaceMock()));
+        return $mock;
+    }
+
+    protected function getWorkspaceMock()
+    {
+        $factory = new \Jackalope\Factory;
+        $mock = $this->getMock('\Jackalope\Session', array('getTransactionManager'), array($factory), '', false);
+        $mock->expects($this->any())
+             ->method('getWorkspace')
+             ->will($this->returnValue($this->getInactiveTransactionMock()));
+        return $mock;
+    }
+
+    protected function getInactiveTransactionMock()
+    {
+        $factory = new \Jackalope\Factory;
+        $mock = $this->getMock('Jackalope\Transaction\UserTransaction', array('inTransaction'), array($factory), '', false);
+        $mock->expects($this->any())
+             ->method('inTransaction')
+             ->will($this->returnValue(false));
     }
 
     protected function getNodeTypeManager()
