@@ -1,31 +1,15 @@
 <?php
-
-/**
- * Converts QOM to SQL Statements for the Doctrine DBAL database backend.
- *
- * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- * @package jackalope
- * @subpackage transport
- */
-
 namespace Jackalope\Transport\DoctrineDBAL\Query;
 
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\Query\QOM;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+/**
+ * Converts QOM to SQL Statements for the Doctrine DBAL database backend.
+ *
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ */
 class QOMWalker
 {
     /**
@@ -44,7 +28,7 @@ class QOMWalker
     private $platform;
 
     private $namespaces;
-    
+
     public function __construct(NodeTypeManagerInterface $manager, AbstractPlatform $platform, array $namespaces = array())
     {
         $this->nodeTypeManager = $manager;
@@ -65,7 +49,7 @@ class QOMWalker
         }
         return $this->alias[$selectorAlias];
     }
-    
+
     public function walkQOMQuery(QOM\QueryObjectModelInterface $qom)
     {
         $sql = "SELECT ";
@@ -79,7 +63,7 @@ class QOMWalker
         }
         return $sql;
     }
-    
+
     public function walkColumns($columns)
     {
         if ($columns) {
@@ -92,21 +76,21 @@ class QOMWalker
         }
         return $sql;
     }
-    
+
     public function walkColumn(QOM\ColumnInterface $column)
     {
-        
+
     }
-    
+
     public function walkSource(QOM\SourceInterface $source)
     {
         if (!($source instanceof QOM\SelectorInterface)) {
             throw new \Jackalope\NotImplementedException("Only Selector Sources are supported.");
         }
-        
+
         $sql = "FROM phpcr_nodes n ".
                "WHERE n.workspace_id = ? AND n.type IN ('" . $source->getNodeTypeName() ."'";
-        
+
         $subTypes = $this->nodeTypeManager->getSubtypes($source->getNodeTypeName());
         foreach ($subTypes as $subType) {
             /* @var $subType PHPCR\NodeType\NodeTypeInterface */
@@ -116,7 +100,7 @@ class QOMWalker
 
         return $sql;
     }
-    
+
     public function walkConstraint(QOM\ConstraintInterface $constraint)
     {
         if ($constraint instanceof QOM\AndInterface) {
@@ -277,7 +261,7 @@ class QOMWalker
             throw new \PHPCR\Query\InvalidQueryException("Dynamic operand " . get_class($operand) ." not yet supported.");
         }
     }
-    
+
     public function walkOrderings(array $orderings)
     {
         $sql = "ORDER BY ";
@@ -286,7 +270,7 @@ class QOMWalker
         }
         return $sql;
     }
-    
+
     public function walkOrdering(QOM\OrderingInterface $ordering)
     {
         return $this->walkOperand($ordering->getOperand()) . " " .
@@ -295,7 +279,7 @@ class QOMWalker
 
     /**
      * SQL to execute an XPATH expression checking if the property exist on the node with the given alias.
-     * 
+     *
      * @param string $alias
      * @param string $property
      * @return string

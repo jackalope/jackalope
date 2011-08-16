@@ -1,25 +1,4 @@
 <?php
-
-/**
- * Class to handle the communication between Jackalope and RDBMS via Doctrine DBAL.
- *
- * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
- *   Licensed under the Apache License, Version 2.0 (the "License") {}
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- * @package jackalope
- * @subpackage transport
- */
-
 namespace Jackalope\Transport\DoctrineDBAL;
 
 use PHPCR\PropertyType;
@@ -33,6 +12,10 @@ use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 
 /**
+ * Class to handle the communication between Jackalope and RDBMS via Doctrine DBAL.
+ *
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class Client implements TransportInterface
@@ -97,10 +80,10 @@ class Client implements TransportInterface
         \PHPCR\NamespaceRegistryInterface::PREFIX_XML => \PHPCR\NamespaceRegistryInterface::NAMESPACE_XML,
         'phpcr' => 'http://github.com/jackalope/jackalope', // TODO: Namespace?
     );
-    
+
     /**
      * Indexes
-     * 
+     *
      * @var array
      */
     private $indexes;
@@ -225,7 +208,7 @@ class Client implements TransportInterface
                 $this->workspaceId = $this->getWorkspaceId($workspaceName);
             }
         }
-        
+
         if (!$this->workspaceId) {
             throw new \PHPCR\NoSuchWorkspaceException;
         }
@@ -420,12 +403,12 @@ class Client implements TransportInterface
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $newPath = str_replace($srcAbsPath, $dstAbsPath, $row['path']);
-                
+
                 $dom = new \DOMDocument('1.0', 'UTF-8');
                 $dom->loadXML($row['props']);
-                
+
                 $newNodeId = $this->syncNode(null, $newPath, $this->getParentPath($newPath), $row['type'], array(), array('dom' => $dom, 'binaryData' => array()));
-                
+
                 $query = "INSERT INTO phpcr_binarydata (node_id, property_name, workspace_id, idx, data) " .
                          "SELECT ?, b.property_name, ?, b.idx, b.data " .
                          "FROM phpcr_binarydata b WHERE b.node_id = ?";
@@ -453,7 +436,7 @@ class Client implements TransportInterface
         $namespaces = $this->getNamespaces();
         return array($namespaces[$alias], $name);
     }
-    
+
     private function syncNode($uuid, $path, $parent, $type, $props = array(), $propsData = array())
     {
         // TODO: Not sure if there are always ALL props in $props, should be grab the online data here?
@@ -508,7 +491,7 @@ class Client implements TransportInterface
             $this->conn->rollback();
             throw $e;
         }
-        
+
         return $nodeId;
     }
 
@@ -519,7 +502,7 @@ class Client implements TransportInterface
 
     private function syncUserIndexes()
     {
-        
+
     }
 
     private function syncBinaryData($nodeId, $binaryData)
@@ -574,11 +557,11 @@ class Client implements TransportInterface
             }
         }
     }
-    
+
     /**
      * Seperate properties array into an xml and binary data.
-     * 
-     * @param array $properties 
+     *
+     * @param array $properties
      * @param bool $inlineBinaries
      * @return array ('dom' => $dom, 'binary' => streams)
      */
@@ -592,14 +575,14 @@ class Client implements TransportInterface
             'sv' => "http://www.jcp.org/jcr/sv/1.0",
             'rep' => "internal"
         );
-        
+
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $rootNode = $dom->createElement('sv:node');
         foreach ($namespaces as $namespace => $uri) {
             $rootNode->setAttribute('xmlns:' . $namespace, $uri);
         }
         $dom->appendChild($rootNode);
-        
+
         $binaryData = null;
         foreach ($properties AS $property) {
             /* @var $prop \PHPCR\PropertyInterface */
@@ -607,7 +590,7 @@ class Client implements TransportInterface
             $propertyNode->setAttribute('sv:name', $property->getName());
             $propertyNode->setAttribute('sv:type', $property->getType()); // TODO: Name! not int
             $propertyNode->setAttribute('sv:multi-valued', $property->isMultiple() ? "1" : "0");
-            
+
             switch ($property->getType()) {
                 case \PHPCR\PropertyType::NAME:
                 case \PHPCR\PropertyType::URI:
@@ -647,14 +630,14 @@ class Client implements TransportInterface
                     $values = $property->getDouble();
                     break;
             }
-            
+
             foreach ((array)$values AS $value) {
                 $propertyNode->appendChild($dom->createElement('sv:value', $value));
             }
-            
+
             $rootNode->appendChild($propertyNode);
         }
-        
+
         return array('dom' => $dom, 'binaryData' => $binaryData);
     }
 
@@ -1170,7 +1153,7 @@ $/xi";
 
     /**
      * Fetch a user-defined node-type definition.
-     * 
+     *
      * @param string $name
      * @return array
      */
@@ -1444,9 +1427,9 @@ $/xi";
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
         $targetId = $this->pathExists($path);
-        
+
         $type = $weakReference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
-        
+
         $sql = "SELECT CONCAT(n.path, '/', fk.source_property_name) AS path, fk.source_property_name FROM phpcr_nodes n " .
                "INNER JOIN phpcr_nodes_foreignkeys fk ON n.id = fk.source_id ".
                "WHERE fk.target_id = ? AND fk.type = ?";

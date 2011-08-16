@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope;
 
 /**
@@ -16,7 +15,6 @@ namespace Jackalope;
  * The loading from the backend is deferred until the stream is accessed. Then it is loaded and all
  * stream functions are passed on to the underlying stream.
  *
- * @package jackalope
  * @private
  */
 class BinaryStreamWrapper
@@ -84,9 +82,9 @@ class BinaryStreamWrapper
     {
         if ($this->stream) {
             return fflush($this->stream);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -116,6 +114,9 @@ class BinaryStreamWrapper
                     self::$multiValueMap[$token] = $this->session->getObjectManager()->getBinaryStream($property_path);
                 }
                 $index = isset($url['port']) ? $url['port'] - 1 : 0;
+                if (!isset(self::$multiValueMap[$token][$index])) {
+                    throw new \LogicException("Trying to read a stream from a non existant token '$token' or token index '$index'.");
+                }
                 $this->stream = self::$multiValueMap[$token][$index];
             }
         }

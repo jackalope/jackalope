@@ -1,29 +1,13 @@
 <?php
+namespace Jackalope\Transport\DoctrineDBAL;
+
+use Doctrine\DBAL\Schema\Schema;
 
 /**
  * Class to handle setup the RDBMS tables for the Doctrine DBAL transport.
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
- *   Licensed under the Apache License, Version 2.0 (the "License") {}
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- * @package jackalope
- * @subpackage transport
  */
-
-namespace Jackalope\Transport\DoctrineDBAL;
-
-use Doctrine\DBAL\Schema\Schema;
-
 class RepositorySchema
 {
     static public function create()
@@ -55,7 +39,7 @@ class RepositorySchema
         $nodes->addIndex(array('parent'));
         $nodes->addIndex(array('type'));
         $nodes->addIndex(array('local_name', 'namespace'));
-        
+
         $indexJcrTypes = $schema->createTable('phpcr_internal_index_types');
         $indexJcrTypes->addColumn('type', 'string');
         $indexJcrTypes->addColumn('node_id', 'integer');
@@ -70,7 +54,7 @@ class RepositorySchema
         $binary->addColumn('data', 'text'); // TODO BLOB!
         $binary->setPrimaryKey(array('id'));
         $binary->addUniqueIndex(array('node_id', 'property_name', 'workspace_id', 'idx'));
-        
+
         $foreignKeys = $schema->createTable('phpcr_nodes_foreignkeys');
         $foreignKeys->addColumn('source_id', 'integer');
         $foreignKeys->addColumn('source_property_name', 'string');

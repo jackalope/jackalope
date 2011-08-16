@@ -14,8 +14,6 @@ use Jackalope\ObjectManager;
  * children and not over versions. If you want to use a foreach, you can use
  * getAllVersions() to retrieve an iterator over versions.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class VersionHistory extends \Jackalope\Node {

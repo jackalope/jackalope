@@ -2,7 +2,7 @@
 namespace Jackalope;
 
 /**
- * {@inheritDoc}
+ * Item base class with common functionality
  *
  * TODO: Document Item state and the interractions with the transaction manager.
  */

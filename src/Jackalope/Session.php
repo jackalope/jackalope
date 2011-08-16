@@ -20,10 +20,9 @@ use PHPCR\PropertyType;
  */
 class Session implements \PHPCR\SessionInterface
 {
-
     /**
      * A registry for all created sessions to be able to reference them by id in
-     * the stream wrapper for lazy laoding binary properties.
+     * the stream wrapper for lazy loading binary properties.
      *
      * Keys are spl_object_hash'es for the sessions which are the values
      */
@@ -1045,8 +1044,6 @@ class Session implements \PHPCR\SessionInterface
     {
         if (isset(self::$sessionRegistry[$key])) {
             return self::$sessionRegistry[$key];
-        } else {
-            return null;
         }
     }
 }

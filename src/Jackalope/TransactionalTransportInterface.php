@@ -1,23 +1,14 @@
 <?php
-/**
- * Definition of the interface to be used for implementing a transactional transport.
- *
- * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
- *
- * @package jackalope
- * @subpackage transport
- */
 namespace Jackalope;
 
 /**
- * Implementation specific interface:
+ * Implementation specific interface for implementing transactional transport layers
  * Jackalope encapsulates all communication with the storage backend within
  * this interface.
  *
  * Adds the methods necessary for transaction handling
  *
- * @package jackalope
- * @subpackage transport
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
 interface TransactionalTransportInterface extends TransportInterface
 {

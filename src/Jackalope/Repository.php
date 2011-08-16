@@ -53,7 +53,7 @@ class Repository implements \PHPCR\RepositoryInterface
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
-        $this->options = array_merge((array)$options, $this->options);
+        $this->options = array_merge($this->options, (array)$options);
         $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionalTransportInterface;
         // register a stream wrapper to lazily load binary property values
         if (null === self::$binaryStreamWrapperRegistered) {

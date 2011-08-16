@@ -11,8 +11,6 @@ namespace Jackalope\Query;
  * The iterator is similar to <b>getValues()</b> with keys being the column
  * names and the values the corresponding entry in that column for this row.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class Row implements \Iterator, \PHPCR\Query\RowInterface

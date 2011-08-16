@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope;
 
 use ArrayIterator;
@@ -31,7 +30,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     protected $nodes = array();
 
     /**
-     * Create a node.
+     * Create a new node instance with data from the storage layer
      *
      * @param Jackalope\Factory $factory the factory to instantiate objects with
      * @param array $rawData in the format as returned from Jackalope\TransportInterface
@@ -41,6 +40,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @param boolean $new set to true if this is a new node being created. Defaults to false
      *
      * @see Jackalope\TransportInterface::getNode()
+     *
+     * @private
      */
     public function __construct($factory, $rawData, $path, \PHPCR\SessionInterface $session, $objectManager, $new = false)
     {
@@ -1144,11 +1145,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * This method is implementation specific and not part of the PHPCR API
-     *
      * @throws \PHPCR\ItemNotFoundException If child not found
      * @return void
-     **/
+     *
+     * @private
+     */
     protected function unsetChildNode($name) {
         $this->checkState(false);
         $this->setModified();
@@ -1181,10 +1182,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * This method is implementation specific and not part of the PHPCR API
-     *
      * @throws \PHPCR\ItemNotFoundException If property not found
      * @return void
+     *
+     * @private
      **/
     protected function unsetProperty($name) {
         $this->checkState(false);

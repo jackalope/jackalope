@@ -1,5 +1,4 @@
 <?php
-
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\LiteralInterface;
@@ -7,8 +6,6 @@ use PHPCR\Query\QOM\LiteralInterface;
 /**
  * Evaluates to a literal value.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class Literal implements LiteralInterface
@@ -21,7 +18,7 @@ class Literal implements LiteralInterface
     /**
      * Constructor
      *
-     * @param string $literalValue 
+     * @param string $literalValue
      */
     public function __construct($literalValue)
     {

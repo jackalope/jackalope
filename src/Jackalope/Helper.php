@@ -6,7 +6,7 @@ use \DOMElement;
 /**
  * static helper functions to do some commonly used dom and path operations
  *
- * Not part of the API, implementation specific
+ * @private
  */
 class Helper
 {

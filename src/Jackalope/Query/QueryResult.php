@@ -15,8 +15,6 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
  * single selector, you can either do foreach on getNodes or call getNode on the
  * rows.
  *
- * @package phpcr
- * @subpackage interfaces
  * @api
  */
 class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterface
