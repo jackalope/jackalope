@@ -814,18 +814,12 @@ class ObjectManager
         $parentCurPath = dirname($curPath);
         $parentNewPath = dirname($newPath);
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
-            $obj = $this->objectsByPath['Node'][$parentCurPath];
-
-            $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetChildNode');
-            $meth->setAccessible(true);
-            $meth->invokeArgs($obj, array(basename($curPath)));
+            $node = $this->objectsByPath['Node'][$parentCurPath];
+            $node->unsetChildNode(basename($curPath));
         }
         if (isset($this->objectsByPath['Node'][$parentNewPath])) {
-            $obj = $this->objectsByPath['Node'][$parentNewPath];
-
-            $meth = new \ReflectionMethod('\Jackalope\Node', 'addChildNode');
-            $meth->setAccessible(true);
-            $meth->invokeArgs($obj, array(basename($newPath)));
+            $node = $this->objectsByPath['Node'][$parentNewPath];
+            $node->addChildNode(basename($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
@@ -848,10 +842,7 @@ class ObjectManager
                     $item = $this->objectsByPath['Node'][$path];
                     $this->objectsByPath['Node'][$newItemPath] = $item;
                     unset($this->objectsByPath['Node'][$path]);
-
-                    $meth = new \ReflectionMethod('\Jackalope\Item', 'setPath');
-                    $meth->setAccessible(true);
-                    $meth->invokeArgs($this->objectsByPath['Node'][$newItemPath], array($newItemPath));
+                    $item->setPath($newItemPath);
                 }
             }
         }

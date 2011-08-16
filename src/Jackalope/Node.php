@@ -1155,7 +1155,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @private
      */
-    protected function unsetChildNode($name)
+    public function unsetChildNode($name)
     {
         $this->checkState();
         $this->setModified();
@@ -1169,11 +1169,12 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
 
     /**
-     * Adds child node to this node (only internal reference)
+     * Adds child node to this node for internal reference
      *
      * @param   string  $name   The name of the child node
+     * @private
      */
-    protected function addChildNode($name)
+    public function addChildNode($name)
     {
         $this->checkState();
         $this->setModified();
@@ -1191,8 +1192,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @return void
      *
      * @private
-     **/
-    protected function unsetProperty($name)
+     */
+    public function unsetProperty($name)
     {
         $this->checkState();
         $this->setModified();

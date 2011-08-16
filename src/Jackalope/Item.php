@@ -121,7 +121,16 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->setPath($path);
     }
 
-    protected function setPath($path) {
+    /**
+     * Set or update the path, depth, name and parent reference
+     *
+     * @param $path the new path this item lives at
+     *
+     * @return void
+     *
+     * @private
+     */
+    public function setPath($path) {
         $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
         $this->name = basename($path);
