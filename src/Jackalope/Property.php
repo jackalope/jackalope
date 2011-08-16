@@ -96,12 +96,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         $this->checkState(false);
 
-        $this->_setValue($value, $type);
-
         // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
             $this->setModified();
         }
+
+        // WARNING: The _setValue call MUST BE after the check to see if the value or type changed
+        $this->_setValue($value, $type);
     }
 
     /**

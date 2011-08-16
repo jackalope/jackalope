@@ -375,7 +375,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         } else {
             $this->properties[$name]->setValue($value, $type);
         }
-        $this->properties[$name]->setModified();
+
         return $this->properties[$name];
     }
 
@@ -1081,8 +1081,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function update($srcWorkspace)
     {
         $this->checkState(false);
-        $this->setModified();
-        
+
         if ($this->isNew()) {
             //no node in workspace
             return;

@@ -1070,7 +1070,7 @@ class ObjectManager
      * If the item is not in the cache, returns null.
      *
      * @param $absPath string The absolute path of the item
-     * @return void
+     * @return \PHPCR\NodeInterface or null
      */
     public function purgeDeleted($absPath)
     {
