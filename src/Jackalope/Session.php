@@ -46,6 +46,9 @@ class Session implements \PHPCR\SessionInterface
      * @var ObjectManager
      */
     protected $objectManager;
+    /**
+     * @var \PHPCR\Transaction\UserTransactionInterface
+     */
     protected $utx = null;
     /**
      * @var \PHPCR\SimpleCredentials
@@ -514,7 +517,8 @@ class Session implements \PHPCR\SessionInterface
     {
         throw new NotImplementedException('Write');
 
-        //TODO: is clearing out object manager cache enough?
+        //TODO: tell all cached items to refresh. note the TODO in the node refresh 
+        //code. the $keepChanges will need more work.
         //the $keepChanges option seems not important in php context. we have no long running sessions with the server and don't need to sync changes from server.
     }
 

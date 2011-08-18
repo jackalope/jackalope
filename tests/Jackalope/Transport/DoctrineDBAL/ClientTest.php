@@ -39,6 +39,7 @@ class ClientTest extends DoctrineDBALTestCase
         $this->transport->createWorkspace('default');
 
         $this->repository = new \Jackalope\Repository(null, $this->transport);
+
         $this->session = $this->repository->login(new \PHPCR\SimpleCredentials("user", "passwd"), "default");
     }
 

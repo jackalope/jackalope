@@ -32,6 +32,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * Create a new node instance with data from the storage layer
      *
+     * Never call this directly but use the factory->get method
+     *
      * @param Jackalope\Factory $factory the factory to instantiate objects with
      * @param array $rawData in the format as returned from Jackalope\TransportInterface
      * @param string $path the absolute path of this node
@@ -296,7 +298,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             unset($this->nodes[$oldpos]);
             array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
         }
-        $this->modified = true;
+        $this->setModified();
         //TODO: do we have to record reorderings specifically for telling the backend?
     }
 
@@ -353,6 +355,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
     {
+        $this->checkState();
+
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
 
         if (is_null($value)) {
@@ -367,17 +371,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
         if (!isset($this->properties[$name])) {
             $path = $this->getChildPath($name);
-            $property = $this->factory->get(
-                            'Property',
-                            array(array(), $path,
-                                  $this->session, $this->objectManager,
-                                  true));
+            $property = $this->factory->get('Property', array(array(), $path, $this->session, $this->objectManager, true));
             $property->setValue($value, $type); //do this before adding property, in case of exception
             $this->objectManager->addItem($path, $property);
             $this->properties[$name] = $property;
         } else {
             $this->properties[$name]->setValue($value, $type);
         }
+
         return $this->properties[$name];
     }
 
@@ -402,6 +403,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getNode($relPath)
     {
+        $this->checkState();
+
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
         } catch (\PHPCR\ItemNotFoundException $e) {
@@ -460,6 +463,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getNodes($filter = null)
     {
+        $this->checkState();
+
         $names = self::filterNames($filter, $this->nodes);
         $paths = $pathNameMap = $result = array();
         if (!empty($names)) {
@@ -491,6 +496,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getProperty($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             if (!isset($this->properties[$relPath])) {
                 throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
@@ -518,6 +525,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPropertyValue($name, $type=null)
     {
+        $this->checkState();
+
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
             $val = PropertyType::convertType($val, $type);
@@ -574,6 +583,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getProperties($filter = null)
     {
+        $this->checkState();
+
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
@@ -598,6 +609,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPropertiesValues($filter=null, $dereference=true)
     {
+        $this->checkState();
+
         // OPTIMIZE: do not create properties in constructor, go over array here
         $names = self::filterNames($filter, array_keys($this->properties));
         $result = array();
@@ -665,6 +678,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIdentifier()
     {
+        $this->checkState();
+
         if (isset($this->properties['jcr:uuid'])) {
             return $this->getPropertyValue('jcr:uuid');
         }
@@ -685,6 +700,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIndex()
     {
+        $this->checkState();
+
         return $this->index;
     }
 
@@ -714,6 +731,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getReferences($name = null)
     {
+        $this->checkState();
+
         return $this->objectManager->getReferences($this->path, $name);
     }
 
@@ -743,6 +762,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getWeakReferences($name = null)
     {
+        $this->checkState();
+
         return $this->objectManager->getWeakReferences($this->path, $name);
     }
 
@@ -758,6 +779,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasNode($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         }
@@ -779,6 +802,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasProperty($relPath)
     {
+        $this->checkState();
+
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
         }
@@ -799,6 +824,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasNodes()
     {
+        $this->checkState();
+
         return !empty($this->nodes);
     }
 
@@ -812,6 +839,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function hasProperties()
     {
+        $this->checkState();
+
         return (! empty($this->properties));
     }
 
@@ -826,6 +855,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getPrimaryNodeType()
     {
+        $this->checkState();
+
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
         return $ntm->getNodeType($this->primaryType);
     }
@@ -844,6 +875,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getMixinNodeTypes()
     {
+        $this->checkState();
+
         if (!isset($this->properties['jcr:mixinTypes'])) {
             return array();
         }
@@ -867,6 +900,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isNodeType($nodeTypeName)
     {
+        $this->checkState();
+
         return (
             $this->primaryType == $nodeTypeName ||
             (isset($this->properties["jcr:mixinTypes"]) && in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue()))
@@ -893,6 +928,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function setPrimaryType($nodeTypeName)
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -935,6 +972,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             throw new \PHPCR\NodeType\ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
         }
 
+        $this->checkState();
+
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
             if (array_search($mixinName, $this->properties['jcr:mixinTypes']->getValue()) === false) {
@@ -964,6 +1003,12 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeMixin($mixinName)
     {
+        $this->checkState();
+
+        // check if node type is assigned
+
+        $this->setModified();
+
         throw new NotImplementedException('Write');
     }
 
@@ -989,6 +1034,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function canAddMixin($mixinName)
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1009,6 +1056,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getDefinition()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1037,6 +1086,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function update($srcWorkspace)
     {
+        $this->checkState();
+
         if ($this->isNew()) {
             //no node in workspace
             return;
@@ -1059,6 +1110,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getCorrespondingNodePath($workspaceName)
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1072,6 +1125,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getSharedSet()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1086,8 +1141,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function remove()
     {
-        parent::remove();
+        $this->checkState();
+
         $this->getParent()->unsetChildNode($this->name);
+        parent::remove(); // once we removed ourselves, $this->getParent() won't work anymore
     }
 
     /**
@@ -1098,7 +1155,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @private
      */
-    protected function unsetChildNode($name) {
+    public function unsetChildNode($name)
+    {
+        $this->checkState();
+        $this->setModified();
+
         $key = array_search($name, $this->nodes);
         if ($key === false) {
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
@@ -1108,12 +1169,18 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
 
     /**
-     * Adds child node to this node (only internal reference)
+     * Adds child node to this node for internal reference
      *
      * @param   string  $name   The name of the child node
+     * @private
      */
-    protected function addChildNode($name)
+    public function addChildNode($name)
     {
+        $this->checkState();
+        $this->setModified();
+
+        // TODO: same name siblings
+
         $this->nodes[] = $name;
     }
 
@@ -1125,8 +1192,12 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @return void
      *
      * @private
-     **/
-    protected function unsetProperty($name) {
+     */
+    public function unsetProperty($name)
+    {
+        $this->checkState();
+        $this->setModified();
+
         if (!array_key_exists($name, $this->properties)) {
             throw new \PHPCR\ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
@@ -1154,6 +1225,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeSharedSet()
     {
+        $this->checkState();
+        $this->setModified();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1173,6 +1247,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function removeShare()
     {
+        $this->checkState();
+        $this->setModified();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1190,6 +1267,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isCheckedOut()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1205,6 +1284,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function isLocked()
     {
+        $this->checkState();
+
         throw new NotImplementedException();
     }
 
@@ -1226,6 +1307,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function followLifecycleTransition($transition)
     {
+        $this->checkState();
+        $this->setModified();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1239,6 +1323,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getAllowedLifecycleTransitions()
     {
+        $this->checkState();
+
         throw new NotImplementedException('Write');
     }
 
@@ -1309,6 +1395,163 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      */
     public function getIterator()
     {
+        $this->checkState();
+
         return $this->getNodes();
     }
+
+    /**
+     * Reload the node after an unnotified backend change. Occurs when the state
+     * is DIRTY and the node is accessed.
+     *
+     * @see Item::checkState
+     * @private
+     */
+    public function reload()
+    {
+        // TODO: improve this method to optionally keep local changes to fully implement Ssession::refresh
+
+        $children = array();
+        $props = array();
+
+        // Get properties and children from backend
+        try {
+            $json = $this->objectManager->getTransport()->getNode($this->path);
+
+            foreach($json as $path => $item) {
+                if ($item instanceof \StdClass) {
+                    $children[$path] = $item;
+                } else {
+                    $props[$path] = $item;
+                }
+            }
+
+        } catch(\PHPCR\ItemNotFoundException $ex) {
+
+            // The node was deleted in another session
+            $this->objectManager->purgeDeleted($this->path);
+            $this->setDeleted();
+
+            // Continue and notify all the children and properties
+        }
+
+        // Update the children
+        foreach(array_unique($this->nodes + array_keys($children)) as $path) {
+            $exists_in_memory = in_array($path, $this->nodes);
+            $exists_in_backend = array_key_exists($path, $children);
+            if ($exists_in_memory && ! $exists_in_backend) {
+                // Child was deleted
+                unset($this->nodes[$path]);
+                $node = $this->objectManager->purgeDeleted($this->path . '/' . $path);
+                if ($node) {
+                    $node->setDeleted();
+                }
+            } elseif (! $exists_in_memory && $exists_in_backend) {
+                // Child was added
+                $this->nodes[] = $path;
+            }
+        }
+
+        // Update the properties
+        foreach(array_unique(array_keys($this->properties) + array_keys($props)) as $path) {
+            $exists_in_memory = array_key_exists($path, $this->properties);
+            $exists_in_backend = array_key_exists($path, $props);
+            if ($exists_in_memory && ! $exists_in_backend) {
+                // Property was deleted
+                $this->properties[$path]->setDeleted(); // may not call remove(), we dont want another delete with the backend to be attempted
+                unset($this->properties[$path]);
+            } elseif (! $exists_in_memory && $exists_in_backend) {
+                // Property was added
+                $prop = $this->_addProperty($path, $props[$path]);
+                $prop->setClean();
+            } else {
+                if ($props[$path] !== $this->properties[$path]->_getRawValue()) {
+                    // Property has changed value
+                    $this->properties[$path]->_setValue($props[$path], $this->properties[$path]->getType());
+                }
+                $this->properties[$path]->setClean();
+            }
+        }
+    }
+
+    /**
+     * Add a property to the node without any notification. May occur when the
+     * backend has a new property that is not yet loaded in memory.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param string $type
+     * @return \Jackalope\Property
+     * @see Node::reload
+     */
+    protected function _addProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
+    {
+        if ($name == '' | false !== strpos($name, '/')) {
+            throw new \InvalidArgumentException("The name '$name' is no valid property name");
+        }
+
+        if (!isset($this->properties[$name])) {
+            $path = $this->getChildPath($name);
+            $property = $this->factory->get(
+                            'Property',
+                            array(array(), $path,
+                                  $this->session, $this->objectManager,
+                                  true));
+            $property->_setValue($value, $type); //do this before adding property, in case of exception
+            $this->properties[$name] = $property;
+        } else {
+            $this->properties[$name]->_setValue($value, $type);
+        }
+        return $this->properties[$name];
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Additionally, notifies all properties of this node. Child nodes are not
+     * notified, it is the job of the ObjectManager to know which nodes are
+     * cached and notify them.
+     */
+    public function beginTransaction()
+    {
+        parent::beginTransaction();
+
+        // Notify the children properties
+        foreach($this->properties as $prop) {
+            $prop->beginTransaction();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Additionally, notifies all properties of this node. Child nodes are not
+     * notified, it is the job of the ObjectManager to know which nodes are
+     * cached and notify them.
+     */
+    public function commitTransaction()
+    {
+        parent::commitTransaction();
+
+        foreach($this->properties as $prop) {
+            $prop->commitTransaction();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Additionally, notifies all properties of this node. Child nodes are not
+     * notified, it is the job of the ObjectManager to know which nodes are
+     * cached and notify them.
+     */
+    public function rollbackTransaction()
+    {
+        parent::rollbackTransaction();
+
+        foreach($this->properties as $prop) {
+            $prop->rollbackTransaction();
+        }
+    }
+
 }

@@ -641,6 +641,7 @@ class ObjectManager
         // commit changes to the local state
         foreach ($this->itemsRemove as $path => $dummy) {
             unset($this->objectsByPath['Node'][$path]);
+            // TODO: unset the node in $this->objectsByUuid if necessary
         }
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
@@ -813,18 +814,12 @@ class ObjectManager
         $parentCurPath = dirname($curPath);
         $parentNewPath = dirname($newPath);
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
-            $obj = $this->objectsByPath['Node'][$parentCurPath];
-
-            $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetChildNode');
-            $meth->setAccessible(true);
-            $meth->invokeArgs($obj, array(basename($curPath)));
+            $node = $this->objectsByPath['Node'][$parentCurPath];
+            $node->unsetChildNode(basename($curPath));
         }
         if (isset($this->objectsByPath['Node'][$parentNewPath])) {
-            $obj = $this->objectsByPath['Node'][$parentNewPath];
-
-            $meth = new \ReflectionMethod('\Jackalope\Node', 'addChildNode');
-            $meth->setAccessible(true);
-            $meth->invokeArgs($obj, array(basename($newPath)));
+            $node = $this->objectsByPath['Node'][$parentNewPath];
+            $node->addChildNode(basename($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
@@ -847,10 +842,7 @@ class ObjectManager
                     $item = $this->objectsByPath['Node'][$path];
                     $this->objectsByPath['Node'][$newItemPath] = $item;
                     unset($this->objectsByPath['Node'][$path]);
-
-                    $meth = new \ReflectionMethod('\Jackalope\Item', 'setPath');
-                    $meth->setAccessible(true);
-                    $meth->invokeArgs($this->objectsByPath['Node'][$newItemPath], array($newItemPath));
+                    $item->setPath($newItemPath);
                 }
             }
         }
@@ -951,7 +943,7 @@ class ObjectManager
      *
      * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
      *
-     * @depricated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
+     * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
     public function clear()
     {
@@ -966,11 +958,124 @@ class ObjectManager
      * Implementation specific: Transport is used elsewhere, provide it here for Session
      *
      * @return TransportInterface
-     *
-     * @private
      */
     public function getTransport()
     {
         return $this->transport;
+    }
+
+    /**
+     * Begin new transaction associated with current session.
+     *
+     * @return void
+     *
+     * @throws \PHPCR\RepositoryException if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function beginTransaction()
+    {
+        $this->notifyItems('beginTransaction');
+        $this->transport->beginTransaction();
+    }
+
+    /**
+     * Complete the transaction associated with the current session.
+     *
+     * TODO: Make sure RollbackException and AccessDeniedException are thrown
+     * by the transport if corresponding problems occur.
+     *
+     * @return void
+     *
+     * @throws \PHPCR\Transaction\RollbackException if the transaction failed
+     *      and was rolled back rather than committed.
+     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     *      commit the transaction.
+     * @throws \PHPCR\RepositoryException if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function commitTransaction()
+    {
+        $this->notifyItems('commitTransaction');
+        $this->transport->commitTransaction();
+    }
+
+    /**
+     * Roll back the transaction associated with the current session.
+     *
+     * TODO: Make sure AccessDeniedException is thrown by the transport
+     * if corresponding problems occur
+     * TODO: restore the in-memory state as it would be if save() was never
+     * called during the transaction. The save() method will need to track some
+     * undo information for this to be possible.
+     *
+     * @return void
+     *
+     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     *      roll back the transaction.
+     * @throws \PHPCR\RepositoryException if the transaction implementation
+     *      encounters an unexpected error condition.
+     */
+    public function rollbackTransaction()
+    {
+        $this->transport->rollbackTransaction();
+        $this->notifyItems('rollbackTransaction');
+    }
+
+    /**
+     * Notifies the given node and all of its children and properties that a
+     * transaction has begun, was committed or rolled back so that the item has
+     * a chance to save or restore his internal state.
+     *
+     * @param $method string The method to call on each item for the
+     *      notification (must be beginTransaction, commitTransaction or
+     *      rollbackTransaction)
+     * @return void
+     *
+     * @throws \InvalidArgumentException if the passed $method is not valid
+     */
+    protected function notifyItems($method)
+    {
+        if (! in_array($method, array('beginTransaction', 'commitTransaction', 'rollbackTransaction'))) {
+            throw new \InvalidArgumentException("Unknown notification method '$method'");
+        }
+
+        // Notify the loaded nodes
+        foreach ($this->objectsByPath['Node'] as $node) {
+            $node->$method();
+        }
+
+        // Notify the deleted nodes
+        foreach ($this->itemsRemove as $node) {
+            $node->$method();
+        }
+    }
+
+    /**
+     * Purge an item given by path from the cache and returns the Node.
+     *
+     * If the item is not cached, returns null.
+     *
+     * This is used by Node::reload() to notify the object manager if the node
+     * realizes it is deleted or has deleted child nodes.
+     *
+     * @param $absPath string The absolute path of the item
+     * @return \PHPCR\IodeInterface or null
+     */
+    public function purgeDeleted($absPath)
+    {
+        if (array_key_exists($absPath, $this->objectsByPath)) {
+            $item = $this->objectsByPath[$absPath];
+            $uuid = $item->getIdentifier();
+
+            unset($this->objectsByPath[$absPath]);
+
+            if (array_key_exists($uuid, $this->objectsByUuid)) {
+                unset($this->objectsByUuid[$uuid]);
+            }
+
+            return $item;
+        }
+
+        return null;
     }
 }

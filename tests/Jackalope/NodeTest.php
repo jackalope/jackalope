@@ -9,7 +9,7 @@ class NodeTest extends TestCase
     protected function createNode()
     {
         $factory = new \Jackalope\Factory;
-        $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
+        $session = $this->getSessionMock();
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
         $objectManager->expects($this->any())
             ->method('getNodesByPath')

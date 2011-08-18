@@ -94,58 +94,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function setValue($value, $type = PropertyType::UNDEFINED)
     {
-        if (is_null($value)) {
-            $this->remove();
-        }
-        if (! is_integer($type)) {
-            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
-        }
-        if ($this->new) {
-            $this->isMultiple = is_array($value);
-        }
-
-        if (is_array($value) && !$this->isMultiple) {
-            throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
-        }
-
-        //TODO: check if changing type allowed.
-        /*
-         * if ($type !== null && ! canHaveType($type)) {
-         *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));
-         * }
-         */
-
-        if (PropertyType::UNDEFINED === $type) {
-            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
-        }
-
-        $targettype = $this->type;
-        if ($this->type !== $type) {
-            /* TODO: find out with node type definition if the new type is allowed
-              if (canHaveType($type)) {
-                  */
-                  $targettype = $type;
-                  /*
-              } else {
-                  //convert to an allowed type. if the current type is defined $targettype = $this->type;
-              }
-            */
-        }
-
-        $value = PropertyType::convertType($value, $targettype);
-
-        if (PropertyType::BINARY === $targettype) {
-            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
-            $this->length = $stat['size'];
-        }
+        $this->checkState();
 
         // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
             $this->setModified();
         }
 
-        $this->type = $targettype;
-        $this->value = $value;
+        // WARNING: The _setValue call MUST BE after the check to see if the value or type changed
+        $this->_setValue($value, $type);
     }
 
     /**
@@ -156,6 +113,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function addValue($value)
     {
+        $this->checkState();
+
         if (!$this->isMultiple()) {
             throw new \PHPCR\ValueFormatException('You can not add values to non-multiple properties');
         }
@@ -170,7 +129,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     public function setModified()
     {
         parent::setModified();
-        $this->getParent()->setModified();
+        $parent = $this->getParent();
+        if (!is_null($parent)) {
+            $parent->setModified();
+        }
     }
 
     /**
@@ -185,6 +147,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getValue()
     {
+        $this->checkState();
+
         if ($this->type == PropertyType::REFERENCE
             || $this->type == PropertyType::WEAKREFERENCE
         ) {
@@ -206,6 +170,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getValueForStorage()
     {
+        $this->checkState();
+
         $value = $this->value;
         if (PropertyType::BINARY == $this->type) {
             //from now on,
@@ -225,6 +191,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getString()
     {
+        $this->checkState();
+
         if ($this->type == PropertyType::BINARY && empty($this->value)) {
             return PropertyType::convertType($this->getBinary(), PropertyType::STRING);
         }
@@ -243,6 +211,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getBinary()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::BINARY) {
             return PropertyType::convertType($this->value, PropertyType::BINARY);
         }
@@ -291,6 +261,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getLong()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::LONG) {
             return PropertyType::convertType($this->value, PropertyType::LONG);
         }
@@ -308,6 +280,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDouble()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::DOUBLE) {
             return PropertyType::convertType($this->value, PropertyType::DOUBLE);
         }
@@ -325,6 +299,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDecimal()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::DECIMAL) {
             return PropertyType::convertType($this->value, PropertyType::DECIMAL);
         }
@@ -342,6 +318,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDate()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::DATE) {
             return PropertyType::convertType($this->value, PropertyType::DATE);
         }
@@ -359,6 +337,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getBoolean()
     {
+        $this->checkState();
+
         if ($this->type != PropertyType::BOOLEAN) {
             return PropertyType::convertType($this->value, PropertyType::BOOLEAN);
         }
@@ -382,6 +362,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getNode()
     {
+        $this->checkState();
+
         $values = $this->isMultiple() ? $this->value : array($this->value);
 
         $results = array();
@@ -437,6 +419,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getProperty()
     {
+        $this->checkState();
+
         $values = $this->isMultiple() ? $this->value : array($this->value);
 
         $results = array();
@@ -477,6 +461,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getLength()
     {
+        $this->checkState();
+
         if (PropertyType::BINARY === $this->type) {
             return $this->length;
         }
@@ -511,6 +497,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getDefinition()
     {
+        $this->checkState();
+
         if (empty($this->definition)) {
             //FIXME: acquire definition
         }
@@ -543,6 +531,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getType()
     {
+        $this->checkState();
+
         return $this->type;
     }
 
@@ -556,6 +546,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function isMultiple()
     {
+        $this->checkState();
+
         return $this->isMultiple;
     }
 
@@ -565,6 +557,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     protected function checkMultiple($isMultiple = true)
     {
+        $this->checkState();
+
         if ($isMultiple === $this->isMultiple) {
             throw new \PHPCR\ValueFormatException();
         }
@@ -581,11 +575,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      **/
     public function remove()
     {
-        parent::remove();
+        $this->checkState();
 
-        $meth = new \ReflectionMethod('\Jackalope\Node', 'unsetProperty');
-        $meth->setAccessible(true);
-        $meth->invokeArgs($this->getParent(), array($this->name));
+        $this->getParent()->unsetProperty($this->name);
+
+        parent::remove();
     }
 
     /**
@@ -595,6 +589,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      */
     public function getIterator()
     {
+        $this->checkState();
+
         $value = $this->getValue();
         if (!is_array($value)) {
             $value = array($value);
@@ -602,4 +598,89 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return new ArrayIterator($value);
     }
 
+    /**
+     * Reload the property after an unnotified backend change.
+     *
+     * Triggers a reload of the containing node, as a property can only ever be
+     * loaded attached to a node.
+     *
+     * TODO: refactor this if we implement loading single properties
+     */
+    protected function reload()
+    {
+        // Tell the node this property is part of to reload
+        $this->objectManager->getNodeByPath($this->parentPath)->reload();
+    }
+
+    /**
+     * Internaly used to get the raw value of the property without any checks.
+     *
+     * @return mixed
+     * @see Property::getValue()
+     * @private
+     */
+    public function _getRawValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Internaly used to set the value of the property without any notification
+     * of changes nor state change.
+     *
+     * @param mixed $value
+     * @param string $type
+     * @see Property::setValue()
+     * @private
+     */
+    public function _setValue($value, $type = PropertyType::UNDEFINED)
+    {
+        if (is_null($value)) {
+            $this->remove();
+        }
+        if (! is_integer($type)) {
+            throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
+        }
+        if ($this->isNew()) {
+            $this->isMultiple = is_array($value);
+        }
+
+        if (is_array($value) && !$this->isMultiple) {
+            throw new \PHPCR\ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
+        }
+
+        //TODO: check if changing type allowed.
+        /*
+         * if ($type !== null && ! canHaveType($type)) {
+         *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));
+         * }
+         */
+
+        if (PropertyType::UNDEFINED === $type) {
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+        }
+
+        $targettype = $this->type;
+        if ($this->type !== $type) {
+            /* TODO: find out with node type definition if the new type is allowed
+              if (canHaveType($type)) {
+            */
+            $targettype = $type;
+            /*
+              } else {
+                  //convert to an allowed type. if the current type is defined $targettype = $this->type;
+              }
+            */
+        }
+
+        $value = PropertyType::convertType($value, $targettype);
+
+        if (PropertyType::BINARY === $targettype) {
+            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
+            $this->length = $stat['size'];
+        }
+
+        $this->type = $targettype;
+        $this->value = $value;
+    }
 }
