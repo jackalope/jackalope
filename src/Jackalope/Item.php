@@ -9,7 +9,7 @@ namespace Jackalope;
  * doing anything.
  * Most important is that everything that is in state deleted can not be used
  * anymore (will detect logic errors in client code) and that if the item needs
- * to be reloaded from the backend, this can be postponed until the item is
+ * to be refreshed from the backend, this can be postponed until the item is
  * actually accessed again.
  *
  * <img src="https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png" />
@@ -27,8 +27,8 @@ abstract class Item implements \PHPCR\ItemInterface
     const STATE_NEW = 0;
 
     /**
-     * The item needs to be reloaded before using it the next time.
-     * Item::checkState will reload it and set the state to clean.
+     * The item needs to be refreshed before using it the next time.
+     * Item::checkState will refresh it and set the state to clean.
      */
     const STATE_DIRTY = 1;
 
@@ -85,6 +85,9 @@ abstract class Item implements \PHPCR\ItemInterface
     /** @var string     Normalized and absolute path to this item. */
     protected $path;
 
+    /** @var string     While this item is moved but unsaved, stores the old path for refresh. */
+    protected $oldPath = null;
+
     /** @var string     Normalized and absolute path to the parent item for convenience. */
     protected $parentPath;
 
@@ -124,13 +127,18 @@ abstract class Item implements \PHPCR\ItemInterface
     /**
      * Set or update the path, depth, name and parent reference
      *
-     * @param $path the new path this item lives at
+     * @param string $path the new path this item lives at
+     * @param boolean $move whether this item is being moved in session context
+     *      and should store the current path until the next save operation.
      *
      * @return void
      *
      * @private
      */
-    public function setPath($path) {
+    public function setPath($path, $move = false) {
+        if ($move && is_null($this->oldPath)) {
+            $this->oldPath = $this->path;
+        }
         $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
         $this->name = basename($path);
@@ -303,7 +311,7 @@ abstract class Item implements \PHPCR\ItemInterface
      * Whether this item is in state dirty.
      *
      * Returns true if this Item has been marked dirty (i.e. being saved) and
-     * has not been reloaded since.
+     * has not been refreshed since.
      *
      * The in-memory representation of the item in memory might not reflect the
      * current state in the backend (for instance if mix:referenceable mixin
@@ -411,31 +419,6 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * If keepChanges is false, this method discards all pending changes
-     * currently recorded in this Session that apply to this Item or any
-     * of its descendants (that is, the subgraph rooted at this Item) and
-     * returns all items to reflect the current saved state. Outside a
-     * transaction this state is simple the current state of persistent
-     * storage. Within a transaction, this state will reflect persistent
-     * storage as modified by changes that have been saved but not yet
-     * committed.
-     * If keepChanges is true then pending change are not discarded but
-     * items that do not have changes pending have their state refreshed
-     * to reflect the current saved state, thus revealing changes made by
-     * other sessions.
-     *
-     * @param boolean $keepChanges a boolean
-     * @return void
-     * @throws \PHPCR\InvalidItemStateException if this Item object represents a workspace item that has been removed (either by this session or another).
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
-    public function refresh($keepChanges)
-    {
-        throw new NotImplementedException('Write');
-    }
-
-    /**
      * Removes this item (and its subgraph).
      *
      * To persist a removal, a save must be performed that includes the (former)
@@ -465,13 +448,14 @@ abstract class Item implements \PHPCR\ItemInterface
             throw new \PHPCR\RepositoryException('Cannot remove root node');
         }
 
-        // TODO add sanity checks to all other write methods to avoid modification after deleting
-        // TODO same-name siblings reindexing
         if ($this instanceof \PHPCR\PropertyInterface) {
-            $this->objectManager->removeItem($this->parentPath, $this->name);
+            $this->objectManager->removeItem($this->parentPath, $this);
         } else {
             $this->objectManager->removeItem($this->path);
         }
+
+        // TODO same-name siblings reindexing
+
         $this->setDeleted();
     }
 
@@ -488,7 +472,7 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Tell this item that it is dirty and needs to be reloaded
+     * Tell this item that it is dirty and needs to be refreshed
      * @private
      */
     public function setDirty()
@@ -506,7 +490,7 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * Tell this item it is clean (i.e. it has been reloaded after a modification)
+     * Tell this item it is clean (i.e. it has been refreshed after a modification)
      * @private
      */
     public function setClean()
@@ -520,6 +504,7 @@ abstract class Item implements \PHPCR\ItemInterface
      */
     public function confirmSaved()
     {
+        $this->oldPath = null; // in case this item has been moved
         $this->setState(self::STATE_DIRTY);
     }
 
@@ -564,7 +549,7 @@ abstract class Item implements \PHPCR\ItemInterface
     }
 
     /**
-     * This function will modify the state of the item as well as reload it if necessary (i.e.
+     * This function will modify the state of the item as well as refresh it if necessary (i.e.
      * if it is DIRTY).
      *
      * @return void
@@ -577,10 +562,9 @@ abstract class Item implements \PHPCR\ItemInterface
             throw new \PHPCR\InvalidItemStateException("The item was deleted");
         }
 
-        // Dirty items need to be reloaded
         if ($this->isDirty()) {
 
-            $this->reload();
+            $this->refresh(false);
             $this->setClean();
         }
 
@@ -712,11 +696,4 @@ abstract class Item implements \PHPCR\ItemInterface
         // Reset the saved state
         $this->savedState = null;
     }
-
-    /**
-     * Reload the current item from the backend.
-     *
-     * @private
-     */
-    protected abstract function reload();
 }

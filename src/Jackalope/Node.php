@@ -50,10 +50,48 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;
 
+        $this->parseData($rawData, false);
+    }
+
+    /**
+     * Initialize or update this object with raw data from backend.
+     *
+     * @param array $rawData in the format as returned from Jackalope\TransportInterface
+     * @param boolean $update whether to initialize this object or update
+     * @param boolean $keepChanges only used if $update is true, same as $keepChanges in refresh()
+     *
+     * @see Node::__construct()
+     * @see Node::refresh()
+     */
+    private function parseData($rawData, $update, $keepChanges=false)
+    {
         //TODO: refactor to use hash array instead of stdClass struct
+
+        if ($update) {
+            // keep backup of old state so we can remove what needs to be removed
+            $oldNodes = array_flip($this->nodes);
+            $this->nodes = array(); // reset to avoid duplicates
+            $oldProperties = $this->properties;
+        }
+
         foreach ($rawData as $key => $value) {
+            $node = false; // reset to avoid trouble
             if (is_object($value)) {
-                $this->nodes[] = $key;
+                // this is a node. add it unless we update and the node is deleted in this session
+                if (! $update ||
+                    ! $keepChanges ||
+                    isset($oldNodes[$key]) || // it was here before reloading
+                    ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) ||
+                    ! $node->isDeleted()
+                ) {
+                    if (! $this->objectManager->hasMoved($this->path . '/' . $key)) {
+                        // otherwise we (re)load a node from backend but a child has been moved away already
+                        $this->nodes[] = $key;
+                    }
+                }
+                if ($update) {
+                    unset($oldNodes[$key]);
+                }
             } else {
                 //property or meta information
 
@@ -77,20 +115,36 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
                         if (!isset($rawData->$key)) {
-                            $this->properties[$key] = $this->factory->get(
-                                'Property',
-                                array(
-                                    array('type' => \PHPCR\PropertyType::BINARY, 'value' => $value),
-                                    $this->getChildPath($key),
-                                    $this->session,
-                                    $this->objectManager,
-                                )
-                            );
+                            $binaries[$key] = $value;
+                            if ($update) {
+                                unset($oldProperties[$key]);
+                            }
+                            if (isset($this->properties[$key])) {
+                                // refresh existing binary, this will only happen in update
+                                // only update length if
+                                if (! ($keepChanges && $this->properties[$key]->isModified())) {
+                                    $this->properties[$key]->_setLength($value);
+                                    if ($this->properties[$key]->isDirty()) {
+                                        $this->properties[$key]->setClean();
+                                    }
+                                }
+                            } else {
+                                // this will always fall into the creation mode
+                                $this->_setProperty($key, $value, \PHPCR\PropertyType::BINARY, true);
+                            }
                         }
                     } //else this is a type declaration
 
                     //skip this entry (if its binary, its already processeed
                     continue;
+                }
+
+                if ($update && array_key_exists($key, $this->properties)) {
+                    unset($oldProperties[$key]);
+                    $prop = $this->properties[$key];
+                    if ($keepChanges && ($prop->isModified())) {
+                        continue;
+                    }
                 }
 
                 switch ($key) {
@@ -100,42 +154,42 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
                         // type information is exposed as property too, although there exist more specific methods
-                        $this->properties[$key] = $this->factory->get(
-                            'Property',
-                            array(
-                                array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
-                                $this->getChildPath('jcr:primaryType'),
-                                $this->session,
-                                $this->objectManager,
-                            )
-                        );
+                        $this->_setProperty('jcr:primaryType', $value, \PHPCR\PropertyType::NAME, true);
                         break;
                     case 'jcr:mixinTypes':
                         // type information is exposed as property too, although there exist more specific methods
-                        $this->properties[$key] = $this->factory->get(
-                            'Property',
-                            array(
-                                array('type' => \PHPCR\PropertyType::NAME,  'value' => $value),
-                                $this->getChildPath($key),
-                                $this->session,
-                                $this->objectManager,
-                            )
-                        );
+                        $this->_setProperty($key, $value, \PHPCR\PropertyType::NAME, true);
                         break;
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        $type = isset($rawData->{':' . $key}) ? $rawData->{':' . $key} : PropertyType::determineType(is_array($value) ? reset($value) : $value);
-                        $this->properties[$key] = $this->factory->get(
-                            'Property',
-                            array(
-                                array('type' => $type, 'value' => $value),
-                                $this->getChildPath($key),
-                                $this->session,
-                                $this->objectManager,
-                            )
-                        );
+                        $type = isset($rawData->{':' . $key}) ?
+                                    PropertyType::valueFromName($rawData->{':' . $key}) :
+                                    PropertyType::determineType(is_array($value) ? reset($value) : $value);
+                        $this->_setProperty($key, $value, $type, true);
                         break;
+                }
+            }
+        }
+
+        if ($update) {
+            // notify nodes that where not received again that they disappeared
+            foreach ($oldNodes as $name => $dummy) {
+                if (! $this->objectManager->purgeDisappearedNode($this->path . '/' . $name, $keepChanges)) {
+                    // do not drop, it was a new child and we are to keep changes
+                    $this->nodes[] = $name;
+                } else {
+                    $id = array_search($name, $this->nodes);
+                    if ($id) {
+                        unset($this->nodes[$id]);
+                    }
+                }
+            }
+            foreach ($oldProperties as $name => $property) {
+                if (! ($property->isNew() && $keepChanges)) {
+                    // may not call remove(), we dont want another delete with the backend to be attempted
+                    $this->properties[$name]->setDeleted();
+                    unset($this->properties[$name]);
                 }
             }
         }
@@ -365,21 +419,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             }
             return null;
         }
-        if ($name == '' | false !== strpos($name, '/')) {
-            throw new \InvalidArgumentException("The name '$name' is no valid property name");
-        }
 
-        if (!isset($this->properties[$name])) {
-            $path = $this->getChildPath($name);
-            $property = $this->factory->get('Property', array(array(), $path, $this->session, $this->objectManager, true));
-            $property->setValue($value, $type); //do this before adding property, in case of exception
-            $this->objectManager->addItem($path, $property);
-            $this->properties[$name] = $property;
-        } else {
-            $this->properties[$name]->setValue($value, $type);
-        }
-
-        return $this->properties[$name];
+        return $this->_setProperty($name, $value, $type, false);
     }
 
     /**
@@ -1142,8 +1183,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function remove()
     {
         $this->checkState();
-
-        $this->getParent()->unsetChildNode($this->name);
+        $parent = $this->objectManager->getCachedNode($this->parentPath);
+        if ($parent) {
+            $parent->unsetChildNode($this->name, true);
+        }
         parent::remove(); // once we removed ourselves, $this->getParent() won't work anymore
     }
 
@@ -1155,15 +1198,21 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @private
      */
-    public function unsetChildNode($name)
+    public function unsetChildNode($name, $check)
     {
-        $this->checkState();
-        $this->setModified();
+        if ($check) {
+            $this->checkState();
+        }
 
         $key = array_search($name, $this->nodes);
         if ($key === false) {
+            if (! $check) {
+                // inside a refresh operation
+                return;
+            }
             throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
         }
+
         unset($this->nodes[$key]);
     }
 
@@ -1172,12 +1221,15 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * Adds child node to this node for internal reference
      *
      * @param   string  $name   The name of the child node
+     * @param boolean $check whether to check state
+     *
      * @private
      */
-    public function addChildNode($name)
+    public function addChildNode($name, $check)
     {
-        $this->checkState();
-        $this->setModified();
+        if ($check) {
+            $this->checkState();
+        }
 
         // TODO: same name siblings
 
@@ -1401,90 +1453,71 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     }
 
     /**
-     * Reload the node after an unnotified backend change. Occurs when the state
-     * is DIRTY and the node is accessed.
+     * Refresh this node
+     *
+     * {@inheritDoc}
+     *
+     * This is also called internally to refresh when the node is accessed in
+     * state DIRTY.
+     *
+     * @param boolean $keepChanges whether to keep local changes
+     * @param boolean $internal implementation internal flag to not check for the InvalidItemStateException
      *
      * @see Item::checkState
-     * @private
+     * @api
      */
-    public function reload()
+    public function refresh($keepChanges, $internal = false)
     {
-        // TODO: improve this method to optionally keep local changes to fully implement Ssession::refresh
-
-        $children = array();
-        $props = array();
+        if (! $internal && $this->isDeleted()) {
+            throw new \PHPCR\InvalidItemStateException('This item has been removed and can not be refreshed');
+        }
+        $invalid = false;
 
         // Get properties and children from backend
         try {
-            $json = $this->objectManager->getTransport()->getNode($this->path);
-
-            foreach($json as $path => $item) {
-                if ($item instanceof \StdClass) {
-                    $children[$path] = $item;
-                } else {
-                    $props[$path] = $item;
-                }
-            }
-
+            $json = $this->objectManager->getTransport()->getNode(is_null($this->oldPath) ? $this->path : $this->oldPath);
         } catch(\PHPCR\ItemNotFoundException $ex) {
 
             // The node was deleted in another session
-            $this->objectManager->purgeDeleted($this->path);
-            $this->setDeleted();
+            if (! $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
+                throw new \LogicException($this->path . " should be purged and not kept");
+            }
+            $keepChanges = false; // delete never keeps changes
+            if (! $internal) {
+                // this is not an internal update
+                $invalid = true;
+            }
 
-            // Continue and notify all the children and properties
+            // continue with emtpy data, parseData will notify all cached
+            // children and all properties that we are removed
+            $json = array();
         }
 
-        // Update the children
-        foreach(array_unique($this->nodes + array_keys($children)) as $path) {
-            $exists_in_memory = in_array($path, $this->nodes);
-            $exists_in_backend = array_key_exists($path, $children);
-            if ($exists_in_memory && ! $exists_in_backend) {
-                // Child was deleted
-                unset($this->nodes[$path]);
-                $node = $this->objectManager->purgeDeleted($this->path . '/' . $path);
-                if ($node) {
-                    $node->setDeleted();
-                }
-            } elseif (! $exists_in_memory && $exists_in_backend) {
-                // Child was added
-                $this->nodes[] = $path;
-            }
-        }
+        $this->parseData($json, true, $keepChanges);
 
-        // Update the properties
-        foreach(array_unique(array_keys($this->properties) + array_keys($props)) as $path) {
-            $exists_in_memory = array_key_exists($path, $this->properties);
-            $exists_in_backend = array_key_exists($path, $props);
-            if ($exists_in_memory && ! $exists_in_backend) {
-                // Property was deleted
-                $this->properties[$path]->setDeleted(); // may not call remove(), we dont want another delete with the backend to be attempted
-                unset($this->properties[$path]);
-            } elseif (! $exists_in_memory && $exists_in_backend) {
-                // Property was added
-                $prop = $this->_addProperty($path, $props[$path]);
-                $prop->setClean();
-            } else {
-                if ($props[$path] !== $this->properties[$path]->_getRawValue()) {
-                    // Property has changed value
-                    $this->properties[$path]->_setValue($props[$path], $this->properties[$path]->getType());
-                }
-                $this->properties[$path]->setClean();
-            }
+        if ($invalid) {
+            throw new \PHPCR\InvalidItemStateException('This item has been removed at the backend');
         }
     }
 
     /**
-     * Add a property to the node without any notification. May occur when the
-     * backend has a new property that is not yet loaded in memory.
+     * Implement really setting the property without any notification.
+     *
+     * Implement the setProperty, but also used from constructor or in refresh,
+     * when the backend has a new property that is not yet loaded in memory.
      *
      * @param string $name
      * @param mixed $value
      * @param string $type
+     * @param boolean $internal whether we are setting this node through api or internally
+     *
      * @return \Jackalope\Property
-     * @see Node::reload
+     *
+     * @see Node::setProperty
+     * @see Node::refresh
+     * @see Node::__construct
      */
-    protected function _addProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
+    protected function _setProperty($name, $value, $type, $internal)
     {
         if ($name == '' | false !== strpos($name, '/')) {
             throw new \InvalidArgumentException("The name '$name' is no valid property name");
@@ -1494,13 +1527,25 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $path = $this->getChildPath($name);
             $property = $this->factory->get(
                             'Property',
-                            array(array(), $path,
-                                  $this->session, $this->objectManager,
-                                  true));
-            $property->_setValue($value, $type); //do this before adding property, in case of exception
+                            array(array('type' => $type, 'value' => $value),
+                                  $path,
+                                  $this->session,
+                                  $this->objectManager,
+                                  ! $internal));
             $this->properties[$name] = $property;
+            if (! $internal) {
+                $this->setModified();
+                $this->objectManager->addItem($path, $property);
+            }
         } else {
-            $this->properties[$name]->_setValue($value, $type);
+            if ($internal) {
+                $this->properties[$name]->_setValue($value, $type);
+                if ($this->properties[$name]->isDirty()) {
+                    $this->properties[$name]->setClean();
+                }
+            } else {
+                $this->properties[$name]->setValue($value, $type);
+            }
         }
         return $this->properties[$name];
     }

@@ -52,22 +52,30 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             self::$binaryStreamWrapperRegistered = in_array('jackalope', stream_get_wrappers());
         }
 
-        if (empty($data) && $new == true) {
+        if (empty($data) && $new) {
             return;
+        } else if (! isset($data['value'])) {
+            throw new \InvalidArgumentException("Can't create property at $path without any data");
         }
 
-        $type = $data['type'];
-        if (is_string($type)) {
-            $type = PropertyType::valueFromName($type);
-        } elseif (!is_numeric($type)) {
-            throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
+        if (isset($data['type']) && \PHPCR\PropertyType::UNDEFINED !== $data['type']) {
+            $type = $data['type'];
+            if (is_string($type)) {
+                $type = PropertyType::valueFromName($type);
+            } elseif (!is_numeric($type)) {
+                throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
+            } else {
+                //sanity check. this will throw InvalidArgumentException if $type is not a valid type
+                PropertyType::nameFromValue($type);
+            }
         } else {
-            //sanity check. this will throw InvalidArgumentException if $type is not a valid type
-            PropertyType::nameFromValue($type);
+            // we are creating a node
+            $type = PropertyType::determineType(is_array($data['value']) ? reset($data['value']) : $data['value']);
         }
         $this->type = $type;
 
-        if ($type == PropertyType::BINARY) {
+        if ($type == PropertyType::BINARY && ! $new) {
+            // reading a binary property from backend, we do not get the stream immediately but just the size
             if (is_array($data['value'])) {
                 $this->isMultiple = true;
             }
@@ -101,7 +109,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $this->setModified();
         }
 
-        // WARNING: The _setValue call MUST BE after the check to see if the value or type changed
+        // The _setValue call MUST BE after the check to see if the value or type changed
         $this->_setValue($value, $type);
     }
 
@@ -599,17 +607,25 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Reload the property after an unnotified backend change.
+     * Refresh this property
+     *
+     * {@inheritDoc}
+     *
+     * This is also called internally to refresh when the node is accessed in
+     * state DIRTY.
      *
      * Triggers a reload of the containing node, as a property can only ever be
      * loaded attached to a node.
      *
      * TODO: refactor this if we implement loading single properties
+     *
+     * @see Item::checkState
+     * @api
      */
-    protected function reload()
+    public function refresh($keepChanges)
     {
-        // Tell the node this property is part of to reload
-        $this->objectManager->getNodeByPath($this->parentPath)->reload();
+        // Let the node refresh us
+        $this->objectManager->getNodeByPath($this->parentPath)->refresh($keepChanges);
     }
 
     /**
@@ -682,5 +698,16 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         $this->type = $targettype;
         $this->value = $value;
+    }
+
+    /**
+     * Internally used after refresh from backend to set new length
+     *
+     * @private
+     */
+    public function _setLength($length)
+    {
+        $this->length = $length;
+        $this->value = null;
     }
 }

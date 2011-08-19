@@ -417,9 +417,18 @@ class Session implements \PHPCR\SessionInterface
      */
     public function move($srcAbsPath, $destAbsPath)
     {
-        if ($this->itemExists($destAbsPath)) {
+        try {
+            $parent = $this->objectManager->getNodeByPath(dirname($destAbsPath));
+        } catch(\PHPCR\ItemNotFoundException $e) {
+            throw new \PHPCR\PathNotFoundException("Target path can not be found: $destAbsPath", $e->getCode(), $e);
+        }
+
+        if ($parent->hasNode(basename($destAbsPath))) {
             // TODO same-name siblings
-            throw new \PHPCR\ItemExistsException('Target item already exists at '.$destAbsPath);
+            throw new \PHPCR\ItemExistsException('Target node already exists at '.$destAbsPath);
+        }
+        if ($parent->hasProperty(basename($destAbsPath))) {
+            throw new \PHPCR\ItemExistsException('Target property already exists at '.$destAbsPath);
         }
         $this->objectManager->moveNode($srcAbsPath, $destAbsPath);
     }
@@ -515,11 +524,7 @@ class Session implements \PHPCR\SessionInterface
      */
     public function refresh($keepChanges)
     {
-        throw new NotImplementedException('Write');
-
-        //TODO: tell all cached items to refresh. note the TODO in the node refresh 
-        //code. the $keepChanges will need more work.
-        //the $keepChanges option seems not important in php context. we have no long running sessions with the server and don't need to sync changes from server.
+        $this->objectManager->refresh($keepChanges);
     }
 
     /**
@@ -529,6 +534,7 @@ class Session implements \PHPCR\SessionInterface
      */
     public function clear()
     {
+        trigger_errror('Use Session::refresh instead, this method is extremly unsafe', E_USER_DEPRECATED);
         $this->objectManager->clear();
     }
 
