@@ -534,7 +534,7 @@ class Session implements \PHPCR\SessionInterface
      */
     public function clear()
     {
-        trigger_errror('Use Session::refresh instead, this method is extremly unsafe', E_USER_DEPRECATED);
+        trigger_error('Use Session::refresh instead, this method is extremely unsafe', E_USER_DEPRECATED);
         $this->objectManager->clear();
     }
 
