@@ -819,7 +819,40 @@ class ObjectManager
     }
 
     /**
+     * Remove the item at absPath from local cache and keep information for undo
+     *
+     * @see self::removeItem()
+     */
+    protected function performRemove($absPath, $item)
+    {
+        // was any parent moved?
+        foreach ($this->nodesMove as $dst) {
+            if (strpos($dst, $absPath) === 0) {
+                // this is MOVE, then DELETE but we dispatch DELETE before MOVE
+                // TODO we might could just remove the MOVE and put a DELETE on the previous node :)
+                throw new \PHPCR\RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
+            }
+        }
+
+        if ($item instanceof Node) {
+            unset($this->objectsByUuid[$item->getIdentifier()]);
+        }
+        unset($this->objectsByPath['Node'][$absPath]);
+
+        if (isset($this->itemsAdd[$absPath])) {
+            //this is a new unsaved node
+            unset($this->itemsAdd[$absPath]);
+        } else {
+            // keep reference to object in case of refresh
+            // the topmost item delete will be sent to backend and cascade delete
+            $this->itemsRemove[$absPath] = $item;
+        }
+    }
+
+    /**
      * Remove a node or a property.
+     *
+     * Sets all items below this item to deleted as well
      *
      * @param string $absPath the path to the node, including the node name
      * @param string $property optional, property instance to delete from the given node's path - this
@@ -833,32 +866,35 @@ class ObjectManager
             throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
 
-        // was any parent moved?
-        foreach ($this->nodesMove as $dst) {
-            if (strpos($dst, $absPath) === 0) {
-                // this is MOVE, then DELETE but we dispatch DELETE before MOVE
-                // TODO we might could just remove the MOVE and put a DELETE on the previous node :)
-                throw new \PHPCR\RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
-            }
-        }
-
-        //FIXME: same-name-siblings...
         if ($property) {
             $item = $property;
             $absPath = $this->absolutePath($absPath, $property->getName());
         } else {
             $item = $this->objectsByPath['Node'][$absPath];
-            unset($this->objectsByUuid[$item->getIdentifier()]);
+        }
+        $this->performRemove($absPath, $item);
+
+        if ($property) {
+            // property has no children
+            return;
         }
 
-        unset($this->objectsByPath['Node'][$absPath]);
-
-        if (isset($this->itemsAdd[$absPath])) {
-            //this is a new unsaved node
-            unset($this->itemsAdd[$absPath]);
-        } else {
-            // we must tell the backend. keep reference to object in case of refresh
-            $this->itemsRemove[$absPath] = $item;
+        // notify all cached children that they are deleted as well and clean up internal state
+        $todelete = array();
+        foreach ($this->objectsByPath['Node'] as $path => $item) {
+            if (strpos($path, "$absPath/") === 0) {
+                // notify item and let it call removeItem again. save()
+                // makes sure no children of already deleted items are
+                // deleted again.
+                $this->performRemove($path, $item);
+                $todelete[] = $item;
+            }
+        }
+        // delay notification to still be able to access the uuid property in performRemove
+        foreach ($todelete as $item) {
+            if (! $item->isDeleted()) {
+                $item->setDeleted();
+            }
         }
     }
 
@@ -980,7 +1016,7 @@ class ObjectManager
     /**
      * WRITE: add an item at the specified path.
      *
-     * @param string $absPath the path to the node, including the node identifier
+     * @param string $absPath the path to the node or property, including the item name
      * @param \PHPCR\ItemInterface $item The item to add.
      *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path

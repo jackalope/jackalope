@@ -622,10 +622,21 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * @see Item::checkState
      * @api
      */
-    public function refresh($keepChanges)
+    public function refresh($keepChanges, $internal = false)
     {
+        if ($this->isDeleted()) {
+            if ($internal) {
+                // FIXME: this should not be possible
+                return;
+            }
+            throw new \PHPCR\InvalidItemStateException('This item has been removed at the backend');
+        }
         // Let the node refresh us
-        $this->objectManager->getNodeByPath($this->parentPath)->refresh($keepChanges);
+        try {
+            $this->objectManager->getNodeByPath($this->parentPath)->refresh($keepChanges);
+        } catch (\PHPCR\ItemNotFoundException $e) {
+            $this->setDeleted();
+        }
     }
 
     /**

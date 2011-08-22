@@ -1187,7 +1187,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         if ($parent) {
             $parent->unsetChildNode($this->name, true);
         }
-        parent::remove(); // once we removed ourselves, $this->getParent() won't work anymore
+        // once we removed ourselves, $this->getParent() won't work anymore. do this last
+        parent::remove();
     }
 
     /**
@@ -1548,6 +1549,20 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             }
         }
         return $this->properties[$name];
+    }
+
+    /**
+     * In addition to set this item deleted, set all properties to deleted.
+     *
+     * They will be automatically deleted by the backend, but the user might
+     * still have a reference to one of the property objects.
+     */
+    public function setDeleted()
+    {
+        parent::setDeleted();
+        foreach($this->properties as $property) {
+            $property->setDeleted(); // not all properties are tracked in objectmanager
+        }
     }
 
     /**
