@@ -51,6 +51,9 @@ abstract class Item implements \PHPCR\ItemInterface
     /** @var int    The state of the item, one of the STATE_ constants */
     protected $state;
 
+    /** @var boolean To know whether to keep changes or not when reloading in dirty state */
+    protected $keepChanges = false;
+
     /**
      * @var int    The state of the item saved when a transaction is started
      *
@@ -473,10 +476,13 @@ abstract class Item implements \PHPCR\ItemInterface
 
     /**
      * Tell this item that it is dirty and needs to be refreshed
+     *
+     * @param boolean $keepChanges whether to keep changes when reloading or not
      * @private
      */
-    public function setDirty()
+    public function setDirty($keepChanges = false)
     {
+        $this->keepChanges = $keepChanges;
         $this->setState(self::STATE_DIRTY);
     }
 
@@ -564,7 +570,7 @@ abstract class Item implements \PHPCR\ItemInterface
 
         if ($this->isDirty()) {
 
-            $this->refresh(false);
+            $this->refresh($this->keepChanges);
             $this->setClean();
         }
 

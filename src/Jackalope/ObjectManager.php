@@ -753,7 +753,10 @@ class ObjectManager
             $this->itemsAdd = array();
 
             foreach ($this->itemsRemove as $path => $item) {
+                // the code below will set this to dirty again. but it must not
+                // be in state deleted or we will fail the sanity checks
                 $item->setClean();
+
                 if ($item instanceof Node) {
                     $this->objectsByPath['Node'][$path] = $item; // back in glory
                 }
@@ -792,7 +795,7 @@ class ObjectManager
         foreach ($this->objectsByPath['Node'] as $path => $item) {
             if (! $keepChanges || ! ($item->isDeleted() || $item->isNew())) {
                 // if we keep changes, do not restore a deleted item
-                $item->refresh($keepChanges, true);
+                $item->setDirty($keepChanges);
             }
         }
     }
