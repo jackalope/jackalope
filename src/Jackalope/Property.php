@@ -202,10 +202,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type == PropertyType::BINARY && empty($this->value)) {
-            return PropertyType::convertType($this->getBinary(), PropertyType::STRING);
+            return PropertyType::convertType($this->getBinary(), PropertyType::STRING, $this->type);
         }
         if ($this->type != PropertyType::STRING) {
-            return PropertyType::convertType($this->value, PropertyType::STRING);
+            return PropertyType::convertType($this->value, PropertyType::STRING, $this->type);
         }
         return $this->value;
     }
@@ -222,7 +222,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::BINARY) {
-            return PropertyType::convertType($this->value, PropertyType::BINARY);
+            return PropertyType::convertType($this->value, PropertyType::BINARY, $this->type);
         }
         if (!self::$binaryStreamWrapperRegistered && null == $this->value) {
             $this->value = $this->objectManager->getBinaryStream($this->path);
@@ -272,7 +272,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::LONG) {
-            return PropertyType::convertType($this->value, PropertyType::LONG);
+            return PropertyType::convertType($this->value, PropertyType::LONG, $this->type);
         }
         return $this->value;
     }
@@ -291,7 +291,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::DOUBLE) {
-            return PropertyType::convertType($this->value, PropertyType::DOUBLE);
+            return PropertyType::convertType($this->value, PropertyType::DOUBLE, $this->type);
         }
         return $this->value;
     }
@@ -310,7 +310,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::DECIMAL) {
-            return PropertyType::convertType($this->value, PropertyType::DECIMAL);
+            return PropertyType::convertType($this->value, PropertyType::DECIMAL, $this->type);
         }
         return $this->value;
     }
@@ -329,7 +329,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::DATE) {
-            return PropertyType::convertType($this->value, PropertyType::DATE);
+            return PropertyType::convertType($this->value, PropertyType::DATE, $this->type);
         }
         return $this->value;
     }
@@ -348,7 +348,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if ($this->type != PropertyType::BOOLEAN) {
-            return PropertyType::convertType($this->value, PropertyType::BOOLEAN);
+            return PropertyType::convertType($this->value, PropertyType::BOOLEAN, $this->type);
         }
         return $this->value;
     }
@@ -463,7 +463,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * @return mixed integer with the length, for multivalue property array of lengths
      *
-     * @throws \PHPCR\ValueFormatException if this property is multi-valued.
      * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
@@ -480,7 +479,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         foreach ($vals as $value) {
             try {
-                $ret[] = strlen(PropertyType::convertType($value, PropertyType::STRING));
+                $ret[] = strlen(PropertyType::convertType($value, PropertyType::STRING, $this->type));
             } catch (\Exception $e) {
                 $ret[] = -1;
             }

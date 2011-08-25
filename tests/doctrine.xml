@@ -1,0 +1,52 @@
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="bootstrap_doctrine.php">
+    <php>
+        <var name="phpcr.user" value="admin" />
+        <var name="phpcr.pass" value="admin" />
+        <var name="phpcr.workspace" value="tests" />
+        <!-- Path to Doctrine stuff for transport -->
+        <var name="phpcr.doctrine.loader" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-dbal/lib" />
+        <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
+        <var name="phpcr.doctrine.dbal.host" value="localhost" />
+        <var name="phpcr.doctrine.dbal.username" value="jackalope" />
+        <var name="phpcr.doctrine.dbal.password" value="test1234" />
+        <var name="phpcr.doctrine.dbal.dbname" value="jackalope_doctrine" />
+    </php>
+
+    <testsuites>
+        <testsuite name="Jackalope Doctrine DBAL Tests">
+            <directory>.</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- configuration for code coverage report -->
+    <filter>
+        <whitelist>
+            <directory>../src</directory>
+            <directory>../lib/phpcr</directory>
+
+            <exclude>
+                <!-- ignore helpers -->
+                <file>../src/Jackalope/autoloader.php</file>
+                <file>../src/Jackalope/Transport/curl.php</file>
+
+                <!-- ignore whats not implemented yet -->
+                <directory>../lib/phpcr/src/PHPCR/Lock</directory>
+                <directory>../lib/phpcr/src/PHPCR/Observation</directory>
+                <directory>../lib/phpcr/src/PHPCR/Retention</directory>
+                <directory>../lib/phpcr/src/PHPCR/Security</directory>
+
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
