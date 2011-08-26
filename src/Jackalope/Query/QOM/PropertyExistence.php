@@ -4,12 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\PropertyExistenceInterface;
 
+// inherit all doc
 /**
- * Tests the existence of a property.
- *
- * A node-tuple satisfies the constraint if the selector node has a property
- * named property.
- *
  * @api
  */
 class PropertyExistence implements PropertyExistenceInterface
@@ -28,7 +24,7 @@ class PropertyExistence implements PropertyExistenceInterface
      * Constructor
      *
      * @param string $selectorName
-     * @param string $propertyName 
+     * @param string $propertyName
      */
     public function __construct($selectorName, $propertyName)
     {
@@ -36,10 +32,8 @@ class PropertyExistence implements PropertyExistenceInterface
         $this->propertyName = $propertyName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the selector against which to apply this constraint.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelectorName()
@@ -47,10 +41,8 @@ class PropertyExistence implements PropertyExistenceInterface
         return $this->selectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the property.
-     *
-     * @return string the property name; non-null
      * @api
      */
     function getPropertyName()

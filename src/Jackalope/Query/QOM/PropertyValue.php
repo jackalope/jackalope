@@ -4,17 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\PropertyValueInterface;
 
+// inherit all doc
 /**
- * Evaluates to the value (or values, if multi-valued) of a property.
- *
- * If, for a node-tuple, the selector node does not have a property named property,
- * the operand evaluates to null.
- *
- * The query is invalid if:
- *
- * - selector is not the name of a selector in the query
- * - property is not a syntactically valid JCR name
- *
  * @api
  */
 class PropertyValue implements PropertyValueInterface
@@ -33,7 +24,7 @@ class PropertyValue implements PropertyValueInterface
      * Constructor
      *
      * @param string $selectorName
-     * @param string $propertyName 
+     * @param string $propertyName
      */
     public function __construct($selectorName, $propertyName)
     {
@@ -41,10 +32,8 @@ class PropertyValue implements PropertyValueInterface
         $this->propertyName = $propertyName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the selector against which to evaluate this operand.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelectorName()
@@ -52,10 +41,8 @@ class PropertyValue implements PropertyValueInterface
         return $this->selectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the property.
-     *
-     * @return string the property name; non-null
      * @api
      */
     function getPropertyName()

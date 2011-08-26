@@ -3,16 +3,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
 
+// inherit all doc
 /**
- * Tests whether the descendantSelector node is a descendant of the
- * ancestorSelector node. A node-tuple satisfies the constraint only if:
- *
- *   descendantSelectorNode.getAncestor(n).isSame(ancestorSelectorNode) && descendantSelectorNode.getDepth() > n
- *
- * would return true some some non-negative integer n, where descendantSelectorNode
- * is the node for descendantSelector and ancestorSelectorNode is the node for
- * ancestorSelector.
- *
  * @api
  */
 class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterface
@@ -39,10 +31,8 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
         $this->descendantSelectorName = $descendantSelectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the descendant selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getDescendantSelectorName()
@@ -50,10 +40,8 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
         return $this->descendantSelectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the ancestor selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getAncestorSelectorName()

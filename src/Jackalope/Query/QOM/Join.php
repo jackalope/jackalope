@@ -6,9 +6,8 @@ use PHPCR\Query\QOM\JoinInterface;
 use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Query\QOM\JoinConditionInterface;
 
+// inherit all doc
 /**
- * Performs a join between two node-tuple sources.
- *
  * @api
  */
 class Join implements JoinInterface
@@ -33,6 +32,14 @@ class Join implements JoinInterface
      */
     protected $joinCondition;
 
+    /**
+     * Create a new join instance
+     *
+     * @param SourceInterface $left
+     * @param SourceInterface $right
+     * @param string $joinType
+     * @param JoinConditionInterface $joinCondition
+     */
     public function __construct(SourceInterface $left, SourceInterface $right, $joinType, JoinConditionInterface $joinCondition)
     {
         $this->left = $left;
@@ -41,32 +48,36 @@ class Join implements JoinInterface
         $this->joinCondition = $joinCondition;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getLeft()
     {
         return $this->left;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getRight()
     {
         return $this->right;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getJoinType()
     {
         return $this->joinType;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getJoinCondition()
     {

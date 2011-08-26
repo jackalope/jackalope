@@ -4,17 +4,9 @@ namespace Jackalope\NodeType;
 use Jackalope\Helper;
 use \DOMElement, \DOMXPath, \ArrayObject;
 
+// inherit all doc
 /**
- * The NodeTypeDefinition interface provides methods for discovering the
- * static definition of a node type. These are accessible both before and
- * after the node type is registered. Its subclass NodeType adds methods
- * that are relevant only when the node type is "live"; that is, after it
- * has been registered. Note that the separate NodeDefinition interface only
- * plays a significant role in implementations that support node type
- * registration. In those cases it serves as the superclass of both NodeType
- * and NodeTypeTemplate. In implementations that do not support node type
- * registration, only objects implementing the subinterface NodeType will
- * be encountered.
+ * @api
  */
 class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
 {
@@ -26,13 +18,36 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
      */
     protected $factory;
 
+    /**
+     * @var NodeTypeManager
+     */
     protected $nodeTypeManager;
+    /**
+     * The name of this node type definition.
+     * @var string
+     */
     protected $name = null;
+    /**
+     * @var boolean
+     */
     protected $isAbstract = false;
-    /** Whether this is a mixin node type (otherwise it's a primary node type). */
+    /**
+     * Whether this is a mixin node type (otherwise it's a primary node type).
+     * @var boolean
+     */
     protected $isMixin = false;
+    /**
+     * @var boolean
+     */
     protected $isQueryable = false;
+    /**
+     * @var boolean
+     */
     protected $hasOrderableChildNodes = false;
+    /**
+     * Name of the primary item of this node type.
+     * @var string
+     */
     protected $primaryItemName= null;
 
     /** @var array */
@@ -43,11 +58,19 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
     protected $declaredNodeDefinitions = null;
 
     /**
-     * Initializes the NodeTypeDefinition from an optional source
+     * Create a new node type definition.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
-     * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|null     $nodetype   Either by XML or by NodeTypeDefinition or null for an empty definition
-     * @throws  \InvalidArgumentException   If $nodetype cannot be copied from
+     * Optionally initializes the data from XML, an array or another
+     * NodeTypeDefinition.
+     *
+     * @param object $factory  an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param DOMElement|PHPCR\NodeType\NodeTypeDefinitionInterface|null
+     *      $nodetype Either by XML or by NodeTypeDefinition or null for an
+     *      empty definition
+     *
+     * @throws \InvalidArgumentException If it is not possible to read data
+     *      from $nodetype
      */
     public function __construct($factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
@@ -66,8 +89,10 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
     }
 
     /**
-     * Copies properties from a NodeTypeDefinition
-     * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition to copy properties from
+     * Read the node type definition from another NodeTypeDefinition
+     *
+     * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd The node type
+     *      definition to copy information from
      */
     protected function fromNodeTypeDefinition(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd)
     {
@@ -82,6 +107,11 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: array());
     }
 
+    /**
+     * Reads the node type definition from an array
+     *
+     * @param array $data an array with key-value information
+     */
     protected function fromArray(array $data)
     {
         $this->name = $data['name'];
@@ -108,8 +138,9 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
     }
 
     /**
-     * Reads properties from XML
-     * @param   DOMElement  $node   The dom to parse properties from
+     * Reads the node type definition from an xml element
+     *
+     * @param \DOMElement $node The dom element to read information from
      */
     protected function fromXml(DOMElement $node)
     {
@@ -150,27 +181,18 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         }
     }
 
+    // inherit all doc
     /**
-     * Returns the name of the node type.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return null.
-     *
-     * @return string a String
+     * @api
      */
     public function getName()
     {
         return $this->name;
     }
 
+    // inherit all doc
     /**
-     * Returns the names of the supertypes actually declared in this node type.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return an array containing a
-     * single string indicating the node type nt:base.
-     *
-     * @return array an array of Strings
+     * @api
      */
     public function getDeclaredSupertypeNames()
     {
@@ -180,110 +202,63 @@ class NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeDefinitionInterface
         return $this->declaredSuperTypeNames;
     }
 
+    // inherit all doc
     /**
-     * Returns true if this is an abstract node type; returns false otherwise.
-     * An abstract node type is one that cannot be assigned as the primary or
-     * mixin type of a node but can be used in the definitions of other node
-     * types as a superclass.
-     *
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return false.
-     *
-     * @return boolean a boolean
+     * @api
      */
     public function isAbstract()
     {
         return $this->isAbstract;
     }
 
+    // inherit all doc
     /**
-     * Returns true if this is a mixin type; returns false if it is primary.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return false.
-     *
-     * @return boolean a boolean
+     * @api
      */
     public function isMixin()
     {
         return $this->isMixin;
     }
 
+    // inherit all doc
     /**
-     * Returns true if nodes of this type must support orderable child nodes;
-     * returns false otherwise. If a node type returns true on a call to this
-     * method, then all nodes of that node type must support the method
-     * Node.orderBefore. If a node type returns false on a call to this method,
-     * then nodes of that node type may support Node.orderBefore. Only the primary
-     * node type of a node controls that node's status in this regard. This setting
-     * on a mixin node type will not have any effect on the node.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return false.
-     *
-     * @return boolean a boolean
+     * @api
      */
     public function hasOrderableChildNodes()
     {
         return $this->hasOrderableChildNodes;
     }
 
+    // inherit all doc
     /**
-     * Returns true if the node type is queryable, meaning that the
-     * available-query-operators, full-text-searchable and query-orderable
-     * attributes of its property definitions take effect. See
-     * PropertyDefinition#getAvailableQueryOperators(),
-     * PropertyDefinition#isFullTextSearchable() and
-     * PropertyDefinition#isQueryOrderable().
-     *
-     * If a node type is declared non-queryable then these attributes of its
-     * property definitions have no effect.
-     *
-     * @return boolean a boolean
+     * @api
      */
     public function isQueryable()
     {
         return $this->isQueryable;
     }
 
+    // inherit all doc
     /**
-     * Returns the name of the primary item (one of the child items of the nodes
-     * of this node type). If this node has no primary item, then this method
-     * returns null. This indicator is used by the method Node.getPrimaryItem().
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return null.
-     *
-     * @return string a String
+     * @api
      */
     public function getPrimaryItemName()
     {
         return $this->primaryItemName;
     }
 
+    // inherit all doc
     /**
-     * Returns an array containing the property definitions actually declared
-     * in this node type.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return null.
-     *
-     * @return array an array of PropertyDefinitions
+     * @api
      */
     public function getDeclaredPropertyDefinitions()
     {
         return is_null($this->declaredPropertyDefinitions) ? null : $this->declaredPropertyDefinitions->getArrayCopy();
     }
 
+    // inherit all doc
     /**
-     * Returns an array containing the child node definitions actually
-     * declared in this node type.
-     * In implementations that support node type registration, if this
-     * NodeTypeDefinition object is actually a newly-created empty
-     * NodeTypeTemplate, then this method will return null.
-     *
-     * @return array an array of NodeDefinitions
+     * @api
      */
     public function getDeclaredChildNodeDefinitions()
     {

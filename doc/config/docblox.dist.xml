@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<docblox>
+  <parser>
+    <target>../html</target>
+      <markers>
+        <item>TODO</item>
+        <item>FIXME</item>
+        <item>OPTIMIZE</item>
+      </markers>
+  </parser>
+  <transformer>
+    <target>../html</target>
+  </transformer>
+  <files>
+    <directory>../../src</directory>
+    <directory>../../lib/phpcr</directory>
+    <ignore>../../src/Jackalope/autoloader.php</ignore>
+  </files>
+</docblox>

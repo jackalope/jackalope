@@ -5,11 +5,8 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\NotInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
+// inherit all doc
 /**
- * Performs a logical negation of another constraint.
- *
- * To satisfy the Not constraint, the node-tuple must not satisfy constraint.
- *
  * @api
  */
 class NotConstraint implements NotInterface
@@ -19,15 +16,18 @@ class NotConstraint implements NotInterface
      */
     protected $constraint;
 
-    public function __construct(\PHPCR\Query\QOM\ConstraintInterface $constraint)
+    /**
+     * Create a new not constraint
+     *
+     * @param ConstraintInterface $constraint
+     */
+    public function __construct(ConstraintInterface $constraint)
     {
         $this->constraint = $constraint;
     }
 
+    // inherit all doc
     /**
-     * Gets the constraint negated by this Not constraint.
-     *
-     * @return \PHPCR\Query\QOM\ConstraintInterface the constraint; non-null
      * @api
      */
     function getConstraint()

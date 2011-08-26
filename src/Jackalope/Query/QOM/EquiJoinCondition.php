@@ -3,15 +3,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\EquiJoinConditionInterface;
 
+// inherit all doc
 /**
- * Tests whether the value of a property in a first selector is equal to the
- * value of a property in a second selector.
- *
- * A node-tuple satisfies the constraint only if:
- *  selector1 has a property named property1, and
- *  selector2 has a property named property2, and
- *  the value of property1 equals the value of property2
- *
  * @api
  */
 class EquiJoinCondition implements EquiJoinConditionInterface
@@ -36,6 +29,14 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      */
     protected $property2Name;
 
+    /**
+     * Create a new EquiJoinCondition
+     *
+     * @param string $selector1Name
+     * @param string $property1Name
+     * @param string $selector2Name
+     * @param string $property2Name
+     */
     public function __construct($selector1Name, $property1Name, $selector2Name, $property2Name)
     {
         $this->selector1Name = $selector1Name;
@@ -44,10 +45,8 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         $this->property2Name = $property2Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the first selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelector1Name()
@@ -55,10 +54,8 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->selector1Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the property name in the first selector.
-     *
-     * @return string the property name; non-null
      * @api
      */
     function getProperty1Name()
@@ -66,10 +63,8 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->property1Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the second selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelector2Name()
@@ -77,10 +72,8 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->selector2Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the property name in the second selector.
-     *
-     * @return string the property name; non-null
      * @api
      */
     function getProperty2Name()

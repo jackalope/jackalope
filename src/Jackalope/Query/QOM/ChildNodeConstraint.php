@@ -4,14 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ChildNodeInterface;
 
+// inherit all doc
 /**
- * Tests whether the selector node is a child of a node reachable by absolute
- * path path.
- *
- * A node-tuple satisfies the constraint only if
- *  selectorNode.getParent().isSame(session.getNode(path))
- * would return true, where selectorNode is the node for the specified selector.
- *
  * @api
  */
 class ChildNodeConstraint implements ChildNodeInterface
@@ -26,22 +20,30 @@ class ChildNodeConstraint implements ChildNodeInterface
      */
     protected $parentPath;
 
-    public function __construct($path, $selectorName = null)
+    /**
+     * Create a new child node constraint
+     *
+     * @param string $parentPath parent path the node must be child of
+     * @param string $selectorName optionally restrict to a selector
+     */
+    public function __construct($parentPath, $selectorName = null)
     {
-        $this->parentPath = $path;
+        $this->parentPath = $parentPath;
         $this->selectorName = $selectorName;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getSelectorName()
     {
         return $this->selectorName;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getParentPath()
     {

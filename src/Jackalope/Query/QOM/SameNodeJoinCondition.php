@@ -4,25 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\SameNodeJoinConditionInterface;
 
+// inherit all doc
 /**
- * Tests whether two nodes are "the same" according to the isSame method of
- * javax.jcr.Item.
- *
- * If selector2Path is omitted:
- *  Tests whether the selector1 node is the same as the selector2 node.
- *  A node-tuple satisfies the constraint only if:
- *   selector1Node.isSame(selector2Node)
- *  would return true, where selector1Node is the node for selector1 and
- *  selector2Node is the node for selector2.
- *
- * Otherwise, if selector2Path is specified:
- *  Tests whether the selector1 node is the same as a node identified by
- *  relative path from the selector2 node. A node-tuple satisfies the constraint
- *  only if:
- *   selector1Node.isSame(selector2Node.getNode(selector2Path))
- *  would return true, where selector1Node is the node for selector1 and
- *  selector2Node is the node for selector2.
- *
  * @api
  */
 class SameNodeJoinCondition implements SameNodeJoinConditionInterface
@@ -47,7 +30,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @param string $selector1Name
      * @param string $selector2Name
-     * @param string $selector2Path 
+     * @param string $selector2Path
      */
     public function __construct($selector1Name, $selector2Name, $selector2Path = null)
     {
@@ -56,10 +39,8 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         $this->selector2Path = $selector2Path;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the first selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelector1Name()
@@ -67,10 +48,8 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         return $this->selector1Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the second selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getSelector2Name()
@@ -78,10 +57,8 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         return $this->selector2Name;
     }
 
+    // inherit all doc
     /**
-     * Gets the path relative to the second selector.
-     *
-     * @return string the relative path, or null for none
      * @api
      */
     function getSelector2Path()

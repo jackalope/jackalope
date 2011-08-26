@@ -2,7 +2,9 @@
 namespace Jackalope;
 
 /**
- * Implementation specific interface for implementing transactional transport layers
+ * Implementation specific interface for implementing transactional transport
+ * layers.
+ *
  * Jackalope encapsulates all communication with the storage backend within
  * this interface.
  *
@@ -17,7 +19,8 @@ interface TransactionalTransportInterface extends TransportInterface
      * Initiates a "local transaction" on the root node
      *
      * @return string The received transaction token
-     * @throws \PHPCR\RepositoryException If no transaction token received
+     *
+     * @throws \PHPCR\RepositoryException If no transaction token received.
      */
     function beginTransaction();
 
@@ -27,7 +30,7 @@ interface TransactionalTransportInterface extends TransportInterface
     function commitTransaction();
 
     /**
-     * Rollbacks a transaction started with {@link beginTransaction()}
+     * Rolls back a transaction started with {@link beginTransaction()}
      */
     function rollbackTransaction();
 

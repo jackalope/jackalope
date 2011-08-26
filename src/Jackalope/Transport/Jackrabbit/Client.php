@@ -12,8 +12,8 @@ use Jackalope\NodeType\NodeTypeManager;
  * Connection to one Jackrabbit server.
  *
  * This class handles the communication between Jackalope and Jackrabbit over
- * Davex.
- * Once the login method has been called, the workspace is set and can not be changed anymore.
+ * Davex. Once the login method has been called, the workspace is set and can not be
+ * changed anymore.
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  */
@@ -163,6 +163,8 @@ class Client implements TransactionalTransportInterface
 
     /**
      * Add a HTTP header which is sent on each Request
+     *
+     * This is a Jackrabbit Davex specific option.
      */
     public function addDefaultHeader($header)
     {
@@ -171,8 +173,11 @@ class Client implements TransactionalTransportInterface
 
     /**
      * If you want to send the "Expect: 100-continue" header on larger
-     * PUT and POST requests, set this to true
-     * Disabled by default
+     * PUT and POST requests, set this to true.
+     *
+     * Disabled by default.
+     *
+     * This is a Jackrabbit Davex specific option.
      *
      * @param bool $send
      */
@@ -182,7 +187,7 @@ class Client implements TransactionalTransportInterface
     }
 
     /**
-     * Opens a cURL session if not yet one open.
+     * Makes sure there is an open curl connection.
      *
      * @return Jackalope\Transport\Jackrabbit\Request The Request
      */
@@ -218,20 +223,7 @@ class Client implements TransactionalTransportInterface
         return $request;
     }
 
-    /**
-     * Set this transport to a specific credential and a workspace.
-     *
-     * This can only be called once. To connect to another workspace or with
-     * another credential, use a fresh instance of transport.
-     *
-     * @param \PHPCR\CredentialsInterface $credentials A set of attributes to be used to login per example.
-     * @param string $workspaceName The workspace name for this transport.
-     * @return boolean True on success, exceptions on failure.
-     *
-     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName is not recognized
-     * @throws \PHPCR\RepositoryException if another error occurs
-     */
+    // inherit all doc
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
     {
         if ($this->credentials) {
@@ -268,13 +260,7 @@ class Client implements TransactionalTransportInterface
         return true;
     }
 
-    /**
-     * Releases all resources associated with this Session.
-     *
-     * This method should be called when a Session is no longer needed.
-     *
-     * @return void
-     */
+    // inherit all doc
     public function logout()
     {
         if (false !== $this->curl) {
@@ -283,25 +269,13 @@ class Client implements TransactionalTransportInterface
         $this->curl = false;
     }
 
-    /**
-     * Change the way Jackalope works when getting a session
-     * By default, it sends a PROPFIND to the server, to see if the repository exists
-     * You can disable that with setting it to false, then an error only occurs later
-     * if the repository doesn't exits
-     *
-     * @return void
-     */
+    // inherit all doc
     public function setCheckLoginOnServer($bool)
     {
         $this->checkLoginOnServer = $bool;
     }
-    /**
-     * Get the repository descriptors from the jackrabbit server
-     * This happens without login or accessing a specific workspace.
-     *
-     * @return Array with name => Value for the descriptors
-     * @throws \PHPCR\RepositoryException if error occurs
-     */
+
+    // inherit all doc
     public function getRepositoryDescriptors()
     {
         $request = $this->getRequest(Request::REPORT, $this->server);
@@ -332,39 +306,13 @@ class Client implements TransactionalTransportInterface
         return $descriptors;
     }
 
-    /**
-     * Creates a new Workspace with the specified name. The new workspace is
-     * empty, meaning it contains only root node.
-     *
-     * If srcWorkspace is given:
-     * Creates a new Workspace with the specified name initialized with a
-     * clone of the content of the workspace srcWorkspace. Semantically,
-     * this method is equivalent to creating a new workspace and manually
-     * cloning srcWorkspace to it; however, this method may assist some
-     * implementations in optimizing subsequent Node.update and Node.merge
-     * calls between the new workspace and its source.
-     *
-     * The new workspace can be accessed through a login specifying its name.
-     *
-     * @param string $name A String, the name of the new workspace.
-     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
-     * @return void
-     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
-     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
+    // inherit all doc
     public function createWorkspace($name, $srcWorkspace = null)
     {
         throw new \Jackalope\NotImplementedException();
     }
 
-    /**
-     * Returns the accessible workspace names
-     *
-     * @return array Set of workspaces to work on.
-     */
+    // inherit all doc
     public function getAccessibleWorkspaceNames()
     {
         $request = $this->getRequest(Request::PROPFIND, $this->server);
@@ -381,15 +329,7 @@ class Client implements TransactionalTransportInterface
         return array_unique($workspaces);
     }
 
-    /**
-     * Get the node from an absolute path
-     *
-     * @param string $path Absolute path to the node.
-     * @return array associative array for the node (decoded from json with associative = true)
-     *
-     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNode($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -404,14 +344,7 @@ class Client implements TransactionalTransportInterface
         }
     }
 
-    /**
-     * Get the nodes from an array of absolute paths
-     *
-     * @param array $path Absolute paths to the nodes.
-     * @return array associative array for the node (decoded from json with associative = true)
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodes($paths)
     {
         if (count($paths) == 0) {
@@ -450,13 +383,7 @@ class Client implements TransactionalTransportInterface
         }
     }
 
-    /**
-     * Get the property stored at an absolute path.
-     *
-     * Same format as getNode with just one property.
-     *
-     * @return array associative array with the property value.
-     */
+    // inherit all doc
     public function getProperty($path)
     {
         throw new NotImplementedException();
@@ -468,13 +395,7 @@ class Client implements TransactionalTransportInterface
          */
     }
 
-    /**
-     * Retrieves a binary value resp. multiple values
-     *
-     * @param $path the path to the binary property
-     *
-     * @return mixed decoded stream or array of streams
-     */
+    // inherit all doc
     public function getBinaryStream($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -531,38 +452,19 @@ class Client implements TransactionalTransportInterface
         return $ret;
     }
 
-    /**
-     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
-     *
-     * @param string $path
-     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
-     * @return array
-     */
+    // inherit all doc
     public function getReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name);
     }
 
-    /**
-     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
-     *
-     * @param string $path
-     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
-     * @return array
-     */
+    // inherit all doc
     public function getWeakReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, true);
     }
 
-    /**
-     * Returns the path of all accessible reference properties in the workspace that point to the node.
-     * If $weak_reference is false (default) only the REFERENCE properties are returned, if it is true, only WEAKREFERENCEs.
-     * @param string $path
-     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
-     * @param boolean $weak_reference If true return only WEAKREFERENCEs, otherwise only REFERENCEs
-     * @return array
-     */
+    // inherit all doc
     protected function getNodeReferences($path, $name = null, $weak_reference = false)
     {
         $path = $this->encodePathForDavex($path);
@@ -587,15 +489,7 @@ class Client implements TransactionalTransportInterface
         return $references;
     }
 
-    /**
-     * Check-in item at path.
-     *
-     * @param string $path
-     * @return string path to the new version
-     *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
-     */
+    // inherit all doc
     public function checkinItem($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -617,15 +511,7 @@ class Client implements TransactionalTransportInterface
         throw new \PHPCR\RepositoryException();
     }
 
-    /**
-     * Check-out item at path.
-     *
-     * @param string $path
-     * @return void
-     *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
-     */
+    // inherit all doc
     public function checkoutItem($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -643,6 +529,7 @@ class Client implements TransactionalTransportInterface
         return;
     }
 
+    // inherit all doc
     public function restoreItem($removeExisting, $versionPath, $path)
     {
         $path = $this->encodePathForDavex($path);
@@ -662,6 +549,7 @@ class Client implements TransactionalTransportInterface
         $request->execute(); // errors are checked in request
     }
 
+    // inherit all doc
     public function getVersionHistory($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -671,6 +559,7 @@ class Client implements TransactionalTransportInterface
         return $resp;
     }
 
+    // inherit all doc
     public function query(\PHPCR\Query\QueryInterface $query)
     {
         $querystring = $query->getStatementSql2();
@@ -724,14 +613,7 @@ class Client implements TransactionalTransportInterface
         return $rows;
     }
 
-    /**
-     * Deletes a node and the whole subtree under it
-     *
-     * @param string $path Absolute path to the node
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function deleteNode($path)
     {
         $path = $this->encodePathForDavex($path);
@@ -742,30 +624,13 @@ class Client implements TransactionalTransportInterface
         return true;
     }
 
-    /**
-     * Deletes a property
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function deleteProperty($path)
     {
         return $this->deleteNode($path);
     }
 
-    /**
-     * Copies a Node from src to dst
-     *
-     * @param   string  $srcAbsPath     Absolute source path to the node
-     * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
-     * @param   string  $srcWorkspace   The source workspace where the node can be found or null for current
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     * @see \Jackalope\Workspace::copy
-     */
+    // inherit all doc
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
         $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
@@ -782,15 +647,7 @@ class Client implements TransactionalTransportInterface
         $request->execute();
     }
 
-    /**
-     * Moves a node from src to dst
-     *
-     * @param   string  $srcAbsPath     Absolute source path to the node
-     * @param   string  $dstAbsPath     Absolute destination path (must NOT include the new node name)
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     */
+    // inherit all doc
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
         $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
@@ -803,22 +660,13 @@ class Client implements TransactionalTransportInterface
         $request->execute();
     }
 
+    // inherit all doc
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException();
     }
 
-    /**
-     * Recursively store a node and its children to the given absolute path.
-     *
-     * The basename of the path is the name of the node
-     *
-     * @param NodeInterface $node
-     *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
@@ -890,15 +738,7 @@ class Client implements TransactionalTransportInterface
         return $body . '</sv:node>';
     }
 
-    /**
-     * Stores a property to the given absolute path
-     *
-     * @param string $path Absolute path to identify a specific property.
-     * @param \PHPCR\PropertyInterface
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $path = $property->getPath();
@@ -946,8 +786,8 @@ class Client implements TransactionalTransportInterface
     /**
      * This method is used when building an XML of the properties
      *
-     * @param  $value
-     * @param  $type
+     * @param $value
+     * @param $type
      * @return mixed|string
      */
     protected function propertyToXmlString($value, $type)
@@ -971,8 +811,8 @@ class Client implements TransactionalTransportInterface
     /**
      * This method is used to directly set a property
      *
-     * @param  $value
-     * @param  $type
+     * @param $value
+     * @param $type
      * @return mixed|string
      */
     protected function propertyToRawString($value, $type)
@@ -990,15 +830,7 @@ class Client implements TransactionalTransportInterface
         return $this->propertyToXmlString($value, $type);
     }
 
-    /**
-     * Get the node path from a JCR uuid
-     *
-     * @param string $uuid the id in JCR format
-     * @return string Absolute path to the node
-     *
-     * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodePathForIdentifier($uuid)
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
@@ -1027,13 +859,7 @@ class Client implements TransactionalTransportInterface
         return $this->stripServerRootFromUri(substr(\urldecode($fullPath),0,-1));
     }
 
-    /**
-     * Get the registered namespaces mappings from the backend.
-     *
-     * @return array Associative array of prefix => uri
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNamespaces()
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
@@ -1058,7 +884,8 @@ class Client implements TransactionalTransportInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if trying to overwrite existing prefix to new uri, as jackrabbit can not do this
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if trying to
+     *      overwrite existing prefix to new uri, as jackrabbit can not do this
      */
     public function registerNamespace($prefix, $uri)
     {
@@ -1094,14 +921,7 @@ class Client implements TransactionalTransportInterface
         return true;
     }
 
-    /**
-     * Unregister an existing namespace.
-     *
-     * Validation based on what was returned from getNamespaces has already
-     * happened in the NamespaceRegistry.
-     *
-     * @param string $prefix The prefix to unregister.
-     */
+    // inherit all doc
     public function unregisterNamespace($prefix)
     {
         throw new \PHPCR\UnsupportedRepositoryOperationException('Unregistering namespace not supported by jackrabbit backend');
@@ -1119,14 +939,7 @@ class Client implements TransactionalTransportInterface
         */
     }
 
-    /**
-     * Returns node types as array structure
-     *
-     * @param array nodetypes to request
-     *
-     * @return array a list of nodetype definitions
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodeTypes($nodeTypes = array())
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUriRoot);
@@ -1145,12 +958,7 @@ class Client implements TransactionalTransportInterface
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
 
-    /**
-     * Initiates a "local transaction" on the root node
-     *
-     * @return string The received transaction token
-     * @throws \PHPCR\RepositoryException If no transaction token received
-     */
+    // inherit all doc
     public function beginTransaction()
     {
         $request = $this->getRequest(Request::LOCK, $this->workspaceUriRoot);
@@ -1172,11 +980,7 @@ class Client implements TransactionalTransportInterface
         return $this->transactionToken;
     }
 
-    /**
-     * Ends the transaction started with {@link beginTransaction()}
-     *
-     * @param string $tag Either 'commit' or 'rollback'
-     */
+    // inherit all doc
     protected function endTransaction($tag)
     {
         if ($tag != 'commit' && $tag != 'rollback') {
@@ -1194,44 +998,25 @@ class Client implements TransactionalTransportInterface
         $this->transactionToken = false;
     }
 
-    /**
-     * Commits a transaction started with {@link beginTransaction()}
-     */
+    // inherit all doc
     public function commitTransaction()
     {
         $this->endTransaction('commit');
     }
 
-    /**
-     * Rollbacks a transaction started with {@link beginTransaction()}
-     */
+    // inherit all doc
     public function rollbackTransaction()
     {
         $this->endTransaction('rollback');
     }
 
-    /**
-     * Sets the default transaction timeout
-     *
-     * @param int $seconds The value of the timeout in seconds
-     */
+    // inherit all doc
     public function setTransactionTimeout($seconds)
     {
         throw new NotImplementedException();
     }
 
-    /**
-     * Register namespaces and new node types or update node types based on a
-     * jackrabbit cnd string
-     *
-     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
-     *
-     * @param $cnd The cnd string
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool true on success
-     *
-     * @author david at liip.ch
-     */
+    // inherit all doc
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
@@ -1241,24 +1026,14 @@ class Client implements TransactionalTransportInterface
         return true;
     }
 
-    /**
-     * @param array $types a list of \PHPCR\NodeType\NodeTypeDefinitionInterface objects
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool true on success
-     */
+    // inherit all doc
     public function registerNodeTypes($types, $allowUpdate)
     {
         throw new NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
         //see http://jackrabbit.apache.org/node-type-notation.html
     }
 
-    /**
-     * Return the permissions of the current session on the node given by path.
-     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
-     *
-     * @param string $path the path to the node we want to check
-     * @return array of string
-     */
+    // inherit all doc
     public function getPermissions($path)
     {
         // TODO: OPTIMIZE - once we have ACL this might be done without any server request
@@ -1397,6 +1172,7 @@ class Client implements TransactionalTransportInterface
                '</D:href></dcr:locate-by-uuid>';
     }
 
+    // inherit all doc
     public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;
@@ -1410,7 +1186,7 @@ class Client implements TransactionalTransportInterface
      * TODO: the spec is extremly open and recommends to restrict further. We
      * currently have rather random restrictions
      *
-     * @param   string  $path   THe path to validate
+     * @param string $path The path to validate
      *
      * @return boolean always true, exception if this is not a valid path
      *
@@ -1464,8 +1240,8 @@ class Client implements TransactionalTransportInterface
     /**
      * Prepends the workspace root to the uris that contain an absolute path
      *
-     * @param   string  $uri The absolute path in the current workspace or server uri
-     * @return  string The server uri with this path
+     * @param string $uri The absolute path in the current workspace or server uri
+     * @return string The server uri with this path
      * @throws \PHPCR\RepositoryException   If workspaceUri is missing (not logged in)
      */
     protected function addWorkspacePathToUri($uri)

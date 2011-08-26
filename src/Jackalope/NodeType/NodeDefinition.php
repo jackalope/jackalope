@@ -4,15 +4,41 @@ namespace Jackalope\NodeType;
 use Jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
+// inherit all doc
+/**
+ * @api
+ */
 class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface
 {
     const DEFAULT_PRIMARY_NODE = 'nt:base';
 
+    /**
+     * Cached list of NodeType instances populated in first call to getRequiredPrimaryTypes
+     * @var array
+     */
     protected $requiredPrimaryTypes = array();
+    /**
+     * List of required primary type names as string.
+     * @var array
+     */
     protected $requiredPrimaryTypeNames = array();
+    /**
+     * @var string
+     */
     protected $defaultPrimaryTypeName;
+    /**
+     * @var boolean
+     */
     protected $allowsSameNameSiblings;
 
+    /**
+     * Create a new node definition instance.
+     *
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param mixed $node The node data either as DOMElement or as array
+     * @param NodeTypeManager $nodeTypeManager
+     */
     public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
     {
         parent::__construct($factory, $node, $nodeTypeManager);
@@ -24,6 +50,9 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         }
     }
 
+    /**
+     * Read more information in addition to ItemDefinition::fromXML()
+     */
     protected function fromXML(DOMElement $node)
     {
         parent::fromXML($node);
@@ -44,6 +73,9 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         }
     }
 
+    /**
+     * Read more information in addition to ItemDefinition::fromArray()
+     */
     protected function fromArray(array $data)
     {
         parent::fromArray($data);
@@ -53,23 +85,9 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
                 ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
     }
 
+    // inherit all doc
     /**
-     * Gets the minimum set of primary node types that the child node must have.
-     * Returns an array to support those implementations with multiple inheritance.
-     * This method never returns an empty array. If this node definition places
-     * no requirements on the primary node type, then this method will return an
-     * array containing only the NodeType object representing nt:base, which is
-     * the base of all primary node types and therefore constitutes the least
-     * restrictive node type requirement. Note that any particular node instance
-     * still has only one assigned primary node type, but in multiple-inheritance-
-     * supporting implementations the RequiredPrimaryTypes attribute can be used
-     * to restrict that assigned node type to be a subtype of all of a specified
-     * set of node types.
-     * In implementations that support node type registration an NodeDefinition
-     * object may be acquired (in the form of a NodeDefinitionTemplate) that is
-     * not attached to a live NodeType. In such cases this method returns null.
-     *
-     * @return \PHPCR\NodeType\NodeTypeInterface an array of NodeType objects.
+     * @api
      */
     public function getRequiredPrimaryTypes()
     {
@@ -82,36 +100,18 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         return $this->requiredPrimaryTypes;
     }
 
+    // inherit all doc
     /**
-     * Returns the names of the required primary node types.
-     * If this NodeDefinition is acquired from a live NodeType this list will
-     * reflect the node types returned by getRequiredPrimaryTypes, above.
-     *
-     * If this NodeDefinition is actually a NodeDefinitionTemplate that is not
-     * part of a registered node type, then this method will return the required
-     * primary types as set in that template. If that template is a newly-created
-     * empty one, then this method will return null.
-     *
-     * @return array a String array
+     * @api
      */
     public function getRequiredPrimaryTypeNames()
     {
         return $this->requiredPrimaryTypeNames;
     }
 
+    // inherit all doc
     /**
-     * Gets the default primary node type that will be assigned to the child node
-     * if it is created without an explicitly specified primary node type. This
-     * node type must be a subtype of (or the same type as) the node types returned
-     * by getRequiredPrimaryTypes.
-     * If null is returned this indicates that no default primary type is
-     * specified and that therefore an attempt to create this node without
-     * specifying a node type will throw a ConstraintViolationException. In
-     * implementations that support node type registration an NodeDefinition
-     * object may be acquired (in the form of a NodeDefinitionTemplate) that is
-     * not attached to a live NodeType. In such cases this method returns null.
-     *
-     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType.
+     * @api
      */
     public function getDefaultPrimaryType()
     {
@@ -121,32 +121,18 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
         return $this->nodeTypeManager->getNodeType($this->defaultPrimaryTypeName);
     }
 
+    // inherit all doc
     /**
-     * Returns the name of the default primary node type.
-     * If this NodeDefinition is acquired from a live NodeType this list will
-     * reflect the NodeType returned by getDefaultPrimaryType, above.
-     *
-     * If this NodeDefinition is actually a NodeDefinitionTemplate that is not
-     * part of a registered node type, then this method will return the required
-     * primary types as set in that template. If that template is a newly-created
-     * empty one, then this method will return null.
-     *
-     * @return string a String
+     * @api
      */
     public function getDefaultPrimaryTypeName()
     {
         return $this->defaultPrimaryTypeName;
     }
 
+    // inherit all doc
     /**
-     * Reports whether this child node can have same-name siblings. In other
-     * words, whether the parent node can have more than one child node of this
-     * name. If this NodeDefinition is actually a NodeDefinitionTemplate that is
-     * not part of a registered node type, then this method will return the same
-     * name siblings status as set in that template. If that template is a
-     * newly-created empty one, then this method will return false.
-     *
-     * @return boolean a boolean.
+     * @api
      */
     public function allowsSameNameSiblings()
     {

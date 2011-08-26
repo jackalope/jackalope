@@ -5,14 +5,8 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\OrInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
+// inherit all doc
 /**
- * Performs a logical disjunction of two other constraints.
- *
- * To satisfy the Or constraint, the node-tuple must either:
- * - satisfy constraint1 but not constraint2, or
- * - satisfy constraint2 but not constraint1, or
- * - satisfy both constraint1 and constraint2.
- *
  * @api
  */
 class OrConstraint implements OrInterface
@@ -31,7 +25,7 @@ class OrConstraint implements OrInterface
      * Constructor
      *
      * @param ConstraintInterface $constraint1
-     * @param ConstraintInterface $constraint2 
+     * @param ConstraintInterface $constraint2
      */
     public function __construct(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
@@ -39,10 +33,8 @@ class OrConstraint implements OrInterface
         $this->constraint2 = $constraint2;
     }
 
+    // inherit all doc
     /**
-     * Gets the first constraint.
-     *
-     * @return \PHPCR\Query\QOM\ConstraintInterface the constraint; non-null
      * @api
      */
     function getConstraint1()
@@ -50,10 +42,8 @@ class OrConstraint implements OrInterface
         return $this->constraint1;
     }
 
+    // inherit all doc
     /**
-     * Gets the second constraint.
-     *
-     * @return \PHPCR\Query\QOM\ConstraintInterface the constraint; non-null
      * @api
      */
     function getConstraint2()

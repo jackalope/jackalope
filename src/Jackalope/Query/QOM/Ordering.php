@@ -5,31 +5,8 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\OrderingInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
 
+// inherit all doc
 /**
- * Determines the relative order of two node-tuples by evaluating operand for
- * each.
- *
- * For a first node-tuple, nt1, for which operand evaluates to v1, and a second
- * node-tuple, nt2, for which operand evaluates to v2:
- *
- * If order is Ascending, then:
- * - if either v1 is null, v2 is null, or both v1 and v2 are null, the relative order of nt1 and nt2 is
- *   implementation determined, otherwise
- * - if v1 is a different property type than v2, the relative order of nt1 and nt2 is implementation
- *   determined, otherwise
- * - if v1 is ordered before v2, then nt1 precedes nt2, otherwise
- * - if v1 is ordered after v2, then nt2 precedes nt1, otherwise
- *   the relative order of nt1 and nt2 is implementation determined and may be arbitrary.
- *
- * Otherwise, if order is Descending, then:
- * - if either v1 is null, v2 is null, or both v1 and v2 are null, the relative order of nt1 and nt2 is
- *   implementation determined, otherwise
- * - if v1 is a different property type than v2, the relative order of nt1 and nt2 is implementation
- *   determined, otherwise
- * - if v1 is ordered before v2, then nt2 precedes nt1, otherwise
- * - if v1 is ordered after v2, then nt1 precedes nt2, otherwise
- *   the relative order of nt1 and nt2 is implementation determined and may be arbitrary.
- *
  * @api
  */
 class Ordering implements OrderingInterface
@@ -48,7 +25,7 @@ class Ordering implements OrderingInterface
      * Constructor
      *
      * @param DynamicOperandInterface $operand
-     * @param string $order 
+     * @param string $order
      */
     public function __construct(DynamicOperandInterface $operand, $order = null)
     {
@@ -56,10 +33,8 @@ class Ordering implements OrderingInterface
         $this->order = $order;
     }
 
+    // inherit all doc
     /**
-     * The operand by which to order.
-     *
-     * @return \PHPCR\Query\QOM\DynamicOperandInterface the operand; non-null
      * @api
      */
     function getOperand()
@@ -67,10 +42,8 @@ class Ordering implements OrderingInterface
         return $this->operand;
     }
 
+    // inherit all doc
     /**
-     * Gets the order.
-     *
-     * @return string either QueryObjectModelConstants.JCR_ORDER_ASCENDING or QueryObjectModelConstants.JCR_ORDER_DESCENDING
      * @api
      */
     function getOrder()

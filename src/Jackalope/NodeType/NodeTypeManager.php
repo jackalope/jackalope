@@ -5,35 +5,59 @@ use Jackalope\ObjectManager, Jackalope\NotImplementedException;
 use ArrayIterator;
 
 /**
- * Allows for the retrieval and (in implementations that support it) the
- * registration of node types. Accessed via Workspace.getNodeTypeManager().
+ * {@inheritDoc}
  *
- * Implementation:
- * We try to do lazy fetching of node types.
+ * In Jackalope, we try to do lazy fetching of node types to reduce overhead.
+ * Jackalope supports registering node types, and when using the jackrabbit for
+ * transport, there is an additional method registerNodeTypesCnd for the
+ * jackrabbit specific textual node type specification
  */
 class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeManagerInterface
 {
     /**
-     * The factory to instantiate objects
-     * @var Factory
+     * The factory to instantiate objects.
+     * @var \Jackalope\Factory
      */
     protected $factory;
-
+    /**
+     * @var \Jackalope\ObjectManager
     protected $objectManager;
 
+    /**
+     * Cache of already fetched primary node type instances.
+     * @var array
+     */
     protected $primaryTypes;
+    /**
+     * Cache of already fetched mixin node type instances.
+     * @var array
+     */
     protected $mixinTypes;
-
+    /**
+     * Array of arrays with the super type as key and its sub types as values.
+     * @var array
+     */
     protected $nodeTree = array();
 
     /**
      * Flag to only load all node types from the backend once.
      *
-     * methods like hasNodeType need to fetch all node types.
-     * others like getNodeType do not need all, but just the requested one.
+     * Methods like hasNodeType() need to fetch all node types. Others like
+     * getNodeType() do not need all, but just the requested one. Unless we
+     * need all, we only load specific ones and cache them.
+     *
+     * @var boolean
      */
     protected $fetchedAllFromBackend = false;
 
+    /**
+     * Create the node type manager for a session.
+     *
+     * There may be only one instance per session
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param ObjectManager $objectManager
+     */
     public function __construct($factory, ObjectManager $objectManager)
     {
         $this->factory = $factory;
@@ -42,13 +66,17 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
 
     /**
      * Fetch a node type from backend.
+     *
      * Without a filter parameter, this will fetch all node types from the backend.
      *
-     * It is no problem to trigger the fetch all multiple times, fetch all will occur
-     * only once.
-     * This will not attempt to overwrite existing node types.
+     * It is no problem to call this method with null as name, it will remember
+     * once it fetched all node types and do nothing after that.
      *
-     * @param namelist string type name to fetch. defaults to null which will fetch all nodes.
+     * On fetch all, already cached node types are kept.
+     *
+     * @param string $name type name to fetch. defaults to null which will
+     *      fetch all nodes.
+     *
      * @return void
      */
     protected function fetchNodeTypes($name = null)
@@ -86,7 +114,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     /**
      * Stores the node type in our internal structures (flat && tree)
      *
-     * @param   \PHPCR\NodeType\NodeTypeInterface  $nodetype   The nodetype to add
+     * @param \PHPCR\NodeType\NodeTypeInterface $nodetype The nodetype to add
      */
     protected function addNodeType(\PHPCR\NodeType\NodeTypeInterface $nodetype)
     {
@@ -99,13 +127,18 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     }
 
     /**
-     * Returns the declared subnodes of a given nodename
+     * Helper method for node types: Returns the declared subtypes of a given
+     * nodename.
+     *
      * @param string Nodename
+     *
      * @return array of strings with the names of the subnodes
+     *
      * @private
      */
     public function getDeclaredSubtypes($nodeTypeName)
     {
+        // TODO: do we need to call fetchNodeTypes(null) here?
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
@@ -113,10 +146,13 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     }
 
     /**
-     * Returns the subnode hirarchy of a given nodename
+     * Helper method for NodeType: Returns all sub types of a node and their
+     * sub types.
      *
-     * @param string Nodename
+     * @param string $nodeTypeName
+     *
      * @return array of strings with the names of the subnodes
+     *
      * @private
      */
     public function getSubtypes($nodeTypeName)
@@ -133,10 +169,14 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     }
 
     /**
-     * Adds a node to the tree to get the subnodes later on
-     * @param NodeType the nodetype to add
+     * Adds the declared super types of a node type to the tree to be able to
+     * fetch the sub types of those super types later on.
+     *
+     * Part of addNodeType.
+     *
+     * @param NodeTypeInterface $nodetype the node type to add.
      */
-    protected function addToNodeTree($nodetype)
+    private function addToNodeTree($nodetype)
     {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
@@ -147,13 +187,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         }
     }
 
+    // inherit all doc
     /**
-     * Returns the named node type.
-     *
-     * @param string $nodeTypeName the name of an existing node type.
-     * @return \PHPCR\NodeType\NodeTypeInterface A NodeType object.
-     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no node type by the given name exists.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function getNodeType($nodeTypeName)
     {
@@ -171,13 +207,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
     }
 
+    // inherit all doc
     /**
-     * Returns true if a node type with the specified name is registered. Returns
-     * false otherwise.
-     *
-     * @param string $name - a String.
-     * @return boolean a boolean
-     * @throws \PHPCR\RepositoryException if an error occurs.
+     * @api
      */
     public function hasNodeType($name)
     {
@@ -185,11 +217,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
+    // inherit all doc
     /**
-     * Returns an iterator over all available node types (primary and mixin).
-     *
-     * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
-     * @throws \PHPCR\RepositoryException if an error occurs.
+     * @api
      */
     public function getAllNodeTypes()
     {
@@ -197,11 +227,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return new ArrayIterator(array_values(array_merge($this->primaryTypes, $this->mixinTypes)));
     }
 
+    // inherit all doc
     /**
-     * Returns an iterator over all available primary node types.
-     *
-     * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
-     * @throws \PHPCR\RepositoryException if an error occurs.
+     * @api
      */
     public function getPrimaryNodeTypes()
     {
@@ -209,12 +237,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return new ArrayIterator(array_values($this->primaryTypes));
     }
 
+    // inherit all doc
     /**
-     * Returns an iterator over all available mixin node types. If none are available,
-     * an empty iterator is returned.
-     *
-     * @return Iterator implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
-     * @throws \PHPCR\RepositoryException if an error occurs.
+     * @api
      */
     public function getMixinNodeTypes()
     {
@@ -222,65 +247,36 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return new ArrayIterator(array_values($this->mixinTypes));
     }
 
+    // inherit all doc
     /**
-     * Returns an empty NodeTypeTemplate which can then be used to define a node type
-     * and passed to NodeTypeManager.registerNodeType.
-     *
-     * If $ntd is given:
-     * Returns a NodeTypeTemplate holding the specified node type definition. This
-     * template can then be altered and passed to NodeTypeManager.registerNodeType.
-     *
-     * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd a NodeTypeDefinition.
-     * @return \PHPCR\NodeType\NodeTypeTemplateInterface A NodeTypeTemplate.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function createNodeTypeTemplate($ntd = null)
     {
        return $this->factory->get('NodeType\NodeTypeTemplate', array($this, $ntd));
     }
 
+    // inherit all doc
     /**
-     * Returns an empty NodeDefinitionTemplate which can then be used to create a
-     * child node definition and attached to a NodeTypeTemplate.
-     *
-     * @return \PHPCR\NodeType\NodeDefinitionTemplateInterface A NodeDefinitionTemplate.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function createNodeDefinitionTemplate()
     {
        return $this->factory->get('NodeType\NodeDefinitionTemplate', array($this));
     }
 
+    // inherit all doc
     /**
-     * Returns an empty PropertyDefinitionTemplate which can then be used to create
-     * a property definition and attached to a NodeTypeTemplate.
-     *
-     * @return \PHPCR\NodeType\PropertyDefinitionTemplateInterface A PropertyDefinitionTemplate.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function createPropertyDefinitionTemplate()
     {
        return $this->factory->get('NodeType\PropertyDefinitionTemplate', array($this));
     }
 
+    // inherit all doc
     /**
-     * Registers a new node type or updates an existing node type using the specified
-     * definition and returns the resulting NodeType object.
-     * Typically, the object passed to this method will be a NodeTypeTemplate (a
-     * subclass of NodeTypeDefinition) acquired from NodeTypeManager.createNodeTypeTemplate
-     * and then filled-in with definition information.
-     *
-     * @param \PHPCR\NodeType\NodeTypeDefinitionInterface $ntd an NodeTypeDefinition.
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return \PHPCR\NodeType\NodeTypeInterface the registered or updated node type
-     *
-     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
-     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
@@ -288,13 +284,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return each($ntd);
     }
 
+    // inherit all doc
     /**
-     * Creates a NodeType from a NodeTypeDefinition and validates it
-     *
-     * @param   \PHPCR\NodeType\NodeTypeDefinitionInterface  $ntd    The node type definition
-     * @param   bool    $allowUpdate    Whether an existing note type can be updated
-     * @return \PHPCR\NodeType\NodeType the node type corresponding to the type definition
-     * @throws \PHPCR\NodeType\NodeTypeExistsException   If the node type is already existing and allowUpdate is false
+     * @api
      */
     protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
@@ -304,22 +296,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return $this->factory->get('NodeType\NodeType', array($this, $ntd));
     }
 
+    // inherit all doc
     /**
-     * Registers or updates the specified array of NodeTypeDefinition objects.
-     *
-     * This method is used to register or update a set of node types with mutual
-     * dependencies. Returns an iterator over the resulting NodeType objects.
-     * The effect of the method is "all or nothing"; if an error occurs, no node
-     * types are registered or updated.
-     *
-     * @param array $definitions an array of NodeTypeDefinitions
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeDefinitionInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding new or updated NodeType instances.
-     *
-     * @throws \PHPCR\InvalidNodeTypeDefinitionException - if a NodeTypeDefinition within the Collection is invalid or if the Collection contains an object of a type other than NodeTypeDefinition.
-     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and a NodeTypeDefinition within the Collection specifies a node type name that is already registered.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function registerNodeTypes(array $definitions, $allowUpdate)
     {
@@ -358,13 +337,22 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      * For full documentation of the format, see
      * http://jackrabbit.apache.org/node-type-notation.html
      *
-     * @param $cnd a string with cnd information
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return Iterator over the registered \PHPCR\NodeType\NodeTypeIteratorInterface implementing SeekableIterator and Countable. Keys are the node type names, values the corresponding NodeTypeInterface instances.
+     * @param $cnd a string with cnd information.
+     * @param boolean $allowUpdate whether to fail if node already exists or to
+     *      update it.
      *
-     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the NodeTypeDefinition is invalid.
-     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false and the NodeTypeDefinition specifies a node type name that is already registered.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
+     * @return Iterator over the registered
+     *      \PHPCR\NodeType\NodeTypeIteratorInterface implementing
+     *      SeekableIterator and Countable. Keys are the node type names,
+     *      values the corresponding NodeTypeInterface instances.
+     *
+     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the
+     *      NodeTypeDefinition is invalid.
+     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false
+     *      and the NodeTypeDefinition specifies a node type name that is
+     *      already registered.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if this
+     *      implementation does not support node type registration.
      * @throws \PHPCR\RepositoryException if another error occurs.
      *
      * @author david at liip.ch
@@ -388,14 +376,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         return $types;
     }
 
+    // inherit all doc
     /**
-     * Unregisters the specified node type.
-     *
-     * @param string $name a String.
-     * @return void
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if no registered node type exists with the specified name.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function unregisterNodeType($name)
     {
@@ -410,15 +393,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
     }
 
+    // inherit all doc
     /**
-     * Unregisters the specified set of node types. Used to unregister a set of node
-     * types with mutual dependencies.
-     *
-     * @param array $names a String array
-     * @return void
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this implementation does not support node type registration.
-     * @throws \PHPCR\NodeType\NoSuchNodeTypeException if one of the names listed is not a registered node type.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function unregisterNodeTypes(array $names)
     {

@@ -2,28 +2,14 @@
 namespace Jackalope\NodeType;
 use \ArrayObject;
 
+// inherit all doc
 /**
- * The NodeTypeTemplate interface represents a simple container structure used
- * to define node types which are then registered through the
- * NodeTypeManager.registerNodeType method.
- *
- * NodeTypeTemplate, like NodeType, is a subclass of NodeTypeDefinition so it
- * shares with NodeType those methods that are relevant to a static definition.
- * In addition, NodeTypeTemplate provides methods for setting the attributes of
- * the definition. Implementations of this interface need not contain any
- * validation logic.
- *
- * See the corresponding get methods for each attribute in NodeTypeDefinition
- * for the default values assumed when a new empty NodeTypeTemplate is created
- * (as opposed to one extracted from an existing NodeType).
+ * @api
  */
 class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeTemplateInterface
 {
+    // inherit all doc
     /**
-     * Sets the name of the node type.
-     *
-     * @param string $name a String.
-     * @return void
      * @api
      */
     public function setName($name)
@@ -31,11 +17,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->name = $name;
     }
 
+    // inherit all doc
     /**
-     * Sets the names of the supertypes of the node type.
-     *
-     * @param array $names a String array.
-     * @return void
      * @api
      */
     public function setDeclaredSuperTypeNames(array $names)
@@ -43,11 +26,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->declaredSuperTypeNames = $names;
     }
 
+    // inherit all doc
     /**
-     * Sets the abstract flag of the node type.
-     *
-     * @param boolean $abstractStatus a boolean.
-     * @return void
      * @api
      */
     public function setAbstract($abstractStatus)
@@ -55,11 +35,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->isAbstract = $abstractStatus;
     }
 
+    // inherit all doc
     /**
-     * Sets the mixin flag of the node type.
-     *
-     * @param boolean $mixin a boolean.
-     * @return void
      * @api
      */
     public function setMixin($mixin)
@@ -67,11 +44,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->isMixin = $mixin;
     }
 
+    // inherit all doc
     /**
-     * Sets the orderable child nodes flag of the node type.
-     *
-     * @param boolean $orderable a boolean.
-     * @return void
      * @api
      */
     public function setOrderableChildNodes($orderable)
@@ -79,11 +53,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->hasOrderableChildNodes = $orderable;
     }
 
+    // inherit all doc
     /**
-     * Sets the name of the primary item.
-     *
-     * @param string $name a String.
-     * @return void
      * @api
      */
     public function setPrimaryItemName($name)
@@ -91,11 +62,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->primaryItemName = $name;
     }
 
+    // inherit all doc
     /**
-     * Sets the queryable status of the node type.
-     *
-     * @param booolean $queryable a boolean.
-     * @return void
      * @api
      */
     public function setQueryable($queryable)
@@ -103,12 +71,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         $this->isQueryable = $queryable;
     }
 
+    // inherit all doc
     /**
-     * Returns a mutable List of PropertyDefinitionTemplate objects. To define a
-     * new NodeTypeTemplate or change an existing one, PropertyDefinitionTemplate
-     * objects can be added to or removed from this List.
-     *
-     * @return Object A mutable List (implementing \Traversable, \ArrayAccess, and \Countable) of PropertyDefinitionTemplate objects
      * @api
      */
     public function getPropertyDefinitionTemplates()
@@ -119,12 +83,8 @@ class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\Nod
         return $this->declaredPropertyDefinitions;
     }
 
+    // inherit all doc
     /**
-     * Returns a mutable List of NodeDefinitionTemplate objects. To define a new
-     * NodeTypeTemplate or change an existing one, NodeDefinitionTemplate objects
-     * can be added to or removed from this List.
-     *
-     * @return Object A mutable List (implementing \Traversable, \ArrayAccess, and \Countable) of NodeDefinitionTemplate objects
      * @api
      */
     public function getNodeDefinitionTemplates()

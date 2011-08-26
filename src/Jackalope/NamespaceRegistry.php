@@ -5,7 +5,9 @@ namespace Jackalope;
 use ArrayIterator;
 
 /**
- * Mirrors namespaces with jackarabbit backend
+ * Namespace registry for Jackalope
+ *
+ * {@inheritDoc}
  */
 class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryInterface
 {
@@ -44,19 +46,25 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      *
      * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
      * @param TransportInterface $transport
+     *
+     * @see \Jackalope\Factory
      */
     public function __construct($factory, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->transport = $transport;
     }
-    
+
     /**
-     * Loads the namespace map from the server, when it's not already loaded
+     * Makes sure the namespaces are available.
+     *
+     * We are lazy and only load the namespaces when they are needed for the
+     * first time. This method has to be called by all methods that need to
+     * do something with user defined namespaces.
      *
      * @return void
      */
-    protected function lazyLoadNamespaces() 
+    protected function lazyLoadNamespaces()
     {
         if ($this->userNamespaces === null) {
             $namespaces = $this->transport->getNamespaces();
@@ -69,37 +77,9 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         }
     }
 
+    // inherit all doc
     /**
-     * Sets a one-to-one mapping between prefix and uri in the global namespace
-     * registry of this repository.
-     * Assigning a new prefix to a URI that already exists in the namespace
-     * registry erases the old prefix. In general this can almost always be
-     * done, though an implementation is free to prevent particular
-     * remappings by throwing a NamespaceException.
-     *
-     * On the other hand, taking a prefix that is already assigned to a URI
-     * and re-assigning it to a new URI in effect unregisters that URI.
-     * Therefore, the same restrictions apply to this operation as to
-     * NamespaceRegistry.unregisterNamespace:
-     * - Attempting to re-assign a built-in prefix (jcr, nt, mix, sv, xml,
-     *   or the empty prefix) to a new URI will throw a
-     *   \PHPCR\NamespaceException.
-     * - Attempting to register a namespace with a prefix that begins with
-     *   the characters "xml" (in any combination of case) will throw a
-     *   \PHPCR\NamespaceException.
-     * - An implementation may prevent the re-assignment of any other namespace
-     *   prefixes for implementation-specific reasons by throwing a
-     *   \PHPCR\NamespaceException.
-     *
-     * @param string $prefix The prefix to be mapped.
-     * @param string $uri The URI to be mapped.
-     *
-     * @return void
-     *
-     * @throws \PHPCR\NamespaceException If an attempt is made to re-assign a built-in prefix to a new URI or, to register a namespace with a prefix that begins with the characters "xml" (in any combination of case) or an attempt is made to perform a prefix re-assignment that is forbidden for implementation-specific reasons.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this repository does not support namespace registry changes.
-     * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to register the namespace.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function registerNamespace($prefix, $uri)
     {
@@ -124,39 +104,24 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         $this->userNamespaces[$prefix] = $uri;
     }
 
+    // inherit all doc
     /**
-     * Removes a namespace mapping from the registry. The following restriction
-     * apply:
-     * * Attempting to unregister a built-in namespace (jcr, nt, mix, sv, xml or
-     *   the empty namespace) will throw a \PHPCR\NamespaceException.
-     * * An attempt to unregister a namespace that is not currently registered
-     *   will throw a \PHPCR\NamespaceException.
-     * * An implementation may prevent the unregistering of any other namespace
-     *   for implementation-specific reasons by throwing a
-     *   \PHPCR\NamespaceException.
-     *
-     * @param string $prefix The prefix of the mapping to be removed.
-     * @return void
-     * @throws \PHPCR\NamespaceException unregister a built-in namespace or a namespace that is not currently registered or a namespace whose unregsitration is forbidden for implementation-specific reasons.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this repository does not support namespace registry changes.
-     * @throws \PHPCR\AccessDeniedException if the current session does not have sufficient access to unregister the namespace.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @api
      */
     public function unregisterNamespace($prefix)
     {
         $this->lazyLoadNamespaces();
         $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {
-            //defaultNamespaces would throw an exception in checkPrefix already
+            // we already checked whether this is a prefix out of the defaultNamespaces in checkPrefix
             throw new \PHPCR\NamespaceException("Prefix $prefix is not currently registered");
         }
         $this->transport->unregisterNamespace($prefix);
     }
 
+    // inherit all doc
     /**
-     * Returns an array holding all currently registered prefixes.
-     *
-     * @return array a string array
+     * @api
      */
     public function getPrefixes()
     {
@@ -167,11 +132,8 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         );
     }
 
+    // inherit all doc
     /**
-     * Returns an array holding all currently registered URIs.
-     *
-     * @return array a string array
-     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getURIs()
@@ -183,13 +145,9 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         );
     }
 
+    // inherit all doc
     /**
-     * Returns the URI to which the given prefix is mapped.
-     *
-     * @param string $prefix a string
-     * @return string a string
-     *
-     * @throws \PHPCR\NamespaceException if a mapping with the specified prefix does not exist.
+     * @api
      */
     public function getURI($prefix)
     {
@@ -203,14 +161,9 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
         throw new \PHPCR\NamespaceException("Mapping for '$prefix' is not defined");
     }
 
+    // inherit all doc
     /**
-     * Returns the prefix which is mapped to the given uri.
-     *
-     * @param string $uri a string
-     * @return string a string
-     *
-     * @throws \PHPCR\NamespaceException if a mapping with the specified uri does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs
+     * @api
      */
     public function getPrefix($uri)
     {
@@ -238,7 +191,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     /**
      * Provide Traversable interface: iterator over all namespaces
      *
-     * @return Iterator over all namespaces, with prefix as key and url as value
+     * @return \Iterator over all namespaces, with prefix as key and url as value
      */
     public function getIterator()
     {
@@ -247,7 +200,7 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     }
 
     /**
-     * Verifies whether this is a valid prefix
+     * Implement verification if this is a valid prefix
      *
      * Throws the \PHPCR\NamespaceException if trying to use one of the
      * built-in prefixes or a prefix that begins with the characters "xml"
@@ -256,6 +209,9 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      * @return void
      *
      * @throws \PHPCR\NamespaceException if re-assign built-in prefix or prefix starting with xml
+     *
+     * @private
+     * TODO: can we refactor Session::setNamespacePrefix to not need to directly access this?
      */
     public function checkPrefix($prefix)
     {

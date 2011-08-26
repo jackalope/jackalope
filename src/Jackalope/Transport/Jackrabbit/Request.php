@@ -196,7 +196,7 @@ class Request
     }
 
     /**
-     * @param   int|string  $depth
+     * @param int|string  $depth
      */
     public function setDepth($depth)
     {

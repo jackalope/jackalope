@@ -125,29 +125,7 @@ class Client implements TransportInterface
         return $this->conn;
     }
 
-    /**
-     * Creates a new Workspace with the specified name. The new workspace is
-     * empty, meaning it contains only root node.
-     *
-     * If srcWorkspace is given:
-     * Creates a new Workspace with the specified name initialized with a
-     * clone of the content of the workspace srcWorkspace. Semantically,
-     * this method is equivalent to creating a new workspace and manually
-     * cloning srcWorkspace to it; however, this method may assist some
-     * implementations in optimizing subsequent Node.update and Node.merge
-     * calls between the new workspace and its source.
-     *
-     * The new workspace can be accessed through a login specifying its name.
-     *
-     * @param string $name A String, the name of the new workspace.
-     * @param string $srcWorkspace The name of the workspace from which the new workspace is to be cloned.
-     * @return void
-     * @throws \PHPCR\AccessDeniedException if the session through which this Workspace object was acquired does not have sufficient access to create the new workspace.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository does not support the creation of workspaces.
-     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     * @api
-     */
+    // inherit all doc
     public function createWorkspace($name, $srcWorkspace = null)
     {
         if (null !== $srcWorkspace) {
@@ -177,20 +155,7 @@ class Client implements TransportInterface
         ));
     }
 
-    /**
-     * Set this transport to a specific credential and a workspace.
-     *
-     * This can only be called once. To connect to another workspace or with
-     * another credential, use a fresh instance of transport.
-     *
-     * @param credentials A \PHPCR\SimpleCredentials instance (this is the only type currently understood)
-     * @param workspaceName The workspace name for this transport.
-     * @return true on success (exceptions on failure)
-     *
-     * @throws \PHPCR\LoginException if authentication or authorization (for the specified workspace) fails
-     * @throws \PHPCR\NoSuchWorkspacexception if the specified workspaceName is not recognized
-     * @throws \PHPCR\RepositoryException if another error occurs
-     */
+    // inherit all doc
     public function login(\PHPCR\CredentialsInterface $credentials = null, $workspaceName = 'default')
     {
         $this->credentials = $credentials;
@@ -217,25 +182,14 @@ class Client implements TransportInterface
         return true;
     }
 
-    /**
-     * Releases all resources associated with this Session.
-     *
-     * This method is called on $session->logout
-     * Implementations can use it to close database connections and similar.
-     *
-     * @return void
-     */
+    // inherit all doc
     public function logout()
     {
         $this->loggedIn = false;
         $this->conn = null;
     }
 
-    /**
-     * Change the way Jackalope works when getting a session
-     *
-     * @return void
-     */
+    // inherit all doc
     public function setCheckLoginOnServer($bool)
     {
         $this->checkLoginOnServer = $bool;
@@ -264,13 +218,7 @@ class Client implements TransportInterface
         }
     }
 
-    /**
-     * Get the repository descriptors from the jackrabbit server
-     * This happens without login or accessing a specific workspace.
-     *
-     * @return Array with name => Value for the descriptors
-     * @throws \PHPCR\RepositoryException if error occurs
-     */
+    // inherit all doc
     public function getRepositoryDescriptors()
     {
         return array(
@@ -326,13 +274,7 @@ class Client implements TransportInterface
         );
     }
 
-    /**
-     * Get the registered namespaces mappings from the backend.
-     *
-     * @return array Associative array of prefix => uri
-     *
-     * @throws \PHPCR\RepositoryException if now logged in
-     */
+    // inherit all doc
     public function getNamespaces()
     {
         if ($this->fetchedUserNamespaces === false) {
@@ -346,17 +288,7 @@ class Client implements TransportInterface
         return $this->namespaces;
     }
 
-    /**
-     * Copies a Node from src to dst
-     *
-     * @param   string  $srcAbsPath     Absolute source path to the node
-     * @param   string  $dstAbsPath     Absolute destination path (must include the new node name)
-     * @param   string  $srcWorkspace   The source workspace where the node can be found or NULL for current
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     * @see \Jackalope\Workspace::copy
-     */
+    // inherit all doc
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
         $this->assertLoggedIn();
@@ -422,7 +354,7 @@ class Client implements TransportInterface
     }
 
     /**
-     * @param  string $path
+     * @param string $path
      * @return array
      */
     private function getJcrName($path)
@@ -641,11 +573,7 @@ class Client implements TransportInterface
         return array('dom' => $dom, 'binaryData' => $binaryData);
     }
 
-    /**
-     * Returns the accessible workspace names
-     *
-     * @return array Set of workspaces to work on.
-     */
+    // inherit all doc
     public function getAccessibleWorkspaceNames()
     {
         $workspaceNames = array();
@@ -655,16 +583,7 @@ class Client implements TransportInterface
         return $workspaceNames;
     }
 
-    /**
-     * Get the item from an absolute path
-     *
-     * TODO: should we call this getNode? does not work for property. (see ObjectManager::getPropertyByPath for more on properties)
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @return array for the node (decoded from json)
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNode($path)
     {
         $this->assertLoggedIn();
@@ -747,14 +666,7 @@ class Client implements TransportInterface
         return $data;
     }
 
-    /**
-     * Get the nodes from an array of absolute paths
-     *
-     * @param array $path Absolute paths to the nodes.
-     * @return array associative array for the node (decoded from json with associative = true)
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodes($paths)
     {
         $nodes = array();
@@ -769,39 +681,25 @@ class Client implements TransportInterface
         return $nodes;
     }
 
-    /**
-     * Check-in item at path.
-     *
-     * @param string $path
-     * @return string
-     *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
-     */
+    // inherit all doc
     public function checkinItem($path)
     {
         throw new \Jackalope\NotImplementedException();
     }
 
-    /**
-     * Check-out item at path.
-     *
-     * @param string $path
-     * @return void
-     *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
-     */
+    // inherit all doc
     public function checkoutItem($path)
     {
         throw new \Jackalope\NotImplementedException();
     }
 
+    // inherit all doc
     public function restoreItem($removeExisting, $versionPath, $path)
     {
         throw new \Jackalope\NotImplementedException();
     }
 
+    // inherit all doc
     public function getVersionHistory($path)
     {
         throw new \Jackalope\NotImplementedException();
@@ -816,14 +714,7 @@ class Client implements TransportInterface
         return false;
     }
 
-    /**
-     * Deletes a node and its subnodes
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function deleteNode($path)
     {
         $this->assertLoggedIn();
@@ -883,28 +774,13 @@ class Client implements TransportInterface
         }
     }
 
-    /**
-     * Deletes a property
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function deleteProperty($path)
     {
         // TODO:
     }
 
-    /**
-     * Moves a node from src to dst
-     *
-     * @param   string  $srcAbsPath     Absolute source path to the node
-     * @param   string  $dstAbsPath     Absolute destination path (must NOT include the new node name)
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     */
+    // inherit all doc
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
         $this->assertLoggedIn();
@@ -915,7 +791,7 @@ class Client implements TransportInterface
     /**
      * Get parent path of a path.
      *
-     * @param  string $path
+     * @param string $path
      * @return string
      */
     private function getParentPath($path)
@@ -1006,17 +882,7 @@ class Client implements TransportInterface
         return $nodeTypes;
     }
 
-    /**
-     * Stores a node to the given absolute path
-     *
-     * @param string $path Absolute path to identify a special item.
-     * @param \PHPCR\NodeType\NodeTypeInterface $primaryType
-     * @param \Traversable $properties array of \PHPCR\PropertyInterface objects
-     * @param \Traversable $children array of \PHPCR\NodeInterface objects
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
@@ -1038,15 +904,7 @@ class Client implements TransportInterface
         return true;
     }
 
-    /**
-     * Stores a property to the given absolute path
-     *
-     * @param string $path Absolute path to identify a specific property.
-     * @param \PHPCR\PropertyInterface
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $this->assertLoggedIn();
@@ -1104,15 +962,7 @@ class Client implements TransportInterface
 *)?
 $/xi";
 
-    /**
-     * Get the node path from a PHPCR uuid
-     *
-     * @param string $uuid the id in PHPCR format
-     * @return string Absolute path to the node
-     *
-     * @throws \PHPCR\ItemNotFoundException if the backend does not know the uuid
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodePathForIdentifier($uuid)
     {
         $this->assertLoggedIn();
@@ -1124,12 +974,7 @@ $/xi";
         return $path;
     }
 
-    /**
-     * Returns node types
-     * @param array nodetypes to request
-     * @return dom with the definitions
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
+    // inherit all doc
     public function getNodeTypes($nodeTypes = array())
     {
         $nodeTypes = array_flip($nodeTypes);
@@ -1233,26 +1078,13 @@ $/xi";
         return $result;
     }
 
-    /**
-     * Register namespaces and new node types or update node types based on a
-     * jackrabbit cnd string
-     *
-     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
-     *
-     * @param $cnd The cnd string
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool true on success
-     */
+    // inherit all doc
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         throw new \Jackalope\NotImplementedException("Not implemented yet");
     }
 
-    /**
-     * @param array $types a list of \PHPCR\NodeType\NodeTypeDefinitionInterface objects
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool true on success
-     */
+    // inherit all doc
     public function registerNodeTypes($types, $allowUpdate)
     {
         foreach ($types AS $type) {
@@ -1306,16 +1138,19 @@ $/xi";
         }
     }
 
+    // inherit all doc
     public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;
     }
 
+    // inherit all doc
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new \Jackalope\NotImplementedException("Not implemented yet");
     }
 
+    // inherit all doc
     public function getBinaryStream($path)
     {
         $this->assertLoggedIn();
@@ -1341,11 +1176,13 @@ $/xi";
         }
     }
 
+    // inherit all doc
     public function getProperty($path)
     {
         throw new \Jackalope\NotImplementedException("Not implemented yet");
     }
 
+    // inherit all doc
     public function query(\PHPCR\Query\QueryInterface $query)
     {
         $limit = $query->getLimit();
@@ -1379,6 +1216,7 @@ $/xi";
         }
     }
 
+    // inherit all doc
     public function registerNamespace($prefix, $uri)
     {
         $this->conn->insert('phpcr_namespaces', array(
@@ -1387,43 +1225,25 @@ $/xi";
         ));
     }
 
+    // inherit all doc
     public function unregisterNamespace($prefix)
     {
         $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
     }
 
-    /**
-     * Returns the path of all accessible REFERENCE properties in the workspace that point to the node
-     *
-     * @param string $path
-     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
-     * @return array
-     */
+    // inherit all doc
     public function getReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, false);
     }
 
-    /**
-     * Returns the path of all accessible WEAKREFERENCE properties in the workspace that point to the node
-     *
-     * @param string $path
-     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
-     * @return array
-     */
+    // inherit all doc
     public function getWeakReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, true);
     }
 
-    /**
-     * Returns the path of all accessible reference properties in the workspace that point to the node.
-     * If $weak_reference is false (default) only the REFERENCE properties are returned, if it is true, only WEAKREFERENCEs.
-     * @param string $path
-     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
-     * @param boolean $weakReference If true return only WEAKREFERENCEs, otherwise only REFERENCEs
-     * @return array
-     */
+    // inherit all doc
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
         $targetId = $this->pathExists($path);
@@ -1444,14 +1264,7 @@ $/xi";
         return $references;
     }
 
-
-    /**
-     * Return the permissions of the current session on the node given by path.
-     * The result of this function is an array of zero, one or more strings from add_node, read, remove, set_property.
-     *
-     * @param string $path the path to the node we want to check
-     * @return array of string
-     */
+    // inherit all doc
     public function getPermissions($path)
     {
         return array(

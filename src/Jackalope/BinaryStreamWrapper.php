@@ -2,32 +2,61 @@
 namespace Jackalope;
 
 /**
- * This class implements a stream wrapper that allows for lazy loaded binary properties
+ * This class implements a stream wrapper that allows for lazy loaded binary
+ * properties.
  *
- * The stream is registered for the protocol "jackalope://". The URL must contain the sessions
- * registryKey as the host part and the oath of the binary property as the path part, e.g.
- * "jackalope://abc0123/content/node/binary"
+ * The stream is registered for the protocol "jackalope://". The URL must
+ * contain the sessions registryKey as the host part and the oath of the binary
+ * property as the path part, e.g. "jackalope://abc0123/content/node/binary"
  *
- * For multivalued properties the url also contains the position of the stream in the property array
- * in the port field and a token to identify all streams loaded by the single backend call in an static
- * array as username.
+ * For multivalued properties the url also contains the position of the stream
+ * in the property array in the port field and a token to identify all streams
+ * loaded by the single backend call in an static array as username.
  *
- * The loading from the backend is deferred until the stream is accessed. Then it is loaded and all
- * stream functions are passed on to the underlying stream.
+ * The loading from the backend is deferred until the stream is accessed. Then
+ * it is loaded and all stream functions are passed on to the underlying
+ * stream. This means after closing the Session, streams can no longer be
+ * accessed.
  *
  * @private
  */
 class BinaryStreamWrapper
 {
-    /** array to store the streams loaded by a backend call for all values of a multivalue property */
+    /**
+     * Cached streams for multivalue binary properties - there is no way to fetch only one stream of a multivalue property.
+     *
+     * @var array
+     */
     private static $multiValueMap = array();
 
+    /**
+     * The backend path this stream represents
+     *
+     * @var string
+     */
     private $path = null;
+
+    /**
+     * The stream once the wrapper has been accessed once.
+     * @var stream
+     */
+
     private $stream = null;
+    /**
+     * The PHPCR session to fetch data through it.
+     * @var \PHPCR\SessionInterface
+     */
     private $session = null;
 
     /**
-     * Parse the url and store the information.
+     * Get the information and store it for later usage.
+     *
+     * @param string $path the backend path for this stream
+     * @param int $mode ignored
+     * @param int $options ignored
+     * @param mixed $opened_path ignored
+     *
+     * @return bool true on success
      */
     public function stream_open($path, $mode, $options, &$opened_path)
     {
@@ -35,42 +64,75 @@ class BinaryStreamWrapper
         return true;
     }
 
+    /**
+     * Make sure the stream is ready and read from the underlying stream.
+     *
+     * @param int $count How many bytes to read from the stream.
+     *
+     * @return string data from the stream in utf-8 format.
+     */
     public function stream_read($count)
     {
         $this->init_stream();
         return fread($this->stream, $count);
     }
 
+    /**
+     * Make sure the stream is ready and write to the underlying stream.
+     *
+     * @param string $data the data to write to the stream (utf-8)
+     */
     public function stream_write($data)
     {
         $this->init_stream();
         return fwrite($this->stream, $data);
     }
 
+    /**
+     * Make sure the stream is ready and specify the position in the stream.
+     */
     public function stream_tell()
     {
         $this->init_stream();
         return ftell($this->stream);
     }
 
+    /**
+     * Make sure the stream is ready and check whether the stream is at its end.
+     *
+     * @return bool true if the stream has ended.
+     */
     public function stream_eof()
     {
         $this->init_stream();
         return feof($this->stream);
     }
 
+    /**
+     * Make sure the stream is ready and get information about the stream.
+     */
     public function stream_stat()
     {
         $this->init_stream();
         return fstat($this->stream);
     }
 
+    /**
+     * Make sure the stream is ready and position the file pointer to the
+     * specified position.
+     *
+     * @param int $offset the position in the stream in bytes from the beginning
+     * @param int $whence whether to seek relative or absolute
+     */
     public function stream_seek($offset, $whence)
     {
         $this->init_stream();
         return fseek($this->stream, $offset, $whence);
     }
 
+    /**
+     * Close this stream if it was initialized
+     */
     public function stream_close()
     {
         if ($this->stream) {
@@ -78,6 +140,9 @@ class BinaryStreamWrapper
         }
     }
 
+    /**
+     * Flush all data written to this stream if the stream was initiliazed.
+     */
     public function stream_flush()
     {
         if ($this->stream) {
@@ -88,12 +153,18 @@ class BinaryStreamWrapper
     }
 
     /**
-     * Check whether stream was already loaded, otherwise fetch from backend.
+     * Check whether stream was already loaded, otherwise fetch from backend
+     * and cache it.
      *
-     * Multivalued properties have a special handling since the backend returns all
-     * streams in a single call.
+     * Multivalued properties have a special handling since the backend returns
+     * all streams in a single call.
      *
-     * Always checks that the current session is still alive.
+     * Always checks if the current session is still alive.
+     *
+     * @throws \LogicException when trying to use a stream from a closed session
+     *      and on trying to access a nonexisting multivalue id.
+     *
+     * @return void
      */
     private function init_stream()
     {

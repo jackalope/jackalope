@@ -6,23 +6,46 @@ use ArrayIterator;
 use PHPCR\PropertyType;
 
 /**
- * A Property object represents the smallest granularity of content storage.
- * It has a single parent node and no children. A property consists of a name
- * and a value, or in the case of multi-value properties, a set of values all
- * of the same type.
+ * The Jackalope in-memory representation of a property.
  *
- * @api
+ * This is an Item and follows the property interface - see the base class and
+ * interface for more documentation.
  */
 class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
-    /** flag to call stream_get_wrappers only once */
+    /**
+     * flag to call stream_get_wrappers only once per php session
+     * @var boolean
+     * @see Property::__construct()
+     */
     protected static $binaryStreamWrapperRegistered;
 
+    /**
+     * The property value in suitable native format or object
+     * @var mixed
+     */
     protected $value;
-    /** length (only used for binary property */
+    /**
+     * length is only used for binary property, because binary loading is
+     * delayed until explicitly requested.
+     * @var int
+     */
     protected $length;
+    /**
+     * whether this is a multivalue property
+     * @var boolean
+     */
     protected $isMultiple = false;
+    /**
+     * the type constant from \PHPCR\PropertyType
+     * @var int
+     */
     protected $type;
+    /**
+     * cached instance of the property definition that defines this property
+     * @var \PHPCR\NodeType\PropertyDefinitionInterface
+     * @see Property::getDefinition()
+     */
     protected $definition;
 
     /**
@@ -33,18 +56,23 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * for $data and use setValue afterwards to let the type magic be handled.
      * Then multivalue is determined on setValue
      *
-     * For binary properties, the value is the length of the data(s), not the data itself.
+     * For binary properties, the value is the length of the data(s), not the
+     * data itself.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
-     * @param array $data array with fields
-     *                    type (integer or string from PropertyType)
-     *                    and value (data for creating value object - array for multivalue property)
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param array $data array with fields <tt>type</tt> (integer or string
+     *      from \PHPCR\PropertyType) and <tt>value</tt> (data for creating the
+     *      property value - array for multivalue property)
      * @param string $path the absolute path of this item
      * @param Session the session instance
-     * @param ObjectManager the objectmanager instance - the caller has to take care of registering this item with the object manager
-     * @param boolean $new optional: set to true to make this property aware its not yet existing on the server. defaults to false
+     * @param ObjectManager the objectmanager instance - the caller has to take
+     *      care of registering this item with the object manager
+     * @param boolean $new optional: set to true to make this property aware
+     *      its not yet existing on the server. defaults to false
      */
-    public function __construct($factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
+    public function __construct($factory, array $data, $path, Session $session,
+                                ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 
@@ -97,8 +125,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
     }
 
+    // inherit all doc
     /**
-     * {@inheritDoc}
+     * @api
      */
     public function setValue($value, $type = PropertyType::UNDEFINED)
     {
@@ -113,11 +142,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->_setValue($value, $type);
     }
 
+    // inherit all doc
     /**
-     * Appends a value to a multi-value property
-     *
-     * @param mixed value
-     * @throws \PHPCR\ValueFormatException if the property is not multi-value
+     * @api
      */
     public function addValue($value)
     {
@@ -132,7 +159,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
     /**
      * Tell this item that it has been modified.
-     * Used when deleting a node to tell the parent node about modification.
+     *
+     * Used to make the parent node aware that this property has changed
+     *
+     * @private
      */
     public function setModified()
     {
@@ -143,15 +173,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
     }
 
+    // inherit all doc
     /**
-     * Get the value in format default for the PropertyType of this property.
-     *
-     * PHPCR Note: This directly returns the raw data for this property
-     *
-     * References and Weakreferences are resolved to node instances, while path
-     * is returned as string.
-     *
-     * @return mixed value of this property, or array in case of multi-value
+     * @api
      */
     public function getValue()
     {
@@ -188,13 +212,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $value;
     }
 
+    // inherit all doc
     /**
-     * Returns a String representation of the value of this property. A
-     * shortcut for Property.getValue().getString(). See Value.
-     *
-     * @return string A string representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a String is not possible
-     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getString()
@@ -210,11 +229,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * Returns a stream with the data of this property.
-     *
-     * @return resource a php binary stream
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getBinary()
@@ -258,13 +274,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
    }
 
+    // inherit all doc
     /**
-     * Returns an integer representation of the value of this property. A shortcut
-     * for Property.getValue().getLong(). See Value.
-     *
-     * @return integer An integer representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a long is not possible
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getLong()
@@ -277,13 +288,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * Returns a double representation of the value of this property. A
-     * shortcut for Property.getValue().getDouble(). See Value.
-     *
-     * @return float A float representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a double is not possible
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDouble()
@@ -296,13 +302,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * Returns a BigDecimal representation of the value of this property. A
-     * shortcut for Property.getValue().getDecimal(). See Value.
-     *
-     * @return float A float representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a BigDecimal is not possible or if the property is multi-valued.
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDecimal()
@@ -315,13 +316,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * Returns a DateTime representation of the value of this property. A
-     * shortcut for Property.getValue().getDate(). See Value.
-     *
-     * @return DateTime A date representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a string is not possible or if the property is multi-valued.
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getDate()
@@ -334,13 +330,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * Returns a boolean representation of the value of this property. A
-     * shortcut for Property.getValue().getBoolean(). See Value.
-     *
-     * @return boolean A boolean representation of the value of this property.
-     * @throws \PHPCR\ValueFormatException if conversion to a boolean is not possible or if the property is multi-valued.
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getBoolean()
@@ -353,19 +344,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->value;
     }
 
+    // inherit all doc
     /**
-     * If this property is of type REFERENCE, WEAKREFERENCE or PATH (or
-     * convertible to one of these types) this method returns the Node to
-     * which this property refers.
-     * If this property is of type PATH and it contains a relative path, it is
-     * interpreted relative to the parent node of this property. For example "."
-     * refers to the parent node itself, ".." to the parent of the parent node
-     * and "foo" to a sibling node of this property.
-     *
-     * @return \PHPCR\NodeInterface the referenced Node
-     * @throws \PHPCR\ValueFormatException if this property cannot be converted to a referring type (REFERENCE, WEAKREFERENCE or PATH), if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
-     * @throws \PHPCR\ItemNotFoundException If this property is of type PATH or WEAKREFERENCE and no target node accessible by the current Session exists in this workspace. Note that this applies even if the property is a PATH and a property exists at the specified location. To dereference to a target property (as opposed to a target node), the method Property.getProperty is used.
-     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getNode()
@@ -407,22 +387,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->isMultiple() ? $results : $results[0];
     }
 
+    // inherit all doc
     /**
-     * If this property is of type PATH (or convertible to this type) this
-     * method returns the Property to which this property refers.
-     * If this property contains a relative path, it is interpreted relative
-     * to the parent node of this property. Therefore, when resolving such a
-     * relative path, the segment "." refers to the parent node itself, ".." to
-     * the parent of the parent node and "foo" to a sibling property of this
-     * property or this property itself.
-     *
-     * For example, if this property is located at /a/b/c and it has a value of
-     * "../d" then this method will return the property at /a/d if such exists.
-     *
-     * @return \PHPCR\PropertyInterface the referenced property
-     * @throws \PHPCR\ValueFormatException if this property cannot be converted to a PATH, if the property is multi-valued or if this property is a referring type but is currently part of the frozen state of a version in version storage.
-     * @throws \PHPCR\ItemNotFoundException If no property accessible by the current Session exists in this workspace at the specified path. Note that this applies even if a node exists at the specified location. To dereference to a target node, the method Property.getNode is used.
-     * @throws \PHPCR\RepositoryException if another error occurs
      * @api
      */
     public function getProperty()
@@ -448,22 +414,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
     }
 
+    // inherit all doc
     /**
-     * Returns the length(s) of the value(s) of this property.
-     *
-     * For a BINARY property, getLength returns the number of bytes.
-     * For other property types, getLength returns the same value that would be
-     * returned by calling strlen() on the value when it has been converted to a
-     * STRING according to standard JCR propety type conversion.
-     *
-     * Returns -1 if the implementation cannot determine the length.
-     *
-     * For multivalue properties, the same rules apply, but returns an array of lengths
-     * with the same order as the values have in getValue
-     *
-     * @return mixed integer with the length, for multivalue property array of lengths
-     *
-     * @throws \PHPCR\RepositoryException if another error occurs.
      * @api
      */
     public function getLength()
@@ -488,18 +440,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->isMultiple ? $ret : $ret[0];
     }
 
+    // inherit all doc
     /**
-     * Returns the property definition that applies to this property. In some
-     * cases there may appear to be more than one definition that could apply
-     * to this node. However, it is assumed that upon creation or change of
-     * this property, a single particular definition is chosen by the
-     * implementation. It is that definition that this method returns. How this
-     * governing definition is selected upon property creation or change from
-     * among others which may have been applicable is an implementation issue
-     * and is not covered by this specification.
-     *
-     * @return \PHPCR\NodeType\PropertyDefinitionInterface a PropertyDefinition object.
-     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function getDefinition()
@@ -512,28 +454,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->definition;
     }
 
+    // inherit all doc
     /**
-     * Returns the type of this Property. One of:
-     * * PropertyType.STRING
-     * * PropertyType.BINARY
-     * * PropertyType.DATE
-     * * PropertyType.DOUBLE
-     * * PropertyType.LONG
-     * * PropertyType.BOOLEAN
-     * * PropertyType.NAME
-     * * PropertyType.PATH
-     * * PropertyType.REFERENCE
-     * * PropertyType.WEAKREFERENCE
-     * * PropertyType.URI
-     *
-     * The type returned is that which was set at property creation. Note that
-     * for some property p, the type returned by p.getType() will differ from
-     * the type returned by p.getDefinition.getRequiredType() only in the case
-     * where the latter returns UNDEFINED. The type of a property instance is
-     * never UNDEFINED (it must always have some actual type).
-     *
-     * @return integer type id of this property
-     * @throws \PHPCR\RepositoryException if an error occurs
      * @api
      */
     public function getType()
@@ -543,12 +465,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return $this->type;
     }
 
+    // inherit all doc
     /**
-     * Returns true if this property is multi-valued and false if this property
-     * is single-valued.
-     *
-     * @return boolean true if this property is multi-valued; false otherwise.
-     * @throws \PHPCR\RepositoryException if an error occurs.
      * @api
      */
     public function isMultiple()
@@ -572,14 +490,16 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Also unsets internal reference in parent node
+     * Also unsets internal reference in containing node
      *
      * {@inheritDoc}
      *
      * @return void
+     *
      * @uses Node::unsetProperty()
+     *
      * @api
-     **/
+     */
     public function remove()
     {
         $this->checkState();
@@ -610,8 +530,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * {@inheritDoc}
      *
-     * This is also called internally to refresh when the node is accessed in
-     * state DIRTY.
+     * In Jackalope, this is also called internally to refresh when the node
+     * is accessed in state DIRTY.
      *
      * Triggers a reload of the containing node, as a property can only ever be
      * loaded attached to a node.
@@ -619,6 +539,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * TODO: refactor this if we implement loading single properties
      *
      * @see Item::checkState
+     *
      * @api
      */
     public function refresh($keepChanges, $internal = false)
@@ -639,10 +560,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Internaly used to get the raw value of the property without any checks.
+     * Internaly used to get the raw value of the property without any state
+     * checks.
      *
      * @return mixed
+     *
      * @see Property::getValue()
+     *
      * @private
      */
     public function _getRawValue()
@@ -656,7 +580,11 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      *
      * @param mixed $value
      * @param string $type
+     *
+     * @return void
+     *
      * @see Property::setValue()
+     *
      * @private
      */
     public function _setValue($value, $type = PropertyType::UNDEFINED)
@@ -712,6 +640,10 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
     /**
      * Internally used after refresh from backend to set new length
+     *
+     * @param int $length the new length of this binary
+     *
+     * @return void
      *
      * @private
      */

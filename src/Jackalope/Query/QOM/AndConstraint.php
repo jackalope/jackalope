@@ -5,12 +5,8 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\AndInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
+// inherit all doc
 /**
- * Performs a logical conjunction of two other constraints.
- *
- * To satisfy the And constraint, a node-tuple must satisfy both constraint1 and
- * constraint2.
- *
  * @api
  */
 class AndConstraint implements AndInterface
@@ -25,22 +21,30 @@ class AndConstraint implements AndInterface
      */
     protected $constraint2;
 
+    /**
+     * Create an and constraint
+     *
+     * @param ConstraintInterface $constraint1
+     * @param ConstraintInterface $constraint2
+     */
     public function __construct(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
         $this->constraint1 = $constraint1;
         $this->constraint2 = $constraint2;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getConstraint1()
     {
         return $this->constraint1;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getConstraint2()
     {

@@ -1,12 +1,15 @@
 <?php
 /**
- * Implementation specific helper:
  * Autoloader takes care of loading classes only when they are required.
+ *
  * If your project does not provide its own autoloader, you can require()
  * this file in your entry points. It will automatically register the
  * jackalope_autoloader function with spl_autoload_register
  *
- * load a class named $class
+ * It relies on the files having namespaces as folders and PHPCR living in the
+ * git submodule.
+ *
+ * @param string $class the name of the class to load.
  */
 function jackalope_autoloader($class)
 {

@@ -2,18 +2,20 @@
 namespace Jackalope;
 
 /**
- * Jackalope implementation factory - injected into every class
+ * Jackalope implementation factory - injected into every class.
  *
  * This factory is used to centralize the jackalope instantiations and make
  * them easily replaceable with dummies for the unit and functional testing.
  * It is injected in the constructor of every class of the framework.
  *
- * It should be used in the code like that:
+ * It should be used in the code like this:
+ * <pre>
  * $this->factory->get('Node', array(...));
  * $this->factory->get('NodeType\PropertyDefinition', array(...));
  * //note the \ for sub namespaces. the name is relative to the jackalope namespace
+ * </pre>
  *
- * The result will be an object from jackalope with the given named params.
+ * The result will be an object for jackalope with the given named params.
  *
  * Note that the factory passes itself to every object it creates, to give them
  * a reference to itselves.

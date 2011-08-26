@@ -25,30 +25,30 @@ class ObjectManager
     protected $factory;
 
     /**
-     * Instance of an implementation of the \PHPCR\SessionInterface.
      * @var \PHPCR\SessionInterface
      */
     protected $session;
 
     /**
-     * Instance of an implementation of the TransportInterface
      * @var TransportInterface
      */
     protected $transport;
 
     /**
-     * Mapping of absolutePath => node object.
+     * Mapping of absolutePath => node or item object.
      *
-     * There is no notion of order here. The order is defined by order in Node::nodes array.
+     * There is no notion of order here. The order is defined by order in the
+     * Node::nodes array.
      *
-     * @var array   [ class => String][ absPath => \PHPCR\ItemInterface ]
+     * @var array
      */
     protected $objectsByPath = array();
 
     /**
-     * Mapping of uuid to an absolutePath.
+     * Mapping of uuid => absolutePath.
      *
-     * Take care never to put a path in here unless there is a node for that path in objectsByPath.
+     * Take care never to put a path in here unless there is a node for that
+     * path in objectsByPath.
      *
      * @var array
      */
@@ -59,33 +59,43 @@ class ObjectManager
      */
 
     /**
-     * Contains a list of items to be added to the workspace upon save
-     * @var array   [ absPath => 1 ]
+     * Contains a list of items to be added to the workspace upon save.
+     *
+     * Keys are the full paths to be added, value is meaningless
+     *
+     * @var array
      */
     protected $itemsAdd = array();
 
     /**
      * Contains a list of items to be removed from the workspace upon save
-     * @var array   [ absPath => 1 ]
+     *
+     * Keys are the full paths to be removed, value is meaningless
+     *
+     * @var array
      */
     protected $itemsRemove = array(); //TODO: only nodes can be in this list. call it nodesRemove?
 
     /**
      * Contains a list of nodes to be moved in the workspace upon save
      *
+     * Keys are the source paths, values the destination paths.
+     *
      * The objectsByPath array is updated immediately and any getItem and
      * similar requests are rewritten for the transport layer until save()
      *
-     * Note that this can only contain nodes, as properties can not be moved.
+     * Note that this list can only contain nodes, as properties can not be
+     * moved.
      *
-     * @var array   [ srcAbsPath => dstAbsPath, .. ]
+     * @var array
      */
     protected $nodesMove = array();
 
     /**
-     * Registers the provided parameters as attribute to the instance.
+     * Create the ObjectManager instance with associated session and transport
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
+     * @param object $factory an object factory implementing "get" as described
+     *      in \Jackalope\Factory
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
@@ -97,15 +107,21 @@ class ObjectManager
     }
 
     /**
-     * Resolves the real path where the item initially was before moving
+     * Resolves the path of an item for the current backend state (i.e. a moved
+     * node is still at the source path)
      *
-     * Checks moved nodes whether any parents (or the node itself) was moved and goes back
-     * continuing with the translated path as there can be several moves of the same node.
+     * Checks the list of moved nodes whether any parents (or the node itself)
+     * was moved and goes back continuing with the translated path as there can
+     * be several moves of the same node.
+     * Leaves the path unmodified if it was not moved.
      *
-     * Leaves the path unmodified if it was not moved
+     * This method is called by ObjectManager::getFetchPath() which
+     * additionally prevents requesting a deleted node or one that has been
+     * moved away.
      *
-     * @param   string  $path The current path we try to access a node from
-     * @return  string  The resolved path
+     * @param string $path The current path we try to access a node from
+     *
+     * @return string The resolved path
      */
     protected function resolveBackendPath($path)
     {
@@ -121,15 +137,24 @@ class ObjectManager
     /**
      * Get the node identified by an absolute path.
      *
-     * To prevent unnecessary work to be done a register will be written containing already retrieved nodes.
-     * Unfortunately there is currently no way to refetch a node once it has been fetched.
+     * To prevent unnecessary work to be done a cache is filled to only fetch
+     * nodes once. To reset a node with the data from the backend, use
+     * Node::refresh()
+     *
+     * Uses the factory to create a Node object.
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * @param string $class The class of node to get. TODO: Is it sane to fetch
+     *      data separately for Version and normal Node?
+     *
      * @return \PHPCR\Node
      *
-     * @throws \PHPCR\ItemNotFoundException If nothing is found at that absolute path
-     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
+     * @throws \PHPCR\ItemNotFoundException If nothing is found at that
+     *      absolute path
+     * @throws \PHPCR\RepositoryException If the path is not absolute or not
+     *      well-formed
+     *
+     * @see Session::getNode()
      */
     public function getNodeByPath($absPath, $class = 'Node')
     {
@@ -152,7 +177,6 @@ class ObjectManager
                 $this
             )
         );
-        // TODO: is it always legal to call getIdentifier?
         if ($uuid = $node->getIdentifier()) {
             // map even nodes that are not mix:referenceable, as long as they have a uuid
             $this->objectsByUuid[$uuid] = $absPath;
@@ -163,15 +187,25 @@ class ObjectManager
     }
 
     /**
-     * Get multiple nodes identified by an absolute paths. Missing nodes are ignored
+     * Get multiple nodes identified by an absolute paths. Missing nodes are
+     * ignored.
      *
-     * Note uuid's/path's that cannot be found will be ignored
+     * Note paths that cannot be found will be ignored and missing from the
+     * result.
      *
-     * @param array $paths Array containing the absolute paths of the nodes to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * Uses the factory to create Node objects.
+     *
+     * @param array $paths Array containing the absolute paths of the nodes to
+     *      fetch.
+     * @param string $class The class of node to get. TODO: Is it sane to
+     *      fetch data separately for Version and normal Node?
+     *
      * @return ArrayIterator that contains all \PHPCR\Node's keyed by their path
      *
-     * @throws \PHPCR\RepositoryException    If the path is not absolute or not well-formed
+     * @throws \PHPCR\RepositoryException If the path is not absolute or not
+     *      well-formed
+     *
+     * @see Session::getNodes()
      */
     public function getNodesByPath($paths, $class = 'Node')
     {
@@ -212,12 +246,13 @@ class ObjectManager
     }
 
     /**
-     * Determine the fetch path from a given absolute path
-     *
-     * Also handles checks for removed or moved items
+     * Determine the path to be used when fetching from backend and do sanity
+     * checks (locally removed nodes or parent removed or moved away)
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch data separately for Version and normal Node?
+     * @param string $class The class of node to get. TODO: Is it sane to fetch
+     *      data separately for Version and normal Node?
+     *
      * @return string fetch path
      */
     protected function getFetchPath($absPath, $class)
@@ -245,6 +280,7 @@ class ObjectManager
 
         // was the node moved away from this location?
         if (isset($this->nodesMove[$absPath])) {
+            // FIXME: this will not trigger if an ancestor was moved
             throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
         }
 
@@ -255,7 +291,11 @@ class ObjectManager
 
     /**
      * Get the property identified by an absolute path.
-     * Uses the factory to instantiate Property
+     *
+     * Uses the factory to instantiate a Property.
+     *
+     * Currently Jackalope just loads the containing node and then returns
+     * the requested property of the node instance.
      *
      * @param string $absPath The absolute path of the property to create.
      * @return \PHPCR\Property
@@ -312,8 +352,9 @@ class ObjectManager
                 $finalPath = $this->objectsByUuid[$uuid];
             }
         } else {
-            // when we implement Session::setNamespacePrefix to remap a prefix, this should be translated here too.
-            // more methods would have to call this
+            // TODO: when we implement Session::setNamespacePrefix to remap a
+            // prefix, this should be translated here too.
+            // More methods would have to call this
             $finalParts= array();
             $parts = explode('/', $path);
 
@@ -342,16 +383,19 @@ class ObjectManager
     }
 
     /**
-     * Makes sure $relPath is absolute, prepending $root if it is not already,
-     * then normalizes the path.
+     * Makes sure $relPath is absolute, prepending $root if it is not absolute
+     * already, then normalizes the path.
      *
-     * If $relPath is already absolute, it is just normalized
+     * If $relPath is already absolute, it is just normalized.
      *
-     * If root is missing or does not start with a slash, a slash will be prepended
-     * If $relPath is completely empty, the result will be $root
+     * If root is missing or does not start with a slash, a slash will be
+     * prepended.
+     * If $relPath is completely empty, the result will be $root.
      *
-     * @param string $root base path to prepend to $relPath if it is not already absolute
+     * @param string $root base path to prepend to $relPath if it is not
+     *      already absolute
      * @param string $relPath a relative or absolute path
+     *
      * @return string Absolute and normalized path
      */
     public function absolutePath($root, $relPath)
@@ -374,16 +418,21 @@ class ObjectManager
     /**
      * Get the node identified by an uuid or (relative) path.
      *
-     * If you have an absolute path use {@link getNodeByPath()}.
+     * If you have an absolute path use {@link getNodeByPath()} for better
+     * perfromance.
      *
      * @param string $identifier uuid or (relative) path
-     * @param string $root optional root if you are in a node context - not used if $identifier is an uuid
+     * @param string $root optional root if you are in a node context - not
+     *      used if $identifier is an uuid
      * @param string $class optional class name for the factory
      *
-     * @return \PHPCR\NodeInterface The specified Node. if not available, ItemNotFoundException is thrown
+     * @return \PHPCR\NodeInterface The specified Node. if not available,
+     *      ItemNotFoundException is thrown
      *
      * @throws \PHPCR\ItemNotFoundException If the path was not found
      * @throws \PHPCR\RepositoryException if another error occurs.
+     *
+     * @see Session::getNode()
      */
     public function getNode($identifier, $root = '/', $class = 'Node')
     {
@@ -403,7 +452,7 @@ class ObjectManager
     /**
      * Get the nodes identified by the given uuids or absolute paths.
      *
-     * Note uuid's/path's that cannot be found will be ignored
+     * Note uuids/paths that cannot be found will be ignored
      *
      * @param string $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
@@ -411,6 +460,8 @@ class ObjectManager
      * @return ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
      *
      * @throws \PHPCR\RepositoryException if another error occurs.
+     *
+     * @see Session::getNodes()
      */
     public function getNodes($identifiers, $class = 'Node')
     {
@@ -434,22 +485,26 @@ class ObjectManager
     }
 
     /**
-     * Retrieves a binary value
+     * Retrieves the stream for a binary value.
      *
-     * @param string $path
-     * @return string
+     * @param string $path The absolute path to the stream
+     *
+     * @return stream
      */
     public function getBinaryStream($path)
     {
+        // TODO: should we not rather use getFetchPath ?
         return $this->transport->getBinaryStream($this->resolveBackendPath($path));  // path guaranteed to be normalized and absolute
     }
 
     /**
-     * Returns node types named in the array or all types if no filter is given.
+     * Returns the node types specified by name in the array or all types if no
+     * filter is given.
      *
      * This is only a proxy to the transport
      *
      * @param array $nodeTypes Empty for all or specify node types by name
+     *
      * @return DOMDoocument containing the nodetype information
      */
     public function getNodeTypes($nodeTypes = array())
@@ -460,7 +515,8 @@ class ObjectManager
     /**
      * Get a single nodetype.
      *
-     * @param string the nodetype you want
+     * @param string $nodeType the name of nodetype to get from the transport
+     *
      * @return DOMDocument containing the nodetype information
      *
      * @see getNodeTypes()
@@ -476,7 +532,9 @@ class ObjectManager
      * This is only a proxy to the transport
      *
      * @param array $definitions an array of NodeTypeDefinitions
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @param boolean $allowUpdate whether to fail if node already exists or to
+     *      update it
+     *
      * @return bool true on success
      */
     public function registerNodeTypes($types, $allowUpdate)
@@ -485,33 +543,43 @@ class ObjectManager
     }
 
     /**
-     * Returns all accessible REFERENCE properties in the workspace that point to the node
+     * Returns all accessible REFERENCE properties in the workspace that point
+     * to the node
      *
      * @param string $path the path of the referenced node
-     * @param string $name name of referring REFERENCE properties to be returned; if null then all referring REFERENCEs are returned
+     * @param string $name name of referring REFERENCE properties to be
+     *      returned; if null then all referring REFERENCEs are returned
+     *
      * @return ArrayIterator
+     *
+     * @see Node::getReferences()
      */
     public function getReferences($path, $name = null)
     {
+        // TODO: should we not use getFetchPath() ?
         $references = $this->transport->getReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
         return $this->pathArrayToPropertiesIterator($references);
     }
 
     /**
-     * Returns all accessible WEAKREFERENCE properties in the workspace that point to the node
+     * Returns all accessible WEAKREFERENCE properties in the workspace that
+     * point to the node
      *
      * @param string $path the path of the referenced node
-     * @param string $name name of referring WEAKREFERENCE properties to be returned; if null then all referring WEAKREFERENCEs are returned
+     * @param string $name name of referring WEAKREFERENCE properties to be
+     *      returned; if null then all referring WEAKREFERENCEs are returned
      * @return ArrayIterator
      */
     public function getWeakReferences($path, $name = null)
     {
+        // TODO: should we not use getFetchPath() ?
         $references = $this->transport->getWeakReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
         return $this->pathArrayToPropertiesIterator($references);
     }
 
     /**
-     * Transform an array containing properties paths to an ArrayIterator over Property objects
+     * Transform an array containing properties paths to an ArrayIterator over
+     * Property objects
      *
      * @param array $array an array of properties paths
      * @return ArrayIterator
@@ -530,7 +598,8 @@ class ObjectManager
     }
 
     /**
-     * Implementation specific way to register node types from cnd with the backend.
+     * Implementation specific way to register node types from cnd with the
+     * backend.
      *
      * This is only a proxy to the transport
      *
@@ -548,9 +617,9 @@ class ObjectManager
      *
      * @param string $path the path to verify
      *
-     * @return boolean always true, exception if this is not a valid path
+     * @return boolean always true, exception if this is not a valid path.
      *
-     * @throws \PHPCR\RepositoryException if the path is not absolute or well-formed
+     * @throws \PHPCR\RepositoryException if the path is not absolute.
      */
     protected function verifyAbsolutePath($path)
     {
@@ -679,7 +748,10 @@ class ObjectManager
     }
 
     /**
-     * Removes the cache of the predecessor version after the node has been checked in
+     * Removes the cache of the predecessor version after the node has been
+     * checked in.
+     *
+     * TODO: document more clearly
      *
      * @see VersionManager::checkin
      *
@@ -699,9 +771,12 @@ class ObjectManager
         return $node;
     }
     /**
-     * Removes the cache of the predecessor version after the node has been checked in
+     * Removes the cache of the predecessor version after the node has been
+     * checked in.
      *
-     * @see VersionManager::checkin
+     * TODO: document more clearly. This looks like copy-paste from checkin
+     *
+     * @see VersionManager::checkout
      *
      * @return void
      */
@@ -713,7 +788,8 @@ class ObjectManager
     /**
      * Removes the node's cache after it has been restored.
      *
-     * TODO: This is incomplete. Needs batch processing to avoid chicken-and-egg problems
+     * TODO: This is incomplete. Needs batch processing to avoid
+     * chicken-and-egg problems.
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
@@ -731,6 +807,7 @@ class ObjectManager
      * Get the uuid of the version history node at $path
      *
      * @param string $path the path to the node we want the version
+     *
      * @return string uuid of the version history node
      */
     public function getVersionHistory($path)
@@ -741,9 +818,12 @@ class ObjectManager
     /**
      * Refresh cached items from the backend.
      *
-     * @param boolean $keepChanges whether to keep local changes or discard them
+     * @param boolean $keepChanges whether to keep local changes or discard
+     *      them.
      *
-     * @see Session::refresh($keepChanges)
+     * @return void
+     *
+     * @see Session::refresh()
      */
     public function refresh($keepChanges)
     {
@@ -805,11 +885,11 @@ class ObjectManager
     }
 
     /**
-     * Determine if any object is modified
+     * Determine if any object is modified and not saved to storage.
      *
-     * @return boolean true if any pending changes
+     * @return boolean true if this session has any pending changes.
      *
-     * @see Session::hasPendingChanges
+     * @see Session::hasPendingChanges()
      */
     public function hasPendingChanges()
     {
@@ -826,9 +906,16 @@ class ObjectManager
     }
 
     /**
-     * Remove the item at absPath from local cache and keep information for undo
+     * Remove the item at absPath from local cache and keep information for undo.
      *
-     * @see self::removeItem()
+     * @param string $absPath The absolute path of the item that is being
+     *      removed. Note that contrary to removeItem(), this path is the full
+     *      path for a property too.
+     * @param \PHPCR\ItemInterface $item The item that is being removed
+     *
+     * @return void
+     *
+     * @see ObjectManager::removeItem()
      */
     protected function performRemove($absPath, $item)
     {
@@ -859,12 +946,23 @@ class ObjectManager
     /**
      * Remove a node or a property.
      *
-     * Sets all items below this item to deleted as well
+     * If this is a node, sets all cached items below this node to deleted as
+     * well.
      *
-     * @param string $absPath the path to the node, including the node name
-     * @param string $property optional, property instance to delete from the given node's path - this
+     * If property is set, the path denotes the node containing the property,
+     * otherwise the node at path is removed.
+     *
+     * @param string $absPath The absolute path to the node to be removed,
+     *      including the node name.
+     * @param string $property optional, property instance to delete from the
+     *      given node path. If set, absPath is the path to the node containing
+     *      this property.
+     *
+     * @return void
      *
      * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     *
+     * @see Item::remove()
      */
     public function removeItem($absPath, $property = null)
     {
@@ -906,21 +1004,26 @@ class ObjectManager
     }
 
     /**
-     * Rewrites the path of an item while also updating all children.
+     * Rewrites the path of a node for the movement operation, also updating
+     * all cached children.
      *
      * This applies both to the cache and to the items themselves so
      * they return the correct value on getPath calls.
      *
-     * Does some magic detection if for example you ADD a node and then rewrite (MOVE)
-     * that exact node then it skips the MOVE and just ADDs to the new place. The return
-     * value denotes whether a MOVE must still be dispatched to the backend.
+     * Does some magic detection if for example you ADD a node and then rewrite
+     * (MOVE) that exact node: skips the MOVE and just ADDs to the new place.
+     * The return value denotes whether a MOVE must still be dispatched to the
+     * backend.
      *
-     * @param   string  $curPath    Absolute path of the node to rewrite
-     * @param   string  $newPath    The new absolute path
+     * @param string $curPath Absolute path of the node to rewrite
+     * @param string $newPath The new absolute path
      * @param boolean $session Whether this is a session or an immediate move
-     * @return  bool    Whether dispatching the move to the backend is still required (otherwise we replaced the move with another operation)
+     *
+     * @return boolean Whether dispatching the move to the backend is still
+     *      required (otherwise the move has been replaced with another
+     *      operation - see the add + move example above)
      */
-    public function rewriteItemPaths($curPath, $newPath, $session = false)
+    protected function rewriteItemPaths($curPath, $newPath, $session = false)
     {
         $moveRequired = true;
 
@@ -972,7 +1075,11 @@ class ObjectManager
      * @param string $srcAbsPath Absolute path to the source node.
      * @param string $destAbsPath Absolute path to the destination where the node shall be moved to.
      *
+     * @return void
+     *
      * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     *
+     * @see Session::move()
      */
     public function moveNode($srcAbsPath, $destAbsPath)
     {
@@ -983,12 +1090,18 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace move method. It is dispatched immediately
+     * Implement the workspace move method. It is dispatched to transport
+     * immediately.
      *
      * @param string $srcAbsPath the path of the node to be moved.
-     * @param string $destAbsPath the location to which the node at srcAbsPath is to be moved.
+     * @param string $destAbsPath the location to which the node at srcAbsPath
+     *      is to be moved.
      *
-     * @see Workspace::move
+     * @return void
+     *
+     * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     *
+     * @see Workspace::move()
      */
     public function moveNodeImmediately($srcAbsPath, $destAbsPath)
     {
@@ -1000,13 +1113,17 @@ class ObjectManager
     }
 
     /**
-     * Implement the workspace copy method. It is dispatched immediately
+     * Implement the workspace copy method. It is dispatched immediately.
      *
      * @param string $srcAbsPath the path of the node to be copied.
-     * @param string $destAbsPath the location to which the node at srcAbsPath is to be copied in this workspace.
-     * @param string $srcWorkspace the name of the workspace from which the copy is to be made.
+     * @param string $destAbsPath the location to which the node at srcAbsPath
+     *      is to be copied in this workspace.
+     * @param string $srcWorkspace the name of the workspace from which the
+     *      copy is to be made.
      *
-     * @see Workspace::copy
+     * @return void
+     *
+     * @see Workspace::copy()
      */
     public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
     {
@@ -1021,10 +1138,11 @@ class ObjectManager
     }
 
     /**
-     * WRITE: add an item at the specified path.
+     * WRITE: add an item at the specified path. Schedules an add operation
+     * for the next save() and caches the item.
      *
      * @param string $absPath the path to the node or property, including the item name
-     * @param \PHPCR\ItemInterface $item The item to add.
+     * @param \PHPCR\ItemInterface $item The item instance that is added.
      *
      * @throws \PHPCR\ItemExistsException if a node already exists at that path
      */
@@ -1042,13 +1160,17 @@ class ObjectManager
     /**
      * Return the permissions of the current session on the node given by path.
      * Permission can be of 4 types:
-     *      - add_node
-     *      - read
-     *      - remove
-     *      - set_property
-     * This function will return an array containing zero, one or more of the above strings.
+     *
+     * - add_node
+     * - read
+     * - remove
+     * - set_property
+     *
+     * This function will return an array containing zero, one or more of the
+     * above strings.
      *
      * @param type $absPath the path to get permissions
+     *
      * @return array of string
      */
     public function getPermissions($absPath)
@@ -1059,7 +1181,8 @@ class ObjectManager
     /**
      * Clears the state of the current session
      *
-     * Removes all cached objects, planned changes etc. Mostly useful for testing purposes.
+     * Removes all cached objects, planned changes etc. Mostly useful for
+     * testing purposes.
      *
      * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
@@ -1073,7 +1196,8 @@ class ObjectManager
     }
 
     /**
-     * Implementation specific: Transport is used elsewhere, provide it here for Session
+     * Implementation specific: Transport is used elsewhere, provide it here
+     * for Session
      *
      * @return TransportInterface
      */
@@ -1173,7 +1297,8 @@ class ObjectManager
      *
      * @param string $absPath The absolute path of the node
      *
-     * @return boolean true if the node has an unsaved move operation, false otherwise
+     * @return boolean true if the node has an unsaved move operation, false
+     *      otherwise
      */
     public function isNodeMoved($srcPath)
     {
@@ -1198,8 +1323,8 @@ class ObjectManager
     /**
      * Get a node if it is already in cache or null otherwise.
      *
-     * Note that this method will also return deleted node objects so you can use
-     * them in refresh operations.
+     * Note that this method will also return deleted node objects so you can
+     * use them in refresh operations.
      *
      * @param string $absPath the absolute path to the node to fetch from cache
      *
@@ -1225,9 +1350,11 @@ class ObjectManager
      * deleted nodes or detect cases when not to delete.
      *
      * @param string $absPath The absolute path of the item
-     * @param boolean $keepChanges Whether to keep local changes or forget them
+     * @param boolean $keepChanges Whether to keep local changes or forget
+     *      them
      *
-     * @return true if the node is to be forgotten by its parent (deleted or moved away), false if child should be kept
+     * @return true if the node is to be forgotten by its parent (deleted or
+     *      moved away), false if child should be kept
      */
     public function purgeDisappearedNode($absPath, $keepChanges)
     {

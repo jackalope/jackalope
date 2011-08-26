@@ -5,15 +5,8 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\LowerCaseInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
 
+// inherit all doc
 /**
- * Evaluates to the lower-case string value (or values, if multi-valued) of
- * operand.
- *
- * If operand does not evaluate to a string value, its value is first converted
- * to a string.
- *
- * If operand evaluates to null, the LowerCase operand also evaluates to null.
- *
  * @api
  */
 class LowerCase implements LowerCaseInterface
@@ -23,15 +16,18 @@ class LowerCase implements LowerCaseInterface
      */
     protected $operand;
 
+    /**
+     * Create a new lower case value
+     *
+     * @param DynamicOperandInterface $operand
+     */
     public function __construct(DynamicOperandInterface $operand)
     {
         $this->operand = $operand;
     }
 
+    // inherit all doc
     /**
-     * Gets the operand whose value is converted to a lower-case string.
-     *
-     * @return \PHPCR\Query\QOM\DynamicOperandInterface the operand; non-null
      * @api
      */
     function getOperand()

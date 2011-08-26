@@ -4,17 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\DescendantNodeInterface;
 
+// inherit all doc
 /**
- * Tests whether the selector node is a descendant of a node reachable by
- * absolute path path.
- *
- * A node-tuple satisfies the constraint only if:
- *
- *   selectorNode.getAncestor(n).isSame(session.getNode(path)) && selectorNode.getDepth() > n
- *
- * would return true for some non-negative integer n, where selectorNode is the
- * node for the specified selector.
- *
  * @api
  */
 class DescendantNodeConstraint implements DescendantNodeInterface
@@ -33,7 +24,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      * Constructor
      *
      * @param string $path
-     * @param string $selectorName 
+     * @param string $selectorName
      */
     public function __construct($path, $selectorName = null)
     {
@@ -41,16 +32,18 @@ class DescendantNodeConstraint implements DescendantNodeInterface
         $this->selectorName = $selectorName;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getSelectorName()
     {
         return $this->selectorName;
     }
 
+    // inherit all doc
     /**
-     * {@inheritdoc}
+     * @api
      */
     function getAncestorPath()
     {

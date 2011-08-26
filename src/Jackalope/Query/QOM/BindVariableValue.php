@@ -4,9 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\BindVariableValueInterface;
 
+// inherit all doc
 /**
- * Evaluates to the value of a bind variable.
- *
  * @api
  */
 class BindVariableValue implements BindVariableValueInterface
@@ -19,17 +18,15 @@ class BindVariableValue implements BindVariableValueInterface
     /**
      * Constructor
      *
-     * @param string $bindVariableName 
+     * @param string $bindVariableName
      */
     public function __construct($bindVariableName)
     {
         $this->bindVariableName = $bindVariableName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the bind variable.
-     *
-     * @return string the bind variable name; non-null
      * @api
      */
     function getBindVariableName()

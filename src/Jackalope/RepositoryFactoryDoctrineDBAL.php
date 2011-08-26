@@ -9,15 +9,20 @@ use PHPCR\RepositoryFactoryInterface;
  *
  * Use repository factory based on parameters (the parameters below are examples):
  *
+ * <pre>
  *    $parameters = array('jackalope.doctrine_dbal_connection' => $dbConn);
- *    $repo = \Jackalope\RepositoryFactoryDoctrineDBAL::getRepository($parameters);
+ *    $repository = \Jackalope\RepositoryFactoryDoctrineDBAL::getRepository($parameters);
+ * </pre>
  *
  * @api
  */
 class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 {
     /**
+     * list of required parameters for doctrine dbal
+     *
      * TODO: would be nice if alternatively one could also specify the parameters to let the factory build the connection
+     *
      * @var array
      */
     static private $required = array(
@@ -25,6 +30,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
     );
 
     /**
+     * list of optional parameters for doctrine dbal
      * @var array
      */
     static private $optional = array(
@@ -35,16 +41,14 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
     );
 
     /**
-     * Attempts to establish a connection to a repository using the given
-     * parameters.
+     * Get a repository connected to the backend with the provided doctrine
+     * dbal connection.
      *
+     * {@inheritDoc}
      *
+     * DoctrineDBAL repositories have no default repository, passing null as
+     * parameters will always return null.
      *
-     * @param array|null $parameters string key/value pairs as repository arguments or null if a client wishes
-     *                               to connect to a default repository.
-     * @return \PHPCR\RepositoryInterface a repository instance or null if this implementation does
-     *                                    not understand the passed parameters
-     * @throws \PHPCR\RepositoryException if no suitable repository is found or another error occurs.
      * @api
      */
     static public function getRepository(array $parameters = null)
@@ -83,13 +87,9 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
         return new Repository($factory, $transport, $options);
     }
 
+    // inherit all doc
     /**
-     * Get the list of configuration options that can be passed to getRepository
-     *
-     * The description string should include whether the key is mandatory or
-     * optional.
-     *
-     * @return array hash map of configuration key => english description
+     * @api
      */
     static public function getConfigurationKeys()
     {

@@ -4,9 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\NodeNameInterface;
 
+// inherit all doc
 /**
- * Evaluates to a NAME value equal to the namespace-qualified name of a node.
- *
  * @api
  */
 class NodeName implements NodeNameInterface
@@ -19,21 +18,19 @@ class NodeName implements NodeNameInterface
     /**
      * Constructor
      *
-     * @param string $selectorName 
+     * @param string $selectorName
      */
     public function __construct($selectorName)
     {
         $this->selectorName = $selectorName;
     }
 
+    // inherit all doc
     /**
-    * Gets the name of the selector against which to evaluate this operand.
-    *
-    * @return string the selector name; non-null
-    * @api
-    */
-   function getSelectorName()
-   {
-       return $this->selectorName;
-   }
+     * @api
+     */
+    function getSelectorName()
+    {
+        return $this->selectorName;
+    }
 }

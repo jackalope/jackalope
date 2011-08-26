@@ -4,13 +4,8 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ChildNodeJoinConditionInterface;
 
+// inherit all doc
 /**
- * Tests whether the childSelector node is a child of the parentSelector node. A
- * node-tuple satisfies the constraint only if:
- *  childSelectorNode.getParent().isSame(parentSelectorNode)
- * would return true, where childSelectorNode is the node for childSelector and
- * parentSelectorNode is the node for parentSelector.
- *
  * @api
  */
 class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
@@ -29,7 +24,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      * Constructor
      *
      * @param string $childSelectorName
-     * @param string $parentSelectorName 
+     * @param string $parentSelectorName
      */
     public function __construct($childSelectorName, $parentSelectorName)
     {
@@ -37,10 +32,8 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
         $this->parentSelectorName = $parentSelectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the child selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getChildSelectorName()
@@ -48,10 +41,8 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
         return $this->childNodeSelectorName;
     }
 
+    // inherit all doc
     /**
-     * Gets the name of the parent selector.
-     *
-     * @return string the selector name; non-null
      * @api
      */
     function getParentSelectorName()

@@ -1,17 +1,19 @@
 <?php
 namespace Jackalope\NodeType;
 
+// inherit all doc
 /**
- * The NodeDefinitionTemplate interface extends NodeDefinition with the addition
- * of write methods, enabling the characteristics of a child node definition to
- * be set, after which the NodeDefinitionTemplate is added to a NodeTypeTemplate.
- *
- * See the corresponding get methods for each attribute in NodeDefinition for the
- * default values assumed when a new empty NodeDefinitionTemplate is created (as
- * opposed to one extracted from an existing NodeType).
+ * @api
  */
 class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\NodeDefinitionTemplateInterface
 {
+    /**
+     * Create a new node definition template instance.
+     *
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param NodeTypeManager $nodeTypeManager
+     */
     public function __construct($factory, NodeTypeManager $nodeTypeManager)
     {
         $this->factory = $factory;
@@ -28,11 +30,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->allowsSameNameSiblings = false;
     }
 
+    // inherit all doc
     /**
-     * Sets the name of the node.
-     *
-     * @param string $name a String.
-     * @return void
      * @api
      */
     public function setName($name)
@@ -40,11 +39,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->name = $name;
     }
 
+    // inherit all doc
     /**
-     * Sets the auto-create status of the node.
-     *
-     * @param boolean $autoCreated a boolean.
-     * @return void
      * @api
      */
     public function setAutoCreated($autoCreated)
@@ -52,11 +48,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->isAutoCreated = $autoCreated;
     }
 
+    // inherit all doc
     /**
-     * Sets the mandatory status of the node.
-     *
-     * @param boolean $mandatory a boolean.
-     * @return void
      * @api
      */
     public function setMandatory($mandatory)
@@ -64,11 +57,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->isMandatory = $mandatory;
     }
 
+    // inherit all doc
     /**
-     * Sets the on-parent-version status of the node.
-     *
-     * @param integer $opv an int constant member of OnParentVersionAction.
-     * @return void
      * @api
      */
     public function setOnParentVersion($opv)
@@ -76,11 +66,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->onParentVersion = $opv;
     }
 
+    // inherit all doc
     /**
-     * Sets the protected status of the node.
-     *
-     * @param boolean $protectedStatus a boolean.
-     * @return void
      * @api
      */
     public function setProtected($protectedStatus)
@@ -88,11 +75,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->isProtected = $protectedStatus;
     }
 
+    // inherit all doc
     /**
-     * Sets the names of the required primary types of this node.
-     *
-     * @param array $requiredPrimaryTypeNames a String array.
-     * @return void
      * @api
      */
     public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames)
@@ -100,11 +84,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->requiredPrimaryTypeNames = $requiredPrimaryTypeNames;
     }
 
+    // inherit all doc
     /**
-     * Sets the name of the default primary type of this node.
-     *
-     * @param string $defaultPrimaryTypeName a String.
-     * @return void
      * @api
      */
     public function setDefaultPrimaryTypeName($defaultPrimaryTypeName)
@@ -112,11 +93,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->defaultPrimaryTypeName = $defaultPrimaryTypeName;
     }
 
+    // inherit all doc
     /**
-     * Sets the same-name sibling status of this node.
-     *
-     * @param boolean $allowSameNameSiblings a boolean.
-     * @return void
      * @api
      */
     public function setSameNameSiblings($allowSameNameSiblings)
