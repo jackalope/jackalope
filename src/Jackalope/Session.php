@@ -347,8 +347,8 @@ class Session implements \PHPCR\SessionInterface
         try {
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
-            $this->getNode($absPath);
-        } catch(\PHPCR\PathNotFoundException $e) {
+            $this->objectManager->getNodeByPath($absPath);
+        } catch(\PHPCR\ItemNotFoundException $e) {
             return false;
         }
         return true;

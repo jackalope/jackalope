@@ -229,17 +229,21 @@ class ObjectManager
             $this->objectsByPath[$class] = array();
         }
 
-        if (isset($this->itemsRemove[$absPath])) {
-            throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
-        }
+        // there is no node moved to this location, if the item is in the itemsRemove, it is really deleted
+        if (array_search($absPath, $this->nodesMove) === false) {
+            if (isset($this->itemsRemove[$absPath])) {
+                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+            }
 
-        // check whether a parent node was removed
-        foreach ($this->itemsRemove as $path => $dummy) {
-            if (strpos($absPath, $path) === 0) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+            // check whether a parent node was removed
+            foreach ($this->itemsRemove as $path => $dummy) {
+                if (strpos($absPath, $path) === 0) {
+                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+                }
             }
         }
 
+        // was the node moved away from this location?
         if (isset($this->nodesMove[$absPath])) {
             throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
         }
@@ -1171,9 +1175,24 @@ class ObjectManager
      *
      * @return boolean true if the node has an unsaved move operation, false otherwise
      */
-    public function hasMoved($srcPath)
+    public function isNodeMoved($srcPath)
     {
         return array_key_exists($srcPath, $this->nodesMove);
+    }
+
+    /**
+     * Check whether an item path has an unpersisted delete operation and
+     * there is no other node moved or added there
+     *
+     * @param string $absPath The absolute path of the node
+     *
+     * @return boolean true if the current changed state has no node at this place
+     */
+    public function isItemDeleted($srcPath)
+    {
+        return array_key_exists($srcPath, $this->itemsRemove) &&
+             ! (array_key_exists($srcPath, $this->itemsAdd) ||
+                array_search($srcPath, $this->nodesMove) !== false);
     }
 
     /**

@@ -84,7 +84,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) ||
                     ! $node->isDeleted()
                 ) {
-                    if (! $this->objectManager->hasMoved($this->path . '/' . $key)) {
+                    if (! $this->objectManager->isNodeMoved($this->path . '/' . $key) &&
+                        ! $this->objectManager->isItemDeleted($this->path . '/' . $key)
+                    ) {
                         // otherwise we (re)load a node from backend but a child has been moved away already
                         $this->nodes[] = $key;
                     }
