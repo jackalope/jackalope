@@ -63,7 +63,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @see Node::__construct()
      * @see Node::refresh()
      */
-    private function parseData($rawData, $update, $keepChanges=false)
+    private function parseData($rawData, $update, $keepChanges = false)
     {
         //TODO: refactor to use hash array instead of stdClass struct
 
@@ -165,9 +165,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        $type = isset($rawData->{':' . $key}) ?
-                                    PropertyType::valueFromName($rawData->{':' . $key}) :
-                                    PropertyType::determineType(is_array($value) ? reset($value) : $value);
+                        $type = isset($rawData->{':' . $key})
+                                ? $rawData->{':' . $key}
+                                : PropertyType::determineType(is_array($value) ? reset($value) : $value);
                         $this->_setProperty($key, $value, $type, true);
                         break;
                 }
