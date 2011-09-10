@@ -185,9 +185,22 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        $type = isset($rawData->{':' . $key})
-                                ? $rawData->{':' . $key}
-                                : PropertyType::determineType(is_array($value) ? reset($value) : $value);
+                        if (isset($rawData->{':' . $key})) {
+                            /*
+                             * this is an inconsistency between jackrabbit and
+                             * dbal transport: jackrabbit has type name, dbal
+                             * delivers numeric type.
+                             * we should eventually fix the format returned by
+                             * transport and either have jackrabbit transport
+                             * do the conversion or let dbal store a string
+                             * value instead of numerical.
+                             */
+                            $type = is_numeric($rawData->{':' . $key})
+                                    ? $rawData->{':' . $key}
+                                    : PropertyType::valueFromName($rawData->{':' . $key});
+                        } else {
+                            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+                        }
                         $this->_setProperty($key, $value, $type, true);
                         break;
                 }
