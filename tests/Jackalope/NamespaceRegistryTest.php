@@ -40,7 +40,7 @@ class NamespaceRegistryTest extends TestCase
         } else {
             $expects = $this->any();
         }
-        
+
         $factory = new \Jackalope\Factory;
         $transport = $this->getTransportMockFixture();
         $transport
@@ -62,27 +62,13 @@ class NamespaceRegistryTest extends TestCase
     public function testConstruct($expected, $namespaces)
     {
         $nsr = $this->getNamespaceRegistryFixture($namespaces,false);
-        
+
         $this->assertAttributeInstanceOf('Jackalope\TransportInterface', 'transport', $nsr);
         //after construct, userNamespaces is supposed to be null due to lazyLoading
         $this->assertAttributeEquals(null, 'userNamespaces', $nsr);
         //after we get the prefixes, userNamespaces is supposed to have the userNamespaces
         $nsr->getPrefixes();
         $this->assertAttributeEquals($expected, 'userNamespaces', $nsr);
-    }
-
-    /**
-     * @covers \Jackalope\NamespaceRegistry::getDefaultNamespaces
-     */
-    public function testGetDefaultNamespaces()
-    {
-        $namespaces = array(
-            'beastie' => 'http://beastie.lo/beastie/1.0',
-        );
-
-        $nsr = $this->getNamespaceRegistryFixture($namespaces,false);
-        $expected = $this->defaultNamespaces;
-        $this->assertEquals($expected, $nsr->getDefaultNamespaces());
     }
 
     /**

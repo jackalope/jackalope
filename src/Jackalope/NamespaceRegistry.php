@@ -179,16 +179,6 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
     }
 
     /**
-     * Exposes the set of default namespaces.
-     *
-     * @return array
-     */
-    public function getDefaultNamespaces()
-    {
-        return $this->defaultNamespaces;
-    }
-
-    /**
      * Provide Traversable interface: iterator over all namespaces
      *
      * @return \Iterator over all namespaces, with prefix as key and url as value
