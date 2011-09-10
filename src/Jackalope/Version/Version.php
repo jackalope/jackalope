@@ -11,14 +11,6 @@ use Jackalope\Node;
  */
 class Version extends Node implements \PHPCR\Version\VersionInterface {
 
-    // TODO: use objectManager in Item, no own constructor needed.
-    protected $objectmanager;
-
-    public function  __construct($factory, $rawData, $path, $session, $objectManager, $new = false) {
-        $this->objectmanager = $objectManager;
-        parent::__construct($factory, $rawData, $path, $session, $objectManager, $new);
-    }
-
     // inherit all doc
     /**
      * @api
@@ -65,7 +57,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
         $results = array();
         if ($successors) {
             foreach ($successors as $uuid) {
-                $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+                $results[] = $this->objectManager->getNode($uuid, '/', 'Version\Version');
             }
         }
         return $results;
@@ -99,7 +91,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
         $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
         foreach ($predecessors as $uuid) {
-            $results[] = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\Version');
         }
         return $results;
     }
