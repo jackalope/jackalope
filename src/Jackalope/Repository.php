@@ -34,7 +34,9 @@ class Repository implements \PHPCR\RepositoryInterface
      * @var arrray
      */
     protected $options = array(
+        // this is OPTION_TRANSACTIONS_SUPPORTED
         'transactions' => true,
+        // TODO: we could expose this as a custom descriptor
         'stream_wrapper' => true,
     );
 
@@ -117,7 +119,7 @@ class Repository implements \PHPCR\RepositoryInterface
      */
     public function isStandardDescriptor($key)
     {
-        $ref = new ReflectionClass('\PHPCR\RepositoryInterface');
+        $ref = new \ReflectionClass('\PHPCR\RepositoryInterface');
         $consts = $ref->getConstants();
         return in_array($key, $consts);
     }
@@ -128,6 +130,15 @@ class Repository implements \PHPCR\RepositoryInterface
      */
     public function getDescriptor($key)
     {
+        // handle some of the keys locally
+        switch($key) {
+            case self::OPTION_TRANSACTIONS_SUPPORTED:
+                return $this->options['transactions'];
+            // TODO: return false for everything we know is not implemented in jackalope
+        }
+
+        // handle the rest by the transport to allow non-feature complete transports
+        // or use interface per capability?
         if (null === $this->descriptors) {
             $this->descriptors = $this->transport->getRepositoryDescriptors();
         }

@@ -44,19 +44,22 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function getSessionMock()
     {
         $factory = new \Jackalope\Factory;
-        $mock = $this->getMock('\Jackalope\Session', array('getWorkspace'), array($factory), '', false);
+        $mock = $this->getMock('\Jackalope\Session', array('getWorkspace', 'getRepository'), array($factory), '', false);
         $mock->expects($this->any())
              ->method('getWorkspace')
              ->will($this->returnValue($this->getWorkspaceMock()));
+        $mock->expects($this->any())
+             ->method('getRepository')
+             ->will($this->returnValue($this->getRepositoryMock()));
         return $mock;
     }
 
     protected function getWorkspaceMock()
     {
         $factory = new \Jackalope\Factory;
-        $mock = $this->getMock('\Jackalope\Session', array('getTransactionManager'), array($factory), '', false);
+        $mock = $this->getMock('\Jackalope\Workspace', array('getTransactionManager'), array($factory), '', false);
         $mock->expects($this->any())
-             ->method('getWorkspace')
+             ->method('getTransactionManager')
              ->will($this->returnValue($this->getInactiveTransactionMock()));
         return $mock;
     }
@@ -68,6 +71,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $mock->expects($this->any())
              ->method('inTransaction')
              ->will($this->returnValue(false));
+        return $mock;
+    }
+
+    protected function getRepositoryMock()
+    {
+        $factory = new \Jackalope\Factory;
+        $mock = $this->getMock('\Jackalope\Repository', array(), array($factory, null, array('transactions'=>false)), '', false);
+        return $mock;
     }
 
     protected function getNodeTypeManager()

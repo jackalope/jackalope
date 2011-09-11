@@ -39,10 +39,6 @@ class Session implements \PHPCR\SessionInterface
      */
     protected $objectManager;
     /**
-     * @var \PHPCR\Transaction\UserTransactionInterface
-     */
-    protected $utx = null;
-    /**
      * @var \PHPCR\SimpleCredentials
      */
     protected $credentials;
@@ -88,7 +84,6 @@ class Session implements \PHPCR\SessionInterface
         $this->repository = $repository;
         $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
-        $this->utx = $this->workspace->getTransactionManager();
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
         self::registerSession($this);
@@ -318,19 +313,31 @@ class Session implements \PHPCR\SessionInterface
 
     // inherit all doc
     /**
+     * @inheritDoc
+     *
+     * Wraps the save operation into a transaction if transactions are enabled
+     * but we are not currently inside a transaction and rolls back on error.
+     *
+     * If transactions are disabled, errors on save can lead to partial saves
+     * and inconsistent data.
+     *
      * @api
      */
     public function save()
     {
-        if ($this->utx && !$this->utx->inTransaction()) {
+        if ($this->repository->getDescriptor(\PHPCR\RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)) {
+            $utx = $this->workspace->getTransactionManager();
+        }
+
+        if ($utx && !$utx->inTransaction()) {
             // do the operation in a short transaction
-            $this->utx->begin();
+            $utx->begin();
             try {
                 $this->objectManager->save();
-                $this->utx->commit();
+                $utx->commit();
             } catch(\Exception $e) {
                 // if anything goes wrong, rollback this mess
-                $this->utx->rollback();
+                $utx->rollback();
                 // but do not eat the exception
                 throw $e;
             }

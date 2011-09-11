@@ -112,18 +112,20 @@ abstract class Item implements \PHPCR\ItemInterface
      * @param string $path The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager
-     * @param boolean $new can be set to true to tell the object that it has been created locally
+     * @param boolean $new can be set to true to tell the object that it has
+     *      been created locally
      */
-    protected function __construct($factory, $path,  Session $session,
-                                ObjectManager $objectManager, $new = false)
+    protected function __construct($factory, $path, Session $session,
+                                   ObjectManager $objectManager, $new = false)
     {
         $this->factory = $factory;
         $this->session = $session;
         $this->objectManager = $objectManager;
-
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
-        if (! $new && $utx = $session->getWorkspace()->getTransactionManager()) {
-            if ($utx->inTransaction()) {
+        if (! $new
+            && $session->getRepository()->getDescriptor(\PHPCR\RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)
+        ) {
+            if ($session->getWorkspace()->getTransactionManager()->inTransaction()) {
                 // properly set previous state in case we get into a rollback
                 $this->savedState = self::STATE_CLEAN;
             }

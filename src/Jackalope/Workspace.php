@@ -137,6 +137,8 @@ class Workspace implements \PHPCR\WorkspaceInterface
      *
      * @param \PHPCR\Transaction\UserTransactionInterface $utx A
      *      UserTransaction object
+     *
+     * @private
      */
     public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
     {
@@ -149,6 +151,9 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getTransactionManager()
     {
+        if (! $this->utx) {
+            throw new \PHPCR\UnsupportedRepositoryOperationException('Transactions are currently disabled');
+        }
         return $this->utx;
     }
 
