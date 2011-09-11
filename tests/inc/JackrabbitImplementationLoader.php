@@ -50,6 +50,9 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 
                     'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
                     'Writing\\CopyMethodsTest::testCopyUpdateOnCopy',
+                    'Writing\\MoveMethodsTest::testNodeOrderBeforeEnd',
+                    'Writing\\MoveMethodsTest::testNodeOrderBeforeDown',
+                    'Writing\\MoveMethodsTest::testNodeOrderBeforeUp',
         );
 
     }
