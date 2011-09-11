@@ -14,11 +14,16 @@ use PHPCR\PropertyType;
 class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterface
 {
     /**
-     * flag to call stream_get_wrappers only once per php session
+     * flag to know if binary streams should be wrapped or retrieved
+     * immediately.
+     *
+     * limit the call to stream_get_wrappers to one per session. can not be
+     * static as this is a per session setting.
+     *
      * @var boolean
      * @see Property::__construct()
      */
-    protected static $binaryStreamWrapperRegistered;
+    protected $binaryStreamWrapperRegistered;
 
     /**
      * The property value in suitable native format or object
@@ -76,8 +81,8 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 
-        if (null === self::$binaryStreamWrapperRegistered) {
-            self::$binaryStreamWrapperRegistered = in_array('jackalope', stream_get_wrappers());
+        if (null === $this->binaryStreamWrapperRegistered) {
+            $this->binaryStreamWrapperRegistered = in_array('jackalope', stream_get_wrappers());
         }
 
         if (empty($data) && $new) {
@@ -240,7 +245,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return PropertyType::convertType($this->value, PropertyType::BINARY, $this->type);
         }
-        if (!self::$binaryStreamWrapperRegistered && null == $this->value) {
+        if (! $this->binaryStreamWrapperRegistered && null == $this->value) {
             $this->value = $this->objectManager->getBinaryStream($this->path);
         }
         if ($this->value != null) {
@@ -256,7 +261,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             }
             return is_array($this->value) ? $ret : $ret[0];
         }
-        if (!self::$binaryStreamWrapperRegistered) {
+        if (! $this->binaryStreamWrapperRegistered) {
             throw new \LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not registered");
         }
         // return wrapped stream
@@ -553,6 +558,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         }
         // Let the node refresh us
         try {
+            // do not use getParent to avoid checkState - could lead to an endless loop
             $this->objectManager->getNodeByPath($this->parentPath)->refresh($keepChanges);
         } catch (\PHPCR\ItemNotFoundException $e) {
             $this->setDeleted();
