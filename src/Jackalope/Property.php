@@ -26,16 +26,24 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     protected $binaryStreamWrapperRegistered;
 
     /**
+     * All binary stream wrapper instances
+     * @var array
+     */
+    protected $streams = array();
+
+    /**
      * The property value in suitable native format or object
      * @var mixed
      */
     protected $value;
+
     /**
      * length is only used for binary property, because binary loading is
      * delayed until explicitly requested.
      * @var int
      */
     protected $length;
+
     /**
      * whether this is a multivalue property
      * @var boolean
@@ -46,6 +54,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
      * @var int
      */
     protected $type;
+
     /**
      * cached instance of the property definition that defines this property
      * @var \PHPCR\NodeType\PropertyDefinitionInterface
@@ -271,13 +280,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $token = md5(uniqid(mt_rand(), true));
             // start with part = 1 since 0 will not be parsed properly by parse_url
             for ($i = 1; $i <= count($this->length); $i++) {
-                $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
+                $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
             }
             return $results;
         }
         // single property case
-        return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
-   }
+        $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
+        $this->streams[] = $result;
+        return $result;
+    }
 
     // inherit all doc
     /**
@@ -566,7 +577,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Internaly used to get the raw value of the property without any state
+     * Internally used to get the raw value of the property without any state
      * checks.
      *
      * @return mixed
@@ -581,7 +592,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     }
 
     /**
-     * Internaly used to set the value of the property without any notification
+     * Internally used to set the value of the property without any notification
      * of changes nor state change.
      *
      * @param mixed $value
@@ -657,5 +668,20 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         $this->length = $length;
         $this->value = null;
+    }
+
+    /**
+     * Close all open binary stream wrapper instances on shutdown
+     * 
+     * @return void
+     */
+    public function __destruct()
+    {
+        foreach ($this->streams as $k => $v) {
+            if ($v) {
+                fclose($v);
+                unset($this->streams[$k]);
+            }
+        }
     }
 }
