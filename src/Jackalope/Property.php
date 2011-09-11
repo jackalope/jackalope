@@ -24,6 +24,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     protected $isMultiple = false;
     protected $type;
     protected $definition;
+    protected $streams = array();
 
     /**
      * Create a property, either from server data or locally
@@ -272,12 +273,14 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             $token = md5(uniqid(mt_rand(), true));
             // start with part = 1 since 0 will not be parsed properly by parse_url
             for ($i = 1; $i <= count($this->length); $i++) {
-                $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
+                $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
             }
             return $results;
         }
         // single property case
-        return fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
+        $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
+        $this->streams[] = $result;
+        return $result;
    }
 
     /**
@@ -602,4 +605,13 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         return new ArrayIterator($value);
     }
 
+    public function __destruct()
+    {
+       foreach ($this->streams as $k => $v) {
+           if ($v) {
+               fclose($v);
+               unset($this->streams[$k]);
+           }
+       }
+    }
 }
