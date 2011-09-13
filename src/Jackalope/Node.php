@@ -299,6 +299,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         if (false !== strpos($relPath, ']')) {
             throw new \PHPCR\RepositoryException("Index not allowed in name of newly created node: $relPath");
         }
+        if (in_array($relPath, $this->nodes)) {
+            throw new \PHPCR\ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
+        }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));

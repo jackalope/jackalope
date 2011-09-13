@@ -679,7 +679,17 @@ class Client implements TransactionalTransportInterface
         $request = $this->getRequest(Request::MKCOL, $path);
         $request->setBody($body);
         $request->setTransactionId($this->transactionToken);
-        $request->execute();
+        try {
+            $request->execute();
+        } catch(HTTPErrorException $e) {
+            // TODO: this will need to be changed when we refactor transport to use the diff format to store changes.
+            if (strpos($e->getMessage(), "405") !== false && strpos($e->getMessage(), "MKCOL") !== false) {
+                // TODO: can the 405 exception be thrown for other reasons too?
+                throw new \PHPCR\ItemExistsException('This node probably already exists: '.$node->getPath(), $e->getCode(), $e);
+            }
+            // TODO: can we throw any other more specific errors here?
+            throw new \PHPCR\RepositoryException('Something went wrong while saving node: '.$node->getPath(), $e->getCode(), $e);
+        }
 
         // store single-valued multivalue properties separately
         foreach ($buffer as $path => $body) {
