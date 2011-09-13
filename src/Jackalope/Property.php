@@ -672,13 +672,15 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
     /**
      * Close all open binary stream wrapper instances on shutdown
-     * 
+     *
      * @return void
      */
     public function __destruct()
     {
         foreach ($this->streams as $k => $v) {
-            if ($v) {
+            // if this is not a resource, it means the stream has already been
+            // closed by client code
+            if (is_resource($v)) {
                 fclose($v);
                 unset($this->streams[$k]);
             }
