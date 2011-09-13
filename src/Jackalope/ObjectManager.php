@@ -42,7 +42,7 @@ class ObjectManager
      *
      * @var array
      */
-    protected $objectsByPath = array();
+    protected $objectsByPath = array('Node' => array());
 
     /**
      * Mapping of uuid => absolutePath.
@@ -1188,7 +1188,7 @@ class ObjectManager
      */
     public function clear()
     {
-        $this->objectsByPath = array();
+        $this->objectsByPath = array('Node' => array());
         $this->objectsByUuid = array();
         $this->itemsAdd = array();
         $this->itemsRemove = array();
