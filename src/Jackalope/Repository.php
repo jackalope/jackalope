@@ -12,6 +12,14 @@ use PHPCR\CredentialsInterface;
 class Repository implements \PHPCR\RepositoryInterface
 {
     /**
+     * The descriptor key for the version of the specification
+     * that this repository implements. For JCR 2.0
+     * the value of this descriptor is the string "2.0".
+     * @api
+     */
+    const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
+
+    /**
      * flag to call stream_wrapper_register only once
      */
     protected static $binaryStreamWrapperRegistered;
@@ -36,7 +44,7 @@ class Repository implements \PHPCR\RepositoryInterface
     protected $options = array(
         // this is OPTION_TRANSACTIONS_SUPPORTED
         'transactions' => true,
-        // TODO: we could expose this as a custom descriptor
+        // this is JACKALOPE_OPTION_STREAM_WRAPPER
         'stream_wrapper' => true,
     );
 
@@ -132,6 +140,8 @@ class Repository implements \PHPCR\RepositoryInterface
     {
         // handle some of the keys locally
         switch($key) {
+            case self::JACKALOPE_OPTION_STREAM_WRAPPER:
+                return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
             // TODO: return false for everything we know is not implemented in jackalope

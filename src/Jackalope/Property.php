@@ -15,15 +15,12 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 {
     /**
      * flag to know if binary streams should be wrapped or retrieved
-     * immediately.
-     *
-     * limit the call to stream_get_wrappers to one per session. can not be
-     * static as this is a per session setting.
+     * immediately. this is a per session setting.
      *
      * @var boolean
      * @see Property::__construct()
      */
-    protected $binaryStreamWrapperRegistered;
+    protected $wrapBinaryStreams;
 
     /**
      * All binary stream wrapper instances
@@ -90,9 +87,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 
-        if (null === $this->binaryStreamWrapperRegistered) {
-            $this->binaryStreamWrapperRegistered = in_array('jackalope', stream_get_wrappers());
-        }
+        $this->wrapBinaryStreams = $session->getRepository()->getDescriptor(Repository::JACKALOPE_OPTION_STREAM_WRAPPER);
 
         if (empty($data) && $new) {
             return;
@@ -254,11 +249,14 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         if ($this->type != PropertyType::BINARY) {
             return PropertyType::convertType($this->value, PropertyType::BINARY, $this->type);
         }
-        if (! $this->binaryStreamWrapperRegistered && null == $this->value) {
+        if (! $this->wrapBinaryStreams && null == $this->value) {
+            // no caching the stream. we need to fetch the stream and then copy
+            // it into a memory stream so it can be accessed more than once.
             $this->value = $this->objectManager->getBinaryStream($this->path);
         }
         if ($this->value != null) {
-            // new or updated property
+            // we have the stream locally: no wrapping or new or updated property
+            // copy the stream so the original stream stays usable for storing, fetching again...
             $val = is_array($this->value) ? $this->value : array($this->value);
             foreach ($val as $s) {
                 $stream = fopen('php://memory', 'rwb+');
@@ -270,8 +268,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             }
             return is_array($this->value) ? $ret : $ret[0];
         }
-        if (! $this->binaryStreamWrapperRegistered) {
-            throw new \LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not registered");
+
+        if (! $this->wrapBinaryStreams) {
+            throw new \LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not activated");
         }
         // return wrapped stream
         if ($this->isMultiple()) {
