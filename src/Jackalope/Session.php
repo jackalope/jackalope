@@ -329,7 +329,7 @@ class Session implements \PHPCR\SessionInterface
             $utx = $this->workspace->getTransactionManager();
         }
 
-        if ($utx && !$utx->inTransaction()) {
+        if (isset($utx) && !$utx->inTransaction()) {
             // do the operation in a short transaction
             $utx->begin();
             try {
