@@ -821,7 +821,7 @@ class Client implements TransportInterface
                         "Child " . $child->getName() . " is mandatory, but is not present while ".
                         "saving " . $def->getName() . " at " . $node->getPath()
                     );
-                } else if ($childDef->isAutoCreated()) {
+                } elseif ($childDef->isAutoCreated()) {
                     throw new \Jackalope\NotImplementedException("Auto-creation of child node '".$def->getName()."#".$childDef->getName()."' is not yet supported in DoctrineDBAL transport.");
                 }
 
@@ -855,7 +855,7 @@ class Client implements TransportInterface
                         "Property " . $propertyDef->getName() . " is mandatory, but is not present while ".
                         "saving " . $def->getName() . " at " . $node->getPath()
                     );
-                } else if ($propertyDef->isAutoCreated()) {
+                } elseif ($propertyDef->isAutoCreated()) {
                     $defaultValues = $propertyDef->getDefaultValues();
                     $node->setProperty(
                         $propertyDef->getName(),
@@ -934,11 +934,11 @@ class Client implements TransportInterface
                     throw new \PHPCR\ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
                 }
             }
-        } else if ($type === \PHPCR\PropertyType::PATH) {
+        } elseif ($type === \PHPCR\PropertyType::PATH) {
             if (!preg_match('((/[a-zA-Z0-9:_-]+)+)', $value)) {
                 throw new \PHPCR\ValueFormatException("Invalid PATH at " . $path .": Segments are seperated by / and allowed chars are a-zA-Z0-9:_-");
             }
-        } else if ($type === \PHPCR\PropertyType::URI) {
+        } elseif ($type === \PHPCR\PropertyType::URI) {
             if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
                 throw new \PHPCR\ValueFormatException("Invalid URI at " . $path .": Has to follow RFC 3986.");
             }

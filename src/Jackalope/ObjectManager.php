@@ -408,7 +408,7 @@ class ObjectManager
                 $concat = '/';
             }
             $relPath = $concat . ltrim($relPath, '/');
-        } else if (strlen($relPath)==0) {
+        } elseif (strlen($relPath)==0) {
             $relPath = $root;
         }
 
@@ -1336,7 +1336,7 @@ class ObjectManager
     {
         if (array_key_exists($absPath, $this->objectsByPath['Node'])) {
             return $this->objectsByPath['Node'][$absPath];
-        } else if (array_key_exists($absPath, $this->itemsRemove)) {
+        } elseif (array_key_exists($absPath, $this->itemsRemove)) {
             return $this->itemsRemove[$absPath];
         }
         return null;

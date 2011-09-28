@@ -1137,7 +1137,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function setDeleted()
     {
         parent::setDeleted();
-        foreach($this->properties as $property) {
+        foreach ($this->properties as $property) {
             $property->setDeleted(); // not all properties are tracked in objectmanager
         }
     }
@@ -1154,7 +1154,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         parent::beginTransaction();
 
         // Notify the children properties
-        foreach($this->properties as $prop) {
+        foreach ($this->properties as $prop) {
             $prop->beginTransaction();
         }
     }
@@ -1170,7 +1170,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         parent::commitTransaction();
 
-        foreach($this->properties as $prop) {
+        foreach ($this->properties as $prop) {
             $prop->commitTransaction();
         }
     }
@@ -1186,7 +1186,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     {
         parent::rollbackTransaction();
 
-        foreach($this->properties as $prop) {
+        foreach ($this->properties as $prop) {
             $prop->rollbackTransaction();
         }
     }

@@ -91,7 +91,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
 
         if (empty($data) && $new) {
             return;
-        } else if (! isset($data['value'])) {
+        } elseif (! isset($data['value'])) {
             throw new \InvalidArgumentException("Can't create property at $path without any data");
         }
 

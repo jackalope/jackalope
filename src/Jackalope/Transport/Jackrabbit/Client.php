@@ -200,7 +200,7 @@ class Client implements TransactionalTransportInterface
         if (is_null($this->curl)) {
             // lazy init curl
             $this->curl = new curl();
-        } else if ($this->curl === false) {
+        } elseif ($this->curl === false) {
             // but do not re-connect, rather report the error if trying to access a closed connection
             throw new \LogicException("Tried to start a request on a closed transport ($method for ".var_export($uri,true).")");
         }
