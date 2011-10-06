@@ -599,6 +599,13 @@ class Client implements TransactionalTransportInterface
                 foreach ($column->childNodes as $childNode) {
                     $sets[$childNode->tagName] = $childNode->nodeValue;
                 }
+
+                // TODO this can happen inside joins
+                // probabably caused by https://issues.apache.org/jira/browse/JCR-3089
+                if (!isset($sets['dcr:value'])) {
+                    continue;
+                }
+
                 // TODO if this bug is fixed, spaces may be urlencoded instead of the escape sequence: https://issues.apache.org/jira/browse/JCR-2997
                 // the following line fails for nodes with "_x0020 " in their name, changing that part to " x0020_"
                 // other characters like < and > are urlencoded, which seems to be handled by dom already.
