@@ -84,7 +84,8 @@ class VersionHistory extends \Jackalope\Node
      *
      * @return array list of \PHPCR\VersionInterface
      */
-    protected function getEventualSuccessors($node) {
+    protected function getEventualSuccessors($node)
+    {
         $successors = $node->getSuccessors();
         $results = array();
         foreach ($successors as $successor) {

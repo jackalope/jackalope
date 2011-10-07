@@ -1109,7 +1109,8 @@ class Client implements TransactionalTransportInterface
      *
      * @param array $mappings hashmap of prefix => uri for all existing and new namespaces
      */
-    protected function buildRegisterNamespaceRequest($mappings) {
+    protected function buildRegisterNamespaceRequest($mappings)
+    {
         $ns = '';
         foreach ($mappings as $prefix => $uri) {
             $ns .= "<dcr:namespace><dcr:prefix>$prefix</dcr:prefix><dcr:uri>$uri</dcr:uri></dcr:namespace>";

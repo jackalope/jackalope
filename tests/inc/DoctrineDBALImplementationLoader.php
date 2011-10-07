@@ -68,11 +68,13 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
         return array('jackalope.doctrine_dbal_connection' => $dbConn);
     }
 
-    public function getCredentials() {
+    public function getCredentials()
+    {
         return new \PHPCR\SimpleCredentials($GLOBALS['phpcr.user'], $GLOBALS['phpcr.pass']);
     }
 
-    public function getInvalidCredentials() {
+    public function getInvalidCredentials()
+    {
         return new \PHPCR\SimpleCredentials('nonexistinguser', '');
     }
 

@@ -73,11 +73,13 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
         return array('jackalope.jackrabbit_uri' => $GLOBALS['jackrabbit.uri']);
     }
 
-    public function getCredentials() {
+    public function getCredentials()
+    {
         return new \PHPCR\SimpleCredentials($GLOBALS['phpcr.user'], $GLOBALS['phpcr.pass']);
     }
 
-    public function getInvalidCredentials() {
+    public function getInvalidCredentials()
+    {
         return new \PHPCR\SimpleCredentials('nonexistinguser', '');
     }
 

@@ -145,7 +145,8 @@ abstract class Item implements \PHPCR\ItemInterface
      *
      * @private
      */
-    public function setPath($path, $move = false) {
+    public function setPath($path, $move = false)
+    {
         if ($move && is_null($this->oldPath)) {
             $this->oldPath = $this->path;
         }

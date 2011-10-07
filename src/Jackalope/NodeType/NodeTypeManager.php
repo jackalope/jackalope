@@ -409,7 +409,8 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @return Iterator over all node types
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return $this->getAllNodeTypes();
     }
 }
