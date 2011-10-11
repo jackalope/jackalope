@@ -153,7 +153,7 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
         $this->name = basename($path);
-        $this->parentPath = strtr(dirname($path), '\\', '/');
+        $this->parentPath = (('/' == $path) ? null : strtr(dirname($path), '\\', '/'));
     }
 
     // inherit all doc
@@ -201,6 +201,9 @@ abstract class Item implements \PHPCR\ItemInterface
     public function getParent()
     {
         $this->checkState();
+        if (is_null($this->parentPath)) {
+            throw new \PHPCR\ItemNotFoundException('The root node has no parent');
+        }
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
