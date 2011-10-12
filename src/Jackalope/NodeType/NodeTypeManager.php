@@ -132,17 +132,19 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @param string Nodename
      *
-     * @return array of strings with the names of the subnodes
+     * @return Iterator according to NodeType::getDeclaredSubtypes
      *
      * @private
      */
     public function getDeclaredSubtypes($nodeTypeName)
     {
-        // TODO: do we need to call fetchNodeTypes(null) here?
+        // OPTIMIZE: any way to avoid loading all nodes at this point?
+        $this->fetchNodeTypes();
+
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
-        return $this->nodeTree[$nodeTypeName];
+        return new ArrayIterator($this->nodeTree[$nodeTypeName]);
     }
 
     /**
@@ -157,15 +159,13 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function getSubtypes($nodeTypeName)
     {
+        // OPTIMIZE: any way to avoid loading all nodes at this point?
+        $this->fetchNodeTypes();
         $ret = array();
-        if (empty($this->nodeTree[$nodeTypeName])) {
-            return array();
+        foreach ($this->nodeTree[$nodeTypeName] as $name => $subnode) {
+            $ret = array_merge($ret, array($name => $subnode), $this->nodeTree[$name]);
         }
-
-        foreach ($this->nodeTree[$nodeTypeName] as $subnode) {
-            $ret = array_merge($ret, array($subnode), $this->getDeclaredSubtypes($subnode));
-        }
-        return $ret;
+        return new ArrayIterator($ret);
     }
 
     /**
@@ -180,9 +180,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
-                $this->nodeTree[$declaredSupertypeName] = array_merge($this->nodeTree[$declaredSupertypeName], array($nodetype->getName()));
+                $this->nodeTree[$declaredSupertypeName] =
+                    array_merge($this->nodeTree[$declaredSupertypeName],
+                                array($nodetype->getName() => $nodetype)
+                               );
             } else {
-                $this->nodeTree[$declaredSupertypeName] = array($nodetype->getName());
+                $this->nodeTree[$declaredSupertypeName] = array($nodetype->getName() => $nodetype);
             }
         }
     }
@@ -213,7 +216,13 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function hasNodeType($name)
     {
-        $this->fetchNodeTypes($name);
+        try {
+            $this->fetchNodeTypes($name);
+        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $e) {
+            // if we have not yet fetched all types and this type is not existing
+            // we get an exception. just ignore the exception, we don't have the type.
+            return false;
+        }
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
@@ -224,7 +233,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     public function getAllNodeTypes()
     {
         $this->fetchNodeTypes();
-        return new ArrayIterator(array_values(array_merge($this->primaryTypes, $this->mixinTypes)));
+        return new ArrayIterator(array_merge($this->primaryTypes, $this->mixinTypes));
     }
 
     // inherit all doc
@@ -234,7 +243,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     public function getPrimaryNodeTypes()
     {
         $this->fetchNodeTypes();
-        return new ArrayIterator(array_values($this->primaryTypes));
+        return new ArrayIterator($this->primaryTypes);
     }
 
     // inherit all doc
@@ -244,7 +253,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     public function getMixinNodeTypes()
     {
         $this->fetchNodeTypes();
-        return new ArrayIterator(array_values($this->mixinTypes));
+        return new ArrayIterator($this->mixinTypes);
     }
 
     // inherit all doc

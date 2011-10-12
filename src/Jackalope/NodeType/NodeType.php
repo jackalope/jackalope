@@ -98,11 +98,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function getSubtypes()
     {
-        $ret = array();
-        foreach ($this->nodeTypeManager->getSubtypes($this->name) as $subtype) {
-            $ret[] = $this->nodeTypeManager->getNodeType($subtype);
-        }
-        return new ArrayIterator($ret);
+        return $this->nodeTypeManager->getSubtypes($this->name);
     }
 
     // inherit all doc
@@ -111,11 +107,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function getDeclaredSubtypes()
     {
-        $ret = array();
-        foreach ($this->nodeTypeManager->getDeclaredSubtypes($this->name) as $subtype) {
-            $ret[] = $this->nodeTypeManager->getNodeType($subtype);
-        }
-        return new ArrayIterator($ret);
+        return $this->nodeTypeManager->getDeclaredSubtypes($this->name);
     }
 
     // inherit all doc
