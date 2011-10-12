@@ -432,6 +432,8 @@ class Request
                         throw new \PHPCR\ItemNotFoundException($exceptionMsg);
                     case 'javax.jcr.nodetype.ConstraintViolationException':
                         throw new \PHPCR\NodeType\ConstraintViolationException($exceptionMsg);
+                    case 'javax.jcr.ReferentialIntegrityException':
+                        throw new \PHPCR\ReferentialIntegrityException($exceptionMsg);
                     //TODO: Two more errors needed for Transactions. How does the corresponding Jackrabbit response look like?
                     // javax.transaction.RollbackException => \PHPCR\Transaction\RollbackException
                     // java.lang.SecurityException => \PHPCR\AccessDeniedException
