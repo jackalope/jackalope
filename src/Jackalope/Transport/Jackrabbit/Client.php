@@ -969,7 +969,7 @@ class Client implements TransactionalTransportInterface
         }
 
         if ($this->typeXmlConverter === null) {
-            $this->typeXmlConverter = new \Jackalope\NodeType\NodeTypeXmlConverter();
+            $this->typeXmlConverter = $this->factory->get('NodeType\NodeTypeXmlConverter');
         }
 
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
