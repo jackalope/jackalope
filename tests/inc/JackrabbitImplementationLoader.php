@@ -49,6 +49,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 
                     'Query\QueryManagerTest::testGetQuery',
                     'Query\QueryManagerTest::testGetQueryInvalid',
+                    'Query\QueryObjectSql2Test::testGetStoredQueryPath',
                     'Query\\NodeViewTest::testSeekable',
 
                     'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
