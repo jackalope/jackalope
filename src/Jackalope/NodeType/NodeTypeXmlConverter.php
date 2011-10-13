@@ -37,9 +37,9 @@ class NodeTypeXmlConverter
         $data = array();
         $data['declaringNodeType'] = $node->getAttribute('declaringNodeType');
         $data['name'] = $node->getAttribute('name');
-        $data['isAutoCreated'] = Helper::getBoolAttribute($node, 'isAutoCreated');
+        $data['isAutoCreated'] = Helper::getBoolAttribute($node, 'autoCreated');
         $data['isMandatory'] = Helper::getBoolAttribute($node, 'mandatory');
-        $data['isProtected'] = Helper::getBoolAttribute($node, 'isProtected');
+        $data['isProtected'] = Helper::getBoolAttribute($node, 'protected');
         $data['onParentVersion'] = \PHPCR\Version\OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
 
         return $data;

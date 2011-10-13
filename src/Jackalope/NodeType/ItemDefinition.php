@@ -93,7 +93,7 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
         $this->declaringNodeType = $data['declaringNodeType'];
         $this->name = $data['name'];
         $this->isAutoCreated = $data['isAutoCreated'];
-        $this->isMandatory = isset($data['mandatory']) ? $data['mandatory'] : false;
+        $this->isMandatory = $data['isMandatory'];
         $this->isProtected = $data['isProtected'];
         $this->onParentVersion = $data['onParentVersion'];
     }

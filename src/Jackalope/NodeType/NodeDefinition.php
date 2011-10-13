@@ -47,6 +47,8 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
             $this->fromXML($node);
         } elseif (is_array($node)) {
             $this->fromArray($node);
+        } else {
+            throw new \InvalidArgumentException(get_type($node).' is not valid to create a NodeDefinition from');
         }
     }
 

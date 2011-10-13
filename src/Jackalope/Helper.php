@@ -22,6 +22,9 @@ class Helper
      */
     public static function getBoolAttribute(DOMElement $node, $attribute)
     {
+        if (! $node->hasAttribute($attribute)) {
+            throw new \PHPCR\RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());
+        }
         if ('false' === $node->getAttribute($attribute)) {
             return false;
         }

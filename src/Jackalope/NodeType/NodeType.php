@@ -2,6 +2,7 @@
 namespace Jackalope\NodeType;
 
 use ArrayIterator;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -173,7 +174,13 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function canRemoveNode($nodeName)
     {
-        throw new NotImplementedException();
+        $childDefs = $this->getChildNodeDefinitions();
+        foreach($childDefs as $child) {
+            if ($nodeName == $child->getName() && $child->isMandatory()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // inherit all doc
