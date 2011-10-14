@@ -11,7 +11,7 @@ class PropertyDefinitionTest extends TestCase
         'declaringNodeType' => 'nt:unstructured',
         'name' => 'foo',
         'isAutoCreated' => false,
-        'mandatory' => false,
+        'isMandatory' => false,
         'isProtected' => false,
         'onParentVersion' => OnParentVersionAction::COPY,
         'requiredType' => 'binary',

@@ -47,9 +47,9 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Reading\\SessionNamespaceRemappingTest::testSetNamespacePrefix',
                     'Reading\\NodeReadMethodsTest::testGetSharedSetUnreferenced', // TODO: should this be moved to 14_ShareableNodes
 
-                    'Query\QueryManagerTest::testGetQuery',
-                    'Query\QueryManagerTest::testGetQueryInvalid',
-                    'Query\QueryObjectSql2Test::testGetStoredQueryPath',
+                    'Query\\QueryManagerTest::testGetQuery',
+                    'Query\\QueryManagerTest::testGetQueryInvalid',
+                    'Query\\QueryObjectSql2Test::testGetStoredQueryPath',
                     'Query\\NodeViewTest::testSeekable',
 
                     'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
@@ -57,8 +57,10 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeEnd',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeDown',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeUp',
+                    'Writing\\NodeTypePreemptiveValidationTest::testCanSetProperty',
+                    'Writing\\NodeTypePreemptiveValidationTest::testCanSetPropertyWrongType',
+                    'Writing\\NodeTypePreemptiveValidationTest::testCanRemoveProperty',
         );
-
     }
 
     public static function getInstance()

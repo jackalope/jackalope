@@ -132,7 +132,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @param string Nodename
      *
-     * @return Iterator according to NodeType::getDeclaredSubtypes
+     * @return array with the names of the subnode types pointing to the node type instances
+     *
+     * @see NodeType::getDeclaredSubtypes
      *
      * @private
      */
@@ -144,7 +146,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
-        return new ArrayIterator($this->nodeTree[$nodeTypeName]);
+        return $this->nodeTree[$nodeTypeName];
     }
 
     /**
@@ -153,7 +155,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @param string $nodeTypeName
      *
-     * @return array of strings with the names of the subnodes
+     * @return array with the names of the subnode types pointing to the node type instances
+     *
+     * @see NodeType::getSubtypes
      *
      * @private
      */
@@ -162,10 +166,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         // OPTIMIZE: any way to avoid loading all nodes at this point?
         $this->fetchNodeTypes();
         $ret = array();
-        foreach ($this->nodeTree[$nodeTypeName] as $name => $subnode) {
-            $ret = array_merge($ret, array($name => $subnode), $this->nodeTree[$name]);
+        if (isset($this->nodeTree[$nodeTypeName])) {
+            foreach ($this->nodeTree[$nodeTypeName] as $name => $subnode) {
+                $ret = array_merge($ret, array($name => $subnode), $this->getSubtypes($name));
+            }
         }
-        return new ArrayIterator($ret);
+        return $ret;
     }
 
     /**

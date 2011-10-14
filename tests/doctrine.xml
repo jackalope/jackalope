@@ -13,8 +13,8 @@
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="phpcr.doctrine.loader" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="phpcr.doctrine.commondir" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.loader" value="/home/david/liip/symfony-cmf/phpcr-odm/lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="/home/david/liip/symfony-cmf/phpcr-odm/lib/vendor/doctrine-common/lib" />
         <var name="phpcr.doctrine.dbaldir" value="/home/david/liip/symfony-cmf/cmf-sandbox/vendor/doctrine-dbal/lib" />
         <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="phpcr.doctrine.dbal.host" value="localhost" />

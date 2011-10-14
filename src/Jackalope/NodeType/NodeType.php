@@ -99,7 +99,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function getSubtypes()
     {
-        return $this->nodeTypeManager->getSubtypes($this->name);
+        return new \ArrayIterator($this->nodeTypeManager->getSubtypes($this->name));
     }
 
     // inherit all doc
@@ -108,7 +108,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function getDeclaredSubtypes()
     {
-        return $this->nodeTypeManager->getDeclaredSubtypes($this->name);
+        return new \ArrayIterator($this->nodeTypeManager->getDeclaredSubtypes($this->name));
     }
 
     // inherit all doc
@@ -157,6 +157,8 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     public function canSetProperty($propertyName, $value)
     {
         throw new NotImplementedException();
+        // TODO: we need find a property definition that defines that name or allows * and check if it
+        // requires a type that $value can be converted into
     }
 
     // inherit all doc
@@ -165,7 +167,30 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function canAddChildNode($childNodeName, $nodeTypeName = null)
     {
-        throw new NotImplementedException();
+        $childDefs = $this->getChildNodeDefinitions();
+        if ($nodeTypeName) {
+            try {
+                $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+        foreach ($childDefs as $child) {
+            if ( '*' == $child->getName() || $childNodeName == $child->getName()) {
+                if ($nodeTypeName == null) {
+                    if ($child->getDefaultPrimaryTypeName() != null) {
+                        return true;
+                    }
+                } else {
+                    foreach ($child->getRequiredPrimaryTypeNames() as $type) {
+                        if ($nodeType->isNodeType($type)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // inherit all doc
@@ -175,7 +200,7 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     public function canRemoveNode($nodeName)
     {
         $childDefs = $this->getChildNodeDefinitions();
-        foreach($childDefs as $child) {
+        foreach ($childDefs as $child) {
             if ($nodeName == $child->getName() && $child->isMandatory()) {
                 return false;
             }
@@ -190,5 +215,6 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     public function canRemoveProperty($propertyName)
     {
         throw new NotImplementedException();
+        // TODO: we need to check all property definitions if they require this property
     }
 }

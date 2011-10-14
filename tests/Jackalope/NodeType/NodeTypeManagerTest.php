@@ -4,6 +4,9 @@ namespace Jackalope\NodeType;
 
 use Jackalope\TestCase;
 
+/**
+ * TODO: this is more of a jackrabbit specific functional test than a real unit test. Mock more.
+ */
 class NodeTypeManagerTest extends TestCase
 {
     protected $ntm;
@@ -36,10 +39,10 @@ class NodeTypeManagerTest extends TestCase
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertSame(array('nt:hierarchyNode'), $nt->getDeclaredSupertypeNames());
-        $this->assertSame(array(), $this->ntm->getDeclaredSubtypes('nt:file'));
-        $this->assertSame(array(), $this->ntm->getSubtypes('nt:file'));
-        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'), $this->ntm->getDeclaredSubtypes('nt:hierarchyNode'));
-        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), $this->ntm->getSubtypes('nt:hierarchyNode'));
+        $this->assertEquals(array(), $this->ntm->getDeclaredSubtypes('nt:file'));
+        $this->assertEquals(array(), $this->ntm->getSubtypes('nt:file'));
+        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'), array_keys($this->ntm->getDeclaredSubtypes('nt:hierarchyNode')));
+        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), array_keys($this->ntm->getSubtypes('nt:hierarchyNode')));
     }
 
     /**
