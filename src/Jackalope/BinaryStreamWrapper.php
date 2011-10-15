@@ -40,8 +40,8 @@ class BinaryStreamWrapper
      * The stream once the wrapper has been accessed once.
      * @var stream
      */
-
     private $stream = null;
+
     /**
      * The PHPCR session to fetch data through it.
      * @var \PHPCR\SessionInterface
