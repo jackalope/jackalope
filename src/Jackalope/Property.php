@@ -100,7 +100,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             if (is_string($type)) {
                 $type = PropertyType::valueFromName($type);
             } elseif (!is_numeric($type)) {
+                // @codeCoverageIgnoreStart
                 throw new \PHPCR\RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
+                // @codeCoverageIgnoreEnd
             } else {
                 //sanity check. this will throw InvalidArgumentException if $type is not a valid type
                 PropertyType::nameFromValue($type);
@@ -130,7 +132,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         } elseif (null !== $data['value']) {
             $this->value = PropertyType::convertType($data['value'], $type);
         } else {
+            // @codeCoverageIgnoreStart
             throw new \PHPCR\RepositoryException('INTERNAL ERROR -- data[value] may not be null');
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -378,7 +382,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
                         $results[] = $this->objectManager->getNode($value);
                     }
                 } catch(\PHPCR\ItemNotFoundException $e) {
+                    // @codeCoverageIgnoreStart
                     throw new \PHPCR\RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
+                    // @codeCoverageIgnoreEnd
                 }
                 break;
             case PropertyType::WEAKREFERENCE:
@@ -448,7 +454,9 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
             try {
                 $ret[] = strlen(PropertyType::convertType($value, PropertyType::STRING, $this->type));
             } catch (\Exception $e) {
+                // @codeCoverageIgnoreStart
                 $ret[] = -1;
+                // @codeCoverageIgnoreEnd
             }
         }
 
@@ -464,7 +472,7 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         if (empty($this->definition)) {
-            //FIXME: acquire definition
+            throw new NotImplementedException(); //FIXME: acquire definition
         }
         return $this->definition;
     }
@@ -489,19 +497,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         $this->checkState();
 
         return $this->isMultiple;
-    }
-
-    /**
-     * Throws an exception if the property is multivalued
-     * @throws \PHPCR\ValueFormatException
-     */
-    protected function checkMultiple($isMultiple = true)
-    {
-        $this->checkState();
-
-        if ($isMultiple === $this->isMultiple) {
-            throw new \PHPCR\ValueFormatException();
-        }
     }
 
     /**
@@ -561,10 +556,12 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if ($this->isDeleted()) {
             if ($internal) {
+                // @codeCoverageIgnoreStart
                 // FIXME: this should not be possible
                 return;
+                // @codeCoverageIgnoreEnd
             }
-            throw new \PHPCR\InvalidItemStateException('This item has been removed at the backend');
+            throw new \PHPCR\InvalidItemStateException('This property is deleted');
         }
         // Let the node refresh us
         try {
@@ -573,21 +570,6 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
         } catch (\PHPCR\ItemNotFoundException $e) {
             $this->setDeleted();
         }
-    }
-
-    /**
-     * Internally used to get the raw value of the property without any state
-     * checks.
-     *
-     * @return mixed
-     *
-     * @see Property::getValue()
-     *
-     * @private
-     */
-    public function _getRawValue()
-    {
-        return $this->value;
     }
 
     /**
@@ -607,9 +589,12 @@ class Property extends Item implements \IteratorAggregate, \PHPCR\PropertyInterf
     {
         if (is_null($value)) {
             $this->remove();
+            return;
         }
         if (! is_integer($type)) {
+            // @codeCoverageIgnoreStart
             throw new \InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\PropertyType. $type");
+            // @codeCoverageIgnoreEnd
         }
         if ($this->isNew()) {
             $this->isMultiple = is_array($value);

@@ -909,7 +909,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         if (! $internal && $this->isDeleted()) {
             throw new \PHPCR\InvalidItemStateException('This item has been removed and can not be refreshed');
         }
-        $invalid = false;
+        $deleted = false;
 
         // Get properties and children from backend
         try {
@@ -923,7 +923,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             $keepChanges = false; // delete never keeps changes
             if (! $internal) {
                 // this is not an internal update
-                $invalid = true;
+                $deleted = true;
             }
 
             // continue with emtpy data, parseData will notify all cached
@@ -933,8 +933,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
         $this->parseData($json, true, $keepChanges);
 
-        if ($invalid) {
-            throw new \PHPCR\InvalidItemStateException('This item has been removed at the backend');
+        if ($deleted) {
+            $this->setDeleted();
         }
     }
 
