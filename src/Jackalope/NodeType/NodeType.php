@@ -156,9 +156,50 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function canSetProperty($propertyName, $value)
     {
-        throw new NotImplementedException();
-        // TODO: we need find a property definition that defines that name or allows * and check if it
-        // requires a type that $value can be converted into
+        $propDefs = $this->getPropertyDefinitions();
+        try {
+            $type = \PHPCR\PropertyType::determineType($value);
+        } catch (\PHPCR\ValueFormatException $e) {
+            return false;
+        }
+
+        // check explicit matches first and keep wildcard definitions for later
+        $wildcards = array();
+        foreach ($propDefs as $prop) {
+            if ('*' == $prop->getName()) {
+                $wildcards[] = $prop;
+            } elseif ($propertyName == $prop->getName()) {
+                if (\PHPCR\PropertyType::UNDEFINED == $prop->getRequiredType()
+                    || $type == $prop->getRequiredType()
+                ) {
+                    return true;
+                }
+                // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
+                try {
+                    \PHPCR\PropertyType::convertType($value, $prop->getRequiredType(), $type);
+                    return true;
+                } catch (\PHPCR\ValueFormatException $e) {
+                    // fall through and return false
+                }
+                return false; // if there is an explicit match, it has to fit
+            }
+        }
+        // now check if any of the wildcards matches
+        foreach ($wildcards as $prop) {
+            if (\PHPCR\PropertyType::UNDEFINED == $prop->getRequiredType()
+                || $type == $prop->getRequiredType()
+            ) {
+                return true;
+            }
+            // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
+            try {
+                \PHPCR\PropertyType::convertType($value, $prop->getRequiredType(), $type);
+                return true;
+            } catch (\PHPCR\ValueFormatException $e) {
+                return false; // if there is an explicit match, it has to fit
+            }
+        }
+        return false;
     }
 
     // inherit all doc
@@ -171,6 +212,9 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
         if ($nodeTypeName) {
             try {
                 $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
+                if ($nodeType->isMixin() || $nodeType->isAbstract()) {
+                    return false;
+                }
             } catch (\Exception $e) {
                 return false;
             }
@@ -201,7 +245,9 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
     {
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
-            if ($nodeName == $child->getName() && $child->isMandatory()) {
+            if ($nodeName == $child->getName() &&
+                ( $child->isMandatory() || $child->isProtected() )
+            ) {
                 return false;
             }
         }
@@ -214,7 +260,14 @@ class NodeType extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeInt
      */
     public function canRemoveProperty($propertyName)
     {
-        throw new NotImplementedException();
-        // TODO: we need to check all property definitions if they require this property
+        $propDefs = $this->getPropertyDefinitions();
+        foreach ($propDefs as $prop) {
+            if ($propertyName == $prop->getName() &&
+                ( $prop->isMandatory() || $prop->isProtected() )
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

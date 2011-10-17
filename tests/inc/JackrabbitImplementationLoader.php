@@ -57,9 +57,6 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeEnd',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeDown',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeUp',
-                    'Writing\\NodeTypePreemptiveValidationTest::testCanSetProperty',
-                    'Writing\\NodeTypePreemptiveValidationTest::testCanSetPropertyWrongType',
-                    'Writing\\NodeTypePreemptiveValidationTest::testCanRemoveProperty',
         );
     }
 
