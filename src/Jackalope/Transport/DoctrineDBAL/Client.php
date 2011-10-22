@@ -1185,6 +1185,8 @@ $/xi";
     // inherit all doc
     public function query(\PHPCR\Query\QueryInterface $query)
     {
+        $this->assertLoggedIn();
+
         $limit = $query->getLimit();
         $offset = $query->getOffset();
 
