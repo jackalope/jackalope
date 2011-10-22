@@ -34,11 +34,16 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     protected $position = 0;
     /**
+     * The score this row has
+     * @var float
+     */
+    protected $score = 0;
+    /**
      * Cached list of values extracted from columns to avoid double work.
      * @var array
      * @see Row::getValues()
      */
-    protected $values;
+    protected $values = array();
 
     /**
      * Create new Row instance.
@@ -52,7 +57,18 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     {
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
-        $this->columns = $columns;
+        foreach ($columns as $column) {
+            if ($column['dcr:name'] == 'jcr:score') {
+                $this->score = (float) $column['dcr:value'];
+            } elseif (strlen($column['dcr:name']) >= 15
+                      && substr($column['dcr:name'], -15) == 'jcr:primaryType'
+                     ) {
+                // ignore for now. TODO: trac the selector name in front of the primary type
+            } else {
+                $this->columns[] = $column;
+                $this->values[$column['dcr:name']] = $column['dcr:value'];
+            }
+        }
     }
 
     // inherit all doc
@@ -61,13 +77,6 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      */
     public function getValues()
     {
-        if (!isset($this->values)) {
-            $this->values = array();
-            foreach ($this->columns as $column) {
-                $this->values[$column['dcr:name']] = $column['dcr:value'];
-            }
-        }
-
         return $this->values;
     }
 
@@ -114,8 +123,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     public function getScore($selectorName = null)
     {
         // TODO: implement $selectorName
-
-        return $this->getValue('jcr:score');
+        return $this->score;
     }
 
     /**
