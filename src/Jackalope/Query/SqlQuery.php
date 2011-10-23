@@ -31,7 +31,7 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
     /**
      * @var \Jackalope\ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
     /**
      * If this is a stored query, the path to the node that stores this query.
      * @var string
@@ -44,16 +44,16 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      * @param object $factory an object factory implementing "get" as described
      *      in \Jackalope\Factory
      * @param string $statement The SQL statement for this query
-     * @param ObjectManager $objectmanager Object manager to execute query
+     * @param ObjectManager $objectManager Object manager to execute query
      *      against
      * @param string $path If this query is loaded from workspace with
      *      QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct($factory, $statement, ObjectManager $objectmanager, $path = null)
+    public function __construct($factory, $statement, ObjectManager $objectManager, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
         $this->path = $path;
     }
 
@@ -72,13 +72,13 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function execute()
     {
-        $transport = $this->objectmanager->getTransport();
+        $transport = $this->objectManager->getTransport();
         $rawData = $transport->query($this);
         $queryResult = $this->factory->get(
             'Query\QueryResult',
             array(
                 $rawData,
-                $this->objectmanager,
+                $this->objectManager,
             )
         );
         return $queryResult;
@@ -135,6 +135,8 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      * Access the query statement from the transport layer
      *
      * @return string the sql2 query statement
+     *
+     * @private
      */
     public function getStatementSql2()
     {
