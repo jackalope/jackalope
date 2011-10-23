@@ -28,6 +28,16 @@ class NodeTypeXmlConverter
     const DEFAULT_PRIMARY_NODE = 'nt:base';
 
     /**
+     * Empty constructor.
+     *
+     * Everything inside jackalope has to accept the factory in the
+     * constructor. We define the constructor but to nothing at all.
+     */
+    public function __construct($factory)
+    {
+    }
+
+    /**
      * @param \DOMElement $node
      *
      * @return array

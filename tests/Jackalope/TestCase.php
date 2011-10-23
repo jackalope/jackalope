@@ -92,7 +92,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $factory = new \Jackalope\Factory;
         $dom = new \DOMDocument();
         $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
-        $converter = new \Jackalope\NodeType\NodeTypeXmlConverter;
+        $converter = new \Jackalope\NodeType\NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
         $om->expects($this->any())
             ->method('getNodeTypes')

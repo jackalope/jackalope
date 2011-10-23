@@ -10,7 +10,8 @@ class NodeTypeXmlConverterDefinitionTest extends TestCase
 
     public function setUp()
     {
-        $this->converter = new NodeTypeXmlConverter();
+        $factory = new \Jackalope\Factory;
+        $this->converter = new NodeTypeXmlConverter($factory);
     }
 
     public function testConvertNtBase()
