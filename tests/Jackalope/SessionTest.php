@@ -25,10 +25,20 @@ class SessionTest extends TestCase
         $this->assertSame('value', $s->getAttribute('other'));
     }
 
-    public function testLogout()
+    public function testLogoutAndRegistry()
     {
-        $this->markTestSkipped();
-        //TODO: test flush object manager with the help of mock objects
+        $factory = new \Jackalope\Factory;
+        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
+        $transport = $this->getMock('Jackalope\TransportInterface');
+        $transport->expects($this->once())
+            ->method('logout');
+        $session = new Session($factory, $repository, 'x',  new \PHPCR\SimpleCredentials('foo', 'bar'), $transport);
+        $this->assertTrue($session->isLive());
+        $key = $session->getRegistryKey();
+        $this->assertSame($session, Session::getSessionFromRegistry($key));
+        $session->logout();
+        $this->assertFalse($session->isLive());
+        $this->assertNull(Session::getSessionFromRegistry($key));
     }
 
     public function testSessionRegistry()
