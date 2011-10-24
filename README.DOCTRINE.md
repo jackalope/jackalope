@@ -28,7 +28,7 @@ You need both Jackalope with the DoctrineDBAL branch and Doctrine Common+DBAL in
     ));
 
     // only necessary on the first run, creates the database:
-    $schema = \Jackalope\Transport\Doctrine\RepositorySchema::create();
+    $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
     foreach ($schema->toSQL($dbConn->getDatabasePlatform()) AS $sql) {
         $dbConn->exec($sql);
     }
@@ -42,7 +42,9 @@ You need both Jackalope with the DoctrineDBAL branch and Doctrine Common+DBAL in
 The default workspace is automatically created when you first try to access it
 
     <?php
-    $session = $repository->login(null, 'default'); //credentials where in dbConn, don't matter here
+    //credentials where in dbConn, don't matter here
+    $credentials = new \PHPCR\SimpleCredentials(null, null);
+    $session = $repository->login($credentials, 'default'); 
     $workspace = $session->getWorkspace();
     $workspace->createWorkspace('myworkspace');
 
@@ -52,7 +54,7 @@ Now you have a 'default' workspace and can start changing stuff:
 
     <?php
 
-    $session = $repository->login(null, "default"); // credentials dont matter
+    $session = $repository->login($credentials, "default"); // credentials dont matter
     $rootNode = $session->getNode("/");
     $whitewashing = $rootNode->addNode("www-whitewashing-de");
     $session->save();
