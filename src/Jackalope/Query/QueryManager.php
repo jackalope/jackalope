@@ -18,7 +18,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
     /**
      * @var \Jackalope\ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
 
     /**
      * Create the query manager - akquire through the session.
@@ -27,10 +27,10 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      *      described in \Jackalope\Factory
      * @param ObjectManager $objectManager
      */
-    public function __construct($factory, ObjectManager $objectmanager)
+    public function __construct($factory, ObjectManager $objectManager)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
     }
 
     // inherit all doc
@@ -41,7 +41,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
     {
         switch($language) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
-                return $this->factory->get('Query\SqlQuery', array($statement, $this->objectmanager));
+                return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
             case \PHPCR\Query\QueryInterface::JCR_JQOM:
                 throw new NotImplementedException();
             default:
@@ -55,7 +55,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      */
     public function getQOMFactory()
     {
-        return new \Jackalope\Query\QOM\QueryObjectModelFactory();
+        return $this->factory->get('Query\QOM\QueryObjectModelFactory', array($this->objectManager));
     }
 
     // inherit all doc

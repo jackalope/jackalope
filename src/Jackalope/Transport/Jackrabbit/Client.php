@@ -562,7 +562,13 @@ class Client implements TransactionalTransportInterface
     // inherit all doc
     public function query(\PHPCR\Query\QueryInterface $query)
     {
-        $querystring = $query->getStatementSql2();
+        if ($query instanceof \Jackalope\Query\SqlQuery
+            || $query instanceof \PHPCR\Query\QOM\QueryObjectModelInterface
+        ) {
+            $querystring = $query->getStatementSql2();
+        } else {
+            throw new \PHPCR\UnsupportedRepositoryOperationException('Unknown query type: '.$query->getLanguage());
+        }
         $limit = $query->getLimit();
         $offset = $query->getOffset();
 

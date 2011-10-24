@@ -140,7 +140,8 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function getStatementSql2()
     {
-        return $this->statement; //TODO: should this expand bind variables? or the transport?
+        return $this->getStatement();
+        //TODO: should this expand bind variables? or the transport?
     }
 
     // inherit all doc
@@ -180,6 +181,8 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function storeAsNode($absPath)
     {
+        // when implementing this, use ->getStatementSql2() and not $this->statement
+        // so this works for the extending QueryObjectModel as well
         throw new \PHPCR\UnsupportedRepositoryOperationException('Not implemented: Write');
     }
 
