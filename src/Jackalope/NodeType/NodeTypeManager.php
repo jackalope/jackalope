@@ -347,7 +347,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *   <'phpcr'='http://www.doctrine-project.org/projects/phpcr_odm'>
      *   [phpcr:managed]
      *     mixin
-     *     - phpcr:alias (string)
+     *     - phpcr:class (string)
      *
      * For full documentation of the format, see
      * http://jackrabbit.apache.org/node-type-notation.html
