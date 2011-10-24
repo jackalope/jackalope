@@ -508,7 +508,8 @@ class Request
         foreach ($responses as $key => $response) {
             $json[$key] = json_decode($response);
             if (null === $json[$key] && 'null' !== strtolower($response)) {
-                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} {$this->uri[$key]} \nResponse: \n$response");
+                $uri = reset($this->uri); // FIXME was $this->uri[$key]. at which point did we lose the right key?
+                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} $uri \nResponse: \n$response");
             }
         }
         //TODO: are there error responses in json format? if so, handle them
