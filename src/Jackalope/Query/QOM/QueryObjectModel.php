@@ -55,12 +55,12 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {
-                throw new \InvalidArguemntException('Not a valid ordering: '.$o);
+                throw new \InvalidArgumentException('Not a valid ordering: '.$o);
             }
         }
         foreach ($columns as $c) {
             if (! $c instanceof ColumnInterface) {
-                throw new \InvalidArguemntException('Not a valid column: '.$o);
+                throw new \InvalidArgumentException('Not a valid column: '.$o);
             }
         }
         parent::__construct($factory, '', $objectManager);
