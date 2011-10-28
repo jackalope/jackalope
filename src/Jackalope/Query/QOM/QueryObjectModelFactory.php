@@ -113,7 +113,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * @api
      */
-    function _and(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
+    function andConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
                          \PHPCR\Query\QOM\ConstraintInterface $constraint2)
     {
         return new AndConstraint($constraint1, $constraint2);
@@ -123,7 +123,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * @api
      */
-    function _or(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
+    function orConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
                         \PHPCR\Query\QOM\ConstraintInterface $constraint2)
     {
         return new OrConstraint($constraint1, $constraint2);
@@ -133,7 +133,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * @api
      */
-    function not(\PHPCR\Query\QOM\ConstraintInterface $constraint)
+    function notConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint)
     {
         return new NotConstraint($constraint);
     }
