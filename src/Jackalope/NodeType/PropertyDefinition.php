@@ -4,8 +4,11 @@ namespace Jackalope\NodeType;
 use Jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
+ * TODO: document array format of constructor
+ *
  * @api
  */
 class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\PropertyDefinitionInterface
@@ -43,54 +46,11 @@ class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\Prope
     protected $isQueryOrderable;
 
     /**
-     * Create a new property definition instance.
+     * Treat more information in addition to ItemDefinition::fromArray()
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
-     * @param mixed $node The property data either as DOMElement or as array
-     * @param NodeTypeManager $nodeTypeManager
-     */
-    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
-    {
-        parent::__construct($factory, $node, $nodeTypeManager);
-
-        if ($node instanceof DOMElement) {
-            $this->fromXML($node);
-        } elseif (is_array($node)) {
-            $this->fromArray($node);
-        }
-    }
-
-    /**
-     * Read more information in addition to ItemDefinition::fromXML()
-     */
-    protected function fromXML(DOMElement $node)
-    {
-        parent::fromXML($node);
-        $this->requiredType = \PHPCR\PropertyType::valueFromName($node->getAttribute('requiredType'));
-        $this->isMultiple = Helper::getBoolAttribute($node, 'multiple');
-        $this->isFullTextSearchable = Helper::getBoolAttribute($node, 'fullTextSearchable');
-        $this->isQueryOrderable = Helper::getBoolAttribute($node, 'queryOrderable');
-
-        $xp = new DOMXPath($node->ownerDocument);
-        $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
-        foreach ($valueConstraints as $valueConstraint) {
-            $this->valueConstraints[] = $valueConstraint->nodeValue;
-        }
-
-        $availableQueryOperators = $xp->query('availableQueryOperators/availableQueryOperator', $node);
-        foreach ($availableQueryOperators as $availableQueryOperator) {
-            $this->availableQueryOperators[] = $availableQueryOperator->nodeValue;
-        }
-
-        $defaultValues = $xp->query('defaultValues/defaultValue', $node);
-        foreach ($defaultValues as $defaultValue) {
-            $this->defaultValues[] = $defaultValue->nodeValue;
-        }
-    }
-
-    /**
-     * Read more information in addition to ItemDefinition::fromArray()
+     * See class documentation for the fields supported in the array.
+     *
+     * @param array $data The property definition in array form.
      */
     protected function fromArray(array $data)
     {

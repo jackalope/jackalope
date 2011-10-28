@@ -55,34 +55,25 @@ class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
     /**
      * Create a new item definition.
      *
-     * @param object $factory Ignored for now, as this class does not create objects
+     *  TODO: document this format. Property and Node add more to this.
+     *
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param array $definition The property definition data as array
+     * @param NodeTypeManager $nodeTypeManager
      */
-    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
+    public function __construct($factory, array $definition, NodeTypeManager $nodeTypeManager)
     {
         $this->factory = $factory;
+        $this->fromArray($definition);
         $this->nodeTypeManager = $nodeTypeManager;
     }
 
     /**
-     * Load item definition from xml fragment.
-     *
-     * @param \DOMElement $node The node containing the information for this
-     *      item definition
-     *
-     * @return void
-     */
-    protected function fromXML(DOMElement $node)
-    {
-        $this->declaringNodeType = $node->getAttribute('declaringNodeType');
-        $this->name = $node->getAttribute('name');
-        $this->isAutoCreated = Helper::getBoolAttribute($node, 'isAutoCreated');
-        $this->isMandatory = Helper::getBoolAttribute($node, 'mandatory');
-        $this->isProtected = Helper::getBoolAttribute($node, 'isProtected');
-        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::valueFromName($node->getAttribute('onParentVersion'));
-    }
-
-    /**
      * Load item definition from an array.
+     *
+     * Overwritten for property and node to add more information, with a call
+     * to this parent method for the common things.
      *
      * @param array $data An array with the fields required by ItemDefition
      *

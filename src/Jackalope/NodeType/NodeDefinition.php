@@ -4,8 +4,11 @@ namespace Jackalope\NodeType;
 use Jackalope\Helper;
 use \DOMElement, \DOMXPath;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
+ * TODO: document array format of constructor
+ *
  * @api
  */
 class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface
@@ -32,51 +35,11 @@ class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefin
     protected $allowsSameNameSiblings;
 
     /**
-     * Create a new node definition instance.
+     * Treat more information in addition to ItemDefinition::fromArray()
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
-     * @param mixed $node The node data either as DOMElement or as array
-     * @param NodeTypeManager $nodeTypeManager
-     */
-    public function __construct($factory, $node, NodeTypeManager $nodeTypeManager)
-    {
-        parent::__construct($factory, $node, $nodeTypeManager);
-
-        if ($node instanceof DOMElement) {
-            $this->fromXML($node);
-        } elseif (is_array($node)) {
-            $this->fromArray($node);
-        } else {
-            throw new \InvalidArgumentException(get_type($node).' is not valid to create a NodeDefinition from');
-        }
-    }
-
-    /**
-     * Read more information in addition to ItemDefinition::fromXML()
-     */
-    protected function fromXML(DOMElement $node)
-    {
-        parent::fromXML($node);
-        $this->allowsSameNameSiblings = Helper::getBoolAttribute($node, 'sameNameSiblings');
-        $this->defaultPrimaryTypeName = $node->getAttribute('defaultPrimaryType');
-        if (empty($this->defaultPrimaryTypeName)) {
-            $this->defaultPrimaryTypeName = null;
-        }
-
-        $xp = new DOMXPath($node->ownerDocument);
-        $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
-        if (0 < $requiredPrimaryTypes->length) {
-            foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
-                $this->requiredPrimaryTypeNames[] = $requiredPrimaryType->nodeValue;
-            }
-        } else {
-            $this->requiredPrimaryTypeNames[] = self::DEFAULT_PRIMARY_NODE;
-        }
-    }
-
-    /**
-     * Read more information in addition to ItemDefinition::fromArray()
+     * See class documentation for the fields supported in the array.
+     *
+     * @param array $data The node definition in array form.
      */
     protected function fromArray(array $data)
     {
