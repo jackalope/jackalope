@@ -28,9 +28,11 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @param object $factory an object factory implementing "get" as
      *      described in \Jackalope\Factory
-     * @param ObjectManager $objectManager
+     * @param ObjectManager $objectManager only used to create the query (can
+     *      be omitted if you do not want to execute the query but just use it
+     *      with a parser)
      */
-    public function __construct($factory, ObjectManager $objectManager)
+    public function __construct($factory, ObjectManager $objectManager = null)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;

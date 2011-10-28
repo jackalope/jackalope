@@ -29,6 +29,8 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     protected $offset;
     /**
+     * The object manager to execute the query with.
+     *
      * @var \Jackalope\ObjectManager
      */
     protected $objectManager;
@@ -44,12 +46,12 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      * @param object $factory an object factory implementing "get" as described
      *      in \Jackalope\Factory
      * @param string $statement The SQL statement for this query
-     * @param ObjectManager $objectManager Object manager to execute query
-     *      against
+     * @param ObjectManager $objectManager (can be omitted if you do not want
+     *      to execute the query but just use it with a parser)
      * @param string $path If this query is loaded from workspace with
      *      QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct($factory, $statement, ObjectManager $objectManager, $path = null)
+    public function __construct($factory, $statement, ObjectManager $objectManager = null, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;
@@ -72,6 +74,10 @@ class SqlQuery implements \PHPCR\Query\QueryInterface
      */
     public function execute()
     {
+        if (is_null($this->objectManager)) {
+            // if the ObjectManager was not injected in the header. this is only supposed to happen in the DBAL client.
+            throw new \PHPCR\RepositoryException('Jackalope implementation error: This query was built for parsing only. (There is no ObjectManager to run the query against.)');
+        }
         $transport = $this->objectManager->getTransport();
         $rawData = $transport->query($this);
         $queryResult = $this->factory->get(

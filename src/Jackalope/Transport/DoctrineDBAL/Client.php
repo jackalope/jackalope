@@ -51,7 +51,6 @@ class Client implements TransportInterface
     private $nodeIdentifiers = array();
 
     /**
-     *
      * @var PHPCR\NodeType\NodeTypeManagerInterface
      */
     private $nodeTypeManager = null;
@@ -1192,7 +1191,7 @@ $/xi";
 
         switch ($query->getLanguage()) {
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
-                $parser = new \PHPCR\Util\QOM\Sql2ToQomQueryConverter(new \Jackalope\Query\QOM\QueryObjectModelFactory());
+                $parser = new \PHPCR\Util\QOM\Sql2ToQomQueryConverter($this->factory->get('Jackalope\Query\QOM\QueryObjectModelFactory'));
                 $qom = $parser->parse($query->getStatement());
 
                 $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());

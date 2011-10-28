@@ -44,12 +44,16 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * Constructor
      *
+     * @param object $factory an object factory implementing "get" as
+     *      described in \Jackalope\Factory
+     * @param ObjectManager $objectManager (can be omitted if you do not want
+     *      to execute the query but just use it with a parser)
      * @param SourceInterface $source
      * @param ConstraintInterface $constraint
      * @param array $orderings
      * @param array $columns
      */
-    public function __construct($factory, ObjectManager $objectManager,
+    public function __construct($factory, ObjectManager $objectManager = null,
                                 SourceInterface $source, ConstraintInterface $constraint = null,
                                 array $orderings, array $columns)
     {
