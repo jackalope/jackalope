@@ -26,6 +26,7 @@
     <testsuites>
         <testsuite name="Jackalope Doctrine DBAL Tests">
             <directory>.</directory>
+            <exclude>./Jackalope/Transport/Jackrabbit</exclude>
         </testsuite>
     </testsuites>
 

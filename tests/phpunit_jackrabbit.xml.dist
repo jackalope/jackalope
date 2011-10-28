@@ -19,6 +19,7 @@
     <testsuites>
         <testsuite name="Jackalope Jackrabbit Tests">
             <directory>.</directory>
+            <exclude>./Jackalope/Transport/DoctrineDBAL</exclude>
         </testsuite>
         <!-- if phpunit would support the full power of its config format, we
              could add more test suites to allow the user to specify which
