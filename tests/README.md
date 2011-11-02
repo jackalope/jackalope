@@ -1,5 +1,7 @@
 # Tests
 
+To bootstrap for the jackrabbit tests, see the [wiki page](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit)
+
 There are two kind of tests. The folder ``tests/phpcr-api`` contains the
 [phpcr-api-tests](https://github.com/phpcr/phpcr-api-tests/) suite to test
 against the specification. This is what you want to look at when using
