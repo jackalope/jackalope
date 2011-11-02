@@ -9,7 +9,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 {
     private static $instance = null;
 
-    private $necessaryConfigValues = array('jackrabbit.uri', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace', 'jackrabbit.jar');
+    private $necessaryConfigValues = array('jackrabbit.uri', 'phpcr.user', 'phpcr.pass', 'phpcr.workspace');
 
     protected function __construct()
     {
@@ -107,6 +107,6 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
     function getFixtureLoader()
     {
         require_once "JackrabbitFixtureLoader.php";
-        return new JackrabbitFixtureLoader(__DIR__.'/../phpcr-api/fixtures/', (isset($GLOBALS['jackrabbit.jar']) ? $config['jackrabbit.jar'] : null));
+        return new JackrabbitFixtureLoader(__DIR__.'/../phpcr-api/fixtures/', (isset($GLOBALS['jackrabbit.jar']) ? $GLOBALS['jackrabbit.jar'] : null));
     }
 }
