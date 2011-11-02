@@ -5,8 +5,8 @@ A powerful implementation of the [PHPCR API](http://phpcr.github.com).
 You can use Jackalope with different storage backends. For now, we support
 relational databases with the DoctrineDBAL backend, and the Jackrabbit server
 with the Jackrabbit backend.
-There is a different factory for each backend, see below for an introduction.
 
+There is a different factory for each backend, see below for an introduction.
 
 Discuss on jackalope-dev@googlegroups.com
 or visit #jackalope on irc.freenode.net
@@ -28,7 +28,8 @@ See https://github.com/jackalope/jackalope/wiki/Downloads
 
 ## Tests
 
-See the wiki pages for how to set up testing: [DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) | [Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
+See the wiki pages for how to set up testing:
+[DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) | [Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
 
 
 # Usage
@@ -73,6 +74,6 @@ look at the source files and generate the phpdoc.
 * Tobias Ebnöther <ebi@liip.ch>
 * Roland Schilter <roland.schilter@liip.ch>
 * Uwe Jäger <uwej711@googlemail.com>
-* Lukas Kahwe Smith <lukas@liip.ch>
+* Lukas Kahwe Smith <smith@pooteeweet.org>
 * Benjamin Eberlei <kontakt@beberlei.de>
 * Daniel Barsotti <daniel.barsotti@liip.ch>

@@ -9,7 +9,7 @@ jackalope as a PHPCR implementation.
 
 The folder ``tests/Jackalope`` contains unit tests for the jackalope
 implementation. You should only need those if you want to debug jackalope
-itselves or implement new features. Again, make sure you have the test
+itself or implement new features. Again, make sure you have the test
 workspace in jackrabbit.
 
 
@@ -35,11 +35,11 @@ Note that the best would be to implement the Session::importXML method
 Until this happens, you can use the class JackrabbitFixtureLoader found in
 inc/JackrabbitFixtureLoader.php to import fixtures in the JCR XML formats.
 It relies on jack.jar. The class can be plugged in Symfony2 autoload mechanism
-through autoload.php, which can be used to feed a MapFileClassLoader istance. E.g:
+through autoload.php, which can be used to feed a MapFileClassLoader instance. E.g:
 
 
     $phpcr_loader = new MapFileClassLoader(
-    __DIR__.'/../vendor/doctrine-phpcr-odm/lib/vendor/jackalope/inc/JackrabbitFixtureLoader.php'
+        __DIR__.'/../vendor/doctrine-phpcr-odm/lib/vendor/jackalope/inc/JackrabbitFixtureLoader.php'
     );
     $phpcr_loader->register();
 
@@ -48,7 +48,7 @@ through autoload.php, which can be used to feed a MapFileClassLoader istance. E.
 
 It would be nice if we were able to run the relevant parts of the JSR-283
 Technology Compliance Kit (TCK) against php implementations. Note that we would
-need to have some glue for things that look different in php than in Java, like
+need to have some glue for things that look different in PHP than in Java, like
 the whole topic of Value and ValueFactory.
 [https://jira.liip.ch/browse/JACK-24](https://jira.liip.ch/browse/JACK-24)
 
