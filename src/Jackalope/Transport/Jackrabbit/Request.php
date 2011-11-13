@@ -237,13 +237,15 @@ class Request
         $this->transactionId = (string) $transactionId;
     }
 
+    /**
+     * used by multiCurl with fresh curl instances
+     */
     protected function prepareCurl($curl, $getCurlObject)
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
-        } else {
-            $curl->setopt(CURLOPT_USERPWD, null);
         }
+        // otherwise leave this alone, the new curl instance has no USERPWD yet
 
         $headers = array(
             'Depth: ' . $this->depth,
@@ -351,8 +353,11 @@ class Request
     {
         if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
+            $curl = $this->curl;
         } else {
-            $this->curl->setopt(CURLOPT_USERPWD, null);
+            // we seem to be unable to remove the Authorization header
+            // setting to null produces a bogus Authorization: Basic Og==
+            $curl = new curl;
         }
 
         $headers = array(
@@ -370,26 +375,26 @@ class Request
             $headers[] = 'TransactionId: <'.$this->transactionId.'>';
         }
 
-        $this->curl->setopt(CURLOPT_RETURNTRANSFER, true);
-        $this->curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
-        $this->curl->setopt(CURLOPT_URL, reset($this->uri));
-        $this->curl->setopt(CURLOPT_HTTPHEADER, $headers);
-        $this->curl->setopt(CURLOPT_POSTFIELDS, $this->body);
+        $curl->setopt(CURLOPT_RETURNTRANSFER, true);
+        $curl->setopt(CURLOPT_CUSTOMREQUEST, $this->method);
+        $curl->setopt(CURLOPT_URL, reset($this->uri));
+        $curl->setopt(CURLOPT_HTTPHEADER, $headers);
+        $curl->setopt(CURLOPT_POSTFIELDS, $this->body);
         if ($getCurlObject) {
-            $this->curl->parseResponseHeaders();
+            $curl->parseResponseHeaders();
         }
 
-        $response = $this->curl->exec();
-        $this->curl->setResponse($response);
+        $response = $curl->exec();
+        $curl->setResponse($response);
 
-        $httpCode = $this->curl->getinfo(CURLINFO_HTTP_CODE);
+        $httpCode = $curl->getinfo(CURLINFO_HTTP_CODE);
         if ($httpCode >= 200 && $httpCode < 300) {
             if ($getCurlObject) {
-                return $this->curl;
+                return $curl;
             }
             return $response;
         }
-        $this->handleError($this->curl, $response, $httpCode);
+        $this->handleError($curl, $response, $httpCode);
     }
 
     /**
