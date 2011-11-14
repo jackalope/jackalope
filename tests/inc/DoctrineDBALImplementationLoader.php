@@ -11,7 +11,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 
     protected function __construct()
     {
-        parent::__construct('Jackalope\RepositoryFactoryDoctrineDBAL');
+        parent::__construct('Jackalope\RepositoryFactoryDoctrineDBAL', $GLOBALS['phpcr.workspace']);
 
         $this->unsupportedChapters = array(
                     'PermissionsAndCapabilities',
@@ -93,7 +93,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
     {
         global $dbConn;
 
-        $dbConn->insert('phpcr_workspaces', array('name' => 'tests'));
+        $dbConn->insert('phpcr_workspaces', array('name' => $this->config['workspace']));
         $transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory, $dbConn);
         $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
         return new \Jackalope\Repository(null, $transport);

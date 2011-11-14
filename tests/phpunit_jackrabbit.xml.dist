@@ -13,7 +13,7 @@
         <var name="jackrabbit.uri" value="http://localhost:8080/server" />
         <var name="phpcr.user" value="admin" />
         <var name="phpcr.pass" value="admin" />
-        <var name="phpcr.workspace" value="tests" />
+        <var name="phpcr.workspace" value="default" />
     </php>
 
     <testsuites>

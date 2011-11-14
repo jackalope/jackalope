@@ -1,4 +1,4 @@
-# Jackalope
+# Jackalope [![Build Status](https://secure.travis-ci.org/jackalope/jackalope.png)](http://travis-ci.org/jackalope/jackalope)
 
 A powerful implementation of the [PHPCR API](http://phpcr.github.com).
 

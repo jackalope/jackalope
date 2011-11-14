@@ -215,7 +215,7 @@ class ClientTest extends DavexTestCase
         $t->expects($this->once())
             ->method('getRequest')
             ->will($this->returnValue($request));
-        $t->login($this->credentials, $this->config['workspace']);
+        $t->login($this->credentials, 'tests');
     }
 
     /**
@@ -231,7 +231,7 @@ class ClientTest extends DavexTestCase
         $t->expects($this->once())
             ->method('getRequest')
             ->will($this->returnValue($request));
-        $t->login($this->credentials, $this->config['workspace']);
+        $t->login($this->credentials, 'tests');
     }
 
      /**

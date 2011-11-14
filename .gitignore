@@ -12,3 +12,6 @@ doc/html
 /tests/fixtures/doctrine
 /tests/phpunit.xml
 
+
+jackrabbit/
+jackrabbit-standalone*.jar

@@ -19,7 +19,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                 die('Please set '.$val.' in your phpunit.xml.' . "\n");
             }
         }
-        parent::__construct('Jackalope\RepositoryFactoryJackrabbit');
+        parent::__construct('Jackalope\RepositoryFactoryJackrabbit', $GLOBALS['phpcr.workspace']);
 
         $this->unsupportedChapters = array(
                     'PermissionsAndCapabilities',
