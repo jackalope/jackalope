@@ -24,7 +24,8 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
-use Jackalope\TransportInterface;
+use Jackalope\QueryableTransportInterface;
+use Jackalope\ReferenceableTransportInterface;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 use Jackalope\NotImplementedException;
@@ -36,7 +37,7 @@ use Jackalope\NotImplementedException;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Client implements TransportInterface
+class Client implements QueryableTransportInterface, ReferenceableTransportInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -1256,16 +1257,6 @@ $/xi";
             }
         }
         return $references;
-    }
-
-    // inherit all doc
-    public function getPermissions($path)
-    {
-        return array(
-            \PHPCR\SessionInterface::ACTION_ADD_NODE,
-            \PHPCR\SessionInterface::ACTION_READ,
-            \PHPCR\SessionInterface::ACTION_REMOVE,
-            \PHPCR\SessionInterface::ACTION_SET_PROPERTY);
     }
 
     private function assertValidPath($path)
