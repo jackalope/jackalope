@@ -43,7 +43,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
             case \PHPCR\Query\QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
             case \PHPCR\Query\QueryInterface::JCR_JQOM:
-                throw new NotImplementedException();
+                throw new \PHPCR\Query\InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
             default:
                 throw new \PHPCR\Query\InvalidQueryException("No such query language: $language");
         }
