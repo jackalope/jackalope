@@ -23,7 +23,7 @@ class ClientTest extends DoctrineDBALTestCase
         $conn = $this->getConnection();
         $schema = RepositorySchema::create();
 
-        foreach ($schema->toDropSql($conn->getDatabasePlatform()) AS $statement) {
+        foreach ($schema->toDropSql($conn->getDatabasePlatform()) as $statement) {
             try {
                 $conn->exec($statement);
             } catch(\Exception $e) {
@@ -31,7 +31,7 @@ class ClientTest extends DoctrineDBALTestCase
             }
         }
 
-        foreach ($schema->toSql($conn->getDatabasePlatform()) AS $statement) {
+        foreach ($schema->toSql($conn->getDatabasePlatform()) as $statement) {
             $conn->exec($statement);
         }
 

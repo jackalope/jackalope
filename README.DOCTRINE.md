@@ -29,7 +29,7 @@ You need both Jackalope with the DoctrineDBAL branch and Doctrine Common+DBAL in
 
     // only necessary on the first run, creates the database:
     $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
-    foreach ($schema->toSQL($dbConn->getDatabasePlatform()) AS $sql) {
+    foreach ($schema->toSQL($dbConn->getDatabasePlatform()) as $sql) {
         $dbConn->exec($sql);
     }
 

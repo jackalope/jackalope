@@ -7,15 +7,15 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="bootstrap_doctrine.php">
+         bootstrap="bootstrap_doctrine_dbal.php">
     <php>
         <var name="phpcr.user" value="admin" />
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="phpcr.doctrine.loader" value="/path/to/Doctrine/Common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="phpcr.doctrine.commondir" value="/path/to/Doctrine/Common/lib" />
-        <var name="phpcr.doctrine.dbaldir" value="/path/to/Doctrine/dbal/lib" />
+        <var name="phpcr.doctrine.loader" value="./tests/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="./tests/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="./tests/vendor/doctrine-dbal/lib" />
         <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="phpcr.doctrine.dbal.host" value="localhost" />
         <var name="phpcr.doctrine.dbal.username" value="root" />
@@ -25,7 +25,8 @@
 
     <testsuites>
         <testsuite name="Jackalope Doctrine DBAL Tests">
-            <directory>.</directory>
+            <directory>./Jackalope</directory>
+            <directory>./phpcr-api/</directory>
             <exclude>./Jackalope/Transport/Jackrabbit</exclude>
         </testsuite>
     </testsuites>

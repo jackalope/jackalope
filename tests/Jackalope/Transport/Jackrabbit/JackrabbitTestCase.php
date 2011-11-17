@@ -4,7 +4,7 @@ namespace Jackalope\Transport\Jackrabbit;
 
 use Jackalope\TestCase;
 
-abstract class DavexTestCase extends TestCase
+abstract class JackrabbitTestCase extends TestCase
 {
     public function setUp()
     {

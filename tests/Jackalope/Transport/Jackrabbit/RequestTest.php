@@ -7,7 +7,7 @@ use Jackalope\TestCase;
 use DOMDocument;
 use DOMXPath;
 
-class RequestTest extends DavexTestCase
+class RequestTest extends JackrabbitTestCase
 {
     protected function getCurlFixture($fixture = null, $httpCode = 200, $errno = null)
     {

@@ -20,7 +20,7 @@ foreach ($necessaryConfigValues as $val) {
     }
 }
 
-require_once($GLOBALS['phpcr.doctrine.loader']);
+require_once $GLOBALS['phpcr.doctrine.loader'];
 
 $loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['phpcr.doctrine.commondir']);
 $loader->register();
@@ -31,11 +31,11 @@ $loader->register();
 /**
  * autoloader: tests rely on an autoloader.
  */
-require_once(dirname(__FILE__) . '/../src/Jackalope/autoloader.php');
+require_once __DIR__ . '/../src/Jackalope/autoloader.php';
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
-require 'Jackalope/Transport/Jackrabbit/DavexTestCase.php';
+require 'Jackalope/Transport/Jackrabbit/JackrabbitTestCase.php';
 require 'Jackalope/Transport/DoctrineDBAL/DoctrineDBALTestCase.php';
 
 ### Load the implementation loader class ###
@@ -53,14 +53,14 @@ $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
 ));
 echo "Updating schema...";
 $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
-foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) AS $sql) {
+foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) as $sql) {
     try {
         $dbConn->exec($sql);
     } catch(PDOException $e) {
         echo $e->getMessage();
     }
 }
-foreach ($schema->toSql($dbConn->getDatabasePlatform()) AS $sql) {
+foreach ($schema->toSql($dbConn->getDatabasePlatform()) as $sql) {
     try {
     $dbConn->exec($sql);
     } catch(PDOException $e) {

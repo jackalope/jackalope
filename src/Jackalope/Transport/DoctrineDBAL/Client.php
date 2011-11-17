@@ -280,7 +280,7 @@ class Client implements TransportInterface
             $data = $this->conn->fetchAll('SELECT * FROM phpcr_namespaces');
             $this->fetchedUserNamespaces = true;
 
-            foreach ($data AS $row) {
+            foreach ($data as $row) {
                 $this->namespaces[$row['prefix']] = $row['uri'];
             }
         }
@@ -438,8 +438,8 @@ class Client implements TransportInterface
 
     private function syncBinaryData($nodeId, $binaryData)
     {
-        foreach ($binaryData AS $propertyName => $binaryValues) {
-            foreach ($binaryValues AS $idx => $data) {
+        foreach ($binaryData as $propertyName => $binaryValues) {
+            foreach ($binaryValues as $idx => $data) {
                 $this->conn->delete('phpcr_binarydata', array(
                     'node_id'       => $nodeId,
                     'property_name' => $propertyName,
@@ -461,12 +461,12 @@ class Client implements TransportInterface
         $this->conn->delete('phpcr_nodes_foreignkeys', array(
             'source_id' => $nodeId,
         ));
-        foreach ($props AS $property) {
+        foreach ($props as $property) {
             $type = $property->getType();
             if ($type == \PHPCR\PropertyType::REFERENCE || $type == \PHPCR\PropertyType::WEAKREFERENCE) {
                 $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
-                foreach ($values AS $value) {
+                foreach ($values as $value) {
                     $targetId = $this->pathExists($this->getNodePathForIdentifier($value));
                     if (!$targetId) {
                         if ($type == \PHPCR\PropertyType::REFERENCE) {
@@ -515,7 +515,7 @@ class Client implements TransportInterface
         $dom->appendChild($rootNode);
 
         $binaryData = null;
-        foreach ($properties AS $property) {
+        foreach ($properties as $property) {
             /* @var $prop \PHPCR\PropertyInterface */
             $propertyNode = $dom->createElement('sv:property');
             $propertyNode->setAttribute('sv:name', $property->getName());
@@ -542,7 +542,7 @@ class Client implements TransportInterface
                     break;
                 case \PHPCR\PropertyType::BINARY:
                     if ($property->isMultiple()) {
-                        foreach ((array)$property->getBinary() AS $binary) {
+                        foreach ((array)$property->getBinary() as $binary) {
                             $binary = stream_get_contents($binary);
                             $binaryData[$property->getName()][] = $binary;
                             $values[] = strlen($binary);
@@ -562,7 +562,7 @@ class Client implements TransportInterface
                     break;
             }
 
-            foreach ((array)$values AS $value) {
+            foreach ((array)$values as $value) {
                 $propertyNode->appendChild($dom->createElement('sv:value', $value));
             }
 
@@ -576,7 +576,7 @@ class Client implements TransportInterface
     public function getAccessibleWorkspaceNames()
     {
         $workspaceNames = array();
-        foreach ($this->conn->fetchAll("SELECT name FROM phpcr_workspaces") AS $row) {
+        foreach ($this->conn->fetchAll("SELECT name FROM phpcr_workspaces") as $row) {
             $workspaceNames[] = $row['name'];
         }
         return $workspaceNames;
@@ -602,7 +602,7 @@ class Client implements TransportInterface
         $sql = "SELECT path FROM phpcr_nodes WHERE parent = ? AND workspace_id = ?";
         $children = $this->conn->fetchAll($sql, array($path, $this->workspaceId));
 
-        foreach ($children AS $child) {
+        foreach ($children as $child) {
             $childName = explode("/", $child['path']);
             $childName = end($childName);
             $data->{$childName} = new \stdClass();
@@ -611,11 +611,11 @@ class Client implements TransportInterface
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($row['props']);
 
-        foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') AS $propertyNode) {
+        foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
             $name = $propertyNode->getAttribute('sv:name');
             $values = array();
             $type = (int)$propertyNode->getAttribute('sv:type');
-            foreach ($propertyNode->childNodes AS $valueNode) {
+            foreach ($propertyNode->childNodes as $valueNode) {
                 switch ($type) {
                     case \PHPCR\PropertyType::NAME:
                     case \PHPCR\PropertyType::URI:
@@ -736,7 +736,7 @@ class Client implements TransportInterface
             $dom = new \DOMDocument('1.0', 'UTF-8');
             $dom->loadXml($xml);
 
-            foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') AS $propertyNode) {
+            foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
                 if ($propertyName == $propertyNode->getAttribute('sv:name')) {
                     $propertyNode->parentNode->removeChild($propertyNode);
                     break;
@@ -808,7 +808,7 @@ class Client implements TransportInterface
      */
     private function validateNode($node, $def)
     {
-        foreach ($def->getDeclaredChildNodeDefinitions() AS $childDef) {
+        foreach ($def->getDeclaredChildNodeDefinitions() as $childDef) {
             /* @var $childDef \PHPCR\NodeType\NodeDefinitionInterface */
             if (!$node->hasNode($childDef->getName())) {
                 if ($childDef->getName() === '*') {
@@ -834,7 +834,7 @@ class Client implements TransportInterface
             }
         }
 
-        foreach ($def->getDeclaredPropertyDefinitions() AS $propertyDef) {
+        foreach ($def->getDeclaredPropertyDefinitions() as $propertyDef) {
             /* @var $propertyDef \PHPCR\NodeType\PropertyDefinitionInterface */
             if ($propertyDef->getName() == '*') {
                 continue;
@@ -874,7 +874,7 @@ class Client implements TransportInterface
         array_unshift($nodeTypes, $nodeDef);
         foreach ($nodeTypes as $nodeType) {
             /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
-            foreach ($nodeType->getDeclaredSupertypes() AS $superType) {
+            foreach ($nodeType->getDeclaredSupertypes() as $superType) {
                 $nodeTypes[] = $superType;
             }
         }
@@ -889,7 +889,7 @@ class Client implements TransportInterface
 
         $nodeTypes = $this->getResponsibleNodeTypes($node);
         $popertyDefs = array();
-        foreach ($nodeTypes AS $nodeType) {
+        foreach ($nodeTypes as $nodeType) {
             /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
             $this->validateNode($node, $nodeType);
         }
@@ -980,13 +980,13 @@ $/xi";
 
         $data = PHPCR2StandardNodeTypes::getNodeTypeData();
         $filteredData = array();
-        foreach ($data AS $nodeTypeData) {
+        foreach ($data as $nodeTypeData) {
             if (isset($nodeTypes[$nodeTypeData['name']])) {
                 $filteredData[$nodeTypeData['name']] = $nodeTypeData;
             }
         }
 
-        foreach ($nodeTypes AS $type => $val) {
+        foreach ($nodeTypes as $type => $val) {
             if (!isset($filteredData[$type]) && $result = $this->fetchUserNodeType($type)) {
                 $filteredData[$type] = $result;
             }
@@ -1030,7 +1030,7 @@ $/xi";
         $query = "SELECT * FROM phpcr_type_props WHERE node_type_id = ?";
         $props = $this->conn->fetchAll($query, array($data['node_type_id']));
 
-        foreach ($props AS $propertyData) {
+        foreach ($props as $propertyData) {
             $result['declaredPropertyDefinitions'][] = array(
                 'declaringNodeType' => $data['name'],
                 'name' => $propertyData['name'],
@@ -1058,7 +1058,7 @@ $/xi";
         $query = "SELECT * FROM phpcr_type_childs WHERE node_type_id = ?";
         $childs = $this->conn->fetchAll($query, array($data['node_type_id']));
 
-        foreach ($childs AS $childData) {
+        foreach ($childs as $childData) {
             $result['declaredNodeDefinitions'][] = array(
                 'declaringNodeType' => $data['name'],
                 'name' => $childData['name'],
@@ -1086,7 +1086,7 @@ $/xi";
     // inherit all doc
     public function registerNodeTypes($types, $allowUpdate)
     {
-        foreach ($types AS $type) {
+        foreach ($types as $type) {
             /* @var $type \Jackalope\NodeType\NodeTypeDefinition */
             $this->conn->insert('phpcr_type_nodes', array(
                 'name' => $type->getName(),
@@ -1100,7 +1100,7 @@ $/xi";
             $nodeTypeId = $this->conn->lastInsertId($this->sequenceTypeName);
 
             if ($propDefs = $type->getDeclaredPropertyDefinitions()) {
-                foreach ($propDefs AS $propertyDef) {
+                foreach ($propDefs as $propertyDef) {
                     /* @var $propertyDef \Jackalope\NodeType\PropertyDefinition */
                     $this->conn->insert('phpcr_type_props', array(
                         'node_type_id' => $nodeTypeId,
@@ -1120,7 +1120,7 @@ $/xi";
             }
 
             if ($childDefs = $type->getDeclaredChildNodeDefinitions()) {
-                foreach ($childDefs AS $childDef) {
+                foreach ($childDefs as $childDef) {
                     /* @var $propertyDef \PHPCR\NodeType\NodeDefinitionInterface */
                     $this->conn->insert('phpcr_type_childs', array(
                         'node_type_id' => $nodeTypeId,
@@ -1168,7 +1168,7 @@ $/xi";
             return fopen("data://text/plain,".$data[0]['data'], "r");
         } else {
             $streams = array();
-            foreach ($data AS $row) {
+            foreach ($data as $row) {
                 $streams[$row['idx']] = fopen("data://text/plain,".$row['data'], "r");
             }
             return $streams;
@@ -1201,7 +1201,7 @@ $/xi";
                 $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
                 $result = array();
-                foreach ($data AS $row) {
+                foreach ($data as $row) {
                     $result[] = array(
                         array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
                         array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
@@ -1251,13 +1251,13 @@ $/xi";
 
         $type = $weakReference ? \PHPCR\PropertyType::WEAKREFERENCE : \PHPCR\PropertyType::REFERENCE;
 
-        $sql = "SELECT CONCAT(n.path, '/', fk.source_property_name) AS path, fk.source_property_name FROM phpcr_nodes n " .
+        $sql = "SELECT CONCAT(n.path, '/', fk.source_property_name) as path, fk.source_property_name FROM phpcr_nodes n " .
                "INNER JOIN phpcr_nodes_foreignkeys fk ON n.id = fk.source_id ".
                "WHERE fk.target_id = ? AND fk.type = ?";
         $properties = $this->conn->fetchAll($sql, array($targetId, $type));
 
         $references = array();
-        foreach ($properties AS $property) {
+        foreach ($properties as $property) {
             if ($name === null || $property['source_property_name'] == $name) {
                 $references[] = $property['path'];
             }

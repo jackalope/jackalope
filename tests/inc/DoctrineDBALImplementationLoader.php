@@ -65,7 +65,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 
     public function getRepositoryFactoryParameters()
     {
-        global $dbConn; // initialized in bootstrap_doctrine.php
+        global $dbConn; // initialized in bootstrap_doctrine_dbal.php
         return array('jackalope.doctrine_dbal_connection' => $dbConn);
     }
 
@@ -93,7 +93,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
     {
         global $dbConn;
 
-        $dbConn->insert('phpcr_workspaces', array('name' => $this->config['workspace']));
+        $dbConn->insert('phpcr_workspaces', array('name' => $GLOBALS['phpcr.workspace']));
         $transport = new \Jackalope\Transport\DoctrineDBAL\Client(new \Jackalope\Factory, $dbConn);
         $GLOBALS['pdo'] = $dbConn->getWrappedConnection();
         return new \Jackalope\Repository(null, $transport);
@@ -112,7 +112,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
 
     function getFixtureLoader()
     {
-        require_once "DoctrineFixtureLoader.php";
-        return new \DoctrineFixtureLoader($GLOBALS['pdo'], __DIR__ . "/../fixtures/doctrine/");
+        require_once "DoctrineDBALFixtureLoader.php";
+        return new DoctrineDBALFixtureLoader($GLOBALS['pdo'], __DIR__ . "/../fixtures/doctrine/");
     }
 }

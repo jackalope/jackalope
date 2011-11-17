@@ -265,7 +265,7 @@ class QOMWalker
     public function walkOrderings(array $orderings)
     {
         $sql = "ORDER BY ";
-        foreach ($orderings AS $ordering) {
+        foreach ($orderings as $ordering) {
             $sql .= $this->walkOrdering($ordering);
         }
         return $sql;

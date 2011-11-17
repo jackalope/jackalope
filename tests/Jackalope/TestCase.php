@@ -19,7 +19,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
     }
 
-    protected function getTransportStub($path)
+    protected function getTransportStub()
     {
         $factory = new \Jackalope\Factory;
         $transport = $this->getMock('\Jackalope\Transport\Jackrabbit\Client', array('getNode', 'getNodeTypes', 'getNodePathForIdentifier'), array($factory, 'http://example.com'));
@@ -29,7 +29,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(json_decode($this->JSON)));
 
         $dom = new \DOMDocument();
-        $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
+        $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
         $transport->expects($this->any())
             ->method('getNodeTypes')
             ->will($this->returnValue($dom));
@@ -91,7 +91,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         $factory = new \Jackalope\Factory;
         $dom = new \DOMDocument();
-        $dom->load(dirname(__FILE__) . '/../fixtures/nodetypes.xml');
+        $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
         $converter = new \Jackalope\NodeType\NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
         $om->expects($this->any())

@@ -7,11 +7,12 @@ cscope.out
 doc/config/phpdoc.ini
 doc/html
 
-/tests/phpunit_jackrabbit.xml
-/tests/phpunit_doctrinedbal.xml
-/tests/fixtures/doctrine
-/tests/phpunit.xml
+tests/phpunit_jackrabbit.xml
+tests/phpunit_doctrine_dbal.xml
+tests/fixtures/doctrine
+tests/phpunit.xml
 
-
-jackrabbit/
-jackrabbit-standalone*.jar
+tests/vendor/doctrine-dbal
+tests/vendor/doctrine-common
+tests/vendor/jackrabbit-standalone*.jar
+tests/vendor/jackrabbit

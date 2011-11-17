@@ -1,10 +1,11 @@
 <?php
+
 require_once __DIR__.'/../phpcr-api/inc/FixtureLoaderInterface.php';
 
 /**
  * Import fixtures into the doctrine dbal backend of jackalope
  */
-class DoctrineFixtureLoader implements \PHPCR\Test\FixtureLoaderInterface
+class DoctrineDBALFixtureLoader implements \PHPCR\Test\FixtureLoaderInterface
 {
     private $testConn;
     private $fixturePath;

@@ -18,17 +18,10 @@
 
     <testsuites>
         <testsuite name="Jackalope Jackrabbit Tests">
-            <directory>.</directory>
+            <directory>./Jackalope</directory>
+            <directory>./phpcr-api/</directory>
             <exclude>./Jackalope/Transport/DoctrineDBAL</exclude>
         </testsuite>
-        <!-- if phpunit would support the full power of its config format, we
-             could add more test suites to allow the user to specify which
-             tests to run. as it is, you can specify the directy you want to
-             limit tests to on the command line.
-        <testsuite name="Jackalope API Tests">
-            <directory>phpcr-api/</directory>
-        </testsuite>
-        -->
     </testsuites>
 
     <!-- configuration for code coverage report -->

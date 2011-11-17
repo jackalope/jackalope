@@ -20,13 +20,13 @@ class JackrabbitFixtureLoader implements \PHPCR\Test\FixtureLoaderInterface
     protected $jar;
 
     /**
-     * @param string $fixturePath path to the fixtures directory. defaults to dirname(__FILE__) . '/suite/fixtures/'
-     * @param string $jackjar path to the jar file for import-export. defaults to dirname(__FILE__) . '/bin/jack.jar'
+     * @param string $fixturePath path to the fixtures directory. defaults to __DIR__ . '/suite/fixtures/'
+     * @param string $jackjar path to the jar file for import-export. defaults to __DIR__ . '/bin/jack.jar'
      */
     public function __construct($fixturePath = null, $jackjar = null)
     {
         if (is_null($fixturePath)) {
-            $this->fixturePath = dirname(__FILE__) . '/../phpcr-api/fixtures/';
+            $this->fixturePath = __DIR__ . '/../phpcr-api/fixtures/';
         } else {
             $this->fixturePath = $fixturePath;
         }
@@ -35,7 +35,7 @@ class JackrabbitFixtureLoader implements \PHPCR\Test\FixtureLoaderInterface
         }
 
         if (is_null($jackjar)) {
-            $this->jar = dirname(__FILE__) . '/../bin/jack.jar';
+            $this->jar = __DIR__ . '/../bin/jack.jar';
         } else {
             $this->jar = $jackjar;
         }
@@ -54,7 +54,7 @@ class JackrabbitFixtureLoader implements \PHPCR\Test\FixtureLoaderInterface
             'phpcr.basepath' => 'repository-base-xpath',
         );
         $opts = "";
-        foreach ($args AS $arg => $newArg) {
+        foreach ($args as $arg => $newArg) {
             if (isset($GLOBALS[$arg])) {
                 if ($opts != "") {
                     $opts .= " ";
