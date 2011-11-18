@@ -263,7 +263,7 @@ class Client implements TransactionalTransportInterface
     // inherit all doc
     public function logout()
     {
-        if (false !== $this->curl) {
+        if (!empty($this->curl)) {
             $this->curl->close();
         }
         $this->curl = false;
