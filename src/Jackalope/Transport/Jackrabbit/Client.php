@@ -4,10 +4,10 @@ namespace Jackalope\Transport\Jackrabbit;
 
 use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
-use Jackalope\TransactionalTransportInterface;
-use Jackalope\VersionableTransportInterface;
-use Jackalope\QueryableTransportInterface;
-use Jackalope\AuthorizeableTransportInterface;
+use Jackalope\Transport\TransactionalInterface;
+use Jackalope\Transport\VersioningInterface;
+use Jackalope\Transport\QueryInterface;
+use Jackalope\Transport\PermissionInterface;
 use Jackalope\NotImplementedException;
 use DOMDocument;
 use Jackalope\NodeType\NodeTypeManager;
@@ -21,7 +21,7 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  */
-class Client implements TransactionalTransportInterface, VersionableTransportInterface, QueryableTransportInterface, AuthorizeableTransportInterface
+class Client implements TransactionalInterface, VersioningInterface, QueryInterface, PermissionInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.

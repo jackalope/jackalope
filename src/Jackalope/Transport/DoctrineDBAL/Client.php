@@ -7,9 +7,7 @@ use PHPCR\RepositoryException;
 use PHPCR\Query\QueryInterface;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\RepositoryInterface;
-use Jackalope\TransportInterface;
 use PHPCR\Util\UUIDHelper;
-use Jackalope\TransportInterface;
 use PHPCR\Util\QOM\Sql2ToQomQueryConverter;
 use PHPCR\RepositoryException;
 use PHPCR\NoSuchWorkspaceException;
@@ -24,8 +22,8 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
-use Jackalope\QueryableTransportInterface;
-use Jackalope\ReferenceableTransportInterface;
+use Jackalope\Transport\QueryInterface;
+use Jackalope\Transport\ReferenceInterface;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 use Jackalope\NotImplementedException;
@@ -37,7 +35,7 @@ use Jackalope\NotImplementedException;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Client implements QueryableTransportInterface, ReferenceableTransportInterface
+class Client implements QueryInterface, ReferenceInterface
 {
     /**
      * @var Doctrine\DBAL\Connection

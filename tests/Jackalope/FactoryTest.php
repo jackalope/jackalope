@@ -13,7 +13,7 @@ class FactoryTest extends TestCase
 
     public function testJackalope()
     {
-        $reg = $this->factory->get('NamespaceRegistry', array($this->getMock('Jackalope\TransportInterface')));
+        $reg = $this->factory->get('NamespaceRegistry', array($this->getMock('Jackalope\Transport\TransportInterface')));
         $this->assertInstanceOf('Jackalope\NamespaceRegistry', $reg);
     }
 

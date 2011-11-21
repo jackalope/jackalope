@@ -19,7 +19,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
     protected $factory;
     /**
      * Storing the query result raw data in the format documented at
-     * \Jackalope\TransportInterface::query()
+     * \Jackalope\Transport\QueryInterface::query()
      * @var array
      */
     protected $rows = array();
@@ -28,7 +28,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
      * Create a new query result from raw data from transport.
      *
      * The raw data format is documented in
-     * \Jackalope\TransportInterface::query()
+     * \Jackalope\Transport\QueryInterface::query()
      *
      * @param object $factory an object factory implementing "get" as
      *      described in \Jackalope\Factory

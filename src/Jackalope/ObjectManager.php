@@ -2,6 +2,10 @@
 namespace Jackalope;
 
 use PHPCR\Util\UUIDHelper;
+use PHPCR\SessionInterface;
+
+use Jackalope\Transport\TransportInterface;
+
 use ArrayIterator;
 
 /**
@@ -99,7 +103,7 @@ class ObjectManager
      * @param TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, \PHPCR\SessionInterface $session)
+    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;

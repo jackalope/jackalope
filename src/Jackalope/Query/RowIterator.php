@@ -24,7 +24,7 @@ class RowIterator implements \SeekableIterator, \Countable
      * @param object $factory an object factory implementing "get" as
      *      described in \Jackalope\Factory
      * @param ObjectManager $objectManager
-     * @param array $rows Raw data as described in QueryResult and \Jackalope\TransportInterface
+     * @param array $rows Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
     public function __construct($factory, $objectmanager, $rows)
     {

@@ -3,13 +3,18 @@
 namespace Jackalope;
 
 use ArrayIterator;
+
 use PHPCR\PropertyType;
+use PHPCR\SessionInterface;
+use PHPCR\SimpleCredentials;
+
+use Jackalope\Transport\TransportInterface;
 
 // inherit all doc
 /**
  * @api
  */
-class Session implements \PHPCR\SessionInterface
+class Session implements SessionInterface
 {
     /**
      * A registry for all created sessions to be able to reference them by id in
@@ -78,7 +83,7 @@ class Session implements \PHPCR\SessionInterface
      *      used to log in, in order to implement Session::getUserID()
      * @param TransportInterface $transport the transport implementation
      */
-    public function __construct($factory, Repository $repository, $workspaceName, \PHPCR\SimpleCredentials $credentials, TransportInterface $transport)
+    public function __construct($factory, Repository $repository, $workspaceName, SimpleCredentials $credentials, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->repository = $repository;

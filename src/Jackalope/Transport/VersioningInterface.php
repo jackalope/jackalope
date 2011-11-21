@@ -1,5 +1,6 @@
 <?php
-namespace Jackalope;
+
+namespace Jackalope\Transport;
 
 use Jackalope\NodeType\NodeTypeManager;
 
@@ -14,7 +15,7 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
-interface VersionableTransportInterface extends ReferenceableTransportInterface
+interface VersioningInterface extends ReferenceInterface
 {
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jackalope;
+namespace Jackalope\Transport;
 
 use Jackalope\NodeType\NodeTypeManager;
 

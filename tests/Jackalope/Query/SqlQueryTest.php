@@ -31,7 +31,7 @@ class SqlQueryTest extends TestCase
     {
         $dummyData = 'x';
         $factory = $this->getMock('\Jackalope\Factory');
-        $transport = $this->getMock('\Jackalope\QueryableTransportInterface');
+        $transport = $this->getMock('\Jackalope\Transport\QueryInterface');
         $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $transport, $this->getSessionMock()));
 
         $query = $this->getQuery($factory, null, $om);

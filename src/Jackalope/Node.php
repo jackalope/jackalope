@@ -53,14 +53,14 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      * @param object $factory an object factory implementing "get" as
      *      described in \Jackalope\Factory
      * @param array $rawData in the format as returned from
-     *      \Jackalope\TransportInterface
+     *      \Jackalope\Transport\TransportInterface
      * @param string $path the absolute path of this node
      * @param Session $session
      * @param ObjectManager $objectManager
      * @param boolean $new set to true if this is a new node being created.
      *      Defaults to false which means the node is loaded from storage.
      *
-     * @see \Jackalope\TransportInterface::getNode()
+     * @see \Jackalope\Transport\TransportInterface::getNode()
      *
      * @private
      */
@@ -76,7 +76,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * Initialize or update this object with raw data from backend.
      *
-     * @param array $rawData in the format as returned from Jackalope\TransportInterface
+     * @param array $rawData in the format as returned from Jackalope\Transport\TransportInterface
      * @param boolean $update whether to initialize this object or update
      * @param boolean $keepChanges only used if $update is true, same as $keepChanges in refresh()
      *

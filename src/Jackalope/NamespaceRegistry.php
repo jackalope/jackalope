@@ -2,6 +2,8 @@
 
 namespace Jackalope;
 
+use Jackalope\Transport\TransportInterface;
+
 use ArrayIterator;
 
 /**
