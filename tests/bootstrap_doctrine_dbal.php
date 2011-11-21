@@ -9,29 +9,30 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
 }
 
 /**
- * Bootstrap file for jackalope doctrine dbal
+ * bootstrap file for jackalope doctrine dbal tests
+ *
+ * If you want to overwrite the defaults, you can to specify the autoloader and doctrine sources
  */
-
-// Make sure we have the necessary config
-$necessaryConfigValues = array('phpcr.doctrine.loader', 'phpcr.doctrine.commondir', 'phpcr.doctrine.dbaldir');
-foreach ($necessaryConfigValues as $val) {
-    if (empty($GLOBALS[$val])) {
-        die('Please set '.$val.' in your phpunit.xml.' . "\n");
+if (isset($GLOBALS['phpcr.doctrine.loader'])) {
+    require_once $GLOBALS['phpcr.doctrine.loader'];
+    // Make sure we have the necessary config
+    $necessaryConfigValues = array('phpcr.doctrine.loader', 'phpcr.doctrine.commondir', 'phpcr.doctrine.dbaldir');
+    foreach ($necessaryConfigValues as $val) {
+        if (empty($GLOBALS[$val])) {
+            die('Please set '.$val.' in your phpunit.xml.' . "\n");
+        }
     }
+    $loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['phpcr.doctrine.commondir']);
+    $loader->register();
+
+    $loader = new \Doctrine\Common\ClassLoader("Doctrine\DBAL", $GLOBALS['phpcr.doctrine.dbaldir']);
+    $loader->register();
 }
-
-require_once $GLOBALS['phpcr.doctrine.loader'];
-
-$loader = new \Doctrine\Common\ClassLoader("Doctrine\Common", $GLOBALS['phpcr.doctrine.commondir']);
-$loader->register();
-
-$loader = new \Doctrine\Common\ClassLoader("Doctrine\DBAL", $GLOBALS['phpcr.doctrine.dbaldir']);
-$loader->register();
 
 /**
  * autoloader: tests rely on an autoloader.
  */
-require_once __DIR__ . '/../src/Jackalope/autoloader.php';
+require_once __DIR__ . '/../src/autoload.doctrine-dbal.dist.php';
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
@@ -51,6 +52,8 @@ $dbConn = \Doctrine\DBAL\DriverManager::getConnection(array(
     'password'  => $GLOBALS['phpcr.doctrine.dbal.password'],
     'dbname'    => $GLOBALS['phpcr.doctrine.dbal.dbname']
 ));
+
+// TODO: refactor this into the command (a --reset option) and use the command instead
 echo "Updating schema...";
 $schema = \Jackalope\Transport\DoctrineDBAL\RepositorySchema::create();
 foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) as $sql) {

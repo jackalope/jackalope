@@ -3,9 +3,8 @@
 
 set_time_limit(0);
 
-$vendorDir = __DIR__;
+$vendorDir = __DIR__.'/../../lib/vendor';
 $deps = array(
-    array('doctrine-common', 'http://github.com/doctrine/common.git', 'origin/master'),
     array('doctrine-dbal', 'http://github.com/doctrine/dbal.git', 'origin/master'),
 );
 
@@ -16,8 +15,9 @@ foreach ($deps as $dep) {
 
     $installDir = $vendorDir.'/'.$name;
     if (!is_dir($installDir)) {
+        echo "Cloning $name into $installDir\n";
         system(sprintf('git clone -q %s %s', escapeshellarg($url), escapeshellarg($installDir)));
     }
 
-    system(sprintf('cd %s && git fetch -q origin && git reset --hard %s', escapeshellarg($installDir), escapeshellarg($rev)));
+    system(sprintf('cd %s && git fetch -q origin && git reset --hard %s && git submodule update --init', escapeshellarg($installDir), escapeshellarg($rev)));
 }

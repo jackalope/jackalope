@@ -15,7 +15,7 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
 /**
  * autoloader: tests rely on an autoloader.
  */
-require __DIR__.'/../src/Jackalope/autoloader.php';
+require __DIR__.'/../src/autoload.jackrabbit.dist.php';
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
