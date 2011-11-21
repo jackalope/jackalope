@@ -77,6 +77,13 @@ any SQL database supported by doctrine.
 
 PHP code: http://github.com/jackalope/jackalope (see Transport folder)
 
+The code for the Doctrine transport is located in:
+
+    src/Jackalope/Transport/Doctrine/DoctrineTransport.php
+    src/Jackalope/Transport/Doctrine/RepositorySchema.php
+
+The first file contains all the relevant transport code, the second the doctrine schema that is required to run this.
+
 
 ### Jackrabbit: WebDAV/davex protocol to talk to Jackrabbit
 
@@ -84,3 +91,9 @@ The jackrabbit transport stores data into an Apache Jackrabbit server using
 a pure PHP implementation of the WebDAV/davex remoting protocol.
 
 PHP code: http://github.com/jackalope/jackalope (see Transport folder)
+
+
+To hack on Jackalope, you might want to read the documentation of the protocol used between Jackalope and the Jackrabbit backend. We have 2 files to download:
+
+* "jcr-webdav.doc":https://fosswiki.liip.ch/download/attachments/11501816/jcr-webdav_read.doc
+* "jcr-webdav-protocol.doc":https://fosswiki.liip.ch/download/attachments/11501816/JCR_Webdav_Protocol.doc

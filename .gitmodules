@@ -4,3 +4,6 @@
 [submodule "lib/phpcr"]
 	path = lib/phpcr
 	url = git://github.com/phpcr/phpcr.git
+[submodule "lib/phpcr-utils"]
+	path = lib/phpcr-utils
+	url = git://github.com/phpcr/phpcr-utils.git

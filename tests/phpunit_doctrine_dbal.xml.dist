@@ -13,9 +13,11 @@
         <var name="phpcr.pass" value="admin" />
         <var name="phpcr.workspace" value="tests" />
         <!-- Path to Doctrine stuff for transport -->
-        <var name="phpcr.doctrine.loader" value="./tests/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
-        <var name="phpcr.doctrine.commondir" value="./tests/vendor/doctrine-common/lib" />
-        <var name="phpcr.doctrine.dbaldir" value="./tests/vendor/doctrine-dbal/lib" />
+        <!-- if you want your vendors in a different than the default path, uncomment and change this
+        <var name="phpcr.doctrine.loader" value="../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php" />
+        <var name="phpcr.doctrine.commondir" value="../lib/vendor/doctrine-common/lib" />
+        <var name="phpcr.doctrine.dbaldir" value="../lib/vendor/doctrine-dbal/lib" />
+        -->
         <var name="phpcr.doctrine.dbal.driver" value="pdo_mysql" />
         <var name="phpcr.doctrine.dbal.host" value="localhost" />
         <var name="phpcr.doctrine.dbal.username" value="root" />

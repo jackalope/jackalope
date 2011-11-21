@@ -9,9 +9,9 @@ use PHPCR\NamespaceRegistryInterface;
 use PHPCR\RepositoryInterface;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\Util\QOM\Sql2ToQomQueryConverter;
-use PHPCR\RepositoryException;
 use PHPCR\NoSuchWorkspaceException;
 use PHPCR\ItemExistsException;
+use PHPCR\ItemNotFoundException;
 use PHPCR\ReferentialIntegrityException;
 use PHPCR\ValueFormatException;
 use PHPCR\PathNotFoundException;
@@ -1266,4 +1266,23 @@ $/xi";
             throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
         }
     }
+
+    // TODO: remove once transport is split
+    public function checkinItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function checkoutItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
+        throw new NotImplementedException();
+    }
+    public function getVersionHistory($path)
+    {
+        throw new NotImplementedException();
+    }
+
 }

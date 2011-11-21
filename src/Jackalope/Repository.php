@@ -5,13 +5,15 @@ namespace Jackalope;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionalInterface;
 use PHPCR\CredentialsInterface;
+use PHPCR\RepositoryException;
+use PHPCR\RepositoryInterface;
 
 /**
  * The jackalope implementation of the repository.
  *
  * {@inheritDoc}
  */
-class Repository implements \PHPCR\RepositoryInterface
+class Repository implements RepositoryInterface
 {
     /**
      * The descriptor key for the version of the specification
@@ -88,8 +90,9 @@ class Repository implements \PHPCR\RepositoryInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function login(CredentialsInterface $credentials = null, $workspaceName = null)
@@ -99,7 +102,7 @@ class Repository implements \PHPCR\RepositoryInterface
             $workspaceName = 'default';
         }
         if (! $this->transport->login($credentials, $workspaceName)) {
-            throw new \PHPCR\RepositoryException('transport failed to login without telling why');
+            throw new RepositoryException('transport failed to login without telling why');
         }
 
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
@@ -111,8 +114,9 @@ class Repository implements \PHPCR\RepositoryInterface
         return $session;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDescriptorKeys()
@@ -123,8 +127,9 @@ class Repository implements \PHPCR\RepositoryInterface
         return array_keys($this->descriptors);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isStandardDescriptor($key)
@@ -134,8 +139,9 @@ class Repository implements \PHPCR\RepositoryInterface
         return in_array($key, $consts);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDescriptor($key)
@@ -146,7 +152,7 @@ class Repository implements \PHPCR\RepositoryInterface
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
-            // TODO: return false for everything we know is not implemented in jackalope
+                // TODO: return false for everything we know is not implemented in jackalope
         }
 
         // handle the rest by the transport to allow non-feature complete transports

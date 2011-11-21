@@ -1,8 +1,22 @@
 <?php
+
 namespace Jackalope;
 
 use ArrayIterator;
+use IteratorAggregate;
+use InvalidArgumentException;
+use LogicException;
+
 use PHPCR\PropertyType;
+use PHPCR\NodeInterface;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\RepositoryException;
+use PHPCR\PathNotFoundException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\InvalidItemStateException;
+use PHPCR\ItemExistsException;
+
+use Jackalope\Factory;
 
 /**
  * The Node interface represents a node in a workspace.
@@ -11,7 +25,7 @@ use PHPCR\PropertyType;
  *
  * @api
  */
-class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
+class Node extends Item implements IteratorAggregate, NodeInterface
 {
     /**
      * The index if this is a same-name sibling.
@@ -64,7 +78,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
      *
      * @private
      */
-    public function __construct($factory, $rawData, $path, Session $session,
+    public function __construct(Factory $factory, $rawData, $path, Session $session,
                                 ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
@@ -152,7 +166,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                                 }
                             } else {
                                 // this will always fall into the creation mode
-                                $this->_setProperty($key, $value, \PHPCR\PropertyType::BINARY, true);
+                                $this->_setProperty($key, $value, PropertyType::BINARY, true);
                             }
                         }
                     } //else this is a type declaration
@@ -176,11 +190,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     case 'jcr:primaryType':
                         $this->primaryType = $value;
                         // type information is exposed as property too, although there exist more specific methods
-                        $this->_setProperty('jcr:primaryType', $value, \PHPCR\PropertyType::NAME, true);
+                        $this->_setProperty('jcr:primaryType', $value, PropertyType::NAME, true);
                         break;
                     case 'jcr:mixinTypes':
                         // type information is exposed as property too, although there exist more specific methods
-                        $this->_setProperty($key, $value, \PHPCR\PropertyType::NAME, true);
+                        $this->_setProperty($key, $value, PropertyType::NAME, true);
                         break;
 
                     // OPTIMIZE: do not instantiate properties until needed
@@ -252,18 +266,18 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             // forward to real parent
             try {
                 $parentNode = $this->objectManager->getNode(dirname($relPath), $this->path);
-            } catch(\PHPCR\ItemNotFoundException $e) {
+            } catch(ItemNotFoundException $e) {
                 try {
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
                     $prop = $this->objectManager->getPropertyByPath($this->getChildPath(dirname($relPath)));
                     if (! is_null($prop)) {
-                        throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node below a property');
+                        throw new ConstraintViolationException('Not allowed to add a node below a property');
                     }
-                } catch(\PHPCR\ItemNotFoundException $e) {
+                } catch(ItemNotFoundException $e) {
                     //ignore to throw the PathNotFoundException below
                 }
 
-                throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+                throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
             return $parentNode->addNode(basename($relPath), $primaryNodeTypeName);
         }
@@ -272,9 +286,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             // sanitize
             $nt = $ntm->getNodeType($primaryNodeTypeName);
             if ($nt->isMixin()) {
-                throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
+                throw new ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
             } elseif ($nt->isAbstract()) {
-                throw new \PHPCR\NodeType\ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
+                throw new ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
             }
         } else {
             if ($this->primaryType === 'rep:root') {
@@ -289,7 +303,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                     }
                 }
                 if (is_null($primaryNodeTypeName)) {
-                    throw new \PHPCR\NodeType\ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
+                    throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
                 }
             }
         }
@@ -297,10 +311,10 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         // create child node
         //sanity check: no index allowed. TODO: we should verify this is a valid node name
         if (false !== strpos($relPath, ']')) {
-            throw new \PHPCR\RepositoryException("Index not allowed in name of newly created node: $relPath");
+            throw new RepositoryException("Index not allowed in name of newly created node: $relPath");
         }
         if (in_array($relPath, $this->nodes)) {
-            throw new \PHPCR\ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
+            throw new ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
         }
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
@@ -336,7 +350,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         }
         $oldpos = array_search($srcChildRelPath, $this->nodes);
         if ($oldpos === false) {
-            throw new \PHPCR\ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
         }
 
         if ($destChildRelPath == null) {
@@ -347,7 +361,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             //insert somewhere specified by dest path
             $newpos = array_search($destChildRelPath, $this->nodes);
             if ($newpos === false) {
-                throw new \PHPCR\ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
+                throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             }
             if ($oldpos < $newpos) {
                 //we first unset, so
@@ -364,7 +378,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     /**
      * @api
      */
-    public function setProperty($name, $value, $type = \PHPCR\PropertyType::UNDEFINED)
+    public function setProperty($name, $value, $type = PropertyType::UNDEFINED)
     {
         $this->checkState();
 
@@ -390,8 +404,8 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
         try {
             $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
-        } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (ItemNotFoundException $e) {
+            throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
         return $node;
     }
@@ -433,7 +447,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
 
         if (false === strpos($relPath, '/')) {
             if (!isset($this->properties[$relPath])) {
-                throw new \PHPCR\PathNotFoundException("Property $relPath in ".$this->path);
+                throw new PathNotFoundException("Property $relPath in ".$this->path);
             }
 
             return $this->properties[$relPath];
@@ -489,9 +503,9 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             //we know for sure the properties exist, as they come from the array keys of the array we are accessing
             $type = $this->properties[$name]->getType();
             if (! $dereference &&
-                    (\PHPCR\PropertyType::REFERENCE == $type
-                    || \PHPCR\PropertyType::WEAKREFERENCE == $type
-                    || \PHPCR\PropertyType::PATH == $type)
+                    (PropertyType::REFERENCE == $type
+                    || PropertyType::WEAKREFERENCE == $type
+                    || PropertyType::PATH == $type)
             ) {
                 $result[$name] = $this->properties[$name]->getString();
             } else {
@@ -517,11 +531,11 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 $primary_item = $this->session->getItem($this->path . '/' . $item_name);
             }
         } catch (\Exception $ex) {
-            throw new \PHPCR\RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
+            throw new RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
         }
 
         if ($primary_item === null) {
-           throw new \PHPCR\ItemNotFoundException("No primary item found for node '{$this->path}'");
+           throw new ItemNotFoundException("No primary item found for node '{$this->path}'");
         }
 
         return $primary_item;
@@ -586,7 +600,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             return array_search($relPath, $this->nodes) !== false;
         }
         if (! strlen($relPath) || $relPath[0] == '/') {
-            throw new \InvalidArgumentException("'$relPath' is not a relative path");
+            throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->nodeExists($this->getChildPath($relPath));
@@ -604,7 +618,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
             return isset($this->properties[$relPath]);
         }
         if (! strlen($relPath) || $relPath[0] == '/') {
-            throw new \InvalidArgumentException("'$relPath' is not a relative path");
+            throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->propertyExists($this->getChildPath($relPath));
@@ -728,7 +742,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
         $nodeType = $typemgr->getNodeType($mixinName);
         if (! $nodeType->isMixin()) {
-            throw new \PHPCR\NodeType\ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
+            throw new ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
         }
 
         $this->checkState();
@@ -740,7 +754,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 $this->setModified();
             }
         } else {
-            $this->setProperty('jcr:mixinTypes', array($mixinName), \PHPCR\PropertyType::NAME);
+            $this->setProperty('jcr:mixinTypes', array($mixinName), PropertyType::NAME);
             $this->setModified();
         }
     }
@@ -907,18 +921,18 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     public function refresh($keepChanges, $internal = false)
     {
         if (! $internal && $this->isDeleted()) {
-            throw new \PHPCR\InvalidItemStateException('This item has been removed and can not be refreshed');
+            throw new InvalidItemStateException('This item has been removed and can not be refreshed');
         }
         $deleted = false;
 
         // Get properties and children from backend
         try {
             $json = $this->objectManager->getTransport()->getNode(is_null($this->oldPath) ? $this->path : $this->oldPath);
-        } catch(\PHPCR\ItemNotFoundException $ex) {
+        } catch(ItemNotFoundException $ex) {
 
             // The node was deleted in another session
             if (! $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
-                throw new \LogicException($this->path . " should be purged and not kept");
+                throw new LogicException($this->path . " should be purged and not kept");
             }
             $keepChanges = false; // delete never keeps changes
             if (! $internal) {
@@ -981,7 +995,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
                 // inside a refresh operation
                 return;
             }
-            throw new \PHPCR\ItemNotFoundException("Could not remove child node because it's already gone");
+            throw new ItemNotFoundException("Could not remove child node because it's already gone");
         }
 
         unset($this->nodes[$key]);
@@ -1022,7 +1036,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
         $this->setModified();
 
         if (!array_key_exists($name, $this->properties)) {
-            throw new \PHPCR\ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
+            throw new ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
         unset($this->properties[$name]);
     }
@@ -1039,7 +1053,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     protected function getChildPath($p)
     {
         if ('' == $p) {
-            throw new \InvalidArgumentException("Name can not be empty");
+            throw new InvalidArgumentException("Name can not be empty");
         }
         if ($p[0] == '/') {
             return $p;
@@ -1119,7 +1133,7 @@ class Node extends Item implements \IteratorAggregate, \PHPCR\NodeInterface
     protected function _setProperty($name, $value, $type, $internal)
     {
         if ($name == '' | false !== strpos($name, '/')) {
-            throw new \InvalidArgumentException("The name '$name' is no valid property name");
+            throw new InvalidArgumentException("The name '$name' is no valid property name");
         }
 
         if (!isset($this->properties[$name])) {

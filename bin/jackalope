@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+$autoload = __DIR__.'/../src/autoload.php';
+if (! file_exists($autoload)) {
+    die("Please copy one of the autoload dist files in src/ to $autoload and adjust as needed\n");
+}
+
+require_once($autoload);
+
+$configFile = getcwd() . DIRECTORY_SEPARATOR . 'cli-config.php';
+
+$helperSet = null;
+if (file_exists($configFile)) {
+    if (!is_readable($configFile)) {
+        trigger_error(
+            'Configuration file [' . $configFile . '] does not have read permission.', E_USER_ERROR
+        );
+    }
+
+    require $configFile;
+
+    foreach ($GLOBALS as $helperSetCandidate) {
+        if ($helperSetCandidate instanceof \Symfony\Component\Console\Helper\HelperSet) {
+            $helperSet = $helperSetCandidate;
+            break;
+        }
+    }
+} else {
+    trigger_error(
+        'Configuration file [' . $configFile . '] does not exist. See the README.md file', E_USER_ERROR
+    );
+}
+
+$helperSet = ($helperSet) ?: new \Symfony\Component\Console\Helper\HelperSet();
+
+$cli = new \Symfony\Component\Console\Application('Jackalope Command Line Interface', '0.1');
+$cli->setCatchExceptions(true);
+$cli->setHelperSet($helperSet);
+$cli->addCommands(array(
+    new \PHPCR\Util\Console\Command\CreateWorkspaceCommand(),
+    new \PHPCR\Util\Console\Command\DumpCommand(),
+    new \PHPCR\Util\Console\Command\PurgeCommand(),
+    new \PHPCR\Util\Console\Command\RegisterNodeTypesCommand(),
+    new \PHPCR\Util\Console\Command\Sql2Command(),
+    new \Jackalope\Tools\Console\Command\InitDoctrineDbalCommand(),
+    new \Jackalope\Tools\Console\Command\JackrabbitCommand(),
+));
+$cli->run();
+

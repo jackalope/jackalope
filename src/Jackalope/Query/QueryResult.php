@@ -1,22 +1,30 @@
 <?php
+
 namespace Jackalope\Query;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
+use Jackalope\Factory;
 
-// inherit all doc
+use PHPCR\Query\QueryResultInterface;
+
+use IteratorAggregate;
+
 /**
  * @api
  */
-class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterface
+class QueryResult implements IteratorAggregate, QueryResultInterface
 {
     /**
      * @var \Jackalope\ObjectManager
      */
     protected $objectmanager;
+
     /**
      * @var \Jackalope\Factory
      */
     protected $factory;
+
     /**
      * Storing the query result raw data in the format documented at
      * \Jackalope\Transport\QueryInterface::query()
@@ -35,7 +43,7 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
      * @param array $rawData the data as returned by the transport
      * @param ObjectManager $objectManager
      */
-    public function __construct($factory, $rawData, $objectmanager)
+    public function __construct(Factory $factory, $rawData, ObjectManager $objectmanager)
     {
         $this->factory = $factory;
         $this->rows = $rawData;
@@ -61,8 +69,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         return $this->getRows();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getColumnNames()
@@ -78,8 +87,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         return array_unique($columnNames);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRows()
@@ -87,8 +97,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         return $this->factory->get('Query\RowIterator', array($this->objectmanager, $this->rows));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodes($prefetch = false)
@@ -109,8 +120,9 @@ class QueryResult implements \IteratorAggregate, \PHPCR\Query\QueryResultInterfa
         return $this->objectmanager->getNodesByPath($paths);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSelectorNames()
