@@ -6,7 +6,7 @@
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 
-require_once __DIR__ . "/../lib/phpcr/src/PHPCR/Util/UUIDHelper.php";
+require_once __DIR__ . "/../lib/phpcr-utils/src/PHPCR/Util/UUIDHelper.php";
 
 $srcDir = __DIR__ . "/phpcr-api/fixtures";
 $destDir = __DIR__ . "/fixtures/doctrine";
