@@ -1192,13 +1192,13 @@ $/xi";
         $language = $query->getLanguage();
         if ($language === QueryInterface::JCR_SQL2) {
             $parser = new Sql2ToQomQueryConverter($this->factory->get('Jackalope\Query\QOM\QueryObjectModelFactory'));
-            $qom = $parser->parse($query->getStatement());
+            $query = $parser->parse($query->getStatement());
             $language = QueryInterface::JCR_JQOM;
         }
 
         if ($language === QueryInterface::JCR_JQOM) {
             $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
-            $sql = $qomWalker->walkQOMQuery($qom);
+            $sql = $qomWalker->walkQOMQuery($query);
 
             $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
             $data = $this->conn->fetchAll($sql, array($this->workspaceId));
