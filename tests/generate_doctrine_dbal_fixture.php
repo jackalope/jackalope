@@ -58,6 +58,8 @@ foreach ($ri as $file) {
             'id' => $nodeId++,
             'path' => '/',
             'parent' => '',
+            'local_name' => '',
+            'namespace' => '',
             'workspace_id' => 1,
             'identifier' => $id,
             'type' => 'nt:unstructured',
@@ -213,10 +215,19 @@ foreach ($ri as $file) {
             if (!$parent) {
                 $parent = '/';
             }
+
+            if (strpos(':', $attr)) {
+                list($namespace, $local_name) = explode(':', $attr);
+            } else {
+                $namespace = '';
+                $local_name = $attr;
+            }
             $dataSetBuilder->addRow('phpcr_nodes', array(
                 'id' => $nodeId,
                 'path' => $path,
                 'parent' => $parent,
+                'local_name' => $local_name,
+                'namespace' => $namespace,
                 'workspace_id' => 1,
                 'identifier' => $id,
                 'type' => $attrs['jcr:primaryType']['value'][0],
