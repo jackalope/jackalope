@@ -70,7 +70,7 @@ foreach ($schema->toSql($dbConn->getDatabasePlatform()) as $sql) {
         echo $e->getMessage();
     }
 }
-$GLOBALS['phpcr.doctrine.loaded'] = true;
+$GLOBALS['phpcr.doctrine_dbal.loaded'] = true;
 echo "done.\n";
 
 /** some constants */
