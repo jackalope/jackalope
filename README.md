@@ -32,7 +32,7 @@ Please see the file LICENSE in this folder.
 
 ## Jackalope Jackrabbit
 
-Besides the Jackalope repository, you need the Jackrabbit server component. For instructions, see [Jackalope Wiki](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit)
+Besides the Jackalope repository, you need the Jackrabbit server component. For instructions, see [Jackalope Wiki](https://github.com/jackalope/jackalope/wiki/Running-a-jackrabbit-server)
 
 
 ## Jackalope - Doctrine DBAL

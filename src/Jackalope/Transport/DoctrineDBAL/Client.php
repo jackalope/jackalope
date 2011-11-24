@@ -188,7 +188,7 @@ class Client implements TransportInterface
         }
 
         if (!$this->workspaceId) {
-            throw new NoSuchWorkspaceException;
+            throw new NoSuchWorkspaceException("Requested workspace: $workspaceName");
         }
 
         $this->loggedIn = true;
@@ -210,8 +210,18 @@ class Client implements TransportInterface
 
     private function getWorkspaceId($workspaceName)
     {
-        $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
-        return $this->conn->fetchColumn($sql, array($workspaceName));
+        try {
+            $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
+            return $this->conn->fetchColumn($sql, array($workspaceName));
+        } catch(\PDOException $e) {
+            if (1045 == $e->getCode()) {
+                throw new \PHPCR\LoginException('Access denied with your credentials: '.$e->getMessage());
+            }
+            if ("42S02" == $e->getCode()) {
+                throw new \PHPCR\RepositoryException('You did not properly set up the database for the repository. See README file for more information. Message from backend: '.$e->getMessage());
+            }
+            throw new \PHPCR\RepositoryException('Unexpected error talking to the backend: '.$e->getMessage());
+        }
     }
 
     private function assertLoggedIn()
