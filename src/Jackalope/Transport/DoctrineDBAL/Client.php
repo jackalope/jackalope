@@ -15,6 +15,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\ReferentialIntegrityException;
 use PHPCR\ValueFormatException;
 use PHPCR\PathNotFoundException;
+use PHPCR\Query\InvalidQueryException;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -1192,7 +1193,11 @@ $/xi";
         $language = $query->getLanguage();
         if ($language === QueryInterface::JCR_SQL2) {
             $parser = new Sql2ToQomQueryConverter($this->factory->get('Jackalope\Query\QOM\QueryObjectModelFactory'));
-            $query = $parser->parse($query->getStatement());
+            try {
+                $query = $parser->parse($query->getStatement());
+            } catch (\Exception $e) {
+                throw new InvalidQueryException('Invalid query: '.$query->getStatement());
+            }
             $language = QueryInterface::JCR_JQOM;
         }
 
