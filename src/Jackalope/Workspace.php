@@ -1,6 +1,8 @@
 <?php
 namespace Jackalope;
 
+use PHPCR\UnsupportedRepositoryOperationException;
+
 // inherit all doc
 /**
  * @api
@@ -90,6 +92,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
     //clone is a reserved keyword in php and may not be used as a function name.
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         throw new NotImplementedException('Write');
         /* @param boolean $removeExisting if false then this method throws an ItemExistsException on identifier conflict
          *                                with an incoming node. If true then a identifier conflict is resolved by removing
@@ -117,6 +123,7 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getLockManager()
     {
+        // TODO: also check for interface on transport
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 
@@ -126,6 +133,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getQueryManager()
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\QueryInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support queries');
+        }
+
         return $this->factory->get('Query\QueryManager', array($this->session->getObjectManager()));
     }
 
@@ -142,6 +153,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function setTransactionManager(\PHPCR\Transaction\UserTransactionInterface $utx)
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->utx = $utx;
     }
 
@@ -151,6 +166,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getTransactionManager()
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         if (! $this->utx) {
             throw new \PHPCR\UnsupportedRepositoryOperationException('Transactions are currently disabled');
         }
@@ -194,6 +213,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function getVersionManager()
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
         return $this->factory->get('Version\VersionManager', array($this->session->getObjectManager()));
     }
 
@@ -222,6 +245,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function createWorkspace($name, $srcWorkspace = null)
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\WorkspaceManagementInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support workspace management');
+        }
+
         return $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
     }
 
@@ -233,6 +260,10 @@ class Workspace implements \PHPCR\WorkspaceInterface
      */
     public function deleteWorkspace($name)
     {
+        if (! $this->session->getTransport() instanceof \Jackalope\Transport\WorkspaceManagementInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support workspace management');
+        }
+
         throw new \PHPCR\UnsupportedRepositoryOperationException();
     }
 }

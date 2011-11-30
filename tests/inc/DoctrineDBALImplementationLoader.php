@@ -44,8 +44,11 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Reading\\NodeReadMethodsTest::testGetSharedSetUnreferenced', // TODO: should this be moved to 14_ShareableNodes
                     'Reading\\PropertyReadMethodsTest::testJcrCreated', // fails because NodeTypeDefinitions do not work inside DoctrineDBAL transport yet.
 
-                    'Query\QueryManagerTest::testGetQuery',
-                    'Query\QueryManagerTest::testGetQueryInvalid',
+                    'Query\\QueryManagerTest::testGetQuery',
+                    'Query\\QueryManagerTest::testGetQueryInvalid',
+                    'Query\\QueryObjectSql2Test::testGetStoredQueryPath',
+                    'Query\\QuerySql2OperationsTest::testQueryJoin',
+                    'Query\\QuerySql2OperationsTest::testQueryJoinReference',
 
                     'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
                     'Writing\\CopyMethodsTest::testCopyUpdateOnCopy',

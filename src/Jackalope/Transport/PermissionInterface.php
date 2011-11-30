@@ -5,13 +5,7 @@ namespace Jackalope\Transport;
 use Jackalope\NodeType\NodeTypeManager;
 
 /**
- * Implementation specific interface for implementing transactional transport
- * layers.
- *
- * Jackalope encapsulates all communication with the storage backend within
- * this interface.
- *
- * Adds the methods necessary for authentication handling
+ * Defines the methods needed for permission checks.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */

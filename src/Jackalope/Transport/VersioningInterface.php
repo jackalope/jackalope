@@ -5,17 +5,11 @@ namespace Jackalope\Transport;
 use Jackalope\NodeType\NodeTypeManager;
 
 /**
- * Implementation specific interface for implementing transactional transport
- * layers.
- *
- * Jackalope encapsulates all communication with the storage backend within
- * this interface.
- *
- * Adds the methods necessary for version handling
+ * Defines the method needed for versioning support.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
-interface VersioningInterface extends ReferenceInterface
+interface VersioningInterface extends TransportInterface
 {
 
     /**
@@ -65,4 +59,7 @@ interface VersioningInterface extends ReferenceInterface
      * TODO: Does this make any sense? We should maybe return the root version to make this more generic.
      */
     public function getVersionHistory($path);
+
+    //TODO
+    //public function removeVersion();
 }

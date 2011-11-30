@@ -3,6 +3,7 @@ namespace Jackalope;
 
 use PHPCR\Util\UUIDHelper;
 use PHPCR\SessionInterface;
+use PHPCR\UnsupportedRepositoryOperationException;
 
 use Jackalope\Transport\TransportInterface;
 
@@ -543,7 +544,12 @@ class ObjectManager
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
-        return $this->transport->registerNodeTypes($types, $allowUpdate);
+        if ($this->transport instanceof \Jackalope\Transport\NodeTypeManagementInterface) {
+            return $this->transport->registerNodeTypes($types, $allowUpdate);
+        } elseif ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+            throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+        }
+        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
     }
 
     /**
@@ -613,7 +619,12 @@ class ObjectManager
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
+        if ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+            return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
+        } elseif ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+            throw new UnsupportedRepositoryOperationException('TODO: parse cnd and call registerNodeTypes');
+        }
+        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
     }
 
     /**
@@ -650,6 +661,10 @@ class ObjectManager
      */
     public function save()
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         // TODO: adjust transport to accept lists and do a diff request instead of single requests
 
         /* remove nodes/properties
@@ -763,6 +778,9 @@ class ObjectManager
      */
     public function checkin($absPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
         $node = $this->getNodeByPath($path, "Version\Version");
         $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
@@ -786,6 +804,9 @@ class ObjectManager
      */
     public function checkout($absPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
         $this->transport->checkoutItem($absPath); //FIXME: what about pending move operations?
     }
 
@@ -797,6 +818,10 @@ class ObjectManager
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
         if (null !== $absPath
             && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
         ) {
@@ -816,6 +841,10 @@ class ObjectManager
      */
     public function getVersionHistory($path)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
         return $this->transport->getVersionHistory($this->resolveBackendPath($path));
     }
 
@@ -970,6 +999,10 @@ class ObjectManager
      */
     public function removeItem($absPath, $property = null)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         // the object is always cached as invocation flow goes through Item::remove() without exception
         if (!isset($this->objectsByPath['Node'][$absPath])) {
             throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
@@ -1087,6 +1120,10 @@ class ObjectManager
      */
     public function moveNode($srcAbsPath, $destAbsPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         if ($this->rewriteItemPaths($srcAbsPath, $destAbsPath, true)) {
             // TODO collapse multiple consecutive move operations here
             $this->nodesMove[$srcAbsPath] = $destAbsPath;
@@ -1109,6 +1146,10 @@ class ObjectManager
      */
     public function moveNodeImmediately($srcAbsPath, $destAbsPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
@@ -1131,6 +1172,10 @@ class ObjectManager
      */
     public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
@@ -1152,6 +1197,10 @@ class ObjectManager
      */
     public function addItem($absPath, \PHPCR\ItemInterface $item)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         if (isset($this->objectsByPath['Node'][$absPath])) {
             throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
@@ -1179,6 +1228,10 @@ class ObjectManager
      */
     public function getPermissions($absPath)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\PermissionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support permissions');
+        }
+
         return $this->transport->getPermissions($absPath);
     }
 
@@ -1220,6 +1273,10 @@ class ObjectManager
      */
     public function beginTransaction()
     {
+        if (! $this->transport instanceof \Jackalope\Transport\TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->notifyItems('beginTransaction');
         $this->transport->beginTransaction();
     }
@@ -1241,6 +1298,10 @@ class ObjectManager
      */
     public function commitTransaction()
     {
+        if (! $this->transport instanceof \Jackalope\Transport\TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->notifyItems('commitTransaction');
         $this->transport->commitTransaction();
     }
@@ -1263,6 +1324,10 @@ class ObjectManager
      */
     public function rollbackTransaction()
     {
+        if (! $this->transport instanceof \Jackalope\Transport\TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->transport->rollbackTransaction();
         $this->notifyItems('rollbackTransaction');
     }

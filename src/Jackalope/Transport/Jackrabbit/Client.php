@@ -4,10 +4,12 @@ namespace Jackalope\Transport\Jackrabbit;
 
 use PHPCR\PropertyType;
 use Jackalope\Transport\curl;
-use Jackalope\Transport\TransactionalInterface;
-use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\QueryInterface;
 use Jackalope\Transport\PermissionInterface;
+use Jackalope\Transport\WritingInterface;
+use Jackalope\Transport\VersioningInterface;
+use Jackalope\Transport\NodeTypeCndManagementInterface;
+use Jackalope\Transport\TransactionInterface;
 use Jackalope\NotImplementedException;
 use DOMDocument;
 use Jackalope\NodeType\NodeTypeManager;
@@ -21,7 +23,7 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  */
-class Client implements TransactionalInterface, VersioningInterface, QueryInterface, PermissionInterface
+class Client implements QueryInterface, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.
@@ -166,9 +168,15 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
     }
 
     /**
-     * Add a HTTP header which is sent on each Request
+     * Add a HTTP header which is sent on each Request.
      *
-     * This is a Jackrabbit Davex specific option.
+     * This is used for example for a session identifier header to help a proxy
+     * to route all requests from the same session to the same server.
+     *
+     * This is a Jackrabbit Davex specific option called from the repository
+     * factory.
+     *
+     * @param string $header a valid HTTP header to add to each request
      */
     public function addDefaultHeader($header)
     {
@@ -179,11 +187,9 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
      * If you want to send the "Expect: 100-continue" header on larger
      * PUT and POST requests, set this to true.
      *
-     * Disabled by default.
-     *
      * This is a Jackrabbit Davex specific option.
      *
-     * @param bool $send
+     * @param bool $send Whether to send the header or not
      */
     public function sendExpect($send = true)
     {
@@ -226,6 +232,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
 
         return $request;
     }
+
+    // CoreInterface //
 
     // inherit all doc
     public function login(\PHPCR\CredentialsInterface $credentials, $workspaceName)
@@ -308,12 +316,6 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
             }
         }
         return $descriptors;
-    }
-
-    // inherit all doc
-    public function createWorkspace($name, $srcWorkspace = null)
-    {
-        throw new \Jackalope\NotImplementedException();
     }
 
     // inherit all doc
@@ -493,6 +495,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
         return $references;
     }
 
+    // VersioningInterface //
+
     // inherit all doc
     public function checkinItem($path)
     {
@@ -563,6 +567,9 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
         return $resp;
     }
 
+
+    // QueryInterface //
+
     // inherit all doc
     public function query(\PHPCR\Query\QueryInterface $query)
     {
@@ -629,6 +636,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
 
         return $rows;
     }
+
+    // WritingInterface //
 
     // inherit all doc
     public function deleteNode($path)
@@ -987,6 +996,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
         return $this->typeXmlConverter->getNodeTypesFromXml($dom);
     }
 
+    // TransactionInterface //
+
     // inherit all doc
     public function beginTransaction()
     {
@@ -1045,6 +1056,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
         throw new NotImplementedException();
     }
 
+    // NodeTypeCndManagementInterface //
+
     // inherit all doc
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
@@ -1055,12 +1068,7 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
         return true;
     }
 
-    // inherit all doc
-    public function registerNodeTypes($types, $allowUpdate)
-    {
-        throw new NotImplementedException('TODO: convert node type definition to cnd format and call registerNodeTypesCnd');
-        //see http://jackrabbit.apache.org/node-type-notation.html
-    }
+    // PermissionInterface //
 
     // inherit all doc
     public function getPermissions($path)
@@ -1098,6 +1106,8 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
 
         return $result;
     }
+
+    // protected helper methods //
 
     /**
      * Build the xml required to register node types

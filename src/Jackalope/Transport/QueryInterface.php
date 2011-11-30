@@ -5,13 +5,9 @@ namespace Jackalope\Transport;
 use Jackalope\NodeType\NodeTypeManager;
 
 /**
- * Implementation specific interface for implementing transactional transport
- * layers.
+ * Defines the methods needed for Query support
  *
- * Jackalope encapsulates all communication with the storage backend within
- * this interface.
- *
- * Adds the methods necessary for query handling
+ * @see <a href="http://www.day.com/specs/jcr/2.0/6_Query.html">JCR 2.0, chapter 6</a>
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
@@ -43,9 +39,11 @@ interface QueryInterface extends TransportInterface
      *
      * @return array data with search result. TODO: what to return? should be some simple array
      *
-     * @see Query\QueryResult::__construct for the xml format. TODO: have the transport return a QueryResult?
+     * @see Query\QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */
     public function query(\PHPCR\Query\QueryInterface $query);
 
     //TODO: getSupportedQueryLanguages
+
+    //TODO: method for stored queries?
 }

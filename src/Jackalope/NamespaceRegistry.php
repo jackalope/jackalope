@@ -2,6 +2,8 @@
 
 namespace Jackalope;
 
+use PHPCR\UnsupportedRepositoryOperationException;
+
 use Jackalope\Transport\TransportInterface;
 
 use ArrayIterator;
@@ -85,6 +87,10 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function registerNamespace($prefix, $uri)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         // prevent default namespace prefixes to be overridden.
         $this->checkPrefix($prefix);
 
@@ -112,6 +118,10 @@ class NamespaceRegistry implements \IteratorAggregate, \PHPCR\NamespaceRegistryI
      */
     public function unregisterNamespace($prefix)
     {
+        if (! $this->transport instanceof \Jackalope\Transport\WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         $this->lazyLoadNamespaces();
         $this->checkPrefix($prefix);
         if (! array_key_exists($prefix, $this->userNamespaces)) {

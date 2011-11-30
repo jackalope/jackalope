@@ -5,48 +5,43 @@ namespace Jackalope\Transport;
 use Jackalope\NodeType\NodeTypeManager;
 
 /**
- * Implementation specific interface:
- * Jackalope encapsulates all communication with the storage backend within
- * this interface.
+ * Core transport operations. Every transport must implement this interface. It
+ * defines the minimal operations required for Jackalope to work.
  *
- * Data must never be cached by the transport layer, this is only done in
- * objectmanager. If the same path is requested again, it must be read from
- * the backend again.
+ * Note that the JCR <a href="http://www.day.com/specs/jcr/2.0/24_Repository_Compliance.html">Repository
+ * Compliance</a> specification defines a larger set of functions, but we want
+ * Jackalope to even work with very minimalistic backends.
  *
- * The Transport can be told how to access that backend in its constructor.
- * Look in the transport/ subfolder for actual implementations.
- *
- * Implementors can expect Jackalope to only pass normalized absolute paths
- * to the transport. What still has to be tested is if the paths contain no
- * invalid characters according to
- * <a href="http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names">the specification</a>
- * and backend specific restrictions.
- *
+ * See the README.md in this folder for general information about the transport
+ * layer.
+
  * This interface is now synchronized with what we had for davex as per 2011-04-13
  * TODO: keep this in sync with Transport/Jackrabbit/Client.php
- * TODO: add references to all phpcr api methods that use each transport method
- *      for additional doc
- * TODO: add methods for all features. split into one interface per feature
- *      and transport implements just does it actually supports
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
 interface TransportInterface
 {
     /**
-     * Get the repository descriptors from the jackrabbit server
+     * Get all repository descriptors
      *
-     * This happens without login or accessing a specific workspace.
-     * With this, you can get some information without being logged in
+     * This may be called before login or accessing any specific workspace.
+     * With this, you can get some information without being logged in.
      *
-     * At least, this must return the constants defined in
-     * \PHPCR\RepositoryInterface . Doc about each constant is found there.
-     * Implementations can add their own constants.
+     * Must return at least the constants defined in \PHPCR\RepositoryInterface
+     * Doc about each constant is found there. Implementations may add their
+     * own constants.
+     *
+     * The transport has to make sure the correct boolean values are set for
+     * optional features. Jackalope will rely on the interface implementation,
+     * but client code could check the descriptors and be confused if you
+     * announce invalid capabilities here.
      *
      * @return Array with name => value/array of value for the descriptors
      *
      * @throws \PHPCR\RepositoryException if error occurs
      *
+     * @see http://www.day.com/specs/jcr/2.0/24_Repository_Compliance.html#24.2%20Repository%20Descriptors
      * @see \PHPCR\RepositoryInterface
      */
     public function getRepositoryDescriptors();
@@ -99,39 +94,9 @@ interface TransportInterface
      */
     public function logout();
 
-    /*****************************
+    /****************************
      * Methods for read support *
-     *****************************/
-
-    /**
-     * Creates a new Workspace with the specified name. The new workspace is
-     * empty, meaning it contains only root node.
-     *
-     * If srcWorkspace is given:
-     * Creates a new Workspace with the specified name initialized with a
-     * clone of the content of the workspace srcWorkspace. Semantically,
-     * this method is equivalent to creating a new workspace and manually
-     * cloning srcWorkspace to it; however, this method may assist some
-     * implementations in optimizing subsequent Node.update and Node.merge
-     * calls between the new workspace and its source.
-     *
-     * The new workspace can be accessed through a login specifying its name.
-     *
-     * @param string $name A String, the name of the new workspace.
-     * @param string $srcWorkspace The name of the workspace from which the new
-     *      workspace is to be cloned.
-     *
-     * @return void
-     *
-     * @throws \PHPCR\AccessDeniedException if the session through which this
-     *      Workspace object was acquired does not have sufficient access to
-     *      create the new workspace.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository
-     *      does not support the creation of workspaces.
-     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     */
-    public function createWorkspace($name, $srcWorkspace = null);
+     ****************************/
 
     /**
      * Get the registered namespaces mappings from the backend.
@@ -209,7 +174,11 @@ interface TransportInterface
     public function getNode($path);
 
     /**
-     * Get the nodes from an array of absolute paths
+     * Get the nodes from an array of absolute paths.
+     *
+     * This is an optimization over getNode to get many nodes in one call. If
+     * the transport implementation does not optimize, it can just loop over the
+     * paths and call getNode repeatedly.
      *
      * @param array $path Absolute paths to the nodes.
      *
@@ -238,7 +207,7 @@ interface TransportInterface
      *
      * @param string $uuid the id in JCR format
      *
-     * @return string Absolute path to the node
+     * @return string Absolute path to the node (not the node itself!)
      *
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
@@ -255,146 +224,38 @@ interface TransportInterface
      */
     public function getBinaryStream($path);
 
-    /*****************************
-     * Methods for write support *
-     *****************************/
+    /****************************************************************************
+     * References reading                                                       *
+     * if you really can't support these, throw UnsupportedRepositoryException  *
+     ****************************************************************************/
 
     /**
-     * Copies a Node from src (potentially from another workspace) to dst in
-     * the current workspace.
+     * Returns the path of all accessible REFERENCE properties in the workspace
+     * that point to the node
      *
-     * This method does not need to load the node but can execute the copy
-     * directly in the storage.
+     * @param string $path
+     * @param string $name name of referring REFERENCE properties to be returned;
+     *       if null then all referring REFERENCEs are returned
      *
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $dstAbsPath Absolute destination path (must include the
-     *      new node name)
-     * @param string $srcWorkspace The workspace where the source node can be
-     *      found or null for current workspace
-     *
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
-     * @see \Jackalope\Workspace::copy
+     * @return array
      */
-    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
+    public function getReferences($path, $name = null);
 
     /**
-     * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
-     * location at destAbsPath in this workspace.
+     * Returns the path of all accessible WEAKREFERENCE properties in the
+     * workspace that point to the node
      *
-     * There may be no node at dstAbsPath
-     * This method does not need to load the node but can execute the clone
-     * directly in the storage.
+     * @param string $path
+     * @param string $name name of referring WEAKREFERENCE properties to be
+     *      returned; if null then all referring WEAKREFERENCEs are returned
      *
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $dstAbsPath Absolute destination path (must include the
-     *      new node name)
-     * @param string $srcWorkspace The workspace where the source node can be found
-     *
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
-     * @see \Jackalope\Workspace::cloneFrom
+     * @return array
      */
-    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+    public function getWeakReferences($path, $name = null);
 
-    /**
-     * Moves a node from src to dst
-     *
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $dstAbsPath Absolute destination path (must NOT include
-     *      the new node name)
-     *
-     * @return void
-     *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
-     * @see \Jackalope\Workspace::moveNode
-     */
-    public function moveNode($srcAbsPath, $dstAbsPath);
-
-    /**
-     * Deletes a node and the whole subtree under it
-     *
-     * @param string $path Absolute path to the node
-     *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\PathNotFoundException if the item is already deleted on
-     *      the server. This should not happen if ObjectManager is correctly
-     *      checking.
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
-    public function deleteNode($path);
-
-    /**
-     * Deletes a property
-     *
-     * @param string $path Absolute path to the property
-     *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
-    public function deleteProperty($path);
-
-    /**
-     * Recursively store a node and its children to the given absolute path.
-     *
-     * Transport stores the node at its path, with all properties and all
-     * children.
-     *
-     * @param \PHPCR\NodeInterface $node the node to store
-     *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
-    public function storeNode(\PHPCR\NodeInterface $node);
-
-    /**
-     * Stores a property to its absolute path
-     *
-     * @param \PHPCR\PropertyInterface
-     *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
-     */
-    public function storeProperty(\PHPCR\PropertyInterface $property);
-
-    /**
-     * Register a new namespace.
-     *
-     * Validation based on what was returned from getNamespaces has already
-     * happened in the NamespaceRegistry.
-     *
-     * The transport is however responsible of removing an existing prefix for
-     * that uri, if one exists. As well as removing the current uri mapped to
-     * this prefix if this prefix is already existing.
-     *
-     * @param string $prefix The prefix to be mapped.
-     * @param string $uri The URI to be mapped.
-     */
-    public function registerNamespace($prefix, $uri);
-
-    /**
-     * Unregister an existing namespace.
-     *
-     * Validation based on what was returned from getNamespaces has already
-     * happened in the NamespaceRegistry.
-     *
-     * @param string $prefix The prefix to unregister.
-     */
-    public function unregisterNamespace($prefix);
-
-
-    /*********************************
-     * Methods for NodeType support. *
-     *********************************/
+    /***********************************
+     * Methods for NodeType discovery. *
+     ***********************************/
 
     /**
      * Pass the node type manager into the transport to be used for validation
@@ -407,7 +268,11 @@ interface TransportInterface
     public function setNodeTypeManager($nodeTypeManager);
 
     /**
-     * Get node types, either filtered or all
+     * Get node types, either filtered or all.
+     *
+     * If the transport does not support registering new node types, it can
+     * just return types from the hard coded definition at
+     * Jackalope\NodeType\PHPCR2StandardNodeTypes
      *
      * @param array string names of node types to fetch, if empty array all
      *      node types are retrieved
@@ -421,32 +286,4 @@ interface TransportInterface
      */
     public function getNodeTypes($nodeTypes = array());
 
-    /**
-     * Register namespaces and new node types or update node types based on a
-     * jackrabbit cnd string
-     *
-     * TODO: change this to xml string (format described at the end of
-     * http://jackrabbit.apache.org/node-type-notation.html) we even have the
-     * parser in the node type manager
-     *
-     * @param $cnd The cnd string
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     *
-     * @return bool true on success
-     *
-     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
-     */
-    public function registerNodeTypesCnd($cnd, $allowUpdate);
-
-    /**
-     * Register a list of node types with the storage backend
-     *
-     * @param array $types a list of
-     *      \PHPCR\NodeType\NodeTypeDefinitionInterface objects
-     * @param boolean $allowUpdate whether to fail if node already exists or to
-     *      update it
-     *
-     * @return bool true on success
-     */
-    public function registerNodeTypes($types, $allowUpdate);
 }

@@ -7,7 +7,7 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 
-use Jackalope\Transport\TransportInterface;
+use Jackalope\Transport\TransactionInterface;
 
 use LogicException;
 
@@ -31,8 +31,8 @@ class UserTransaction implements UserTransactionInterface
     protected $session;
 
     /**
-     * Instance of an implementation of the TransportInterface
-     * @var \Jackalope\Transport\TransportInterface
+     * Instance of an implementation of the TransactionInterface transport
+     * @var \Jackalope\Transport\TransactionInterface
      */
     protected $transport;
 
@@ -51,7 +51,7 @@ class UserTransaction implements UserTransactionInterface
      * @param \Jackalope\Transport\TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
+    public function __construct($factory, TransactionInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;

@@ -5,6 +5,9 @@ use Jackalope\ObjectManager;
 
 /**
  * Query implementation for the SQL2 language
+ *
+ * This can never be legally created if the transport does not implement
+ * QueryInterface
  */
 class SqlQuery implements \PHPCR\Query\QueryInterface
 {

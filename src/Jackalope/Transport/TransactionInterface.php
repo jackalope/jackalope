@@ -3,17 +3,13 @@
 namespace Jackalope\Transport;
 
 /**
- * Implementation specific interface for implementing transactional transport
- * layers.
+ * Defines the methods needed for Transaction support.
  *
- * Jackalope encapsulates all communication with the storage backend within
- * this interface.
- *
- * Adds the methods necessary for transaction handling
+ * @see <a href="http://www.day.com/specs/jcr/2.0/21_Transactions.html">JCR 2.0, chapter 21</a>
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  */
-interface TransactionalInterface extends TransportInterface
+interface TransactionInterface extends TransportInterface
 {
 
     /**

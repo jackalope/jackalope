@@ -3,7 +3,7 @@
 namespace Jackalope;
 
 use Jackalope\Transport\TransportInterface;
-use Jackalope\Transport\TransactionalInterface;
+use Jackalope\Transport\TransactionInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
@@ -80,7 +80,7 @@ class Repository implements RepositoryInterface
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
         $this->options = array_merge($this->options, (array)$options);
-        $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionalInterface;
+        $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionInterface;
         // register a stream wrapper to lazily load binary property values
         if (null === self::$binaryStreamWrapperRegistered) {
             self::$binaryStreamWrapperRegistered = $this->options['stream_wrapper'];
