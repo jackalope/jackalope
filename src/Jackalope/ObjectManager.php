@@ -544,12 +544,14 @@ class ObjectManager
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
-        if ($this->transport instanceof \Jackalope\Transport\NodeTypeManagementInterface) {
-            return $this->transport->registerNodeTypes($types, $allowUpdate);
-        } elseif ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
-            throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+        if (! $this->transport instanceof \Jackalope\Transport\NodeTypeManagementInterface) {
+            if ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+                throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+            }
+            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
         }
-        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+
+        return $this->transport->registerNodeTypes($types, $allowUpdate);
     }
 
     /**
@@ -619,12 +621,14 @@ class ObjectManager
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        if ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
-            return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
-        } elseif ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
-            throw new UnsupportedRepositoryOperationException('TODO: parse cnd and call registerNodeTypes');
+        if (! $this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+            if ($this->transport instanceof \Jackalope\Transport\NodeTypeCndManagementInterface) {
+                throw new UnsupportedRepositoryOperationException('TODO: parse cnd and call registerNodeTypes');
+            }
+            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
         }
-        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+
+        return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
     }
 
     /**
