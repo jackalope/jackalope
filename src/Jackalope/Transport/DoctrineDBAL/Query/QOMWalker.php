@@ -66,14 +66,17 @@ class QOMWalker
 
     public function walkColumns($columns)
     {
+        $sql = '';
         if ($columns) {
-            $sql = "";
             foreach ($columns as $column) {
                 $sql .= $this->walkColumn($column);
             }
-        } else {
-            $sql = "*";
         }
+
+        if ('' === trim($sql)) {
+            $sql = '*';
+        }
+
         return $sql;
     }
 

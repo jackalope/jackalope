@@ -7,7 +7,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="true"
-         strict="true"
+         strict="false"
          bootstrap="bootstrap_jackrabbit.php">
     <php>
         <var name="jackrabbit.uri" value="http://localhost:8080/server" />

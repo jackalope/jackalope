@@ -825,7 +825,9 @@ class Client implements TransactionalInterface, VersioningInterface, QueryInterf
             case \PHPCR\PropertyType::TYPENAME_DATE:
                 return PropertyType::convertType($value, PropertyType::STRING);
             case \PHPCR\PropertyType::TYPENAME_BINARY:
-                return base64_encode(stream_get_contents($value));
+                $ret = base64_encode(stream_get_contents($value));
+                fclose($value);
+                return $ret;
             case \PHPCR\PropertyType::TYPENAME_UNDEFINED:
             case \PHPCR\PropertyType::TYPENAME_STRING:
             case \PHPCR\PropertyType::TYPENAME_URI:

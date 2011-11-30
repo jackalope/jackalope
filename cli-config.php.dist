@@ -17,13 +17,14 @@ function bootstrapJackrabbit()
     /* additional jackrabbit configuration */
     $jackrabbit_url = 'http://127.0.0.1:8080/server/';
 
-    $repository = \Jackalope\RepositoryFactoryJackrabbit::getRepository(array("jackalope.jackrabbit_uri" => $url));
+    // bootstrap jackrabbit
+    $repository = \Jackalope\RepositoryFactoryJackrabbit::getRepository(array("jackalope.jackrabbit_uri" => $jackrabbit_url));
 }
 
 /** for jackalope - doctrine dbal, do this: */
 function bootstrapDoctrineDbal()
 {
-    global $repository;
+    global $repository, $user, $pass, $dbConn;
 
     /* additional doctrine dbal configuration */
     $driver   = 'pdo_mysql';
@@ -38,8 +39,6 @@ function bootstrapDoctrineDbal()
         'password'  => $pass,
         'dbname'    => $database,
     ));
-
-
     $repository = \Jackalope\RepositoryFactoryDoctrineDBAL::getRepository(array('jackalope.doctrine_dbal_connection' => $dbConn));
 }
 
@@ -57,6 +56,7 @@ $credentials = new \PHPCR\SimpleCredentials($user, $pass);
 /* only create a session if this is not about the server control command */
 if (isset($argv[1])
     && $argv[1] != 'jackalope:run:jackrabbit'
+    && $argv[1] != 'jackalope:init:dbal'
     && $argv[1] != 'list'
     && $argv[1] != 'help'
 ) {
@@ -64,5 +64,10 @@ if (isset($argv[1])
 
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'session' => new \PHPCR\Util\Console\Helper\PhpcrHelper($session)
+    ));
+} else if (isset($argv[1]) && $argv[1] == 'jackalope:init:dbal') {
+    // special case: the init command needs the db connection, but a session is impossible if the db is not yet initialized
+    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+        'connection' => new \Jackalope\Tools\Console\Helper\DoctrineDbalHelper($dbConn)
     ));
 }

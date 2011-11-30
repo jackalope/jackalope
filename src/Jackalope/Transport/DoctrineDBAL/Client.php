@@ -15,6 +15,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\ReferentialIntegrityException;
 use PHPCR\ValueFormatException;
 use PHPCR\PathNotFoundException;
+use PHPCR\Query\InvalidQueryException;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
@@ -189,7 +190,7 @@ class Client implements QueryInterface, ReferenceInterface
         }
 
         if (!$this->workspaceId) {
-            throw new NoSuchWorkspaceException;
+            throw new NoSuchWorkspaceException("Requested workspace: $workspaceName");
         }
 
         $this->loggedIn = true;
@@ -211,8 +212,18 @@ class Client implements QueryInterface, ReferenceInterface
 
     private function getWorkspaceId($workspaceName)
     {
-        $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
-        return $this->conn->fetchColumn($sql, array($workspaceName));
+        try {
+            $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
+            return $this->conn->fetchColumn($sql, array($workspaceName));
+        } catch(\PDOException $e) {
+            if (1045 == $e->getCode()) {
+                throw new \PHPCR\LoginException('Access denied with your credentials: '.$e->getMessage());
+            }
+            if ("42S02" == $e->getCode()) {
+                throw new \PHPCR\RepositoryException('You did not properly set up the database for the repository. See README file for more information. Message from backend: '.$e->getMessage());
+            }
+            throw new \PHPCR\RepositoryException('Unexpected error talking to the backend: '.$e->getMessage());
+        }
     }
 
     private function assertLoggedIn()
@@ -1183,13 +1194,17 @@ $/xi";
         $language = $query->getLanguage();
         if ($language === QueryInterface::JCR_SQL2) {
             $parser = new Sql2ToQomQueryConverter($this->factory->get('Jackalope\Query\QOM\QueryObjectModelFactory'));
-            $qom = $parser->parse($query->getStatement());
+            try {
+                $query = $parser->parse($query->getStatement());
+            } catch (\Exception $e) {
+                throw new InvalidQueryException('Invalid query: '.$query->getStatement());
+            }
             $language = QueryInterface::JCR_JQOM;
         }
 
         if ($language === QueryInterface::JCR_JQOM) {
             $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
-            $sql = $qomWalker->walkQOMQuery($qom);
+            $sql = $qomWalker->walkQOMQuery($query);
 
             $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
             $data = $this->conn->fetchAll($sql, array($this->workspaceId));

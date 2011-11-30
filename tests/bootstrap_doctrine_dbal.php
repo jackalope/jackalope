@@ -32,7 +32,7 @@ if (isset($GLOBALS['phpcr.doctrine.loader'])) {
 /**
  * autoloader: tests rely on an autoloader.
  */
-require_once __DIR__ . '/../src/autoload.doctrine-dbal.dist.php';
+require_once __DIR__ . '/../src/autoload.doctrine_dbal.dist.php';
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
@@ -70,7 +70,7 @@ foreach ($schema->toSql($dbConn->getDatabasePlatform()) as $sql) {
         echo $e->getMessage();
     }
 }
-$GLOBALS['phpcr.doctrine.loaded'] = true;
+$GLOBALS['phpcr.doctrine_dbal.loaded'] = true;
 echo "done.\n";
 
 /** some constants */

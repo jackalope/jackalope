@@ -5,7 +5,6 @@ require_once $vendorDir.'/Symfony/Component/ClassLoader/UniversalClassLoader.php
 
 $doctrineCommonDir = __DIR__.'/../lib/vendor/doctrine-dbal/lib/vendor/doctrine-common/lib';
 $doctrineDbalDir = __DIR__.'/../lib/vendor/doctrine-dbal/lib';
-var_dump($doctrineDbalDir);
 $classLoader = new \Symfony\Component\ClassLoader\UniversalClassLoader();
 $classLoader->register();
 
