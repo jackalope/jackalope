@@ -1,11 +1,16 @@
 <?php
 namespace Jackalope\NodeType;
 
+use PHPCR\PropertyType;
+
+use PHPCR\Version\OnParentVersionAction;
+use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
+
 // inherit all doc
 /**
  * @api
  */
-class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\NodeType\PropertyDefinitionTemplateInterface
+class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyDefinitionTemplateInterface
 {
     /**
      * Create a new property definition template.
@@ -20,7 +25,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
         $this->nodeTypeManager = $nodeTypeManager;
 
         // initialize empty values
-        $this->requiredType = \PHPCR\PropertyType::STRING;
+        $this->requiredType = PropertyType::STRING;
         $this->valueConstraints = null;
         $this->defaultValues = null;
         $this->isMultiple = false;
@@ -30,7 +35,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements \PHPCR\No
         $this->name = null;
         $this->isAutoCreated = false;
         $this->isMandatory = false;
-        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::COPY;
+        $this->onParentVersion = OnParentVersionAction::COPY;
         $this->isProtected = false;
     }
 

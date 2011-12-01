@@ -1,14 +1,18 @@
 <?php
+
 namespace Jackalope\NodeType;
 
+use DOMElement;
+
+use PHPCR\NodeType\ItemDefinitionInterface;
+
 use Jackalope\Helper;
-use \DOMElement;
 
 // inherit all doc
 /**
  * @api
  */
-class ItemDefinition implements \PHPCR\NodeType\ItemDefinitionInterface
+class ItemDefinition implements ItemDefinitionInterface
 {
     /**
      * The factory to instantiate objects

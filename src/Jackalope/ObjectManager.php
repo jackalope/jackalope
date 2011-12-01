@@ -1,8 +1,31 @@
 <?php
 namespace Jackalope;
 
-use PHPCR\Util\UUIDHelper;
 use ArrayIterator;
+use InvalidArgumentException;
+
+use PHPCR\SessionInterface;
+use PHPCR\NodeInterface;
+use PHPCR\PropertyInterface;
+use PHPCR\ItemInterface;
+use PHPCR\RepositoryException;
+use PHPCR\AccessDeniedException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\ItemExistsException;
+use PHPCR\PathNotFoundException;
+use PHPCR\UnsupportedRepositoryOperationException;
+
+use PHPCR\Util\UUIDHelper;
+
+use PHPCR\Version\VersionInterface;
+
+use Jackalope\Transport\TransportInterface;
+use Jackalope\Transport\PermissionInterface;
+use Jackalope\Transport\WritingInterface;
+use Jackalope\Transport\VersioningInterface;
+use Jackalope\Transport\NodeTypeManagementInterface;
+use Jackalope\Transport\NodeTypeCndManagementInterface;
+use Jackalope\Transport\TransactionInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -25,7 +48,7 @@ class ObjectManager
     protected $factory;
 
     /**
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     protected $session;
 
@@ -97,9 +120,9 @@ class ObjectManager
      * @param object $factory an object factory implementing "get" as described
      *      in \Jackalope\Factory
      * @param TransportInterface $transport
-     * @param \PHPCR\SessionInterface $session
+     * @param SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, \PHPCR\SessionInterface $session)
+    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;
@@ -147,11 +170,11 @@ class ObjectManager
      * @param string $class The class of node to get. TODO: Is it sane to fetch
      *      data separately for Version and normal Node?
      *
-     * @return \PHPCR\Node
+     * @return NodeInterface
      *
-     * @throws \PHPCR\ItemNotFoundException If nothing is found at that
+     * @throws ItemNotFoundException If nothing is found at that
      *      absolute path
-     * @throws \PHPCR\RepositoryException If the path is not absolute or not
+     * @throws RepositoryException If the path is not absolute or not
      *      well-formed
      *
      * @see Session::getNode()
@@ -200,9 +223,10 @@ class ObjectManager
      * @param string $class The class of node to get. TODO: Is it sane to
      *      fetch data separately for Version and normal Node?
      *
-     * @return ArrayIterator that contains all \PHPCR\Node's keyed by their path
+     * @return ArrayIterator that contains all found NodeInterface
+     *      instances keyed by their path
      *
-     * @throws \PHPCR\RepositoryException If the path is not absolute or not
+     * @throws RepositoryException If the path is not absolute or not
      *      well-formed
      *
      * @see Session::getNodes()
@@ -267,13 +291,13 @@ class ObjectManager
         // there is no node moved to this location, if the item is in the itemsRemove, it is really deleted
         if (array_search($absPath, $this->nodesMove) === false) {
             if (isset($this->itemsRemove[$absPath])) {
-                throw new \PHPCR\ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+                throw new ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
             }
 
             // check whether a parent node was removed
             foreach ($this->itemsRemove as $path => $dummy) {
                 if (strpos($absPath, $path) === 0) {
-                    throw new \PHPCR\ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+                    throw new ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
                 }
             }
         }
@@ -281,7 +305,7 @@ class ObjectManager
         // was the node moved away from this location?
         if (isset($this->nodesMove[$absPath])) {
             // FIXME: this will not trigger if an ancestor was moved
-            throw new \PHPCR\ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
+            throw new ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
         }
 
         // The path was the destination of a previous move which isn't yet dispatched to the backend.
@@ -298,7 +322,7 @@ class ObjectManager
      * the requested property of the node instance.
      *
      * @param string $absPath The absolute path of the property to create.
-     * @return \PHPCR\Property
+     * @return PropertyInterface
      *
      * @throws ItemNotFoundException if item is not found at this path
      */
@@ -314,8 +338,8 @@ class ObjectManager
         $n = $this->getNodeByPath($nodep);
         try {
             return $n->getProperty($name); //throws PathNotFoundException if there is no such property
-        } catch(\PHPCR\PathNotFoundException $e) {
-            throw new \PHPCR\ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch(PathNotFoundException $e) {
+            throw new ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -426,11 +450,11 @@ class ObjectManager
      *      used if $identifier is an uuid
      * @param string $class optional class name for the factory
      *
-     * @return \PHPCR\NodeInterface The specified Node. if not available,
+     * @return NodeInterface The specified Node. if not available,
      *      ItemNotFoundException is thrown
      *
-     * @throws \PHPCR\ItemNotFoundException If the path was not found
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws ItemNotFoundException If the path was not found
+     * @throws RepositoryException if another error occurs.
      *
      * @see Session::getNode()
      */
@@ -457,9 +481,9 @@ class ObjectManager
      * @param string $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
      *
-     * @return ArrayIterator of \PHPCR\NodeInterface of the specified nodes keyed by their path
+     * @return ArrayIterator of NodeInterface of the specified nodes keyed by their path
      *
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws RepositoryException if another error occurs.
      *
      * @see Session::getNodes()
      */
@@ -471,7 +495,7 @@ class ObjectManager
                 if (empty($this->objectsByUuid[$identifier])) {
                     try {
                         $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
-                    } catch (\PHPCR\ItemNotFoundException $e) {
+                    } catch (ItemNotFoundException $e) {
                         // ignore
                     }
                 } else {
@@ -539,6 +563,13 @@ class ObjectManager
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
+        if (! $this->transport instanceof NodeTypeManagementInterface) {
+            if ($this->transport instanceof NodeTypeCndManagementInterface) {
+                throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+            }
+            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+        }
+
         return $this->transport->registerNodeTypes($types, $allowUpdate);
     }
 
@@ -609,6 +640,13 @@ class ObjectManager
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
+        if (! $this->transport instanceof NodeTypeCndManagementInterface) {
+            if ($this->transport instanceof NodeTypeManagementInterface) {
+                throw new UnsupportedRepositoryOperationException('TODO: parse cnd and call registerNodeTypes');
+            }
+            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+        }
+
         return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
     }
 
@@ -619,12 +657,12 @@ class ObjectManager
      *
      * @return boolean always true, exception if this is not a valid path.
      *
-     * @throws \PHPCR\RepositoryException if the path is not absolute.
+     * @throws RepositoryException if the path is not absolute.
      */
     protected function verifyAbsolutePath($path)
     {
         if (! ($path && $path[0] == '/')) {
-            throw new \PHPCR\RepositoryException('Path is not absolute: ' . $path);
+            throw new RepositoryException('Path is not absolute: ' . $path);
         }
         return true;
     }
@@ -646,6 +684,10 @@ class ObjectManager
      */
     public function save()
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         // TODO: adjust transport to accept lists and do a diff request instead of single requests
 
         /* remove nodes/properties
@@ -690,12 +732,12 @@ class ObjectManager
         // create new items
         foreach ($nodesToCreate as $path => $dummy) {
             $item = $this->getNodeByPath($path);
-            if ($item instanceof \PHPCR\NodeInterface) {
+            if ($item instanceof NodeInterface) {
                 $this->transport->storeNode($item);
-            } elseif ($item instanceof \PHPCR\PropertyInterface) {
+            } elseif ($item instanceof PropertyInterface) {
                 $this->transport->storeProperty($item);
             } else {
-                throw new \UnexpectedValueException('Unknown type '.get_class($item));
+                throw new RepositoryException('Internal error: Unknown type '.get_class($item));
             }
         }
 
@@ -703,20 +745,20 @@ class ObjectManager
         if (isset($this->objectsByPath['Node'])) {
             foreach ($this->objectsByPath['Node'] as $path => $item) {
                 if ($item->isModified()) {
-                    if ($item instanceof \PHPCR\NodeInterface) {
+                    if ($item instanceof NodeInterface) {
                         foreach ($item->getProperties() as $property) {
                             if ($property->isModified()) {
                                 $this->transport->storeProperty($property);
                             }
                         }
-                    } elseif ($item instanceof \PHPCR\PropertyInterface) {
+                    } elseif ($item instanceof PropertyInterface) {
                         if ($item->getValue() === null) {
                             $this->transport->deleteProperty($path);
                         } else {
                             $this->transport->storeProperty($item);
                         }
                     } else {
-                        throw new \UnexpectedValueException('Unknown type '.get_class($item));
+                        throw new RepositoryException('Internal Error: Unknown type '.get_class($item));
                     }
                 }
             }
@@ -759,12 +801,15 @@ class ObjectManager
      */
     public function checkin($absPath)
     {
+        if (! $this->transport instanceof VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
-        $node = $this->getNodeByPath($path, "Version\Version");
+        $node = $this->getNodeByPath($path, 'Version\\Version');
         $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
         if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
             $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
-            unset($this->objectsByPath['Version\Version'][$dirtyPath]);
+            unset($this->objectsByPath['Version\\Version'][$dirtyPath]);
             unset($this->objectsByPath['Node'][$dirtyPath]); //FIXME: the node object should be told about this
             unset($this->objectsByUuid[$predecessorUuids[0]]);
         }
@@ -782,6 +827,9 @@ class ObjectManager
      */
     public function checkout($absPath)
     {
+        if (! $this->transport instanceof VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
         $this->transport->checkoutItem($absPath); //FIXME: what about pending move operations?
     }
 
@@ -793,8 +841,12 @@ class ObjectManager
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
+        if (! $this->transport instanceof VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
         if (null !== $absPath
-            && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\Version'][$absPath]))
+            && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\\Version'][$absPath]))
         ) {
             unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
             unset($this->objectsByPath['Version\Version'][$absPath]);
@@ -812,6 +864,10 @@ class ObjectManager
      */
     public function getVersionHistory($path)
     {
+        if (! $this->transport instanceof VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
         return $this->transport->getVersionHistory($this->resolveBackendPath($path));
     }
 
@@ -911,7 +967,7 @@ class ObjectManager
      * @param string $absPath The absolute path of the item that is being
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
-     * @param \PHPCR\ItemInterface $item The item that is being removed
+     * @param ItemInterface $item The item that is being removed
      *
      * @return void
      *
@@ -924,7 +980,7 @@ class ObjectManager
             if (strpos($dst, $absPath) === 0) {
                 // this is MOVE, then DELETE but we dispatch DELETE before MOVE
                 // TODO we might could just remove the MOVE and put a DELETE on the previous node :)
-                throw new \PHPCR\RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
+                throw new RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
             }
         }
 
@@ -960,15 +1016,19 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     * @throws RepositoryException If node cannot be found at given path
      *
      * @see Item::remove()
      */
     public function removeItem($absPath, $property = null)
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         // the object is always cached as invocation flow goes through Item::remove() without exception
         if (!isset($this->objectsByPath['Node'][$absPath])) {
-            throw new \PHPCR\RepositoryException("Internal error: Item not found in local cache at $absPath");
+            throw new RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
 
         if ($property) {
@@ -1033,7 +1093,7 @@ class ObjectManager
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
             $node = $this->objectsByPath['Node'][$parentCurPath];
             if (! $node->hasNode(basename($curPath))) {
-                throw new \PHPCR\PathNotFoundException("Source path can not be found: $curPath");
+                throw new PathNotFoundException("Source path can not be found: $curPath");
             }
             $node->unsetChildNode(basename($curPath), true);
         }
@@ -1077,12 +1137,16 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     * @throws RepositoryException If node cannot be found at given path
      *
      * @see Session::move()
      */
     public function moveNode($srcAbsPath, $destAbsPath)
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         if ($this->rewriteItemPaths($srcAbsPath, $destAbsPath, true)) {
             // TODO collapse multiple consecutive move operations here
             $this->nodesMove[$srcAbsPath] = $destAbsPath;
@@ -1099,12 +1163,16 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException If node cannot be found at given path
+     * @throws RepositoryException If node cannot be found at given path
      *
      * @see Workspace::move()
      */
     public function moveNodeImmediately($srcAbsPath, $destAbsPath)
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
@@ -1127,11 +1195,15 @@ class ObjectManager
      */
     public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
         if ($this->session->nodeExists($destAbsPath)) {
-            throw new \PHPCR\ItemExistsException('Node already exists at destination (update-on-copy is currently not supported)');
+            throw new ItemExistsException('Node already exists at destination (update-on-copy is currently not supported)');
             // to support this, we would have to update the local cache of nodes as well
         }
         $this->transport->copyNode($srcAbsPath, $destAbsPath, $srcWorkspace);
@@ -1142,14 +1214,18 @@ class ObjectManager
      * for the next save() and caches the item.
      *
      * @param string $absPath the path to the node or property, including the item name
-     * @param \PHPCR\ItemInterface $item The item instance that is added.
+     * @param ItemInterface $item The item instance that is added.
      *
-     * @throws \PHPCR\ItemExistsException if a node already exists at that path
+     * @throws ItemExistsException if a node already exists at that path
      */
-    public function addItem($absPath, \PHPCR\ItemInterface $item)
+    public function addItem($absPath, ItemInterface $item)
     {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
         if (isset($this->objectsByPath['Node'][$absPath])) {
-            throw new \PHPCR\ItemExistsException($absPath); //FIXME: same-name-siblings...
+            throw new ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
         $this->objectsByPath['Node'][$absPath] = $item;
         // a new item never has a uuid, no need to add to objectsByUuid
@@ -1175,6 +1251,10 @@ class ObjectManager
      */
     public function getPermissions($absPath)
     {
+        if (! $this->transport instanceof PermissionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support permissions');
+        }
+
         return $this->transport->getPermissions($absPath);
     }
 
@@ -1211,11 +1291,15 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\RepositoryException if the transaction implementation
+     * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function beginTransaction()
     {
+        if (! $this->transport instanceof TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->notifyItems('beginTransaction');
         $this->transport->beginTransaction();
     }
@@ -1230,13 +1314,17 @@ class ObjectManager
      *
      * @throws \PHPCR\Transaction\RollbackException if the transaction failed
      *      and was rolled back rather than committed.
-     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     * @throws AccessDeniedException if the session is not allowed to
      *      commit the transaction.
-     * @throws \PHPCR\RepositoryException if the transaction implementation
+     * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function commitTransaction()
     {
+        if (! $this->transport instanceof TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->notifyItems('commitTransaction');
         $this->transport->commitTransaction();
     }
@@ -1252,13 +1340,17 @@ class ObjectManager
      *
      * @return void
      *
-     * @throws \PHPCR\AccessDeniedException if the session is not allowed to
+     * @throws AccessDeniedException if the session is not allowed to
      *      roll back the transaction.
-     * @throws \PHPCR\RepositoryException if the transaction implementation
+     * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
     public function rollbackTransaction()
     {
+        if (! $this->transport instanceof TransactionInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
+        }
+
         $this->transport->rollbackTransaction();
         $this->notifyItems('rollbackTransaction');
     }
@@ -1273,12 +1365,12 @@ class ObjectManager
      *      rollbackTransaction)
      * @return void
      *
-     * @throws \InvalidArgumentException if the passed $method is not valid
+     * @throws InvalidArgumentException if the passed $method is not valid
      */
     protected function notifyItems($method)
     {
         if (! in_array($method, array('beginTransaction', 'commitTransaction', 'rollbackTransaction'))) {
-            throw new \InvalidArgumentException("Unknown notification method '$method'");
+            throw new InvalidArgumentException("Unknown notification method '$method'");
         }
 
         // Notify the loaded nodes
@@ -1328,7 +1420,7 @@ class ObjectManager
      *
      * @param string $absPath the absolute path to the node to fetch from cache
      *
-     * @return \PHPCR\NodeInterface or null
+     * @return NodeInterface or null
      *
      * @see Node::refresh()
      */

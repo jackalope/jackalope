@@ -29,7 +29,7 @@ class SessionTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\TransportInterface');
+        $transport = $this->getMock('Jackalope\Transport\TransportInterface');
         $transport->expects($this->once())
             ->method('logout');
         $session = new Session($factory, $repository, 'x',  new \PHPCR\SimpleCredentials('foo', 'bar'), $transport);

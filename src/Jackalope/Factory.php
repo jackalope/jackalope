@@ -1,5 +1,9 @@
 <?php
+
 namespace Jackalope;
+
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
  * Jackalope implementation factory - injected into every class.
@@ -43,10 +47,10 @@ class Factory
         if (class_exists('Jackalope\\' . $name)) {
             $name = 'Jackalope\\' . $name;
         } elseif (! class_exists($name)) {
-            throw new \InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
+            throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
         }
 
-        $class = new \ReflectionClass($name);
+        $class = new ReflectionClass($name);
         array_unshift($params, $this);
         return $class->newInstanceArgs($params);
     }

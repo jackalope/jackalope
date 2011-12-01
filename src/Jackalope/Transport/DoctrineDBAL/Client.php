@@ -23,7 +23,10 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
-use Jackalope\TransportInterface;
+use Jackalope\Transport\QueryInterface as QueryTransport;
+use Jackalope\Transport\WritingInterface;
+use Jackalope\Transport\WorkspaceManagementInterface;
+use Jackalope\Transport\NodeTypeManagementInterface;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 use Jackalope\NotImplementedException;
@@ -35,7 +38,7 @@ use Jackalope\NotImplementedException;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Client implements TransportInterface
+class Client implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -280,14 +283,14 @@ class Client implements TransportInterface
           'option.retention.supported' => false,
           'option.shareable.nodes.supported' => false,
           'option.simple.versioning.supported' => false,
-          'option.transactions.supported' => true,
+          'option.transactions.supported' => false, // TODO: this claimed true but we need to implement TransactionInterface to really support transactions
           'option.unfiled.content.supported' => true,
           'option.update.mixin.node.types.supported' => true,
           'option.update.primary.node.type.supported' => true,
           'option.versioning.supported' => false,
           'option.workspace.management.supported' => true,
           'option.xml.export.supported' => false,
-          'option.xml.import.supported' => false,
+          'option.xml.import.supported' => true,
           'query.full.text.search.supported' => false,
           'query.joins' => false,
           'query.languages' => '',
@@ -1269,16 +1272,6 @@ $/xi";
             }
         }
         return $references;
-    }
-
-    // inherit all doc
-    public function getPermissions($path)
-    {
-        return array(
-            \PHPCR\SessionInterface::ACTION_ADD_NODE,
-            \PHPCR\SessionInterface::ACTION_READ,
-            \PHPCR\SessionInterface::ACTION_REMOVE,
-            \PHPCR\SessionInterface::ACTION_SET_PROPERTY);
     }
 
     private function assertValidPath($path)

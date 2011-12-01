@@ -3,14 +3,19 @@
 namespace Jackalope\Version;
 
 use ArrayIterator;
-use Jackalope\NotImplementedException;
+
+use PHPCR\Version\VersionInterface;
+use PHPCR\Version\VersionException;
+
+use Jackalope\Node;
 use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
 
 // inherit all doc
 /**
  * @api
  */
-class VersionHistory extends \Jackalope\Node
+class VersionHistory extends Node
 {
     protected $objectmanager; //TODO if we would use parent constructor, this would be present
     protected $path; //TODO if we would use parent constructor, this would be present
@@ -65,9 +70,9 @@ class VersionHistory extends \Jackalope\Node
     {
         if (!$this->versions) {
             $uuid = $this->objectmanager->getVersionHistory($this->path);
-            $node = $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+            $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
             $results = array();
-            $rootNode = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\Version');
+            $rootNode = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\\Version');
             $results[$rootNode->getName()] = $rootNode;
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootNode));
         }
@@ -79,10 +84,10 @@ class VersionHistory extends \Jackalope\Node
      *
      * According to spec, 3.13.1.4, these are called eventual successors
      *
-     * @param \PHPCR\Version\VersionInterface $node the node to get successors
+     * @param VersionInterface $node the node to get successors
      *      from
      *
-     * @return array list of \PHPCR\VersionInterface
+     * @return array list of VersionInterface
      */
     protected function getEventualSuccessors($node)
     {
@@ -124,7 +129,7 @@ class VersionHistory extends \Jackalope\Node
             return $this->versions[$versionName];
         }
 
-        throw new \PHPCR\Version\VersionException("No version '$versionName'");
+        throw new VersionException("No version '$versionName'");
     }
 
     // inherit all doc

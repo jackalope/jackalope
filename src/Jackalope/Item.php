@@ -1,5 +1,16 @@
 <?php
+
 namespace Jackalope;
+
+use LogicException;
+
+use PHPCR\PropertyInterface;
+use PHPCR\ItemInterface;
+use PHPCR\ItemVisitorInterface;
+use PHPCR\RepositoryInterface;
+use PHPCR\RepositoryException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\InvalidItemStateException;
 
 /**
  * Item base class with common functionality
@@ -21,7 +32,7 @@ namespace Jackalope;
  *
  * For the special case of Item state after a failed transaction, see Item::rollbackTransaction()
  */
-abstract class Item implements \PHPCR\ItemInterface
+abstract class Item implements ItemInterface
 {
     /**
      * The item needs to be created in the backend on Session::save()
@@ -123,7 +134,7 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->objectManager = $objectManager;
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
         if (! $new
-            && $session->getRepository()->getDescriptor(\PHPCR\RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)
+            && $session->getRepository()->getDescriptor(RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)
         ) {
             if ($session->getWorkspace()->getTransactionManager()->inTransaction()) {
                 // properly set previous state in case we get into a rollback
@@ -185,7 +196,7 @@ abstract class Item implements \PHPCR\ItemInterface
         $this->checkState();
 
         if ($depth < 0 || $depth > $this->depth) {
-            throw new \PHPCR\ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
+            throw new ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
         if ($depth == $this->depth) {
             return $this;
@@ -202,7 +213,7 @@ abstract class Item implements \PHPCR\ItemInterface
     {
         $this->checkState();
         if (is_null($this->parentPath)) {
-            throw new \PHPCR\ItemNotFoundException('The root node has no parent');
+            throw new ItemNotFoundException('The root node has no parent');
         }
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
@@ -301,7 +312,7 @@ abstract class Item implements \PHPCR\ItemInterface
     /**
      * @api
      */
-    public function isSame(\PHPCR\ItemInterface $otherItem)
+    public function isSame(ItemInterface $otherItem)
     {
         $this->checkState();
 
@@ -331,7 +342,7 @@ abstract class Item implements \PHPCR\ItemInterface
     /**
      * @api
      */
-    public function accept(\PHPCR\ItemVisitorInterface $visitor)
+    public function accept(ItemVisitorInterface $visitor)
     {
         $this->checkState();
 
@@ -348,10 +359,10 @@ abstract class Item implements \PHPCR\ItemInterface
 
         // sanity checks
         if ($this->getDepth() == 0) {
-            throw new \PHPCR\RepositoryException('Cannot remove root node');
+            throw new RepositoryException('Cannot remove root node');
         }
 
-        if ($this instanceof \PHPCR\PropertyInterface) {
+        if ($this instanceof PropertyInterface) {
             $this->objectManager->removeItem($this->parentPath, $this);
         } else {
             $this->objectManager->removeItem($this->path);
@@ -437,14 +448,15 @@ abstract class Item implements \PHPCR\ItemInterface
      * Change the state of the item
      *
      * @param int $state The new item state, one of the state constants
-     * @throws \PHPCR\InvalidItemStateException
+     *
+     * @throws RepositoryException
      *
      * @private
      */
     private function setState($state)
     {
         if (! in_array($state, $this->available_states)) {
-            throw new \PHPCR\RepositoryException("Invalid state [$state]");
+            throw new RepositoryException("Invalid state [$state]");
         }
         $this->state = $state;
 
@@ -468,13 +480,13 @@ abstract class Item implements \PHPCR\ItemInterface
      * if it is DIRTY).
      *
      * @return void
-     * @throws \PHPCR\InvalidItemStateException When an operation is attempted on a deleted item
+     * @throws InvalidItemStateException When an operation is attempted on a deleted item
      * @private
      */
     protected function checkState()
     {
         if ($this->state === self::STATE_DELETED) {
-            throw new \PHPCR\InvalidItemStateException("The item was deleted");
+            throw new InvalidItemStateException("The item was deleted");
         }
 
         if ($this->isDirty()) {
@@ -557,8 +569,11 @@ abstract class Item implements \PHPCR\ItemInterface
      * </table>
      *
      * @return void
-     * @throws \LogicException if an unexpected state transition is encountered
+     *
+     * @throws LogicException if an unexpected state transition is encountered
+     *
      * @private
+     *
      * @see ObjectManager::rollbackTransaction()
      */
     public function rollbackTransaction()
@@ -604,7 +619,7 @@ abstract class Item implements \PHPCR\ItemInterface
 
             // There is some special case we didn't think of, for the moment throw an exception
             // TODO: figure out if this might happen or not
-            throw new \LogicException("There was an unexpected state transition during the transaction: " .
+            throw new LogicException("There was an unexpected state transition during the transaction: " .
                                       "old state = {$this->savedState}, new state = {$this->state}");
         }
 
