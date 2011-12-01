@@ -569,6 +569,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                     break;
                 case PropertyType::BINARY:
                     if ($property->isMultiple()) {
+                        $values = $values = array();
                         foreach ((array)$property->getBinary() as $binary) {
                             $binary = stream_get_contents($binary);
                             $binaryData[$property->getName()][] = $binary;
@@ -581,7 +582,10 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                     }
                     break;
                 case PropertyType::DATE:
-                    $date = $property->getDate() ?: new \DateTime("now");
+                    $date = $property->getDate();
+                    if (!$date instanceof \DateTime) {
+                        $date = new \DateTime("now");
+                    }
                     $values = $date->format('r');
                     break;
                 case PropertyType::DOUBLE:
