@@ -3,12 +3,22 @@
 namespace Jackalope;
 
 use ArrayIterator;
-
+use Exception;
+    
 use PHPCR\PropertyType;
+use PHPCR\RepositoryInterface;
 use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
+use PHPCR\CredentialsInterface;
+use PHPCR\PathNotFoundException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\ItemExistsException;
+use PHPCR\UnsupportedRepositoryOperationException;
+    
+use PHPCR\Security\AccessControlException;
 
 use Jackalope\Transport\TransportInterface;
+use Jackalope\Transport\TransactionInterface;
 
 // inherit all doc
 /**
@@ -44,7 +54,7 @@ class Session implements SessionInterface
      */
     protected $objectManager;
     /**
-     * @var \PHPCR\SimpleCredentials
+     * @var SimpleCredentials
      */
     protected $credentials;
     /**
@@ -79,7 +89,7 @@ class Session implements SessionInterface
      *      described in \Jackalope\Factory
      * @param Repository $repository
      * @param string $workspaceName the workspace name that is used
-     * @param \PHPCR\SimpleCredentials $credentials the credentials that where
+     * @param SimpleCredentials $credentials the credentials that where
      *      used to log in, in order to implement Session::getUserID()
      * @param TransportInterface $transport the transport implementation
      */
@@ -156,9 +166,9 @@ class Session implements SessionInterface
      *
      * TODO: Implement this for jackalope
      */
-    public function impersonate(\PHPCR\CredentialsInterface $credentials)
+    public function impersonate(CredentialsInterface $credentials)
     {
-        throw new \PHPCR\LoginException('Not supported');
+        throw new UnsupportedRepositoryOperationException('Not supported');
     }
 
     // inherit all doc
@@ -191,7 +201,7 @@ class Session implements SessionInterface
     public function getItem($absPath)
     {
         if (strpos($absPath,'/') !== 0) {
-            throw new \PHPCR\PathNotFoundException('It is forbidden to call getItem on session with a relative path');
+            throw new PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
         if ($this->nodeExists($absPath)) {
@@ -208,8 +218,8 @@ class Session implements SessionInterface
     {
         try {
             return $this->objectManager->getNodeByPath($absPath);
-        } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (ItemNotFoundException $e) {
+            throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -230,8 +240,8 @@ class Session implements SessionInterface
     {
         try {
             return $this->objectManager->getPropertyByPath($absPath);
-        } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException($e->getMessage(), $e->getCode(), $e);
+        } catch (ItemNotFoundException $e) {
+            throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -261,7 +271,7 @@ class Session implements SessionInterface
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->objectManager->getNodeByPath($absPath);
-        } catch(\PHPCR\ItemNotFoundException $e) {
+        } catch(ItemNotFoundException $e) {
             return false;
         }
         return true;
@@ -277,7 +287,7 @@ class Session implements SessionInterface
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getProperty($absPath);
-        } catch(\PHPCR\PathNotFoundException $e) {
+        } catch(PathNotFoundException $e) {
             return false;
         }
         return true;
@@ -292,16 +302,16 @@ class Session implements SessionInterface
     {
         try {
             $parent = $this->objectManager->getNodeByPath(dirname($destAbsPath));
-        } catch(\PHPCR\ItemNotFoundException $e) {
-            throw new \PHPCR\PathNotFoundException("Target path can not be found: $destAbsPath", $e->getCode(), $e);
+        } catch(ItemNotFoundException $e) {
+            throw new PathNotFoundException("Target path can not be found: $destAbsPath", $e->getCode(), $e);
         }
 
         if ($parent->hasNode(basename($destAbsPath))) {
             // TODO same-name siblings
-            throw new \PHPCR\ItemExistsException('Target node already exists at '.$destAbsPath);
+            throw new ItemExistsException('Target node already exists at '.$destAbsPath);
         }
         if ($parent->hasProperty(basename($destAbsPath))) {
-            throw new \PHPCR\ItemExistsException('Target property already exists at '.$destAbsPath);
+            throw new ItemExistsException('Target property already exists at '.$destAbsPath);
         }
         $this->objectManager->moveNode($srcAbsPath, $destAbsPath);
     }
@@ -330,7 +340,7 @@ class Session implements SessionInterface
      */
     public function save()
     {
-        if ($this->repository->getDescriptor(\PHPCR\RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)) {
+        if ($this->getTransport() instanceof TransactionInterface) {
             $utx = $this->workspace->getTransactionManager();
         }
 
@@ -340,7 +350,7 @@ class Session implements SessionInterface
             try {
                 $this->objectManager->save();
                 $utx->commit();
-            } catch(\Exception $e) {
+            } catch(Exception $e) {
                 // if anything goes wrong, rollback this mess
                 $utx->rollback();
                 // but do not eat the exception
@@ -409,7 +419,7 @@ class Session implements SessionInterface
     public function checkPermission($absPath, $actions)
     {
         if (! $this->hasPermission($absPath, $actions)) {
-            throw new \PHPCR\Security\AccessControlException($absPath);
+            throw new AccessControlException($absPath);
         }
     }
 
@@ -684,7 +694,7 @@ class Session implements SessionInterface
      */
     public function getAccessControlManager()
     {
-        throw new \PHPCR\UnsupportedRepositoryOperationException();
+        throw new UnsupportedRepositoryOperationException();
     }
 
     // inherit all doc
@@ -693,7 +703,7 @@ class Session implements SessionInterface
      */
     public function getRetentionManager()
     {
-        throw new \PHPCR\UnsupportedRepositoryOperationException();
+        throw new UnsupportedRepositoryOperationException();
     }
 
     /**

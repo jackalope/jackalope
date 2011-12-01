@@ -1,8 +1,12 @@
 <?php
 namespace Jackalope\NodeType;
 
+use DOMElement;
+use DOMXPath;
+
+use PHPCR\NodeType\NodeDefinitionInterface;
+
 use Jackalope\Helper;
-use \DOMElement, \DOMXPath;
 
 /**
  * {@inheritDoc}
@@ -11,7 +15,7 @@ use \DOMElement, \DOMXPath;
  *
  * @api
  */
-class NodeDefinition extends ItemDefinition implements \PHPCR\NodeType\NodeDefinitionInterface
+class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
 {
     const DEFAULT_PRIMARY_NODE = 'nt:base';
 

@@ -1,8 +1,13 @@
 <?php
+
 namespace Jackalope\NodeType;
 
+use DOMElement;
+use DOMXPath;
+
+use PHPCR\NodeType\PropertyDefinitionInterface;
+
 use Jackalope\Helper;
-use \DOMElement, \DOMXPath;
 
 /**
  * {@inheritDoc}
@@ -11,7 +16,7 @@ use \DOMElement, \DOMXPath;
  *
  * @api
  */
-class PropertyDefinition extends ItemDefinition implements \PHPCR\NodeType\PropertyDefinitionInterface
+class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInterface
 {
     /**
      * One of the PropertyType type constants

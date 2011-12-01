@@ -2,6 +2,8 @@
 
 namespace Jackalope\Version;
 
+use PHPCR\Version\VersionInterface;
+
 use Jackalope\NotImplementedException;
 use Jackalope\Node;
 
@@ -9,7 +11,7 @@ use Jackalope\Node;
 /**
  * @api
  */
-class Version extends Node implements \PHPCR\Version\VersionInterface {
+class Version extends Node implements VersionInterface {
 
     // inherit all doc
     /**
@@ -57,7 +59,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
         $results = array();
         if ($successors) {
             foreach ($successors as $uuid) {
-                $results[] = $this->objectManager->getNode($uuid, '/', 'Version\Version');
+                $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
             }
         }
         return $results;
@@ -91,7 +93,7 @@ class Version extends Node implements \PHPCR\Version\VersionInterface {
         $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
         foreach ($predecessors as $uuid) {
-            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\Version');
+            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
         return $results;
     }

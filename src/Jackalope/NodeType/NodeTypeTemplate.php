@@ -1,12 +1,16 @@
 <?php
+
 namespace Jackalope\NodeType;
-use \ArrayObject;
+
+use ArrayObject;
+
+use PHPCR\NodeType\NodeTypeTemplateInterface;
 
 // inherit all doc
 /**
  * @api
  */
-class NodeTypeTemplate extends NodeTypeDefinition implements \PHPCR\NodeType\NodeTypeTemplateInterface
+class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInterface
 {
     // inherit all doc
     /**

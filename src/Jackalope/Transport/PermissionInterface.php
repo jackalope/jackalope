@@ -2,8 +2,6 @@
 
 namespace Jackalope\Transport;
 
-use Jackalope\NodeType\NodeTypeManager;
-
 /**
  * Defines the methods needed for permission checks.
  *

@@ -4,10 +4,12 @@ namespace Jackalope;
 
 use ArrayIterator;
 use IteratorAggregate;
+use Exception;
 use InvalidArgumentException;
 use LogicException;
 
 use PHPCR\PropertyType;
+use PHPCR\PropertyInterface;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
@@ -42,7 +44,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $primaryType;
 
     /**
-     * mapping of property name to \PHPCR\PropertyInterface objects.
+     * mapping of property name to PropertyInterface objects.
      *
      * all properties are instantiated in the constructor
      *
@@ -530,7 +532,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             if ($item_name !== null) {
                 $primary_item = $this->session->getItem($this->path . '/' . $item_name);
             }
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             throw new RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
         }
 
@@ -978,7 +980,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * @throws \PHPCR\ItemNotFoundException If child not found
+     * @throws ItemNotFoundException If child not found
      * @return void
      *
      * @private
@@ -1025,7 +1027,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * @throws \PHPCR\ItemNotFoundException If property not found
+     * @throws ItemNotFoundException If property not found
      * @return void
      *
      * @private
@@ -1124,7 +1126,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param string $type
      * @param boolean $internal whether we are setting this node through api or internally
      *
-     * @return \Jackalope\Property
+     * @return Property
      *
      * @see Node::setProperty
      * @see Node::refresh

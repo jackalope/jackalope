@@ -1,6 +1,8 @@
 <?php
 namespace Jackalope;
 
+use LogicException;
+
 /**
  * This class implements a stream wrapper that allows for lazy loaded binary
  * properties.
@@ -161,7 +163,7 @@ class BinaryStreamWrapper
      *
      * Always checks if the current session is still alive.
      *
-     * @throws \LogicException when trying to use a stream from a closed session
+     * @throws LogicException when trying to use a stream from a closed session
      *      and on trying to access a nonexisting multivalue id.
      *
      * @return void
@@ -170,7 +172,7 @@ class BinaryStreamWrapper
     {
         if (null === $this->stream) {
             if ($this->session && !$this->session->isLive()) {
-                throw new \LogicException("Trying to read a stream from a closed transport.");
+                throw new LogicException("Trying to read a stream from a closed transport.");
             }
 
             $url = parse_url($this->path);
@@ -186,7 +188,7 @@ class BinaryStreamWrapper
                 }
                 $index = isset($url['port']) ? $url['port'] - 1 : 0;
                 if (!isset(self::$multiValueMap[$token][$index])) {
-                    throw new \LogicException("Trying to read a stream from a non existant token '$token' or token index '$index'.");
+                    throw new LogicException("Trying to read a stream from a non existant token '$token' or token index '$index'.");
                 }
                 $this->stream = self::$multiValueMap[$token][$index];
             }

@@ -2,6 +2,9 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\PropertyInterface;
+use PHPCR\NodeInterface;
+
 /**
  * Defines the methods needed for Writing support
  *
@@ -107,24 +110,24 @@ interface WritingInterface extends TransportInterface
      * Transport stores the node at its path, with all properties and all
      * children.
      *
-     * @param \PHPCR\NodeInterface $node the node to store
+     * @param NodeInterface $node the node to store
      *
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeNode(\PHPCR\NodeInterface $node);
+    public function storeNode(NodeInterface $node);
 
     /**
      * Stores a property to its absolute path
      *
-     * @param \PHPCR\PropertyInterface
+     * @param PropertyInterface
      *
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeProperty(\PHPCR\PropertyInterface $property);
+    public function storeProperty(PropertyInterface $property);
 
 
     /**

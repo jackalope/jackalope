@@ -1,11 +1,15 @@
 <?php
+
 namespace Jackalope\NodeType;
+
+use PHPCR\NodeType\NodeDefinitionTemplateInterface;
+use PHPCR\Version\OnParentVersionAction;
 
 // inherit all doc
 /**
  * @api
  */
-class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\NodeDefinitionTemplateInterface
+class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTemplateInterface
 {
     /**
      * Create a new node definition template instance.
@@ -23,7 +27,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements \PHPCR\NodeType\N
         $this->name = null;
         $this->isAutoCreated = false;
         $this->isMandatory = false;
-        $this->onParentVersion = \PHPCR\Version\OnParentVersionAction::COPY;
+        $this->onParentVersion = OnParentVersionAction::COPY;
         $this->isProtected = false;
         $this->requiredPrimaryTypeNames = null;
         $this->defaultPrimaryTypeName = null;

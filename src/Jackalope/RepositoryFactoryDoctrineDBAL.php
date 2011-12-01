@@ -26,7 +26,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
      * @var array
      */
     static private $required = array(
-        'jackalope.doctrine_dbal_connection' => 'Doctrine\DBAL\Connection (required): connection instance',
+        'jackalope.doctrine_dbal_connection' => 'Doctrine\\DBAL\\Connection (required): connection instance',
     );
 
     /**
@@ -77,7 +77,7 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
 
         $dbConn = $parameters['jackalope.doctrine_dbal_connection'];
 
-        $transport = $factory->get('Jackalope\Transport\DoctrineDBAL\Client', array($dbConn));
+        $transport = $factory->get('Jackalope\\Transport\\DoctrineDBAL\\Client', array($dbConn));
         if (isset($parameters['jackalope.check_login_on_server'])) {
             $transport->setCheckLoginOnServer($parameters['jackalope.check_login_on_server']);
         }

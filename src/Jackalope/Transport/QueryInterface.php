@@ -2,7 +2,7 @@
 
 namespace Jackalope\Transport;
 
-use Jackalope\NodeType\NodeTypeManager;
+use PHPCR\Query\QueryInterface as Query;
 
 /**
  * Defines the methods needed for Query support
@@ -35,13 +35,13 @@ interface QueryInterface extends TransportInterface
      *     array(...
      * )
      *
-     * @param \PHPCR\Query\QueryInterface $query the query object
+     * @param Query $query the query object
      *
      * @return array data with search result. TODO: what to return? should be some simple array
      *
-     * @see Query\QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
+     * @see \Jackalope\Query\QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */
-    public function query(\PHPCR\Query\QueryInterface $query);
+    public function query(Query $query);
 
     //TODO: getSupportedQueryLanguages
 

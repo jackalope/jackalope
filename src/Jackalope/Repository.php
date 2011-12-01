@@ -2,6 +2,8 @@
 
 namespace Jackalope;
 
+use ReflectionClass;
+
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 use PHPCR\CredentialsInterface;
@@ -37,7 +39,7 @@ class Repository implements RepositoryInterface
 
     /**
      * The transport to use
-     * @var \Jackalope\Transport\TransportInterface
+     * @var TransportInterface
      */
     protected $transport;
 
@@ -64,8 +66,8 @@ class Repository implements RepositoryInterface
      * Create repository with the option to overwrite the factory and bound to
      * a transport.
      *
-     * Use \Jackalope\RepositoryFactoryDoctrineDBAL or
-     * \Jackalope\RepositoryFactoryJackrabbit to instantiate this class.
+     * Use RepositoryFactoryDoctrineDBAL or RepositoryFactoryJackrabbit to
+     * instantiate this class.
      *
      * @param object $factory  an object factory implementing "get" as
      *      described in \Jackalope\Factory. If this is null, the
@@ -134,7 +136,7 @@ class Repository implements RepositoryInterface
      */
     public function isStandardDescriptor($key)
     {
-        $ref = new \ReflectionClass('\PHPCR\RepositoryInterface');
+        $ref = new ReflectionClass('PHPCR\\RepositoryInterface');
         $consts = $ref->getConstants();
         return in_array($key, $consts);
     }
