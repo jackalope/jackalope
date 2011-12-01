@@ -40,6 +40,6 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
      * @throws \PHPCR\RepositoryException if another error occurs.
      */
-    public function createWorkspace($name, $srcWorkspace = null);
+    function createWorkspace($name, $srcWorkspace = null);
 
 }

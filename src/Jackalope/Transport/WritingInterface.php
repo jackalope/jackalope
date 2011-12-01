@@ -41,7 +41,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::copy
      */
-    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
+    function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
 
     /**
      * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
@@ -62,7 +62,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::cloneFrom
      */
-    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+    function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
     /**
      * Moves a node from src to dst
@@ -77,7 +77,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::moveNode
      */
-    public function moveNode($srcAbsPath, $dstAbsPath);
+    function moveNode($srcAbsPath, $dstAbsPath);
 
     /**
      * Deletes a node and the whole subtree under it
@@ -91,7 +91,7 @@ interface WritingInterface extends TransportInterface
      *      checking.
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteNode($path);
+    function deleteNode($path);
 
     /**
      * Deletes a property
@@ -102,7 +102,7 @@ interface WritingInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function deleteProperty($path);
+    function deleteProperty($path);
 
     /**
      * Recursively store a node and its children to the given absolute path.
@@ -116,7 +116,7 @@ interface WritingInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeNode(NodeInterface $node);
+    function storeNode(NodeInterface $node);
 
     /**
      * Stores a property to its absolute path
@@ -127,7 +127,7 @@ interface WritingInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function storeProperty(PropertyInterface $property);
+    function storeProperty(PropertyInterface $property);
 
 
     /**
@@ -143,7 +143,7 @@ interface WritingInterface extends TransportInterface
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.
      */
-    public function registerNamespace($prefix, $uri);
+    function registerNamespace($prefix, $uri);
 
     /**
      * Unregister an existing namespace.
@@ -153,6 +153,6 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $prefix The prefix to unregister.
      */
-    public function unregisterNamespace($prefix);
+    function unregisterNamespace($prefix);
 
 }

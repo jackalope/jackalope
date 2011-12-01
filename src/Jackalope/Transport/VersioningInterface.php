@@ -2,8 +2,6 @@
 
 namespace Jackalope\Transport;
 
-use Jackalope\NodeType\NodeTypeManager;
-
 /**
  * Defines the method needed for versioning support.
  *
@@ -24,7 +22,7 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\UnsupportedRepositoryOperationException
      * @throws PHPCR\RepositoryException
      */
-    public function checkinItem($path);
+    function checkinItem($path);
 
     /**
      * Check-out item at path.
@@ -38,7 +36,7 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\UnsupportedRepositoryOperationException
      * @throws PHPCR\RepositoryException
      */
-    public function checkoutItem($path);
+    function checkoutItem($path);
 
     /**
      * Restore the item at versionPath to the location path
@@ -47,7 +45,7 @@ interface VersioningInterface extends TransportInterface
      *
      * @see VersionManager::restoreItem
      */
-    public function restoreItem($removeExisting, $versionPath, $path);
+    function restoreItem($removeExisting, $versionPath, $path);
 
     /**
      * Get the uuid of the version history node at $path
@@ -58,7 +56,7 @@ interface VersioningInterface extends TransportInterface
      *
      * TODO: Does this make any sense? We should maybe return the root version to make this more generic.
      */
-    public function getVersionHistory($path);
+    function getVersionHistory($path);
 
     //TODO
     //public function removeVersion();

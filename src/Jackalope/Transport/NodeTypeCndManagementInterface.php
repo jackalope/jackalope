@@ -30,5 +30,5 @@ interface NodeTypeCndManagementInterface extends TransportInterface
      *
      * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
      */
-    public function registerNodeTypesCnd($cnd, $allowUpdate);
+    function registerNodeTypesCnd($cnd, $allowUpdate);
 }

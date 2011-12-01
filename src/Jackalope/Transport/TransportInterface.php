@@ -46,14 +46,14 @@ interface TransportInterface
      * @see http://www.day.com/specs/jcr/2.0/24_Repository_Compliance.html#24.2%20Repository%20Descriptors
      * @see \PHPCR\RepositoryInterface
      */
-    public function getRepositoryDescriptors();
+    function getRepositoryDescriptors();
 
     /**
      * Returns the workspace names that can be used when logging in.
      *
      * @return array List of workspaces that can be specified on login
      */
-    public function getAccessibleWorkspaceNames();
+    function getAccessibleWorkspaceNames();
 
     /**
      * Set this transport to a specific credential and a workspace.
@@ -75,7 +75,7 @@ interface TransportInterface
      *      is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(CredentialsInterface $credentials, $workspaceName);
+    function login(CredentialsInterface $credentials, $workspaceName);
 
     /***********************************************************************
      * all methods from here below require that login is called first. the *
@@ -94,7 +94,7 @@ interface TransportInterface
      *
      * @return void
      */
-    public function logout();
+    function logout();
 
     /****************************
      * Methods for read support *
@@ -110,7 +110,7 @@ interface TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNamespaces();
+    function getNamespaces();
 
     /**
      * Get the node from an absolute path
@@ -173,7 +173,7 @@ interface TransportInterface
      * @throws \PHPCR\ItemNotFoundException If the item at path was not found
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNode($path);
+    function getNode($path);
 
     /**
      * Get the nodes from an array of absolute paths.
@@ -189,7 +189,7 @@ interface TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNodes($paths);
+    function getNodes($paths);
 
     /**
      * Get the property stored at an absolute path.
@@ -202,7 +202,7 @@ interface TransportInterface
      *
      * @see TransportInterface::getNode($path)
      */
-    public function getProperty($path);
+    function getProperty($path);
 
     /**
      * Get the node path from a JCR uuid
@@ -215,7 +215,7 @@ interface TransportInterface
      *      uuid
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNodePathForIdentifier($uuid);
+    function getNodePathForIdentifier($uuid);
 
     /**
      * Retrieve a stream of a binary property value
@@ -224,7 +224,7 @@ interface TransportInterface
      *
      * @return resource with binary data
      */
-    public function getBinaryStream($path);
+    function getBinaryStream($path);
 
     /****************************************************************************
      * References reading                                                       *
@@ -241,7 +241,7 @@ interface TransportInterface
      *
      * @return array
      */
-    public function getReferences($path, $name = null);
+    function getReferences($path, $name = null);
 
     /**
      * Returns the path of all accessible WEAKREFERENCE properties in the
@@ -253,7 +253,7 @@ interface TransportInterface
      *
      * @return array
      */
-    public function getWeakReferences($path, $name = null);
+    function getWeakReferences($path, $name = null);
 
     /***********************************
      * Methods for NodeType discovery. *
@@ -263,11 +263,11 @@ interface TransportInterface
      * Pass the node type manager into the transport to be used for validation
      * and such.
      *
-     * @param \Jackalope\NodeTypeManager $nodeTypeManager
+     * @param NodeTypeManager $nodeTypeManager
      *
      * @return void
      */
-    public function setNodeTypeManager($nodeTypeManager);
+    function setNodeTypeManager($nodeTypeManager);
 
     /**
      * Get node types, either filtered or all.
@@ -286,6 +286,6 @@ interface TransportInterface
      *
      * @see Jackalope\NodeTypeDefinition::fromArray
      */
-    public function getNodeTypes($nodeTypes = array());
+    function getNodeTypes($nodeTypes = array());
 
 }

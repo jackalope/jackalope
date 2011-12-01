@@ -19,22 +19,22 @@ interface TransactionInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException If no transaction token received.
      */
-    function beginTransaction();
+    beginTransaction();
 
     /**
      * Commits a transaction started with {@link beginTransaction()}
      */
-    function commitTransaction();
+    commitTransaction();
 
     /**
      * Rolls back a transaction started with {@link beginTransaction()}
      */
-    function rollbackTransaction();
+    rollbackTransaction();
 
     /**
      * Sets the default transaction timeout
      *
      * @param int $seconds The value of the timeout in seconds
      */
-    function setTransactionTimeout($seconds);
+    setTransactionTimeout($seconds);
 }
