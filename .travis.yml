@@ -6,6 +6,7 @@ php:
 
 env:
   - TRANSPORT=jackrabbit
+  - TRANSPORT=doctrine_dbal
 
 before_script:
   - ./tests/travis_${TRANSPORT}.sh
