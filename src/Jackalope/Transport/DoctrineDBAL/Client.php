@@ -412,6 +412,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
             if ($uuid === null) {
                 $uuid = UUIDHelper::generateUUID();
             }
+
             $nodeId = $this->pathExists($path);
             if (!$nodeId) {
                 list($namespace, $localName) = $this->getJcrName($path);
@@ -428,9 +429,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
 
                 $nodeId = $this->conn->lastInsertId($this->sequenceNodeName);
             } else {
-                $this->conn->update('phpcr_nodes', array(
-                    'props' => $propsData['dom']->saveXML(),
-                ), array('id' => $nodeId));
+                $this->conn->update('phpcr_nodes', array('props' => $propsData['dom']->saveXML()), array('id' => $nodeId));
             }
             $this->nodeIdentifiers[$path] = $uuid;
 
@@ -495,22 +494,22 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                 $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
                 foreach ($values as $value) {
-                    $targetId = $this->pathExists($this->getNodePathForIdentifier($value));
-                    if (!$targetId) {
-                        if ($type == PropertyType::REFERENCE) {
-                            throw new ReferentialIntegrityException(
-                                "Trying to store reference to non-existant node with path '" . $value . "' in " .
-                                "node " . $path . " property " . $property->getName()
-                            );
-                        }
-                        // skip otherwise
-                    } else {
+                    try {
+                        $targetId = $this->pathExists($this->getNodePathForIdentifier($value));
+
                         $this->conn->insert('phpcr_nodes_foreignkeys', array(
                             'source_id' => $nodeId,
                             'source_property_name' => $property->getName(),
                             'target_id' => $targetId,
                             'type' => $type
                         ));
+                    } catch (ItemNotFoundException $e) {
+                        if ($type == PropertyType::REFERENCE) {
+                            throw new ReferentialIntegrityException(
+                                "Trying to store reference to non-existant node with path '" . $value . "' in " .
+                                "node " . $path . " property " . $property->getName()
+                            );
+                        }
                     }
                 }
             }
