@@ -1,7 +1,9 @@
 <?php
 namespace Jackalope;
 
-use \DOMElement;
+use DOMElement;
+
+use PHPCR\RepositoryException;
 
 /**
  * Static helper functions to do some commonly used dom and path operations
@@ -23,7 +25,7 @@ class Helper
     public static function getBoolAttribute(DOMElement $node, $attribute)
     {
         if (! $node->hasAttribute($attribute)) {
-            throw new \PHPCR\RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());
+            throw new RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());
         }
         if ('false' === $node->getAttribute($attribute)) {
             return false;

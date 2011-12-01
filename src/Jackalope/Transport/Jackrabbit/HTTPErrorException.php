@@ -2,6 +2,8 @@
 
 namespace Jackalope\Transport\Jackrabbit;
 
-class HTTPErrorException extends \RuntimeException {
-    
+use RuntimeException;
+
+class HTTPErrorException extends RuntimeException {
+
 }

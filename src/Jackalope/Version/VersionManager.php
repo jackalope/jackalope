@@ -2,16 +2,24 @@
 
 namespace Jackalope\Version;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use PHPCR\NodeInterface;
+use PHPCR\PathNotFoundException;
+use PHPCR\UnsupportedRepositoryOperationException;
+
+use PHPCR\Version\VersionInterface;
+use PHPCR\Version\VersionManagerInterface;
+
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
 
 // inherit all doc
 /**
  * @api
  */
-class VersionManager implements \PHPCR\Version\VersionManagerInterface {
+class VersionManager implements VersionManagerInterface {
 
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectmanager;
     /** @var object   The jackalope object factory for this object */
@@ -77,7 +85,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
      */
     public function getVersionHistory($absPath)
     {
-        return $this->factory->get('Version\VersionHistory', array($this->objectmanager,$absPath));
+        return $this->factory->get('Version\\VersionHistory', array($this->objectmanager,$absPath));
     }
 
     // inherit all doc
@@ -90,10 +98,10 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
         try {
             //TODO: could check if node has versionable mixin type
             $uuid = $node->getProperty('jcr:baseVersion')->getString();
-        } catch(\PHPCR\PathNotFoundException $e) {
-            throw new \PHPCR\UnsupportedRepositoryOperationException("No jcr:baseVersion version for $path");
+        } catch(PathNotFoundException $e) {
+            throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $path");
         }
-        return $this->objectmanager->getNode($uuid, '/', 'Version\Version');
+        return $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
     }
 
     // inherit all doc
@@ -137,7 +145,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * @api
      */
-    public function doneMerge($absPath, \PHPCR\Version\VersionInterface $version)
+    public function doneMerge($absPath, VersionInterface $version)
     {
         throw new NotImplementedException();
     }
@@ -146,7 +154,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * @api
      */
-    public function cancelMerge($absPath, \PHPCR\Version\VersionInterface $version)
+    public function cancelMerge($absPath, VersionInterface $version)
     {
         throw new NotImplementedException();
     }
@@ -155,7 +163,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * @api
      */
-    public function createConfiguration($absPath, \PHPCR\Version\VersionInterface $baseline)
+    public function createConfiguration($absPath, VersionInterface $baseline)
     {
         throw new NotImplementedException();
     }
@@ -164,7 +172,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * @api
      */
-    public function setActivity(\PHPCR\NodeInterface $activity)
+    public function setActivity(NodeInterface $activity)
     {
         throw new NotImplementedException();
     }
@@ -191,7 +199,7 @@ class VersionManager implements \PHPCR\Version\VersionManagerInterface {
     /**
      * @api
      */
-    public function removeActivity(\PHPCR\NodeInterface $activityNode)
+    public function removeActivity(NodeInterface $activityNode)
     {
         throw new NotImplementedException();
     }

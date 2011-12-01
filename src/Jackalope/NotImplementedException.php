@@ -1,6 +1,8 @@
 <?php
 namespace Jackalope;
 
+use RuntimeException;
+
 /**
  * Exception to throw when something has not yet been implemented.
  *
@@ -9,6 +11,6 @@ namespace Jackalope;
  *
  * Should become obsolete once everything is implemented.
  */
-class NotImplementedException extends \RuntimeException
+class NotImplementedException extends RuntimeException
 {
 }

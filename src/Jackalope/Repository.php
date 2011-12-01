@@ -2,6 +2,10 @@
 
 namespace Jackalope;
 
+use ReflectionClass;
+
+use Jackalope\Transport\TransportInterface;
+use Jackalope\Transport\TransactionInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
@@ -35,7 +39,7 @@ class Repository implements RepositoryInterface
 
     /**
      * The transport to use
-     * @var \Jackalope\TransportInterface
+     * @var TransportInterface
      */
     protected $transport;
 
@@ -62,8 +66,8 @@ class Repository implements RepositoryInterface
      * Create repository with the option to overwrite the factory and bound to
      * a transport.
      *
-     * Use \Jackalope\RepositoryFactoryDoctrineDBAL or
-     * \Jackalope\RepositoryFactoryJackrabbit to instantiate this class.
+     * Use RepositoryFactoryDoctrineDBAL or RepositoryFactoryJackrabbit to
+     * instantiate this class.
      *
      * @param object $factory  an object factory implementing "get" as
      *      described in \Jackalope\Factory. If this is null, the
@@ -78,7 +82,7 @@ class Repository implements RepositoryInterface
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
         $this->options = array_merge($this->options, (array)$options);
-        $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionalTransportInterface;
+        $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionInterface;
         // register a stream wrapper to lazily load binary property values
         if (null === self::$binaryStreamWrapperRegistered) {
             self::$binaryStreamWrapperRegistered = $this->options['stream_wrapper'];
@@ -132,7 +136,7 @@ class Repository implements RepositoryInterface
      */
     public function isStandardDescriptor($key)
     {
-        $ref = new \ReflectionClass('\PHPCR\RepositoryInterface');
+        $ref = new ReflectionClass('PHPCR\\RepositoryInterface');
         $consts = $ref->getConstants();
         return in_array($key, $consts);
     }

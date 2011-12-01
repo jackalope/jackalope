@@ -1,5 +1,17 @@
 <?php
+
 namespace Jackalope\Transport\Jackrabbit;
+
+use DOMDocument;
+
+use PHPCR\SimpleCredentials;
+use PHPCR\RepositoryException;
+use PHPCR\NoSuchWorkspaceException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\PathNotFoundException;
+use PHPCR\ReferentialIntegrityException;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NoSuchNodeTypeException;
 
 use Jackalope\Transport\curl;
 
@@ -116,7 +128,7 @@ class Request
     const INFINITY = 'infinity';
 
     /**
-     * @var \Jackalope\Transport\curl
+     * @var curl
      */
     protected $curl;
 
@@ -242,7 +254,7 @@ class Request
      */
     protected function prepareCurl($curl, $getCurlObject)
     {
-        if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
+        if ($this->credentials instanceof SimpleCredentials) {
             $curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
         }
         // otherwise leave this alone, the new curl instance has no USERPWD yet
@@ -351,7 +363,7 @@ class Request
      */
     protected function singleRequest($getCurlObject)
     {
-        if ($this->credentials instanceof \PHPCR\SimpleCredentials) {
+        if ($this->credentials instanceof SimpleCredentials) {
             $this->curl->setopt(CURLOPT_USERPWD, $this->credentials->getUserID().':'.$this->credentials->getPassword());
             $curl = $this->curl;
         } else {
@@ -401,10 +413,10 @@ class Request
      * Handles errors caused by singleRequest and multiRequest
      *
      * for transport level errors, throwing the appropriate exceptions.
-     * @throws \PHPCR\NoSuchWorkspaceException if it was not possible to reach the server (resolve host or connect)
-     * @throws \PHPCR\ItemNotFoundException if the object was not found
-     * @throws \PHPCR\RepositoryExceptions if on any other error.
-     * @throws \PHPCR\PathNotFoundException if the path was not found (server returned 404 without xml response)
+     * @throws NoSuchWorkspaceException if it was not possible to reach the server (resolve host or connect)
+     * @throws ItemNotFoundException if the object was not found
+     * @throws RepositoryExceptions if on any other error.
+     * @throws PathNotFoundException if the path was not found (server returned 404 without xml response)
      *
      */
     protected function handleError($curl, $response, $httpCode)
@@ -412,14 +424,14 @@ class Request
         switch ($curl->errno()) {
             case CURLE_COULDNT_RESOLVE_HOST:
             case CURLE_COULDNT_CONNECT:
-                throw new \PHPCR\NoSuchWorkspaceException($curl->error());
+                throw new NoSuchWorkspaceException($curl->error());
         }
 
         // TODO extract HTTP status string from response, more descriptive about error
 
         // use XML error response if it's there
         if (substr($response, 0, 1) === '<') {
-            $dom = new \DOMDocument();
+            $dom = new DOMDocument();
             $dom->loadXML($response);
             $err = $dom->getElementsByTagNameNS(Client::NS_DCR, 'exception');
             if ($err->length > 0) {
@@ -430,15 +442,15 @@ class Request
                 $exceptionMsg = 'HTTP ' . $httpCode . ': ' . $errMsg;
                 switch($errClass) {
                     case 'javax.jcr.NoSuchWorkspaceException':
-                        throw new \PHPCR\NoSuchWorkspaceException($exceptionMsg);
+                        throw new NoSuchWorkspaceException($exceptionMsg);
                     case 'javax.jcr.nodetype.NoSuchNodeTypeException':
-                        throw new \PHPCR\NodeType\NoSuchNodeTypeException($exceptionMsg);
+                        throw new NoSuchNodeTypeException($exceptionMsg);
                     case 'javax.jcr.ItemNotFoundException':
-                        throw new \PHPCR\ItemNotFoundException($exceptionMsg);
+                        throw new ItemNotFoundException($exceptionMsg);
                     case 'javax.jcr.nodetype.ConstraintViolationException':
-                        throw new \PHPCR\NodeType\ConstraintViolationException($exceptionMsg);
+                        throw new ConstraintViolationException($exceptionMsg);
                     case 'javax.jcr.ReferentialIntegrityException':
-                        throw new \PHPCR\ReferentialIntegrityException($exceptionMsg);
+                        throw new ReferentialIntegrityException($exceptionMsg);
                     //TODO: Two more errors needed for Transactions. How does the corresponding Jackrabbit response look like?
                     // javax.transaction.RollbackException => \PHPCR\Transaction\RollbackException
                     // java.lang.SecurityException => \PHPCR\AccessDeniedException
@@ -455,22 +467,22 @@ class Request
                         if (class_exists($class)) {
                             throw new $class($exceptionMsg);
                         }
-                        throw new \PHPCR\RepositoryException($exceptionMsg . " ($errClass)");
+                        throw new RepositoryException($exceptionMsg . " ($errClass)");
                 }
             }
         }
         if (404 === $httpCode) {
-            throw new \PHPCR\PathNotFoundException("HTTP 404 Path Not Found: {$this->method} ".var_export($this->uri, true));
+            throw new PathNotFoundException("HTTP 404 Path Not Found: {$this->method} ".var_export($this->uri, true));
         } elseif (405 == $httpCode) {
             throw new HTTPErrorException("HTTP 405 Method Not Allowed: {$this->method} ".var_export($this->uri, true), 405);
         } elseif ($httpCode >= 500) {
-            throw new \PHPCR\RepositoryException("HTTP $httpCode Error from backend on: {$this->method} ".var_export($this->uri, true)."\n\n$response");
+            throw new RepositoryException("HTTP $httpCode Error from backend on: {$this->method} ".var_export($this->uri, true)."\n\n$response");
         }
 
         $curlError = $curl->error();
 
         $msg = "Unexpected error: \nCURL Error: $curlError \nResponse (HTTP $httpCode): {$this->method} ".var_export($this->uri, true)."\n\n$response";
-        throw new \PHPCR\RepositoryException($msg);
+        throw new RepositoryException($msg);
     }
 
     /**
@@ -486,7 +498,7 @@ class Request
         $xml = $this->execute(null, $forceMultiple);
 
         // create new DOMDocument and load the response text.
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $dom->loadXML($xml);
 
         return $dom;
@@ -499,7 +511,7 @@ class Request
      *
      * @return mixed
      *
-     * @throws \PHPCR\RepositoryException if the json response is not valid
+     * @throws RepositoryException if the json response is not valid
      */
     public function executeJson($forceMultiple = false)
     {
@@ -514,7 +526,7 @@ class Request
             $json[$key] = json_decode($response);
             if (null === $json[$key] && 'null' !== strtolower($response)) {
                 $uri = reset($this->uri); // FIXME was $this->uri[$key]. at which point did we lose the right key?
-                throw new \PHPCR\RepositoryException("Not a valid json object: \nRequest: {$this->method} $uri \nResponse: \n$response");
+                throw new RepositoryException("Not a valid json object: \nRequest: {$this->method} $uri \nResponse: \n$response");
             }
         }
         //TODO: are there error responses in json format? if so, handle them

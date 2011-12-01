@@ -19,12 +19,12 @@ class NamespaceRegistryTest extends TestCase
     /**
      * Creates a Mock object of the dummy implementation of the TransportInterface.
      *
-     * @return Jackalope\TransportInterface
+     * @return Jackalope\Transport\TransportInterface
      */
     public function getTransportMockFixture()
     {
         // this was TransportDummy before, but you can mock interfaces!
-        $transport = $this->getMock('Jackalope\TransportInterface');
+        $transport = $this->getMock('Jackalope\Transport\TransportInterface');
         return $transport;
     }
 
@@ -63,7 +63,7 @@ class NamespaceRegistryTest extends TestCase
     {
         $nsr = $this->getNamespaceRegistryFixture($namespaces,false);
 
-        $this->assertAttributeInstanceOf('Jackalope\TransportInterface', 'transport', $nsr);
+        $this->assertAttributeInstanceOf('Jackalope\Transport\TransportInterface', 'transport', $nsr);
         //after construct, userNamespaces is supposed to be null due to lazyLoading
         $this->assertAttributeEquals(null, 'userNamespaces', $nsr);
         //after we get the prefixes, userNamespaces is supposed to have the userNamespaces

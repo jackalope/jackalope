@@ -1,8 +1,18 @@
 <?php
+
 namespace Jackalope\NodeType;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use IteratorAggregate;
 use ArrayIterator;
+
+use PHPCR\NodeType\NodeTypeInterface;
+use PHPCR\NodeType\NodeTypeDefinitionInterface;
+use PHPCR\NodeType\NodeTypeManagerInterface;
+use PHPCR\NodeType\NoSuchNodeTypeException;
+use PHPCR\NodeType\NodeTypeExistsException;
+
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -12,7 +22,7 @@ use ArrayIterator;
  * transport, there is an additional method registerNodeTypesCnd for the
  * jackrabbit specific textual node type specification
  */
-class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeManagerInterface
+class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 {
     /**
      * The factory to instantiate objects.
@@ -20,7 +30,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     protected $factory;
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
     protected $objectManager;
 
     /**
@@ -100,7 +110,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         }
 
         foreach ($nodetypes as $nodetype) {
-            $nodetype = $this->factory->get('NodeType\NodeType', array($this, $nodetype));
+            $nodetype = $this->factory->get('NodeType\\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();
             //do not overwrite existing types. maybe they where changed locally
             if (empty($this->primaryTypes[$name])
@@ -114,9 +124,9 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     /**
      * Stores the node type in our internal structures (flat && tree)
      *
-     * @param \PHPCR\NodeType\NodeTypeInterface $nodetype The nodetype to add
+     * @param NodeTypeInterface $nodetype The nodetype to add
      */
-    protected function addNodeType(\PHPCR\NodeType\NodeTypeInterface $nodetype)
+    protected function addNodeType(NodeTypeInterface $nodetype)
     {
         if ($nodetype->isMixin()) {
             $this->mixinTypes[$nodetype->getName()] = $nodetype;
@@ -213,7 +223,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         if (is_null($nodeTypeName)) {
             $nodeTypeName = 'nodeTypeName was <null>';
         }
-        throw new \PHPCR\NodeType\NoSuchNodeTypeException($nodeTypeName);
+        throw new NoSuchNodeTypeException($nodeTypeName);
     }
 
     // inherit all doc
@@ -224,7 +234,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     {
         try {
             $this->fetchNodeTypes($name);
-        } catch (\PHPCR\NodeType\NoSuchNodeTypeException $e) {
+        } catch (NoSuchNodeTypeException $e) {
             // if we have not yet fetched all types and this type is not existing
             // we get an exception. just ignore the exception, we don't have the type.
             return false;
@@ -268,7 +278,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createNodeTypeTemplate($ntd = null)
     {
-       return $this->factory->get('NodeType\NodeTypeTemplate', array($this, $ntd));
+       return $this->factory->get('NodeType\\NodeTypeTemplate', array($this, $ntd));
     }
 
     // inherit all doc
@@ -277,7 +287,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createNodeDefinitionTemplate()
     {
-       return $this->factory->get('NodeType\NodeDefinitionTemplate', array($this));
+       return $this->factory->get('NodeType\\NodeDefinitionTemplate', array($this));
     }
 
     // inherit all doc
@@ -286,14 +296,14 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      */
     public function createPropertyDefinitionTemplate()
     {
-       return $this->factory->get('NodeType\PropertyDefinitionTemplate', array($this));
+       return $this->factory->get('NodeType\\PropertyDefinitionTemplate', array($this));
     }
 
     // inherit all doc
     /**
      * @api
      */
-    public function registerNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
         self::registerNodeTypes(array($ntd), $allowUpdate);
         return each($ntd);
@@ -303,12 +313,12 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
     /**
      * @api
      */
-    protected function createNodeType(\PHPCR\NodeType\NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
         if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
-            throw new \PHPCR\NodeType\NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
+            throw new NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
-        return $this->factory->get('NodeType\NodeType', array($this, $ntd));
+        return $this->factory->get('NodeType\\NodeType', array($this, $ntd));
     }
 
     // inherit all doc
@@ -363,7 +373,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
      *
      * @throws \PHPCR\InvalidNodeTypeDefinitionException if the
      *      NodeTypeDefinition is invalid.
-     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false
+     * @throws NodeTypeExistsException if allowUpdate is false
      *      and the NodeTypeDefinition specifies a node type name that is
      *      already registered.
      * @throws \PHPCR\UnsupportedRepositoryOperationException if this
@@ -402,7 +412,7 @@ class NodeTypeManager implements \IteratorAggregate, \PHPCR\NodeType\NodeTypeMan
         } elseif (!empty($this->mixinTypes[$name])) {
             unset($this->mixinTypes[$name]);
         } else {
-            throw new \PHPCR\NodeType\NoSuchNodeTypeException('NodeType not found: '.$name);
+            throw new NoSuchNodeTypeException('NodeType not found: '.$name);
         }
 
         throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
