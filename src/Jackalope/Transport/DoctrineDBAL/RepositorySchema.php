@@ -57,7 +57,7 @@ class RepositorySchema
 
         $foreignKeys = $schema->createTable('phpcr_nodes_foreignkeys');
         $foreignKeys->addColumn('source_id', 'integer');
-        $foreignKeys->addColumn('source_property_name', 'string');
+        $foreignKeys->addColumn('source_property_name', 'string', array('length' => 240));
         $foreignKeys->addColumn('target_id', 'integer');
         $foreignKeys->addColumn('type', 'smallint');
         $foreignKeys->setPrimaryKey(array('source_id', 'source_property_name', 'target_id'));
