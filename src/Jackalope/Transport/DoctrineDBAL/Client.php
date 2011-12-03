@@ -196,6 +196,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         }
 
         $this->loggedIn = true;
+
         return true;
     }
 
@@ -216,6 +217,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
     {
         try {
             $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
+
             return $this->conn->fetchColumn($sql, array($workspaceName));
         } catch(\PDOException $e) {
             if (1045 == $e->getCode()) {
@@ -312,6 +314,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                 $this->namespaces[$row['prefix']] = $row['uri'];
             }
         }
+
         return $this->namespaces;
     }
 
@@ -610,6 +613,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         foreach ($this->conn->fetchAll("SELECT name FROM phpcr_workspaces") as $row) {
             $workspaceNames[] = $row['name'];
         }
+
         return $workspaceNames;
     }
 
@@ -717,6 +721,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         if ($nodeId = $this->conn->fetchColumn($query, array($path, $this->workspaceId))) {
             return $nodeId;
         }
+
         return false;
     }
 
@@ -776,6 +781,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
             return true;
         } catch(\Exception $e) {
             $this->conn->rollBack();
+
             return false;
         }
     }
@@ -806,6 +812,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         if (!$parent) {
             return "/";
         }
+
         return $parent;
     }
 
@@ -885,6 +892,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                 $nodeTypes[] = $superType;
             }
         }
+
         return $nodeTypes;
     }
 
@@ -917,6 +925,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
 
         $node = $property->getParent();
         $this->storeNode($node);
+
         return true;
     }
 
@@ -977,6 +986,7 @@ $/xi";
         if (!$path) {
             throw new ItemNotFoundException("no item found with uuid ".$uuid);
         }
+
         return $path;
     }
 
@@ -1019,6 +1029,7 @@ $/xi";
 
         if (!$data) {
             $this->cache->save('phpcr_nodetype_' . $name, false);
+
             return false;
         }
 
@@ -1178,6 +1189,7 @@ $/xi";
             foreach ($data as $row) {
                 $streams[$row['idx']] = fopen("data://text/plain,".$row['data'], "r");
             }
+
             return $streams;
         }
     }
