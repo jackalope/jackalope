@@ -1232,37 +1232,53 @@ $/xi";
                 $columns[] = $column->getPropertyName();
             }
 
-            $result = array();
+            $results = array();
             foreach ($data as $row) {
+                $result = array();
+
+                // contains a list of all the column data which is expected for each node
+                $cols = array_flip($columns);
+
                 $dom = new \DOMDocument('1.0', 'UTF-8');
                 $dom->loadXml($row['props']);
-                $sets = array();
 
                 foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
                     $propertyName = $propertyNode->getAttribute('sv:name');
                     $prop = array();
 
                     if (in_array($propertyName, $columns)) {
-                        $prop['dcr:name'] = $propertyName;
-
                         // Jackrabbit responses use the dcr: namespace - not sv:
                         foreach ($propertyNode->childNodes as $childNode) {
                             $tagName = 'dcr:' . substr($childNode->tagName, 3);
                             $prop[$tagName] = $childNode->nodeValue;
                         }
 
-                        $sets[] = $prop;
+                        $cols[$propertyName] = $prop;
                     }
                 }
 
-                $result[] = array_merge($sets, array(
+                // how is this a good idea... it does work though
+                // todo improve this lousy block of code
+                foreach ($cols AS $propName => $propValue) {
+                    // yeah, need to deal with default values...
+                    if (!is_array($propValue)) {
+                        $propValue = array(
+                            'dcr:value' => null
+                        );
+                    }
+
+                    $propValue['dcr:name'] = $propName;
+                    $result[] = $propValue;
+                }
+
+                $results[] = array_merge($result, array(
                     array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
                     array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
                     array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
                 ));
             }
 
-            return $result;
+            return $results;
         }
 
         throw new NotImplementedException("JCQ-JQOM not yet implemented.");
