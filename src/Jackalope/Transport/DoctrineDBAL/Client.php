@@ -519,6 +519,75 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         }
     }
 
+    static public function xmlToProps($xml, $filter = null)
+    {
+        $props = array();
+
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->loadXML($xml);
+
+        foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
+            $name = $propertyNode->getAttribute('sv:name');
+            $values = array();
+            $type = (int)$propertyNode->getAttribute('sv:type');
+
+            foreach ($propertyNode->childNodes as $valueNode) {
+                switch ($type) {
+                    case PropertyType::NAME:
+                    case PropertyType::URI:
+                    case PropertyType::WEAKREFERENCE:
+                    case PropertyType::REFERENCE:
+                    case PropertyType::PATH:
+                    case PropertyType::DECIMAL:
+                    case PropertyType::STRING:
+                        $values[] = $valueNode->nodeValue;
+                        break;
+                    case PropertyType::BOOLEAN:
+                        $values[] = (bool)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::LONG:
+                        $values[] = (int)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::BINARY:
+                        $values[] = (int)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::DATE:
+                        $values[] = $valueNode->nodeValue;
+                        break;
+                    case PropertyType::DOUBLE:
+                        $values[] = (double)$valueNode->nodeValue;
+                        break;
+                    default:
+                        throw new \InvalidArgumentException("Type with constant " . $type . " not found.");
+                }
+            }
+
+            // only return the properties that pass through the filter callback
+            if (null !== $filter && is_callable($filter)) {
+                if (false === $filter($name, $values)) {
+                    continue;
+                }
+            }
+
+            if ($type == PropertyType::BINARY) {
+                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+                    $props[":" . $name] = $values;
+                } else {
+                    $props[":" . $name] = $values[0];
+                }
+            } else {
+                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+                    $props[$name] = $values;
+                } else {
+                    $props[$name] = $values[0];
+                }
+                $props[":" . $name] = $type;
+            }
+        }
+
+        return $props;
+    }
+
     /**
      * Seperate properties array into an xml and binary data.
      *
@@ -1229,46 +1298,22 @@ $/xi";
             // The list of columns is required to filter each records props
             $columns = array();
             foreach ($query->getColumns() AS $column) {
-                $columns[] = $column->getPropertyName();
+                $columns[$column->getPropertyName()] = $column->getSelectorName();
             }
 
             $results = array();
             foreach ($data as $row) {
                 $result = array();
 
-                // contains a list of all the column data which is expected for each node
-                $cols = array_flip($columns);
+                $props = static::xmlToProps($row['props'], function ($name) use ($columns) {
+                    return array_key_exists($name, $columns);
+                });
 
-                $dom = new \DOMDocument('1.0', 'UTF-8');
-                $dom->loadXml($row['props']);
-
-                foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
-                    $propertyName = $propertyNode->getAttribute('sv:name');
-                    $prop = array();
-
-                    if (in_array($propertyName, $columns)) {
-                        // Jackrabbit responses use the dcr: namespace - not sv:
-                        foreach ($propertyNode->childNodes as $childNode) {
-                            $tagName = 'dcr:' . substr($childNode->tagName, 3);
-                            $prop[$tagName] = $childNode->nodeValue;
-                        }
-
-                        $cols[$propertyName] = $prop;
-                    }
-                }
-
-                // how is this a good idea... it does work though
-                // todo improve this lousy block of code
-                foreach ($cols AS $propName => $propValue) {
-                    // yeah, need to deal with default values...
-                    if (!is_array($propValue)) {
-                        $propValue = array(
-                            'dcr:value' => null
-                        );
-                    }
-
-                    $propValue['dcr:name'] = $propName;
-                    $result[] = $propValue;
+                foreach ($columns AS $columnName => $columnPrefix) {
+                    $result[] = array(
+                        'dcr:name'  => null === $columnPrefix ? $columnName : "{$columnPrefix}.{$columnName}",
+                        'dcr:value' => array_key_exists($columnName, $props) ? $props[$columnName] : null
+                    );
                 }
 
                 $results[] = array_merge($result, array(
