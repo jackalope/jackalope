@@ -75,8 +75,8 @@ class QOMWalker
 
         if ('' === trim($sql)) {
             $sql = '*';
-        } else {
-            $sql .= ', n.*';
+        // } else {
+        //     $sql .= ', n.*';
         }
 
         return $sql;
@@ -84,10 +84,10 @@ class QOMWalker
 
     public function walkColumn(QOM\ColumnInterface $column)
     {
-        $propertyName = $column->getPropertyName();
-        $columnName = $column->getColumnName() ?: $propertyName;
-
-        return $this->sqlXpathExtractValue('n', $propertyName) . ' as ' . $columnName;
+        // $propertyName = $column->getPropertyName();
+        // $columnName = $column->getColumnName() ?: $propertyName;
+        // 
+        // return $this->sqlXpathExtractValue('n', $propertyName) . ' as ' . $columnName;
     }
 
     public function walkSource(QOM\SourceInterface $source)
