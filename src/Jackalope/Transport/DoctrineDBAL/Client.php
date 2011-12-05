@@ -625,7 +625,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
         if (!$row) {
-            throw new ItemNotFoundException("Item /".$path." not found.");
+            throw new ItemNotFoundException("Item ".$path." not found.");
         }
 
         $data = new \stdClass();
@@ -1226,13 +1226,40 @@ $/xi";
             $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
             $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
+            // The list of columns is required to filter each records props
+            $columns = array();
+            foreach ($query->getColumns() AS $column) {
+                $columns[] = $column->getPropertyName();
+            }
+
             $result = array();
             foreach ($data as $row) {
-                $result[] = array(
+                $dom = new \DOMDocument('1.0', 'UTF-8');
+                $dom->loadXml($row['props']);
+                $sets = array();
+
+                foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
+                    $propertyName = $propertyNode->getAttribute('sv:name');
+                    $prop = array();
+
+                    if (in_array($propertyName, $columns)) {
+                        $prop['dcr:name'] = $propertyName;
+
+                        // Jackrabbit responses use the dcr: namespace - not sv:
+                        foreach ($propertyNode->childNodes as $childNode) {
+                            $tagName = 'dcr:' . substr($childNode->tagName, 3);
+                            $prop[$tagName] = $childNode->nodeValue;
+                        }
+
+                        $sets[] = $prop;
+                    }
+                }
+
+                $result[] = array_merge($sets, array(
                     array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
                     array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
                     array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
-                );
+                ));
             }
 
             return $result;
