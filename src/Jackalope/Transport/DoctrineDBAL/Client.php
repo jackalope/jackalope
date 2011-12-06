@@ -1287,6 +1287,10 @@ $/xi";
         ) {
             throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
         }
+        if ('/' != substr($path, 0, 1)) {
+            //sanity check
+            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
+        }
     }
 
     /**
@@ -1304,10 +1308,6 @@ $/xi";
      */
     protected function encodeSanitizePath($path)
     {
-        if ('/' != substr($path, 0, 1)) {
-            //sanity check
-            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
-        }
         $this->assertValidPath($path);
         return str_replace(' ', '%20', $path); // TODO: does assertValidPath allow other characters that should be encoded?
     }
