@@ -1293,12 +1293,30 @@ $/xi";
             $sql = $qomWalker->walkQOMQuery($query);
 
             $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
+
             $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
             // The list of columns is required to filter each records props
             $columns = array();
+            $source  = $query->getSource();
+
             foreach ($query->getColumns() AS $column) {
                 $columns[$column->getPropertyName()] = $column->getSelectorName();
+            }
+
+            if (array() == $columns) {
+                $selector = $source->getSelectorName();
+                if (null === $selector) {
+                    $selector = $source->getNodeTypeName();
+                }
+
+                $columns = array(
+                    'jcr:primaryType' => $selector,
+                    'jcr:createdBy'   => $selector,
+                    'jcr:created'     => $selector,
+                );
+            } else {
+                $columns['jcr:primaryType'] = null;
             }
 
             $results = array();
@@ -1306,7 +1324,7 @@ $/xi";
                 $result = array();
 
                 $props = static::xmlToProps($row['props'], function ($name) use ($columns) {
-                    return array_key_exists($name, $columns);
+                    return array() === $columns || array_key_exists($name, $columns);
                 });
 
                 foreach ($columns AS $columnName => $columnPrefix) {
@@ -1317,7 +1335,7 @@ $/xi";
                 }
 
                 $results[] = array_merge($result, array(
-                    array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
+                    // array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
                     array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
                     array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
                 ));
