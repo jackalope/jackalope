@@ -31,6 +31,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     protected $factory;
     /**
      * @var ObjectManager
+     */
     protected $objectManager;
 
     /**
