@@ -1,0 +1,77 @@
+<?php
+
+namespace Jackalope\Transport;
+
+use PHPCR\RepositoryException;
+
+/**
+ * Base class for transport implementation.
+ *
+ * Collects useful methods that are independant of backend implementations
+ *
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ */
+
+abstract class BaseTransport
+{
+
+    /**
+     * Helper method to check whether the path conforms to the specification
+     * and is supported by this implementation
+     *
+     * Note that the rest of jackalope might not properly check paths in
+     * getNode requests and similar so you transport should call this whenever
+     * it needs to look up something in the storage to give a good error
+     * message and not just not found.
+     *
+     * TODO: the spec is extremly open and recommends to restrict further.
+     * TODO: how should this interact with assertValidName? The name may not contain / : or [] but the path of course can
+     *
+     * Paths have to be normalized before being checked, i.e. /node/./ is / and /my/node/.. is /my
+     *
+     * @param string $path The path to validate
+     *
+     * @throws RepositoryException if the path contains invalid characters
+     */
+    public function assertValidPath($path)
+    {
+        if ('/' != substr($path, 0, 1)) {
+            //sanity check
+            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
+        }
+        if ('/' != $path[0]
+            || strpos($path, '//') !== false
+            || strpos($path, '/./') !== false
+            || strpos($path, '/../') !== false
+        ) {
+            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
+    }
+
+    /**
+     * Minimal check according to the jcr spec to see if this node name
+     * conforms to the specification
+     *
+     * If it can't be avoided, extending transports may overwrite this method to add
+     * additional checks. But this will reduce interchangeability, thus it is better to
+     * properly encode and decode characters that are not natively allowed by the storage.
+     *
+     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
+     *
+     * @throws RepositoryException if the name contains invalid characters
+     */
+    public function assertValidName($name)
+    {
+        if ('.' == $name || '..' == $name) {
+            throw new RepositoryException('Node name may not be parent or self identifier: ' . $name);
+        }
+
+        if (preg_match('/\/|:|\[|\]|\||\*/', $name)) {
+            throw new RepositoryException('Node name contains illegal characters: '.$name);
+        }
+
+        return true;
+    }
+
+    // TODO: #46 add method to generate capabilities from implemented interfaces
+}

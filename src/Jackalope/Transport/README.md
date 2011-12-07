@@ -31,6 +31,8 @@ transport:
 
 # Notes for implementors of a transport
 
+You can base yourself on the BaseTransport class to get some helper methods.
+
 Implement as many of the interfaces as you can support. If there is the odd method
 you can not handle, you can still throw the UnsupportedRepositoryOperationException
 in the transport (but please document your limitations for the user). If you do not
