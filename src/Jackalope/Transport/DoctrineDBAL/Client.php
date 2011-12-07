@@ -38,6 +38,7 @@ use Jackalope\NotImplementedException;
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Luis Cordova <cordoval@gmail.com>
  */
 class Client extends BaseTransport implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
 {
@@ -617,6 +618,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     // inherit all doc
     public function getNode($path)
     {
+        $path = $this->encodeSanitizePath($path);
         $this->assertLoggedIn();
 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
@@ -1277,4 +1279,56 @@ $/xi";
         }
         return $references;
     }
+
+    private function assertValidPath($path)
+    {
+        if (! (strpos($path, '//') === false
+              && strpos($path, '/../') === false
+              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
+        ) {
+            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
+        if ('/' != substr($path, 0, 1)) {
+            //sanity check
+            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
+        }
+    }
+
+    /**
+     * Checks if the path is absolute and valid, and properly urlencodes special characters
+     *
+     * This is to be used in the Davex headers. The XML requests can cope with unencoded stuff
+     * Not sure if dbal has something to do with Davex but in any case this is a clean utility
+     * run at the very beginning of reading node paths
+     *
+     * @param string $path to check
+     *
+     * @return string the cleaned path
+     *
+     * @throws RepositoryException If path is not absolute or invalid
+     */
+    protected function encodeSanitizePath($path)
+    {
+        $this->assertValidPath($path);
+        return str_replace(' ', '%20', $path); // TODO: does assertValidPath allow other characters that should be encoded?
+    }
+
+    // TODO: remove once transport is split
+    public function checkinItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function checkoutItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
+        throw new NotImplementedException();
+    }
+    public function getVersionHistory($path)
+    {
+        throw new NotImplementedException();
+    }
+
 }
