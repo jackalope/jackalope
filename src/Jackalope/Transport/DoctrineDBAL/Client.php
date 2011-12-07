@@ -23,6 +23,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 
+use Jackalope\Transport\BaseTransport;
 use Jackalope\Transport\QueryInterface as QueryTransport;
 use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\WorkspaceManagementInterface;
@@ -38,7 +39,7 @@ use Jackalope\NotImplementedException;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Client implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
+class Client extends BaseTransport implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -1276,33 +1277,4 @@ $/xi";
         }
         return $references;
     }
-
-    private function assertValidPath($path)
-    {
-        if (! (strpos($path, '//') === false
-              && strpos($path, '/../') === false
-              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
-        ) {
-            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
-        }
-    }
-
-    // TODO: remove once transport is split
-    public function checkinItem($path)
-    {
-        throw new NotImplementedException();
-    }
-    public function checkoutItem($path)
-    {
-        throw new NotImplementedException();
-    }
-    public function restoreItem($removeExisting, $versionPath, $path)
-    {
-        throw new NotImplementedException();
-    }
-    public function getVersionHistory($path)
-    {
-        throw new NotImplementedException();
-    }
-
 }

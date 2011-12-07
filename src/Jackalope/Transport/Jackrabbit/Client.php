@@ -21,6 +21,7 @@ use PHPCR\LoginException;
 use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QOM\QueryObjectModelInterface;
 
+use Jackalope\Transport\BaseTransport;
 use Jackalope\Transport\curl;
 use Jackalope\Transport\QueryInterface as QueryTransport;
 use Jackalope\Transport\PermissionInterface;
@@ -41,7 +42,7 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  */
-class Client implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
+class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {
     /**
      * Description of the namspace to be used for communication with the server.
@@ -356,7 +357,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function getNode($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         $path .= '.0.json';
 
         $request = $this->getRequest(Request::GET, $path);
@@ -385,7 +386,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
         }
         $body = array();
 
-        $url = $this->encodePathForDavex($url).".0.json";
+        $url = $this->encodeAndValidatePathForDavex($url).".0.json";
         foreach ($paths as $path) {
             $body[] = http_build_query(array(":get"=>$path));
         }
@@ -422,7 +423,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function getBinaryStream($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path);
         $request->setTransactionId($this->transactionToken);
         $curl = $request->execute(true);
@@ -491,7 +492,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     protected function getNodeReferences($path, $name = null, $weak_reference = false)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         $identifier = $weak_reference ? 'weakreferences' : 'references';
         $request = $this->getRequest(Request::PROPFIND, $path);
         $request->setTransactionId($this->transactionToken);
@@ -518,7 +519,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function checkinItem($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKIN, $path);
             $request->setTransactionId($this->transactionToken);
@@ -540,7 +541,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function checkoutItem($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         try {
             $request = $this->getRequest(Request::CHECKOUT, $path);
             $request->setTransactionId($this->transactionToken);
@@ -558,7 +559,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function restoreItem($removeExisting, $versionPath, $path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
 
         $body ='<D:update xmlns:D="DAV:">
 	<D:version>
@@ -578,7 +579,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function getVersionHistory($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
         $request = $this->getRequest(Request::GET, $path."/jcr:versionHistory");
         $request->setTransactionId($this->transactionToken);
         $resp = $request->execute();
@@ -660,7 +661,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function deleteNode($path)
     {
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
 
         $request = $this->getRequest(Request::DELETE, $path);
         $request->setTransactionId($this->transactionToken);
@@ -677,8 +678,8 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
-        $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
-        $dstAbsPath = $this->encodePathForDavex($dstAbsPath);
+        $srcAbsPath = $this->encodeAndValidatePathForDavex($srcAbsPath);
+        $dstAbsPath = $this->encodeAndValidatePathForDavex($dstAbsPath);
 
         if ($srcWorkspace) {
             $srcAbsPath = $this->server . $srcAbsPath;
@@ -694,8 +695,8 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     // inherit all doc
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
-        $srcAbsPath = $this->encodePathForDavex($srcAbsPath);
-        $dstAbsPath = $this->encodePathForDavex($dstAbsPath);
+        $srcAbsPath = $this->encodeAndValidatePathForDavex($srcAbsPath);
+        $dstAbsPath = $this->encodeAndValidatePathForDavex($dstAbsPath);
 
         $request = $this->getRequest(Request::MOVE, $srcAbsPath);
         $request->setDepth(Request::INFINITY);
@@ -714,7 +715,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     public function storeNode(NodeInterface $node)
     {
         $path = $node->getPath();
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
 
         $buffer = array();
         $body = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -796,7 +797,7 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     public function storeProperty(PropertyInterface $property)
     {
         $path = $property->getPath();
-        $path = $this->encodePathForDavex($path);
+        $path = $this->encodeAndValidatePathForDavex($path);
 
         $typeid = $property->getType();
         $type = PropertyType::nameFromValue($typeid);
@@ -1237,31 +1238,6 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
     }
 
     /**
-     * Whether the path conforms to the specification and is supported by this implementation
-     *
-     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
-     *
-     * TODO: the spec is extremly open and recommends to restrict further. We
-     * currently have rather random restrictions
-     *
-     * @param string $path The path to validate
-     *
-     * @return boolean always true, exception if this is not a valid path
-     *
-     * @throws RepositoryException if the path contains invalid characters
-     */
-    protected function ensureValidPath($path)
-    {
-        if (! (strpos($path, '//') === false
-              && strpos($path, '/../') === false
-              && preg_match('/^[\w{}\/#:^+~*\[\]\. <>"\'-]*$/i', $path))
-        ) {
-            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
-        }
-        // if we allow MORE stuff, we might have to adapt encodePathForDavex for escaping
-    }
-
-    /**
      * Checks if the path is absolute and valid, and properly urlencodes special characters
      *
      * This is to be used in the Davex headers. The XML requests can cope with unencoded stuff
@@ -1272,14 +1248,19 @@ class Client implements QueryTransport, PermissionInterface, WritingInterface, V
      *
      * @throws RepositoryException If path is not absolute or invalid
      */
-    protected function encodePathForDavex($path)
+    protected function encodeAndValidatePathForDavex($path)
     {
-        if ('/' != substr($path, 0, 1)) {
-            //sanity check
-            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
+        $this->assertValidPath($path);
+
+        // TODO: encode everything except for the regexp below.
+        // the proper character list is http://stackoverflow.com/questions/1547899/which-characters-make-a-url-invalid
+        // use (raw)urlencode and then rebuild / and [] ?
+        $path = str_replace(' ', '%20', $path);
+        // sanity check (TODO if we use urlencode or similar, this is unnecessary)
+        if (! preg_match('/^[\w{}\/\'""#:^+~*\[\]\(\)\.,;=@<>%-]*$/i', $path)) {
+            throw new RepositoryException('Internal error: path valid but not properly encoded: '.$path);
         }
-        $this->ensureValidPath($path);
-        return str_replace(' ', '%20', $path); // TODO: does ensureValidPath allow other characters that should be encoded?
+        return $path;
     }
 
     /**

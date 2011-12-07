@@ -23,6 +23,17 @@ interface WritingInterface extends TransportInterface
 {
 
     /**
+     * Whether this node name conforms to the specification
+     *
+     * Note: There is a minimal implemenation in BaseTransport
+     *
+     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
+     *
+     * @throws RepositoryException if the name contains invalid characters
+     */
+    public function assertValidName($name);
+
+    /**
      * Copies a Node from src (potentially from another workspace) to dst in
      * the current workspace.
      *
