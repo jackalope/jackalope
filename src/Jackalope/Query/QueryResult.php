@@ -108,14 +108,11 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
             return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
         }
 
+        $rows = $this->getRows();
+
         $paths = array();
-        foreach ($this->rows as $row) {
-            foreach ($row as $column) {
-                if ('jcr:path' === $column['dcr:name']) {
-                    $paths[] = $column['dcr:value'];
-                    continue;
-                }
-            }
+        foreach ($rows as $row) {
+            $paths[] = $row->getPath();
         }
 
         return $this->objectmanager->getNodesByPath($paths);
