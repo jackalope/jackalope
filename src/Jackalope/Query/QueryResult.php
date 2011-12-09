@@ -113,6 +113,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
             foreach ($row as $column) {
                 if ('jcr:path' === $column['dcr:name']) {
                     $paths[] = $column['dcr:value'];
+                    continue;
                 }
             }
         }
