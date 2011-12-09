@@ -2,7 +2,8 @@
 
 namespace Jackalope\Query;
 
-// inherit all doc
+use PHPCR\RepositoryException;
+
 /**
  * {@inheritDoc}
  *
@@ -18,32 +19,43 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      * @var \Jackalope\ObjectManager
      */
     protected $objectmanager;
+
     /**
      * @var \Jackalope\Factory
      */
     protected $factory;
+
     /**
      * Columns of this result row: array of array with fields dcr:name and
      * dcr:value
      * @var array
      */
     protected $columns = array();
+
     /**
      * Which column we are on when iterating over the columns
      * @var integer
      */
     protected $position = 0;
+
     /**
      * The score this row has
      * @var float
      */
-    protected $score = 0;
+    protected $score = array();
+
     /**
      * Cached list of values extracted from columns to avoid double work.
      * @var array
      * @see Row::getValues()
      */
     protected $values = array();
+
+    /**
+     * The default selector name
+     * @var string
+     */
+    protected $defaultSelectorName;
 
     /**
      * Create new Row instance.
@@ -57,73 +69,92 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     {
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
+
         foreach ($columns as $column) {
-            if ($column['dcr:name'] == 'jcr:score') {
-                $this->score = (float) $column['dcr:value'];
-            } elseif (strlen($column['dcr:name']) >= 15
-                      && substr($column['dcr:name'], -15) == 'jcr:primaryType'
-                     ) {
-                // ignore for now. TODO: trac the selector name in front of the primary type
+            if ('jcr:score' === $column['dcr:name']) {
+                $this->score[$column['dcr:selectorName']] = (float) $column['dcr:value'];
+            } elseif ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
+                $this->defaultSelectorName = substr($column['dcr:name'], 0, -16);
             } else {
                 $this->columns[] = $column;
-                $this->values[$column['dcr:name']] = $column['dcr:value'];
+                $this->values[$column['dcr:selectorName']][$column['dcr:name']] = $column['dcr:value'];
             }
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
-    public function getValues()
+    public function getValues($selectorName = null)
     {
-        return $this->values;
-    }
-
-    // inherit all doc
-    /**
-     * @api
-     */
-    public function getValue($columnName)
-    {
-        $values = $this->getValues();
-        if (array_key_exists($columnName, $values)) {
-            return $values[$columnName];
+        if (null === $selectorName) {
+            $selectorName = $this->defaultSelectorName;
         }
 
-        throw new \PHPCR\ItemNotFoundException("Column :$columnName not found");
+        if (!isset($this->values[$selectorName])) {
+            throw new RepositoryException('Attempting to get values for a non existent selector: '.$selectorName);
+        }
+
+        return $this->values[$selectorName];
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function getValue($columnName, $selectorName = null)
+    {
+        $values = $this->getValues($selectorName);
+        if (!array_key_exists($columnName, $values)) {
+            throw new \PHPCR\ItemNotFoundException("Column :$columnName not found");
+        }
+
+        return $values[$columnName];
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNode($selectorName = null)
     {
-        // TODO: implement $selectorName
-
-        return $this->objectmanager->getNode($this->getPath());
+        return $this->objectmanager->getNode($this->getPath($selectorName));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPath($selectorName = null)
     {
-        // TODO: implement $selectorName
+        if (null === $selectorName) {
+            $selectorName = $this->defaultSelectorName;
+        }
 
-        return $this->getValue('jcr:path');
+        return $this->getValue('jcr:path', $selectorName);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getScore($selectorName = null)
     {
-        // TODO: implement $selectorName
-        return $this->score;
+        if (null === $selectorName) {
+            $selectorName = $this->defaultSelector;
+        }
+
+        if (!isset($this->score[$selectorName])) {
+            throw new RepositoryException('Attempting to get the score for a non existent selector: '.$selectorName);
+        }
+
+        return $this->score[$selectorName];
     }
 
     /**
