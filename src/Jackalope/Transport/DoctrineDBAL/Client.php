@@ -859,7 +859,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
     // inherit all doc
     public function deleteProperty($path)
     {
-        // TODO:
+        throw new NotImplementedException("Deleting properties by path is not yet implemented");
     }
 
     // inherit all doc
@@ -1234,7 +1234,7 @@ $/xi";
     // inherit all doc
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
-        throw new NotImplementedException("Not implemented yet");
+        throw new NotImplementedException("Cloning nodes is not implemented yet");
     }
 
     // inherit all doc
@@ -1267,7 +1267,7 @@ $/xi";
     // inherit all doc
     public function getProperty($path)
     {
-        throw new NotImplementedException("Not implemented yet");
+        throw new NotImplementedException("Getting properties by path is implemented yet");
     }
 
     // inherit all doc
@@ -1331,11 +1331,16 @@ $/xi";
             }
 
             $results = array();
+            // This block feels really clunky - maybe this should be a QueryResultFormatter class?
             foreach ($data as $row) {
-                $result = array();
+                $result = array(
+                    array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
+                    array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
+                );
 
+                // extract only the properties that have been requested in the query
                 $props = static::xmlToProps($row['props'], function ($name) use ($columns) {
-                    return array() === $columns || array_key_exists($name, $columns);
+                    return array_key_exists($name, $columns);
                 });
 
                 foreach ($columns AS $columnName => $columnPrefix) {
@@ -1345,11 +1350,7 @@ $/xi";
                     );
                 }
 
-                $results[] = array_merge($result, array(
-                    // array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
-                    array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
-                    array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
-                ));
+                $results[] = $result;
             }
 
             return $results;
