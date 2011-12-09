@@ -71,13 +71,24 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
         $this->objectmanager = $objectmanager;
 
         foreach ($columns as $column) {
+            $selectorName = '';
+            if (isset($column['dcr:selectorName'])) {
+                $selectorName = $column['dcr:selectorName'];
+            } else {
+                $pos = strpos($column['dcr:name'], '.');
+                if (false !== $pos) {
+                    $selectorName = substr($column['dcr:name'], 0, $pos);
+                    $column['dcr:name'] = substr($column['dcr:name'], $pos+1);
+                }
+            }
+
             if ('jcr:score' === $column['dcr:name']) {
-                $this->score[$column['dcr:selectorName']] = (float) $column['dcr:value'];
+                $this->score[$selectorName] = (float) $column['dcr:value'];
             } elseif ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
-                $this->defaultSelectorName = substr($column['dcr:name'], 0, -16);
+                $this->defaultSelectorName = $selectorName;
             } else {
                 $this->columns[] = $column;
-                $this->values[$column['dcr:selectorName']][$column['dcr:name']] = $column['dcr:value'];
+                $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
             }
         }
     }
@@ -87,17 +98,16 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      *
      * @api
      */
-    public function getValues($selectorName = null)
+    public function getValues()
     {
-        if (null === $selectorName) {
-            $selectorName = $this->defaultSelectorName;
+        $values = array();
+        foreach ($this->values as $selectorName => $columns) {
+            foreach ($columns as $key => $value) {
+                $values[$selectorName.'.'.$key] = $value;
+            }
         }
 
-        if (!isset($this->values[$selectorName])) {
-            throw new RepositoryException('Attempting to get values for a non existent selector: '.$selectorName);
-        }
-
-        return $this->values[$selectorName];
+        return $values;
     }
 
     /**
@@ -105,11 +115,15 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      *
      * @api
      */
-    public function getValue($columnName, $selectorName = null)
+    public function getValue($columnName)
     {
-        $values = $this->getValues($selectorName);
+        if (false === strpos($columnName, '.')) {
+            $columnName = $this->defaultSelectorName.'.'.$columnName;
+        }
+
+        $values = $this->getValues();
         if (!array_key_exists($columnName, $values)) {
-            throw new \PHPCR\ItemNotFoundException("Column :$columnName not found");
+            throw new \PHPCR\ItemNotFoundException("Column '$columnName' not found");
         }
 
         return $values[$columnName];
@@ -136,7 +150,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        return $this->getValue('jcr:path', $selectorName);
+        return $this->getValue($selectorName.'.jcr:path', $selectorName);
     }
 
     /**
@@ -147,7 +161,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     public function getScore($selectorName = null)
     {
         if (null === $selectorName) {
-            $selectorName = $this->defaultSelector;
+            $selectorName = $this->defaultSelectorName;
         }
 
         if (!isset($this->score[$selectorName])) {
