@@ -226,6 +226,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
             if ("42S02" == $e->getCode()) {
                 throw new \PHPCR\RepositoryException('You did not properly set up the database for the repository. See README file for more information. Message from backend: '.$e->getMessage());
             }
+
             throw new \PHPCR\RepositoryException('Unexpected error talking to the backend: '.$e->getMessage());
         }
     }
@@ -493,7 +494,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
 
         foreach ($props as $property) {
             $type = $property->getType();
-            if ($type === PropertyType::REFERENCE || $type === PropertyType::WEAKREFERENCE) {
+            if (PropertyType::REFERENCE == $type || PropertyType::WEAKREFERENCE == $type) {
                 $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
                 foreach ($values as $value) {
@@ -507,7 +508,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                             'type' => $type
                         ));
                     } catch (ItemNotFoundException $e) {
-                        if ($type == PropertyType::REFERENCE) {
+                        if (PropertyType::REFERENCE == $type) {
                             throw new ReferentialIntegrityException(
                                 "Trying to store reference to non-existant node with path '" . $value . "' in " .
                                 "node " . $path . " property " . $property->getName()
@@ -569,14 +570,14 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                 }
             }
 
-            if ($type == PropertyType::BINARY) {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+            if (PropertyType::BINARY == $type) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $props[":" . $name] = $values;
                 } else {
                     $props[":" . $name] = $values[0];
                 }
             } else {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $props[$name] = $values;
                 } else {
                     $props[$name] = $values[0];
@@ -750,14 +751,14 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                 }
             }
 
-            if ($type == PropertyType::BINARY) {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+            if (PropertyType::BINARY == $type) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $data->{":" . $name} = $values;
                 } else {
                     $data->{":" . $name} = $values[0];
                 }
             } else {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $data->{$name} = $values;
                 } else {
                     $data->{$name} = $values[0];
@@ -1009,7 +1010,7 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
      */
     private function assertValidPropertyValue($type, $value, $path)
     {
-        if ($type === PropertyType::NAME) {
+        if (PropertyType::NAME == $type) {
             if (strpos($value, ":") !== false) {
                 list($prefix, $localName) = explode(":", $value);
 
@@ -1018,11 +1019,11 @@ class Client implements QueryTransport, WritingInterface, WorkspaceManagementInt
                     throw new ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
                 }
             }
-        } elseif ($type === PropertyType::PATH) {
+        } elseif (PropertyType::PATH == $type) {
             if (!preg_match('((/[a-zA-Z0-9:_-]+)+)', $value)) {
                 throw new ValueFormatException("Invalid PATH at " . $path .": Segments are seperated by / and allowed chars are a-zA-Z0-9:_-");
             }
-        } elseif ($type === PropertyType::URI) {
+        } elseif (PropertyType::URI == $type) {
             if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
                 throw new ValueFormatException("Invalid URI at " . $path .": Has to follow RFC 3986.");
             }
