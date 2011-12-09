@@ -1289,13 +1289,16 @@ $/xi";
         }
 
         if ($language === QueryInterface::JCR_JQOM) {
-            $source = $query->getSource();
-            if (!$this->nodeTypeManager->hasNodeType($nodeType = $source->getNodeTypeName())) {
-                throw new InvalidQueryException(sprintf(
-                    'Selected node type does not exist: %s%s',
-                    $nodeType,
-                    ($alias = $source->getSelectorName()) ? ' AS ' . $alias : ''
-                ));
+            $source   = $query->getSource();
+            $nodeType = $source->getNodeTypeName();
+
+            if (!$this->nodeTypeManager->hasNodeType($nodeType)) {
+                $msg = 'Selected node type does not exist: ' . $nodeType;
+                if ($alias = $source->getSelectorName()) {
+                    $msg .= ' AS ' . $alias;
+                }
+
+                throw new InvalidQueryException($msg);
             }
 
             $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
@@ -1307,7 +1310,6 @@ $/xi";
 
             // The list of columns is required to filter each records props
             $columns = array();
-
             foreach ($query->getColumns() AS $column) {
                 $columns[$column->getPropertyName()] = $column->getSelectorName();
             }
