@@ -552,8 +552,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
             $name = $propertyNode->getAttribute('sv:name');
             $values = array();
-            $type = (int)$propertyNode->getAttribute('sv:type');
-
+            $type = PropertyType::valueFromName($propertyNode->getAttribute('sv:type'));
             foreach ($propertyNode->childNodes as $valueNode) {
                 switch ($type) {
                     case PropertyType::NAME:
@@ -641,7 +640,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             /* @var $prop \PHPCR\PropertyInterface */
             $propertyNode = $dom->createElement('sv:property');
             $propertyNode->setAttribute('sv:name', $property->getName());
-            $propertyNode->setAttribute('sv:type', $property->getType()); // TODO: Name! not int
+            $propertyNode->setAttribute('sv:type', PropertyType::nameFromValue($property->getType()));
             $propertyNode->setAttribute('sv:multi-valued', $property->isMultiple() ? "1" : "0");
 
             switch ($property->getType()) {
@@ -751,7 +750,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
             $name = $propertyNode->getAttribute('sv:name');
             $values = array();
-            $type = (int)$propertyNode->getAttribute('sv:type');
+            $type = PropertyType::valueFromName($propertyNode->getAttribute('sv:type'));
             foreach ($propertyNode->childNodes as $valueNode) {
                 switch ($type) {
                     case PropertyType::NAME:
