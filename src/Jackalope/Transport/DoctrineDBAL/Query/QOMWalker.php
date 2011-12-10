@@ -82,7 +82,6 @@ class QOMWalker
 
     public function walkColumn(QOM\ColumnInterface $column)
     {
-
     }
 
     public function walkSource(QOM\SourceInterface $source)
