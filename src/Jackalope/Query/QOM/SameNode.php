@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\SameNodeInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class SameNode implements SameNodeInterface
@@ -32,8 +33,9 @@ class SameNode implements SameNodeInterface
         $this->path = $path;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -41,8 +43,9 @@ class SameNode implements SameNodeInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getPath()

@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\PropertyExistenceInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class PropertyExistence implements PropertyExistenceInterface
@@ -32,8 +33,9 @@ class PropertyExistence implements PropertyExistenceInterface
         $this->propertyName = $propertyName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -41,8 +43,9 @@ class PropertyExistence implements PropertyExistenceInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getPropertyName()

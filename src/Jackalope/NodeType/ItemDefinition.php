@@ -8,8 +8,10 @@ use PHPCR\NodeType\ItemDefinitionInterface;
 
 use Jackalope\Helper;
 
-// inherit all doc
+
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class ItemDefinition implements ItemDefinitionInterface
@@ -93,8 +95,9 @@ class ItemDefinition implements ItemDefinitionInterface
         $this->onParentVersion = $data['onParentVersion'];
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaringNodeType()
@@ -102,8 +105,9 @@ class ItemDefinition implements ItemDefinitionInterface
         return $this->nodeTypeManager->getNodeType($this->declaringNodeType);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getName()
@@ -111,8 +115,9 @@ class ItemDefinition implements ItemDefinitionInterface
         return $this->name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isAutoCreated()
@@ -120,8 +125,9 @@ class ItemDefinition implements ItemDefinitionInterface
         return $this->isAutoCreated;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isMandatory()
@@ -129,8 +135,9 @@ class ItemDefinition implements ItemDefinitionInterface
         return $this->isMandatory;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getOnParentVersion()
@@ -138,8 +145,9 @@ class ItemDefinition implements ItemDefinitionInterface
         return $this->onParentVersion;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isProtected()

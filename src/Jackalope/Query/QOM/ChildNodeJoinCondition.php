@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ChildNodeJoinConditionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
@@ -32,8 +33,9 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
         $this->parentSelectorName = $parentSelectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getChildSelectorName()
@@ -41,8 +43,9 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
         return $this->childNodeSelectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getParentSelectorName()

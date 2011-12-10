@@ -20,8 +20,9 @@ use PHPCR\Security\AccessControlException;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Session implements SessionInterface
@@ -106,8 +107,9 @@ class Session implements SessionInterface
         $transport->setNodeTypeManager($this->workspace->getNodeTypeManager());
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRepository()
@@ -115,8 +117,9 @@ class Session implements SessionInterface
         return $this->repository;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getUserID()
@@ -124,8 +127,9 @@ class Session implements SessionInterface
         return $this->credentials->getUserID(); //TODO: what if its not simple credentials? what about anonymous login?
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAttributeNames()
@@ -133,8 +137,9 @@ class Session implements SessionInterface
         return $this->credentials->getAttributeNames();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAttribute($name)
@@ -142,8 +147,9 @@ class Session implements SessionInterface
         return $this->credentials->getAttribute($name);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getWorkspace()
@@ -151,8 +157,9 @@ class Session implements SessionInterface
         return $this->workspace;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRootNode()
@@ -160,19 +167,19 @@ class Session implements SessionInterface
         return $this->getNode('/');
     }
 
-    // inherit all doc
     /**
      * {@inheritDoc}
      *
-     * TODO: Implement this for jackalope
+     * @api
      */
     public function impersonate(CredentialsInterface $credentials)
     {
         throw new UnsupportedRepositoryOperationException('Not supported');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodeByIdentifier($id)
@@ -180,8 +187,9 @@ class Session implements SessionInterface
         return $this->objectManager->getNode($id);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodesByIdentifier($ids)
@@ -194,8 +202,9 @@ class Session implements SessionInterface
         return new ArrayIterator($nodesByUUID);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getItem($absPath)
@@ -210,8 +219,9 @@ class Session implements SessionInterface
         return $this->getProperty($absPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNode($absPath)
@@ -223,8 +233,9 @@ class Session implements SessionInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodes($absPaths)
@@ -232,8 +243,9 @@ class Session implements SessionInterface
         return $this->objectManager->getNodesByPath($absPaths);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getProperty($absPath)
@@ -245,8 +257,9 @@ class Session implements SessionInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function itemExists($absPath)
@@ -257,8 +270,9 @@ class Session implements SessionInterface
         return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function nodeExists($absPath)
@@ -277,8 +291,9 @@ class Session implements SessionInterface
         return true;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function propertyExists($absPath)
@@ -294,8 +309,9 @@ class Session implements SessionInterface
 
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function move($srcAbsPath, $destAbsPath)
@@ -316,8 +332,9 @@ class Session implements SessionInterface
         $this->objectManager->moveNode($srcAbsPath, $destAbsPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeItem($absPath)
@@ -326,9 +343,8 @@ class Session implements SessionInterface
         $item->remove();
     }
 
-    // inherit all doc
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      *
      * Wraps the save operation into a transaction if transactions are enabled
      * but we are not currently inside a transaction and rolls back on error.
@@ -361,8 +377,9 @@ class Session implements SessionInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function refresh($keepChanges)
@@ -385,8 +402,9 @@ class Session implements SessionInterface
         $this->objectManager->clear();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasPendingChanges()
@@ -394,8 +412,9 @@ class Session implements SessionInterface
         return $this->objectManager->hasPendingChanges();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasPermission($absPath, $actions)
@@ -412,8 +431,9 @@ class Session implements SessionInterface
         return true;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function checkPermission($absPath, $actions)
@@ -423,7 +443,6 @@ class Session implements SessionInterface
         }
     }
 
-    // inherit all doc
     /**
      * {@inheritDoc}
      *
@@ -433,13 +452,14 @@ class Session implements SessionInterface
      */
     public function hasCapability($methodName, $target, array $arguments)
     {
-        //we never determine wether operation can be performed as it is optional ;-)
+        //we never determine whether operation can be performed as it is optional ;-)
         //TODO: could implement some
         return true;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function importXML($parentAbsPath, $in, $uuidBehavior)
@@ -447,8 +467,9 @@ class Session implements SessionInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function exportSystemView($absPath, $stream, $skipBinary, $noRecurse)
@@ -532,8 +553,9 @@ class Session implements SessionInterface
         fwrite($stream, '</sv:node>');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function exportDocumentView($absPath, $stream, $skipBinary, $noRecurse)
@@ -626,8 +648,9 @@ class Session implements SessionInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setNamespacePrefix($prefix, $uri)
@@ -637,8 +660,9 @@ class Session implements SessionInterface
         //this will lead to rewrite all names and paths in requests and replies. part of this can be done in ObjectManager::normalizePath
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNamespacePrefixes()
@@ -647,8 +671,9 @@ class Session implements SessionInterface
         return $this->namespaceRegistry->getPrefixes();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNamespaceURI($prefix)
@@ -657,8 +682,9 @@ class Session implements SessionInterface
         return $this->namespaceRegistry->getURI($prefix);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNamespacePrefix($uri)
@@ -667,8 +693,9 @@ class Session implements SessionInterface
         return $this->namespaceRegistry->getPrefix($uri);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function logout()
@@ -679,8 +706,9 @@ class Session implements SessionInterface
         $this->getTransport()->logout();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isLive()
@@ -688,8 +716,9 @@ class Session implements SessionInterface
         return ! $this->logout;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAccessControlManager()
@@ -697,8 +726,9 @@ class Session implements SessionInterface
         throw new UnsupportedRepositoryOperationException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRetentionManager()

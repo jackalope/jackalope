@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\NodeLocalNameInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class NodeLocalName implements NodeLocalNameInterface
@@ -25,8 +26,9 @@ class NodeLocalName implements NodeLocalNameInterface
         $this->selectorName = $selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()

@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\FullTextSearchInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class FullTextSearchConstraint implements FullTextSearchInterface
@@ -39,8 +40,9 @@ class FullTextSearchConstraint implements FullTextSearchInterface
         $this->selectorName = $selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -48,8 +50,9 @@ class FullTextSearchConstraint implements FullTextSearchInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getPropertyName()
@@ -57,8 +60,9 @@ class FullTextSearchConstraint implements FullTextSearchInterface
         return $this->propertyName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getFullTextSearchExpression()

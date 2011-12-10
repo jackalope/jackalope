@@ -3,8 +3,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\EquiJoinConditionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class EquiJoinCondition implements EquiJoinConditionInterface
@@ -45,8 +46,9 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         $this->property2Name = $property2Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelector1Name()
@@ -54,8 +56,9 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->selector1Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getProperty1Name()
@@ -63,8 +66,9 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->property1Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelector2Name()
@@ -72,8 +76,9 @@ class EquiJoinCondition implements EquiJoinConditionInterface
         return $this->selector2Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getProperty2Name()

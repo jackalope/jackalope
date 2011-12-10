@@ -59,8 +59,9 @@ class UserTransaction implements UserTransactionInterface
         $this->objectManager = $session->getObjectManager();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function begin()

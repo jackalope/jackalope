@@ -11,7 +11,6 @@ use PHPCR\Query\QOM\ColumnInterface;
 use Jackalope\ObjectManager;
 use Jackalope\Query\SqlQuery;
 
-// inherit all doc
 /**
  * {@inheritDoc}
  *
@@ -74,8 +73,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         $this->columns = $columns;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSource()
@@ -83,8 +83,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         return $this->source;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getConstraint()
@@ -92,8 +93,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         return $this->constraint;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOrderings()
@@ -101,8 +103,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         return $this->orderings;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getColumns()
@@ -110,8 +113,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         return $this->columns;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getBindVariableNames()
@@ -120,8 +124,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         throw new \Jackalope\NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getStatement()
@@ -130,8 +135,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         return $converter->convert($this);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getLanguage()

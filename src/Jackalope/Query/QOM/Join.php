@@ -6,8 +6,9 @@ use PHPCR\Query\QOM\JoinInterface;
 use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Query\QOM\JoinConditionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Join implements JoinInterface
@@ -48,8 +49,9 @@ class Join implements JoinInterface
         $this->joinCondition = $joinCondition;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getLeft()
@@ -57,8 +59,9 @@ class Join implements JoinInterface
         return $this->left;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getRight()
@@ -66,8 +69,9 @@ class Join implements JoinInterface
         return $this->right;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getJoinType()
@@ -75,8 +79,9 @@ class Join implements JoinInterface
         return $this->joinType;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getJoinCondition()

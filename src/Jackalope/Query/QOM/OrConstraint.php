@@ -5,8 +5,9 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\OrInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class OrConstraint implements OrInterface
@@ -33,8 +34,9 @@ class OrConstraint implements OrInterface
         $this->constraint2 = $constraint2;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getConstraint1()
@@ -42,8 +44,9 @@ class OrConstraint implements OrInterface
         return $this->constraint1;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getConstraint2()

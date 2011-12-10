@@ -6,8 +6,9 @@ use PHPCR\Query\QOM\ComparisonInterface;
 use PHPCR\Query\QOM\StaticOperandInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class ComparisonConstraint implements ComparisonInterface
@@ -41,8 +42,9 @@ class ComparisonConstraint implements ComparisonInterface
         $this->operand2 = $operand2;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getConstraint1()
@@ -50,8 +52,9 @@ class ComparisonConstraint implements ComparisonInterface
         return $this->constraint1;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOperand1()
@@ -59,8 +62,9 @@ class ComparisonConstraint implements ComparisonInterface
         return $this->operand1;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOperator()
@@ -68,8 +72,9 @@ class ComparisonConstraint implements ComparisonInterface
         return $this->operator;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOperand2()

@@ -3,8 +3,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterface
@@ -31,8 +32,9 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
         $this->descendantSelectorName = $descendantSelectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getDescendantSelectorName()
@@ -40,8 +42,9 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
         return $this->descendantSelectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getAncestorSelectorName()

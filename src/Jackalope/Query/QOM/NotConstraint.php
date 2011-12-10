@@ -5,8 +5,9 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\NotInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class NotConstraint implements NotInterface
@@ -26,8 +27,9 @@ class NotConstraint implements NotInterface
         $this->constraint = $constraint;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getConstraint()

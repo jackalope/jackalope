@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\SameNodeJoinConditionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class SameNodeJoinCondition implements SameNodeJoinConditionInterface
@@ -39,8 +40,9 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         $this->selector2Path = $selector2Path;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelector1Name()
@@ -48,8 +50,9 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         return $this->selector1Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelector2Name()
@@ -57,8 +60,9 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
         return $this->selector2Name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelector2Path()

@@ -5,8 +5,9 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\LowerCaseInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class LowerCase implements LowerCaseInterface
@@ -26,8 +27,9 @@ class LowerCase implements LowerCaseInterface
         $this->operand = $operand;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOperand()

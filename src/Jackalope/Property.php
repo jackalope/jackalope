@@ -150,8 +150,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setValue($value, $type = PropertyType::UNDEFINED)
@@ -167,8 +168,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->_setValue($value, $type);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function addValue($value)
@@ -198,8 +200,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getValue()
@@ -237,8 +240,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getString()
@@ -254,8 +258,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getBinary()
@@ -305,8 +310,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $result;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getLong()
@@ -319,8 +325,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDouble()
@@ -333,8 +340,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDecimal()
@@ -347,8 +355,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDate()
@@ -361,8 +370,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getBoolean()
@@ -375,8 +385,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->value;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNode()
@@ -420,8 +431,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->isMultiple() ? $results : $results[0];
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getProperty()
@@ -447,8 +459,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getLength()
@@ -475,8 +488,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->isMultiple ? $ret : $ret[0];
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDefinition()
@@ -489,8 +503,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->definition;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getType()
@@ -500,8 +515,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         return $this->type;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isMultiple()

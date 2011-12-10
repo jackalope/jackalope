@@ -5,8 +5,10 @@ namespace Jackalope\NodeType;
 use PHPCR\NodeType\NodeDefinitionTemplateInterface;
 use PHPCR\Version\OnParentVersionAction;
 
-// inherit all doc
+
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTemplateInterface
@@ -34,8 +36,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->allowsSameNameSiblings = false;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setName($name)
@@ -43,8 +46,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->name = $name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setAutoCreated($autoCreated)
@@ -52,8 +56,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->isAutoCreated = $autoCreated;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setMandatory($mandatory)
@@ -61,8 +66,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->isMandatory = $mandatory;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setOnParentVersion($opv)
@@ -70,8 +76,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->onParentVersion = $opv;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setProtected($protectedStatus)
@@ -79,8 +86,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->isProtected = $protectedStatus;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames)
@@ -88,8 +96,9 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->requiredPrimaryTypeNames = $requiredPrimaryTypeNames;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setDefaultPrimaryTypeName($defaultPrimaryTypeName)
@@ -97,14 +106,14 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->defaultPrimaryTypeName = $defaultPrimaryTypeName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setSameNameSiblings($allowSameNameSiblings)
     {
         $this->allowsSameNameSiblings = $allowSameNameSiblings;
     }
-
 }
 

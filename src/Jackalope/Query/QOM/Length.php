@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\LengthInterface;
 use PHPCR\Query\QOM\PropertyValueInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Length implements LengthInterface
@@ -25,8 +26,9 @@ class Length implements LengthInterface
         $this->propertyValue = $propertyValue;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getPropertyValue()

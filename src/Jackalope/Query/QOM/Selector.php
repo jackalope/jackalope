@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\SelectorInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Selector implements SelectorInterface
@@ -32,8 +33,9 @@ class Selector implements SelectorInterface
         $this->selectorName = $selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getNodeTypeName()
@@ -41,8 +43,9 @@ class Selector implements SelectorInterface
         return $this->nodeTypeName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()

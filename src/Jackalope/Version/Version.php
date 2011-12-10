@@ -7,14 +7,16 @@ use PHPCR\Version\VersionInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Node;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Version extends Node implements VersionInterface {
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getContainingHistory()
@@ -22,8 +24,9 @@ class Version extends Node implements VersionInterface {
        throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getCreated()
@@ -31,8 +34,9 @@ class Version extends Node implements VersionInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getLinearSuccessor()
@@ -40,8 +44,9 @@ class Version extends Node implements VersionInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSuccessors()
@@ -65,8 +70,9 @@ class Version extends Node implements VersionInterface {
         return $results;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getLinearPredecessor()
@@ -74,8 +80,9 @@ class Version extends Node implements VersionInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPredecessors()
@@ -98,8 +105,9 @@ class Version extends Node implements VersionInterface {
         return $results;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getFrozenNode()

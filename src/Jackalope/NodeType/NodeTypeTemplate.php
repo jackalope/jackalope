@@ -6,14 +6,18 @@ use ArrayObject;
 
 use PHPCR\NodeType\NodeTypeTemplateInterface;
 
-// inherit all doc
+
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInterface
 {
-    // inherit all doc
+
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setName($name)
@@ -21,8 +25,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->name = $name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setDeclaredSuperTypeNames(array $names)
@@ -30,8 +35,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->declaredSuperTypeNames = $names;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setAbstract($abstractStatus)
@@ -39,8 +45,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->isAbstract = $abstractStatus;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setMixin($mixin)
@@ -48,8 +55,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->isMixin = $mixin;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setOrderableChildNodes($orderable)
@@ -57,8 +65,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->hasOrderableChildNodes = $orderable;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setPrimaryItemName($name)
@@ -66,8 +75,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->primaryItemName = $name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setQueryable($queryable)
@@ -75,8 +85,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         $this->isQueryable = $queryable;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPropertyDefinitionTemplates()
@@ -87,8 +98,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         return $this->declaredPropertyDefinitions;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodeDefinitionTemplates()

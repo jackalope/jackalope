@@ -6,8 +6,9 @@ use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyDefinitionTemplateInterface
@@ -39,8 +40,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isProtected = false;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setName($name)
@@ -48,8 +50,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->name = $name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setAutoCreated($autoCreated)
@@ -57,8 +60,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isAutoCreated = $autoCreated;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setMandatory($mandatory)
@@ -66,8 +70,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isMandatory = $mandatory;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setOnParentVersion($opv)
@@ -75,8 +80,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->onParentVersion = $opv;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setProtected($protectedStatus)
@@ -84,8 +90,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isProtected;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setRequiredType($type)
@@ -93,8 +100,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->requiredType = $type;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setValueConstraints(array $constraints)
@@ -102,9 +110,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->valueConstraints = $constraints;
     }
 
-
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setDefaultValues(array $defaultValues)
@@ -112,8 +120,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->defaultValues = $defaultValues;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setMultiple($multiple)
@@ -121,8 +130,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isMultiple = $multiple;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setAvailableQueryOperators(array $operators)
@@ -130,8 +140,9 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->availableQueryOperators = $operators;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setFullTextSearchable($fullTextSearchable)
@@ -139,13 +150,13 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->isFullTextSearchable = $fullTextSearchable;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setQueryOrderable($queryOrderable)
     {
         $this->isQueryOrderable = $queryOrderable;
     }
-
 }

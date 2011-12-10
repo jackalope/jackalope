@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ChildNodeInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class ChildNodeConstraint implements ChildNodeInterface
@@ -32,8 +33,9 @@ class ChildNodeConstraint implements ChildNodeInterface
         $this->selectorName = $selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -41,8 +43,9 @@ class ChildNodeConstraint implements ChildNodeInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getParentPath()

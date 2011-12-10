@@ -69,8 +69,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : array();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRequiredType()
@@ -78,8 +79,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->requiredType;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getValueConstraints()
@@ -87,8 +89,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->valueConstraints;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDefaultValues()
@@ -96,8 +99,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->defaultValues;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isMultiple()
@@ -105,8 +109,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->isMultiple;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAvailableQueryOperators()
@@ -114,8 +119,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->availableQueryOperators;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isFullTextSearchable()
@@ -123,8 +129,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         return $this->isFullTextSearchable;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isQueryOrderable()

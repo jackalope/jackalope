@@ -3,8 +3,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\LiteralInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Literal implements LiteralInterface
@@ -24,8 +25,9 @@ class Literal implements LiteralInterface
         $this->literalValue = $literalValue;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getLiteralValue()

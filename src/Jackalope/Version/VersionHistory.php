@@ -11,8 +11,9 @@ use Jackalope\Node;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class VersionHistory extends Node
@@ -35,8 +36,9 @@ class VersionHistory extends Node
         $this->path = $absPath;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersionableIdentifier()
@@ -44,8 +46,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRootVersion()
@@ -53,8 +56,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllLinearVersions()
@@ -62,8 +66,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllVersions()
@@ -100,8 +105,9 @@ class VersionHistory extends Node
         return $results;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllLinearFrozenNodes()
@@ -109,8 +115,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllFrozenNodes()
@@ -118,8 +125,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersion($versionName)
@@ -132,8 +140,9 @@ class VersionHistory extends Node
         throw new VersionException("No version '$versionName'");
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersionByLabel($label)
@@ -141,8 +150,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function addVersionLabel($versionName, $label, $moveLabel)
@@ -150,8 +160,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeVersionLabel($label)
@@ -159,8 +170,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasVersionLabel($label, $version = null)
@@ -168,8 +180,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersionLabels($version = null)
@@ -177,8 +190,9 @@ class VersionHistory extends Node
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeVersion($versionName)

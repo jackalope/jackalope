@@ -376,8 +376,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         //TODO: this is not enough to persist the reordering with the transport
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setProperty($name, $value, $type = PropertyType::UNDEFINED)
@@ -396,8 +397,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->_setProperty($name, $value, $type, false);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNode($relPath)
@@ -412,8 +414,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $node;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodes($filter = null)
@@ -439,8 +442,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return new ArrayIterator($result);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getProperty($relPath)
@@ -458,8 +462,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->session->getProperty($this->getChildPath($relPath));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPropertyValue($name, $type=null)
@@ -473,8 +478,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $val;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getProperties($filter = null)
@@ -490,8 +496,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return new ArrayIterator($result);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPropertiesValues($filter=null, $dereference=true)
@@ -518,8 +525,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $result;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrimaryItem()
@@ -543,8 +551,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $primary_item;
     }
 
-    // inherit all doc
+
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getIdentifier()
@@ -557,8 +567,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return null;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getIndex()
@@ -568,8 +579,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->index;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getReferences($name = null)
@@ -579,8 +591,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->objectManager->getReferences($this->path, $name);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getWeakReferences($name = null)
@@ -590,8 +603,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->objectManager->getWeakReferences($this->path, $name);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasNode($relPath)
@@ -608,8 +622,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->session->nodeExists($this->getChildPath($relPath));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasProperty($relPath)
@@ -626,8 +641,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $this->session->propertyExists($this->getChildPath($relPath));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasNodes()
@@ -637,8 +653,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return !empty($this->nodes);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasProperties()
@@ -648,8 +665,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return (! empty($this->properties));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrimaryNodeType()
@@ -660,8 +678,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $ntm->getNodeType($this->primaryType);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getMixinNodeTypes()
@@ -679,8 +698,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $res;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isNodeType($nodeTypeName)
@@ -761,8 +781,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeMixin($mixinName)
@@ -776,8 +797,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function canAddMixin($mixinName)
@@ -787,8 +809,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDefinition()
@@ -798,8 +821,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function update($srcWorkspace)
@@ -814,8 +838,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getCorrespondingNodePath($workspaceName)
@@ -825,8 +850,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSharedSet()
@@ -836,8 +862,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeSharedSet()
@@ -848,8 +875,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeShare()
@@ -860,8 +888,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isCheckedOut()
@@ -871,8 +900,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isLocked()
@@ -882,8 +912,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function followLifecycleTransition($transition)
@@ -894,8 +925,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllowedLifecycleTransitions()
@@ -1003,7 +1035,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         unset($this->nodes[$key]);
     }
 
-
     /**
      * Adds child node to this node for internal reference
      *
@@ -1022,7 +1053,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $this->nodes[] = $name;
     }
-
 
     /**
      * Removes the reference in the internal node storage

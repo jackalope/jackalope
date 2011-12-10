@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\DescendantNodeInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class DescendantNodeConstraint implements DescendantNodeInterface
@@ -32,8 +33,9 @@ class DescendantNodeConstraint implements DescendantNodeInterface
         $this->selectorName = $selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -41,8 +43,9 @@ class DescendantNodeConstraint implements DescendantNodeInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getAncestorPath()
