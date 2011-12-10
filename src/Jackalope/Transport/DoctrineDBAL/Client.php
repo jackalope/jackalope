@@ -425,7 +425,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     private function syncNode($uuid, $path, $parent, $type, $props = array(), $propsData = array())
     {
-        // TODO: Not sure if there are always ALL props in $props, should be grab the online data here?
+        // TODO: Not sure if there are always ALL props in $props, should we grab the online data here?
         // TODO: Binary data is handled very inefficiently here, UPSERT will really be necessary here as well as lazy handling
 
         $this->conn->beginTransaction();
@@ -482,12 +482,12 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     private function syncInternalIndexes()
     {
-        // TODO:
+        // TODO implement syncInternalIndexes()
     }
 
     private function syncUserIndexes()
     {
-
+        // TODO implement syncUserIndexes()
     }
 
     private function syncBinaryData($nodeId, $binaryData)
@@ -662,19 +662,26 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                     $values = $property->getLong();
                     break;
                 case PropertyType::BINARY:
-                    // TODO do we need to use getValueForStorage() here to be able to close the original stream?
                     if ($property->isMultiple()) {
                         $values = array();
-                        foreach ($property->getBinary() as $stream) {
-                            $binary = stream_get_contents($stream);
-                            fclose($stream);
+                        foreach ($property->getValueForStorage() as $stream) {
+                            if (null === $stream) {
+                                $binary = '';
+                            } else {
+                                $binary = stream_get_contents($stream);
+                                fclose($stream);
+                            }
                             $binaryData[$property->getName()][] = $binary;
                             $values[] = strlen($binary);
                         }
                     } else {
-                        $stream = $property->getBinary();
-                        $binary = stream_get_contents($stream);
-                        fclose($stream);
+                        $stream = $property->getValueForStorage();
+                        if (null === $stream) {
+                            $binary = '';
+                        } else {
+                            $binary = stream_get_contents($stream);
+                            fclose($stream);
+                        }
                         $binaryData[$property->getName()][] = $binary;
                         $values = strlen($binary);
                     }
@@ -1347,17 +1354,22 @@ $/xi";
             array($nodeId, $propertyName, $this->workspaceId)
         );
 
-        // TODO: Error Handling on the stream?
-        if (count($data) == 1) {
-            return fopen("data://text/plain,".$data[0]['data'], "r");
-        } else {
-            $streams = array();
-            foreach ($data as $row) {
-                $streams[$row['idx']] = fopen("data://text/plain,".$row['data'], "r");
-            }
+        $streams = array();
+        foreach ($data as $row) {
+            $stream = fopen('php://memory', 'rwb+');
+            fwrite($stream, $row['data']);
+            rewind($stream);
 
+            $streams[] = $stream;
+        }
+
+        // TODO even a multi value field could have only one value stored
+        // we need to also fetch if the property is multi valued instead of this count() check
+        if (count($data) > 1) {
             return $streams;
         }
+
+        return reset($streams);
     }
 
     /**
