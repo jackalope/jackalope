@@ -95,8 +95,9 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         return new Repository($factory, $transport, $options);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     static public function getConfigurationKeys()

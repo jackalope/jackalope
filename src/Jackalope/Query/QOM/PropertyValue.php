@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\PropertyValueInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class PropertyValue implements PropertyValueInterface
@@ -32,8 +33,9 @@ class PropertyValue implements PropertyValueInterface
         $this->propertyName = $propertyName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getSelectorName()
@@ -41,8 +43,9 @@ class PropertyValue implements PropertyValueInterface
         return $this->selectorName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getPropertyName()

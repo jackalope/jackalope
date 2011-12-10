@@ -54,8 +54,9 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
                 ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRequiredPrimaryTypes()
@@ -69,8 +70,9 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         return $this->requiredPrimaryTypes;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getRequiredPrimaryTypeNames()
@@ -78,8 +80,9 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         return $this->requiredPrimaryTypeNames;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDefaultPrimaryType()
@@ -90,8 +93,9 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         return $this->nodeTypeManager->getNodeType($this->defaultPrimaryTypeName);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDefaultPrimaryTypeName()
@@ -99,8 +103,9 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         return $this->defaultPrimaryTypeName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function allowsSameNameSiblings()

@@ -14,8 +14,9 @@ use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\TransactionInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Workspace implements WorkspaceInterface
@@ -66,8 +67,9 @@ class Workspace implements WorkspaceInterface
         $this->name = $name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSession()
@@ -75,8 +77,9 @@ class Workspace implements WorkspaceInterface
         return $this->session;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getName()
@@ -84,8 +87,9 @@ class Workspace implements WorkspaceInterface
         return $this->name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
@@ -93,14 +97,11 @@ class Workspace implements WorkspaceInterface
         $this->session->getObjectManager()->copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace);
     }
 
-    // inherit all doc
     /**
      * {@inheritDoc}
      *
-     * TODO: Implement
      * @api
      */
-    //clone is a reserved keyword in php and may not be used as a function name.
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         if (! $this->transport instanceof WritingInterface) {
@@ -117,8 +118,9 @@ class Workspace implements WorkspaceInterface
          */
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function move($srcAbsPath, $destAbsPath)
@@ -126,9 +128,9 @@ class Workspace implements WorkspaceInterface
         $this->session->getObjectManager()->moveNodeImmediately($srcAbsPath, $destAbsPath);
     }
 
-    // inherit all doc
+
     /**
-     * Locking is not implemented in Jackalope
+     * {@inheritDoc}
      *
      * @api
      */
@@ -138,8 +140,9 @@ class Workspace implements WorkspaceInterface
         throw new UnsupportedRepositoryOperationException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getQueryManager()
@@ -171,8 +174,9 @@ class Workspace implements WorkspaceInterface
         $this->utx = $utx;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getTransactionManager()
@@ -187,8 +191,9 @@ class Workspace implements WorkspaceInterface
         return $this->utx;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNamespaceRegistry()
@@ -199,8 +204,9 @@ class Workspace implements WorkspaceInterface
         return $this->namespaceRegistry;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodeTypeManager()
@@ -209,7 +215,7 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * Observation is not supported in Jackalope
+     * {@inheritDoc}
      *
      * @api
      */
@@ -218,8 +224,9 @@ class Workspace implements WorkspaceInterface
         throw new UnsupportedRepositoryOperationException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersionManager()
@@ -231,8 +238,9 @@ class Workspace implements WorkspaceInterface
         return $this->factory->get('Version\\VersionManager', array($this->session->getObjectManager()));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAccessibleWorkspaceNames()
@@ -241,7 +249,7 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * Importing is not implemented in jackalope
+     * {@inheritDoc}
      *
      * @api
      */
@@ -250,8 +258,9 @@ class Workspace implements WorkspaceInterface
         throw new NotImplementedException('Write');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createWorkspace($name, $srcWorkspace = null)
@@ -263,9 +272,8 @@ class Workspace implements WorkspaceInterface
         return $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
     }
 
-    // inherit all doc
     /**
-     * Deleting workspaces is not implemented in Jackalope
+     * {@inheritDoc}
      *
      * @api
      */

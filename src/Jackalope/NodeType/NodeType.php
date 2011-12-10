@@ -54,8 +54,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      */
     protected $childNodeDefinitions = null;
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSupertypes()
@@ -70,8 +71,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->superTypes;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     protected function getSupertypeNames()
@@ -85,8 +87,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->superTypeNames;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaredSupertypes()
@@ -100,8 +103,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->declaredSupertypes;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSubtypes()
@@ -109,8 +113,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return new ArrayIterator($this->nodeTypeManager->getSubtypes($this->name));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaredSubtypes()
@@ -118,8 +123,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return new ArrayIterator($this->nodeTypeManager->getDeclaredSubtypes($this->name));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isNodeType($nodeTypeName)
@@ -127,8 +133,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->getName() == $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPropertyDefinitions()
@@ -142,8 +149,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->propertyDefinitions;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getChildNodeDefinitions()
@@ -157,8 +165,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return $this->childNodeDefinitions;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function canSetProperty($propertyName, $value)
@@ -209,8 +218,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return false;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function canAddChildNode($childNodeName, $nodeTypeName = null)
@@ -244,8 +254,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return false;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function canRemoveNode($nodeName)
@@ -261,8 +272,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         return true;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function canRemoveProperty($propertyName)

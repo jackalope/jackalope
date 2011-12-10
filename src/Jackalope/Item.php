@@ -167,8 +167,9 @@ abstract class Item implements ItemInterface
         $this->parentPath = (('/' == $path) ? null : strtr(dirname($path), '\\', '/'));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPath()
@@ -177,8 +178,9 @@ abstract class Item implements ItemInterface
         return $this->path;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getName()
@@ -187,8 +189,9 @@ abstract class Item implements ItemInterface
         return $this->name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAncestor($depth)
@@ -205,8 +208,9 @@ abstract class Item implements ItemInterface
         return $this->objectManager->getNodeByPath($ancestorPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getParent()
@@ -218,8 +222,9 @@ abstract class Item implements ItemInterface
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDepth()
@@ -228,8 +233,9 @@ abstract class Item implements ItemInterface
         return $this->depth;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getSession()
@@ -238,8 +244,9 @@ abstract class Item implements ItemInterface
         return $this->session;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isNode()
@@ -248,8 +255,9 @@ abstract class Item implements ItemInterface
         return $this->isNode;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isNew()
@@ -257,8 +265,9 @@ abstract class Item implements ItemInterface
         return $this->state === self::STATE_NEW;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isModified()
@@ -308,8 +317,9 @@ abstract class Item implements ItemInterface
         return $this->state === self::STATE_CLEAN;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isSame(ItemInterface $otherItem)
@@ -338,8 +348,9 @@ abstract class Item implements ItemInterface
         return false;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function accept(ItemVisitorInterface $visitor)
@@ -349,8 +360,9 @@ abstract class Item implements ItemInterface
         $visitor->visit($this);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function remove()

@@ -12,8 +12,9 @@ use PHPCR\Version\VersionManagerInterface;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class VersionManager implements VersionManagerInterface {
@@ -38,8 +39,9 @@ class VersionManager implements VersionManagerInterface {
         $this->factory = $factory;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
      public function checkin($absPath)
@@ -50,8 +52,9 @@ class VersionManager implements VersionManagerInterface {
          return $this->objectmanager->checkin($absPath);
      }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
      public function checkout($absPath)
@@ -59,8 +62,9 @@ class VersionManager implements VersionManagerInterface {
          $this->objectmanager->checkout($absPath);
      }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function checkpoint($absPath)
@@ -70,8 +74,9 @@ class VersionManager implements VersionManagerInterface {
         return $version;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isCheckedOut($absPath)
@@ -79,8 +84,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getVersionHistory($absPath)
@@ -88,8 +94,9 @@ class VersionManager implements VersionManagerInterface {
         return $this->factory->get('Version\\VersionHistory', array($this->objectmanager,$absPath));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getBaseVersion($absPath)
@@ -104,8 +111,9 @@ class VersionManager implements VersionManagerInterface {
         return $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function restore($removeExisting, $version, $absPath = null)
@@ -123,8 +131,9 @@ class VersionManager implements VersionManagerInterface {
         $this->objectmanager->restore($removeExisting, $vpath, $absPath);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function restoreByLabel($absPath, $versionLabel, $removeExisting)
@@ -132,8 +141,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function merge($source, $srcWorkspace = null, $bestEffort = null, $isShallow = false)
@@ -141,8 +151,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function doneMerge($absPath, VersionInterface $version)
@@ -150,8 +161,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function cancelMerge($absPath, VersionInterface $version)
@@ -159,8 +171,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createConfiguration($absPath, VersionInterface $baseline)
@@ -168,8 +181,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function setActivity(NodeInterface $activity)
@@ -177,8 +191,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getActivity()
@@ -186,8 +201,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createActivity($title)
@@ -195,8 +211,9 @@ class VersionManager implements VersionManagerInterface {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function removeActivity(NodeInterface $activityNode)

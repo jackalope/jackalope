@@ -1,10 +1,15 @@
 <?php
 namespace Jackalope\Query;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use PHPCR\Query\QueryInterface;
+use PHPCR\Query\InvalidQueryException;
 
-// inherit all doc
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
+
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class QueryManager implements \PHPCR\Query\QueryManagerInterface
@@ -33,24 +38,26 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
         $this->objectManager = $objectManager;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createQuery($statement, $language)
     {
         switch($language) {
-            case \PHPCR\Query\QueryInterface::JCR_SQL2:
+            case QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
-            case \PHPCR\Query\QueryInterface::JCR_JQOM:
-                throw new \PHPCR\Query\InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
+            case QueryInterface::JCR_JQOM:
+                throw new InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
             default:
-                throw new \PHPCR\Query\InvalidQueryException("No such query language: $language");
+                throw new InvalidQueryException("No such query language: $language");
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getQOMFactory()
@@ -58,8 +65,9 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
         return $this->factory->get('Query\QOM\QueryObjectModelFactory', array($this->objectManager));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getQuery($node)
@@ -70,12 +78,10 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
     /**
      * {@inheritDoc}
      *
-     * Jackalope supports Query.JCR_SQL2 and Query.JCR_JQOM
-     *
      * @api
      */
     public function getSupportedQueryLanguages()
     {
-        return array(\PHPCR\Query\QueryInterface::JCR_SQL2, \PHPCR\Query\QueryInterface::JCR_JQOM);
+        return array(QueryInterface::JCR_SQL2, QueryInterface::JCR_JQOM);
     }
 }

@@ -206,8 +206,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getNodeType($nodeTypeName)
@@ -226,8 +227,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         throw new NoSuchNodeTypeException($nodeTypeName);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasNodeType($name)
@@ -242,8 +244,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getAllNodeTypes()
@@ -252,8 +255,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return new ArrayIterator(array_merge($this->primaryTypes, $this->mixinTypes));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrimaryNodeTypes()
@@ -262,8 +266,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return new ArrayIterator($this->primaryTypes);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getMixinNodeTypes()
@@ -272,8 +277,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return new ArrayIterator($this->mixinTypes);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createNodeTypeTemplate($ntd = null)
@@ -281,8 +287,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
        return $this->factory->get('NodeType\\NodeTypeTemplate', array($this, $ntd));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createNodeDefinitionTemplate()
@@ -290,8 +297,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
        return $this->factory->get('NodeType\\NodeDefinitionTemplate', array($this));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function createPropertyDefinitionTemplate()
@@ -299,8 +307,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
        return $this->factory->get('NodeType\\PropertyDefinitionTemplate', array($this));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
@@ -309,8 +318,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return each($ntd);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
@@ -321,8 +331,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return $this->factory->get('NodeType\\NodeType', array($this, $ntd));
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function registerNodeTypes(array $definitions, $allowUpdate)
@@ -401,8 +412,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         return $types;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function unregisterNodeType($name)
@@ -418,8 +430,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         throw new NotImplementedException('TODO: remove from nodeTree and register with server (jackrabbit has not implemented this yet)');
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function unregisterNodeTypes(array $names)

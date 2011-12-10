@@ -5,8 +5,9 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\OrderingInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class Ordering implements OrderingInterface
@@ -33,8 +34,9 @@ class Ordering implements OrderingInterface
         $this->order = $order;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOperand()
@@ -42,8 +44,9 @@ class Ordering implements OrderingInterface
         return $this->operand;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getOrder()

@@ -4,8 +4,9 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\BindVariableValueInterface;
 
-// inherit all doc
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class BindVariableValue implements BindVariableValueInterface
@@ -25,8 +26,9 @@ class BindVariableValue implements BindVariableValueInterface
         $this->bindVariableName = $bindVariableName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     function getBindVariableName()

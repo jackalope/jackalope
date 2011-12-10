@@ -87,8 +87,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function registerNamespace($prefix, $uri)
@@ -118,8 +119,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         $this->userNamespaces[$prefix] = $uri;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function unregisterNamespace($prefix)
@@ -137,8 +139,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         $this->transport->unregisterNamespace($prefix);
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrefixes()
@@ -150,8 +153,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         );
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getURIs()
@@ -163,8 +167,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         );
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getURI($prefix)
@@ -179,8 +184,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         throw new NamespaceException("Mapping for '$prefix' is not defined");
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrefix($uri)

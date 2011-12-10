@@ -10,8 +10,10 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 
 use Jackalope\Helper;
 
-// inherit all doc
+
 /**
+ * {@inheritDoc}
+ *
  * @api
  */
 class NodeTypeDefinition implements NodeTypeDefinitionInterface
@@ -187,8 +189,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         }
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getName()
@@ -196,8 +199,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->name;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaredSupertypeNames()
@@ -208,8 +212,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->declaredSuperTypeNames;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isAbstract()
@@ -217,8 +222,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->isAbstract;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isMixin()
@@ -226,8 +232,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->isMixin;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function hasOrderableChildNodes()
@@ -235,8 +242,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->hasOrderableChildNodes;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function isQueryable()
@@ -244,8 +252,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->isQueryable;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getPrimaryItemName()
@@ -253,22 +262,26 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return $this->primaryItemName;
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaredPropertyDefinitions()
     {
-        return is_null($this->declaredPropertyDefinitions) ? null : $this->declaredPropertyDefinitions->getArrayCopy();
+        return is_null($this->declaredPropertyDefinitions)
+            ? null : $this->declaredPropertyDefinitions->getArrayCopy();
     }
 
-    // inherit all doc
     /**
+     * {@inheritDoc}
+     *
      * @api
      */
     public function getDeclaredChildNodeDefinitions()
     {
-        return is_null($this->declaredNodeDefinitions) ? null : $this->declaredNodeDefinitions->getArrayCopy();
+        return is_null($this->declaredNodeDefinitions)
+            ? null : $this->declaredNodeDefinitions->getArrayCopy();
     }
 
 }
