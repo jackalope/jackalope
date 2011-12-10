@@ -109,12 +109,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
         }
 
         $paths = array();
-        foreach ($this->rows as $row) {
-            foreach ($row as $column) {
-                if ('jcr:path' === $column['dcr:name']) {
-                    $paths[] = $column['dcr:value'];
-                }
-            }
+        foreach ($this->getRows() as $row) {
+            $paths[] = $row->getPath();
         }
 
         return $this->objectmanager->getNodesByPath($paths);
