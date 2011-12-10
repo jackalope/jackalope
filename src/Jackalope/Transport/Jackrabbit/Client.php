@@ -254,7 +254,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // CoreInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function login(CredentialsInterface $credentials, $workspaceName)
     {
         if ($this->credentials) {
@@ -291,7 +293,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return true;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function logout()
     {
         if (!empty($this->curl)) {
@@ -300,13 +304,17 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $this->curl = false;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function setCheckLoginOnServer($bool)
     {
         $this->checkLoginOnServer = $bool;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getRepositoryDescriptors()
     {
         $request = $this->getRequest(Request::REPORT, $this->server);
@@ -337,7 +345,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $descriptors;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getAccessibleWorkspaceNames()
     {
         $request = $this->getRequest(Request::PROPFIND, $this->server);
@@ -354,7 +364,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return array_unique($workspaces);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNode($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -369,7 +381,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodes($paths)
     {
         if (count($paths) == 0) {
@@ -408,7 +422,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getProperty($path)
     {
         throw new NotImplementedException();
@@ -420,7 +436,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
          */
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getBinaryStream($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -477,19 +495,25 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $ret;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getWeakReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, true);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     protected function getNodeReferences($path, $name = null, $weak_reference = false)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -516,7 +540,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // VersioningInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function checkinItem($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -538,7 +564,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         throw new RepositoryException();
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function checkoutItem($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -556,7 +584,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function restoreItem($removeExisting, $versionPath, $path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -576,7 +606,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request->execute(); // errors are checked in request
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getVersionHistory($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -589,7 +621,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // QueryInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function query(QueryInterface $query)
     {
         if ($query instanceof SqlQuery
@@ -658,7 +692,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // WritingInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function deleteNode($path)
     {
         $path = $this->encodeAndValidatePathForDavex($path);
@@ -669,13 +705,17 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return true;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function deleteProperty($path)
     {
         return $this->deleteNode($path);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
         $srcAbsPath = $this->encodeAndValidatePathForDavex($srcAbsPath);
@@ -692,7 +732,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request->execute();
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
         $srcAbsPath = $this->encodeAndValidatePathForDavex($srcAbsPath);
@@ -705,13 +747,17 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request->execute();
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException();
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function storeNode(NodeInterface $node)
     {
         $path = $node->getPath();
@@ -793,7 +839,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $body . '</sv:node>';
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function storeProperty(PropertyInterface $property)
     {
         $path = $property->getPath();
@@ -887,7 +935,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $this->propertyToXmlString($value, $type);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodePathForIdentifier($uuid)
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
@@ -916,7 +966,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $this->stripServerRootFromUri(substr(urldecode($fullPath),0,-1));
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNamespaces()
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUri);
@@ -978,7 +1030,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return true;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function unregisterNamespace($prefix)
     {
         throw new UnsupportedRepositoryOperationException('Unregistering namespace not supported by jackrabbit backend');
@@ -996,7 +1050,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         */
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodeTypes($nodeTypes = array())
     {
         $request = $this->getRequest(Request::REPORT, $this->workspaceUriRoot);
@@ -1017,7 +1073,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // TransactionInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function beginTransaction()
     {
         $request = $this->getRequest(Request::LOCK, $this->workspaceUriRoot);
@@ -1039,7 +1097,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $this->transactionToken;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     protected function endTransaction($tag)
     {
         if ($tag != 'commit' && $tag != 'rollback') {
@@ -1057,19 +1117,25 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $this->transactionToken = false;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function commitTransaction()
     {
         $this->endTransaction('commit');
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function rollbackTransaction()
     {
         $this->endTransaction('rollback');
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function setTransactionTimeout($seconds)
     {
         throw new NotImplementedException();
@@ -1077,7 +1143,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // NodeTypeCndManagementInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         $request = $this->getRequest(Request::PROPPATCH, $this->workspaceUri);
@@ -1089,7 +1157,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     // PermissionInterface //
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getPermissions($path)
     {
         // TODO: OPTIMIZE - once we have ACL this might be done without any server request
@@ -1231,7 +1301,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
                '</D:href></dcr:locate-by-uuid>';
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;

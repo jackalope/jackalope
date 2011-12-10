@@ -103,7 +103,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         if (empty($data) && $new) {
             return;
-        } elseif (! isset($data['value'])) {
+        }
+
+        if (! isset($data['value'])) {
             throw new InvalidArgumentException("Can't create property at $path without any data");
         }
 
@@ -293,6 +295,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (! $this->wrapBinaryStreams) {
             throw new LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not activated");
         }
+
         // return wrapped stream
         if ($this->isMultiple()) {
             $results = array();
@@ -304,6 +307,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             }
             return $results;
         }
+
         // single property case
         $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
         $this->streams[] = $result;

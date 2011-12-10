@@ -180,7 +180,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function login(\PHPCR\CredentialsInterface $credentials = null, $workspaceName = 'default')
     {
@@ -209,7 +208,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function logout()
     {
@@ -219,7 +217,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function setCheckLoginOnServer($bool)
     {
@@ -263,7 +260,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getRepositoryDescriptors()
     {
@@ -322,7 +318,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getNamespaces()
     {
@@ -340,7 +335,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
@@ -710,7 +704,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getAccessibleWorkspaceNames()
     {
@@ -724,7 +717,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getNode($path)
     {
@@ -810,7 +802,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getNodes($paths)
     {
@@ -838,7 +829,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function deleteNode($path)
     {
@@ -902,7 +892,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function deleteProperty($path)
     {
@@ -911,7 +900,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
@@ -1022,7 +1010,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function storeNode(\PHPCR\NodeInterface $node)
     {
@@ -1047,7 +1034,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     /**
      * {@inheritDoc}
-     *
      */
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
@@ -1131,7 +1117,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getNodePathForIdentifier($uuid)
     {
@@ -1147,7 +1132,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getNodeTypes($nodeTypes = array())
     {
@@ -1255,7 +1239,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
@@ -1264,7 +1247,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
@@ -1321,7 +1303,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function setNodeTypeManager($nodeTypeManager)
     {
@@ -1330,7 +1311,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
@@ -1339,7 +1319,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getBinaryStream($path)
     {
@@ -1374,7 +1353,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getProperty($path)
     {
@@ -1383,7 +1361,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function query(\PHPCR\Query\QueryInterface $query)
     {
@@ -1475,7 +1452,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function registerNamespace($prefix, $uri)
     {
@@ -1487,7 +1463,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function unregisterNamespace($prefix)
     {
@@ -1496,7 +1471,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getReferences($path, $name = null)
     {
@@ -1505,7 +1479,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     public function getWeakReferences($path, $name = null)
     {
@@ -1514,7 +1487,6 @@ $/xi";
 
     /**
      * {@inheritDoc}
-     *
      */
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
