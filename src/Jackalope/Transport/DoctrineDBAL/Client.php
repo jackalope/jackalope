@@ -145,7 +145,10 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return $this->conn;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     *
+     */
     public function createWorkspace($name, $srcWorkspace = null)
     {
         if (null !== $srcWorkspace) {
@@ -175,7 +178,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         ));
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function login(\PHPCR\CredentialsInterface $credentials = null, $workspaceName = 'default')
     {
         $this->credentials = $credentials;
@@ -200,14 +205,18 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return true;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function logout()
     {
         $this->loggedIn = false;
         $this->conn = null;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function setCheckLoginOnServer($bool)
     {
         $this->checkLoginOnServer = $bool;
@@ -246,7 +255,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getRepositoryDescriptors()
     {
         return array(
@@ -302,7 +313,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         );
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNamespaces()
     {
         if ($this->fetchedUserNamespaces === false) {
@@ -316,7 +329,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return $this->namespaces;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null)
     {
         $this->assertLoggedIn();
@@ -604,7 +619,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return array('dom' => $dom, 'binaryData' => $binaryData);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getAccessibleWorkspaceNames()
     {
         $workspaceNames = array();
@@ -614,7 +631,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return $workspaceNames;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNode($path)
     {
         $this->assertLoggedIn();
@@ -697,7 +716,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return $data;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodes($paths)
     {
         $nodes = array();
@@ -721,7 +742,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return false;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function deleteNode($path)
     {
         $this->assertLoggedIn();
@@ -781,13 +804,17 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function deleteProperty($path)
     {
         // TODO:
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function moveNode($srcAbsPath, $dstAbsPath)
     {
         $this->assertLoggedIn();
@@ -889,7 +916,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return $nodeTypes;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function storeNode(\PHPCR\NodeInterface $node)
     {
         $path = $node->getPath();
@@ -911,7 +940,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         return true;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function storeProperty(\PHPCR\PropertyInterface $property)
     {
         $this->assertLoggedIn();
@@ -969,7 +1000,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 *)?
 $/xi";
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodePathForIdentifier($uuid)
     {
         $this->assertLoggedIn();
@@ -981,7 +1014,9 @@ $/xi";
         return $path;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getNodeTypes($nodeTypes = array())
     {
         $nodeTypes = array_flip($nodeTypes);
@@ -1085,13 +1120,17 @@ $/xi";
         return $result;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
         throw new NotImplementedException("Not implemented yet");
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function registerNodeTypes($types, $allowUpdate)
     {
         foreach ($types as $type) {
@@ -1145,19 +1184,25 @@ $/xi";
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function setNodeTypeManager($nodeTypeManager)
     {
         $this->nodeTypeManager = $nodeTypeManager;
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException("Not implemented yet");
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getBinaryStream($path)
     {
         $this->assertLoggedIn();
@@ -1183,13 +1228,17 @@ $/xi";
         }
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getProperty($path)
     {
         throw new NotImplementedException("Not implemented yet");
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function query(\PHPCR\Query\QueryInterface $query)
     {
         $this->assertLoggedIn();
@@ -1230,7 +1279,9 @@ $/xi";
         throw new NotImplementedException("JCQ-JQOM not yet implemented.");
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function registerNamespace($prefix, $uri)
     {
         $this->conn->insert('phpcr_namespaces', array(
@@ -1239,25 +1290,33 @@ $/xi";
         ));
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function unregisterNamespace($prefix)
     {
         $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, false);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     public function getWeakReferences($path, $name = null)
     {
         return $this->getNodeReferences($path, $name, true);
     }
 
-    // inherit all doc
+    /**
+     * {@inheritDoc}
+     */
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {
         $targetId = $this->pathExists($path);
