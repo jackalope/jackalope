@@ -991,6 +991,10 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 }
             }
         }
+
+        foreach ($node->getProperties() as $property) {
+            $this->assertValidProperty($property);
+        }
     }
 
     private function getResponsibleNodeTypes($node)
@@ -1051,31 +1055,53 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     /**
      * Validation if all the data is correct before writing it into the database.
      *
-     * @param int $type
-     * @param mixed $value
-     * @param string $path
+     * @param \PHPCR\PropertyInterface $property
      * @throws \PHPCR\ValueFormatException
      * @return void
      */
-    private function assertValidPropertyValue($type, $value, $path)
+    private function assertValidProperty($property)
     {
-        if (PropertyType::NAME == $type) {
-            if (strpos($value, ":") !== false) {
-                list($prefix, $localName) = explode(":", $value);
-
-                $this->getNamespaces();
-                if (!isset($this->namespaces[$prefix])) {
-                    throw new ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
+        $type = $property->getType();
+        switch ($type) {
+            case PropertyType::NAME:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
                 }
-            }
-        } elseif (PropertyType::PATH == $type) {
-            if (!preg_match('((/[a-zA-Z0-9:_-]+)+)', $value)) {
-                throw new ValueFormatException("Invalid PATH at " . $path .": Segments are seperated by / and allowed chars are a-zA-Z0-9:_-");
-            }
-        } elseif (PropertyType::URI == $type) {
-            if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
-                throw new ValueFormatException("Invalid URI at " . $path .": Has to follow RFC 3986.");
-            }
+                foreach ($values as $value) {
+                    $pos = strpos($value, ":");
+                    if (false !== $pos) {
+                        $prefix = substr($value, 0, $pos);
+
+                        $this->getNamespaces();
+                        if (!isset($this->namespaces[$prefix])) {
+                            throw new ValueFormatException("Invalid PHPCR NAME at '" . $property->getPath() . "': The namespace prefix " . $prefix . " does not exist.");
+                        }
+                    }
+                }
+                break;
+            case PropertyType::PATH:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
+                }
+                foreach ($values as $value) {
+                    if (!preg_match('(((/|..)?[-a-zA-Z0-9:_]+)+)', $value)) {
+                        throw new ValueFormatException("Invalid PATH '$value' at '" . $property->getPath() ."': Segments are separated by / and allowed chars are -a-zA-Z0-9:_");
+                    }
+                }
+                break;
+            case PropertyType::URI:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
+                }
+                foreach ($values as $value) {
+                    if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
+                        throw new ValueFormatException("Invalid URI '$value' at '" . $property->getPath() ."': Has to follow RFC 3986.");
+                    }
+                }
+                break;
         }
     }
 
