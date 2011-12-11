@@ -502,7 +502,6 @@ abstract class Item implements ItemInterface
         }
 
         if ($this->isDirty()) {
-
             $this->refresh($this->keepChanges);
             $this->setClean();
         }

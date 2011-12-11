@@ -55,6 +55,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $properties = array();
 
     /**
+     * keep track of properties to be deleted until the save operation was successful.
+     *
+     * this is needed in order to track deletions in case of refresh
+     *
+     * keys are the property names, values the properties (in state deleted)
+     */
+    protected $deletedProperties = array();
+
+    /**
      * list of the child node names
      * @var array
      */
@@ -159,7 +168,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                             }
                             if (isset($this->properties[$key])) {
                                 // refresh existing binary, this will only happen in update
-                                // only update length if
+                                // only update length
                                 if (! ($keepChanges && $this->properties[$key]->isModified())) {
                                     $this->properties[$key]->_setLength($value);
                                     if ($this->properties[$key]->isDirty()) {
@@ -180,8 +189,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 if ($update && array_key_exists($key, $this->properties)) {
                     unset($oldProperties[$key]);
                     $prop = $this->properties[$key];
-                    if ($keepChanges && ($prop->isModified())) {
+                    if ($keepChanges && $prop->isModified()) {
                         continue;
+                    }
+                } elseif ($update && array_key_exists($key, $this->deletedProperties)) {
+                    if ($keepChanges) {
+                        // keep the delete
+                        continue;
+                    } else {
+                        // restore the property
+                        $this->properties[$key] = $this->deletedProperties[$key];
+                        $this->properties[$key]->setClean();
+                        // now let the loop update the value. no need to talk to ObjectManager as it
+                        // does not store property deletions
                     }
                 }
 
@@ -1070,7 +1090,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!array_key_exists($name, $this->properties)) {
             throw new ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
+        $this->deletedProperties[$name] = $this->properties[$name];
         unset($this->properties[$name]);
+    }
+
+    /**
+     * In addition to calling parent method, clean deletedProperties
+     */
+    public function confirmSaved()
+    {
+        $this->deletedProperties = array();
+        parent::confirmSaved();
     }
 
     /**
