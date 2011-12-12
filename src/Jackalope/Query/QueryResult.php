@@ -80,7 +80,12 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
 
         foreach ($this->rows as $row) {
             foreach ($row as $columns) {
-                $columnNames[] = $columns['dcr:name'];
+                if ('jcr:path' != substr($columns['dcr:name'], -8)
+                    && 'jcr:score' != substr($columns['dcr:name'], -9)
+                ) {
+                    // skip the meta information path and score that is also in the raw result table
+                    $columnNames[] = $columns['dcr:name'];
+                }
             }
         }
 

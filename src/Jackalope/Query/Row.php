@@ -39,10 +39,18 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     protected $position = 0;
 
     /**
-     * The score this row has
-     * @var float
+     * The score this row has for each selector
+     *
+     * @var array of float
      */
     protected $score = array();
+
+    /**
+     * The path to the node for each selector
+     *
+     * @var array of string
+     */
+    protected $path = array();
 
     /**
      * Cached list of values extracted from columns to avoid double work.
@@ -84,9 +92,12 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
             if ('jcr:score' === $column['dcr:name']) {
                 $this->score[$selectorName] = (float) $column['dcr:value'];
-            } elseif ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
-                $this->defaultSelectorName = $selectorName;
+            } elseif ('jcr:path' === $column['dcr:name']) {
+                $this->path[$selectorName] = $column['dcr:value'];
             } else {
+                if ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
+                    $this->defaultSelectorName = $selectorName;
+                }
                 $this->columns[] = $column;
                 $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
             }
@@ -150,7 +161,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        return $this->getValue($selectorName.'.jcr:path', $selectorName);
+        if (!isset($this->path[$selectorName])) {
+            throw new RepositoryException('Attempting to get the path for a non existent selector: '.$selectorName);
+        }
+
+        return $this->path[$selectorName];
     }
 
     /**
