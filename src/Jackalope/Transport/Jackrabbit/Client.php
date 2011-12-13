@@ -618,6 +618,18 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $resp;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function removeVersion($versionPath, $versionName)
+    {
+        $versionPath = $this->encodeAndValidatePathForDavex($versionPath);
+        $request = $this->getRequest(Request::DELETE, $versionPath . '/' . $versionName);
+        $request->setTransactionId($this->transactionToken);
+        $resp = $request->execute();
+        return $resp;
+    }
+
 
     // QueryInterface //
 

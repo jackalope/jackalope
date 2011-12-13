@@ -872,6 +872,26 @@ class ObjectManager
     }
 
     /**
+     * Remove a version given the path to the version node and the version name.
+     *
+     * @param $versionPath The path to the version node
+     * @param $versionName The name of the version to remove
+     * @return void
+     *
+     * @throws \PHPCR\UnsupportedRepositoryOperationException
+     * @throws PHPCR\ReferentialIntegrityException
+     * @throws PHPCR\Version\VersionException
+     */
+    public function removeVersion($versionPath, $versionName)
+    {
+        if (! $this->transport instanceof VersioningInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
+        }
+
+        return $this->transport->removeVersion($versionPath, $versionName);
+    }
+
+    /**
      * Refresh cached items from the backend.
      *
      * @param boolean $keepChanges whether to keep local changes or discard

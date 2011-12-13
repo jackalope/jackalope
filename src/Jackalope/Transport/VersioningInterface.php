@@ -58,6 +58,16 @@ interface VersioningInterface extends TransportInterface
      */
     function getVersionHistory($path);
 
-    //TODO
-    //public function removeVersion();
+    /**
+     * Remove a version given the path to the version node and the name of the version.
+     *
+     * @param $versionPath The path to the version node
+     * @param $versionName The name of the version
+     * @return void
+     *
+     * @throws PHPCR\ReferentialIntegrityException
+     * @throws PHPCR\Version\VersionException
+     */
+    public function removeVersion($versionPath, $versionName);
+
 }

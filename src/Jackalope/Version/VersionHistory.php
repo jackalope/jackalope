@@ -197,13 +197,9 @@ class VersionHistory extends Node
      */
     public function removeVersion($versionName)
     {
-        /*
-         * this should send an immediate request with
-         * DELETE /server/tests/jcr%3aroot/jcr%3asystem/jcr%3aversionStorage/88/f5/0e/88f50ee0-38fc-4cab-8ef1-706fb2f78cfe/1.4
-         * ...
-         * using the full path of the version node that is to be removed.
-         */
-        throw new NotImplementedException();
+        $uuid = $this->objectmanager->getVersionHistory($this->path);
+        $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
+        return $this->objectmanager->removeVersion($node->getPath(), $versionName);
     }
 
 }
