@@ -36,8 +36,8 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
         );
 
         $this->unsupportedCases = array(
-                    'Versioning\\DeleteVersionTest',
         );
+
         $this->unsupportedTests = array(
                     'Connecting\\RepositoryTest::testLoginException', //TODO: figure out what would be invalid credentials
                     'Connecting\\RepositoryTest::testNoLogin',
