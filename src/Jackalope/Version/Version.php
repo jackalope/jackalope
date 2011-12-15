@@ -116,4 +116,15 @@ class Version extends Node implements VersionInterface {
         //TODO: what should we do now? recreate the node with the data at that time?
         throw new NotImplementedException();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function remove()
+    {
+        // A version node cannot be removed, so always throw an Exception
+        throw new \PHPCR\RepositoryException();
+    }
 }

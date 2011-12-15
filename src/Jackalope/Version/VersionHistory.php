@@ -199,7 +199,12 @@ class VersionHistory extends Node
     {
         $uuid = $this->objectmanager->getVersionHistory($this->path);
         $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
-        return $this->objectmanager->removeVersion($node->getPath(), $versionName);
+
+        $this->objectmanager->removeVersion($node->getPath(), $versionName);
+
+        if (!is_null($this->versions)) {
+            unset($this->versions[$versionName]);
+        }
     }
 
 }

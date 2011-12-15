@@ -888,7 +888,29 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
         }
 
-        return $this->transport->removeVersion($versionPath, $versionName);
+        $this->transport->removeVersion($versionPath, $versionName);
+
+        // Adjust the in memory state
+        $path = $versionPath . '/' . $versionName;
+
+        if (isset($this->objectsByPath['Node'][$path])) {
+            $node = $this->objectsByPath['Node'][$path];
+        }
+
+        if (isset($this->objectsByPath['Version\\Version'][$path])) {
+            $version = $this->objectsByPath['Version\\Version'][$path];
+        }
+
+        unset($this->objectsByPath['Node'][$path]);
+        unset($this->objectsByPath['Version\\Version'][$path]);
+
+        if (isset($node)) {
+            $node->setDeleted();
+        }
+
+        if (isset($version)) {
+            $version->setDeleted();
+        }
     }
 
     /**
