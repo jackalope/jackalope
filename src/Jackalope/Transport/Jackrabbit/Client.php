@@ -389,9 +389,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         if (count($paths) == 0) {
             return array();
         }
-        $url = array_shift($paths);
 
-        if (count($paths) == 0) {
+        if (count($paths) == 1) {
+            $url = array_shift($paths);
             try {
                 return array($url => $this->getNode($url));
             } catch (ItemNotFoundException $e) {
@@ -400,9 +400,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
         $body = array();
 
-        $url = $this->encodeAndValidatePathForDavex($url).".0.json";
+        $url = $this->encodeAndValidatePathForDavex("/").".0.json";
         foreach ($paths as $path) {
-            $body[] = http_build_query(array(":get"=>$path));
+            $body[] = http_build_query(array(":include"=>$path));
         }
         $body = implode("&",$body);
         $request = $this->getRequest(Request::POST, $url);
