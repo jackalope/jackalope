@@ -895,22 +895,16 @@ class ObjectManager
 
         if (isset($this->objectsByPath['Node'][$path])) {
             $node = $this->objectsByPath['Node'][$path];
+            $node->setDeleted();
         }
 
         if (isset($this->objectsByPath['Version\\Version'][$path])) {
             $version = $this->objectsByPath['Version\\Version'][$path];
+            $version->setDeleted();
         }
 
         unset($this->objectsByPath['Node'][$path]);
         unset($this->objectsByPath['Version\\Version'][$path]);
-
-        if (isset($node)) {
-            $node->setDeleted();
-        }
-
-        if (isset($version)) {
-            $version->setDeleted();
-        }
     }
 
     /**

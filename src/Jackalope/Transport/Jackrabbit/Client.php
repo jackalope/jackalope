@@ -623,8 +623,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     public function removeVersion($versionPath, $versionName)
     {
-        $versionPath = $this->encodeAndValidatePathForDavex($versionPath);
-        $request = $this->getRequest(Request::DELETE, $versionPath . '/' . $versionName);
+        $path = $this->encodeAndValidatePathForDavex($versionPath . '/' . $versionName);
+        $request = $this->getRequest(Request::DELETE, $path);
         $request->setTransactionId($this->transactionToken);
         $resp = $request->execute();
         return $resp;
