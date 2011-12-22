@@ -202,6 +202,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
 
         $this->loggedIn = true;
+
         return true;
     }
 
@@ -226,6 +227,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     {
         try {
             $sql = "SELECT id FROM phpcr_workspaces WHERE name = ?";
+
             return $this->conn->fetchColumn($sql, array($workspaceName));
         } catch(\PDOException $e) {
             if (1045 == $e->getCode()) {
@@ -234,6 +236,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             if ("42S02" == $e->getCode()) {
                 throw new \PHPCR\RepositoryException('You did not properly set up the database for the repository. See README file for more information. Message from backend: '.$e->getMessage());
             }
+
             throw new \PHPCR\RepositoryException('Unexpected error talking to the backend: '.$e->getMessage());
         }
     }
@@ -326,6 +329,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 $this->namespaces[$row['prefix']] = $row['uri'];
             }
         }
+
         return $this->namespaces;
     }
 
@@ -415,7 +419,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     private function syncNode($uuid, $path, $parent, $type, $props = array(), $propsData = array())
     {
-        // TODO: Not sure if there are always ALL props in $props, should be grab the online data here?
+        // TODO: Not sure if there are always ALL props in $props, should we grab the online data here?
         // TODO: Binary data is handled very inefficiently here, UPSERT will really be necessary here as well as lazy handling
 
         $this->conn->beginTransaction();
@@ -472,12 +476,12 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
     private function syncInternalIndexes()
     {
-        // TODO:
+        // TODO implement syncInternalIndexes()
     }
 
     private function syncUserIndexes()
     {
-
+        // TODO implement syncUserIndexes()
     }
 
     private function syncBinaryData($nodeId, $binaryData)
@@ -506,7 +510,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         foreach ($props as $property) {
             $type = $property->getType();
-            if ($type === PropertyType::REFERENCE || $type === PropertyType::WEAKREFERENCE) {
+            if (PropertyType::REFERENCE == $type || PropertyType::WEAKREFERENCE == $type) {
                 $values = array_unique( $property->isMultiple() ? $property->getString() : array($property->getString()) );
 
                 foreach ($values as $value) {
@@ -520,7 +524,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                             'type' => $type
                         ));
                     } catch (ItemNotFoundException $e) {
-                        if ($type == PropertyType::REFERENCE) {
+                        if (PropertyType::REFERENCE == $type) {
                             throw new ReferentialIntegrityException(
                                 "Trying to store reference to non-existant node with path '" . $value . "' in " .
                                 "node " . $path . " property " . $property->getName()
@@ -530,6 +534,74 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 }
             }
         }
+    }
+
+    static public function xmlToProps($xml, $filter = null)
+    {
+        $props = array();
+
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->loadXML($xml);
+
+        foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
+            $name = $propertyNode->getAttribute('sv:name');
+            $values = array();
+            $type = PropertyType::valueFromName($propertyNode->getAttribute('sv:type'));
+            foreach ($propertyNode->childNodes as $valueNode) {
+                switch ($type) {
+                    case PropertyType::NAME:
+                    case PropertyType::URI:
+                    case PropertyType::WEAKREFERENCE:
+                    case PropertyType::REFERENCE:
+                    case PropertyType::PATH:
+                    case PropertyType::DECIMAL:
+                    case PropertyType::STRING:
+                        $values[] = $valueNode->nodeValue;
+                        break;
+                    case PropertyType::BOOLEAN:
+                        $values[] = (bool)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::LONG:
+                        $values[] = (int)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::BINARY:
+                        $values[] = (int)$valueNode->nodeValue;
+                        break;
+                    case PropertyType::DATE:
+                        $values[] = $valueNode->nodeValue;
+                        break;
+                    case PropertyType::DOUBLE:
+                        $values[] = (double)$valueNode->nodeValue;
+                        break;
+                    default:
+                        throw new \InvalidArgumentException("Type with constant " . $type . " not found.");
+                }
+            }
+
+            // only return the properties that pass through the filter callback
+            if (null !== $filter && is_callable($filter)) {
+                if (false === $filter($name, $values)) {
+                    continue;
+                }
+            }
+
+            if (PropertyType::BINARY == $type) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
+                    $props[":" . $name] = $values;
+                } else {
+                    $props[":" . $name] = $values[0];
+                }
+            } else {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
+                    $props[$name] = $values;
+                } else {
+                    $props[$name] = $values[0];
+                }
+                $props[":" . $name] = $type;
+            }
+        }
+
+        return $props;
     }
 
     /**
@@ -562,7 +634,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             /* @var $prop \PHPCR\PropertyInterface */
             $propertyNode = $dom->createElement('sv:property');
             $propertyNode->setAttribute('sv:name', $property->getName());
-            $propertyNode->setAttribute('sv:type', $property->getType()); // TODO: Name! not int
+            $propertyNode->setAttribute('sv:type', PropertyType::nameFromValue($property->getType()));
             $propertyNode->setAttribute('sv:multi-valued', $property->isMultiple() ? "1" : "0");
 
             switch ($property->getType()) {
@@ -585,14 +657,25 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                     break;
                 case PropertyType::BINARY:
                     if ($property->isMultiple()) {
-                        $values = $values = array();
-                        foreach ((array)$property->getBinary() as $binary) {
-                            $binary = stream_get_contents($binary);
+                        $values = array();
+                        foreach ($property->getValueForStorage() as $stream) {
+                            if (null === $stream) {
+                                $binary = '';
+                            } else {
+                                $binary = stream_get_contents($stream);
+                                fclose($stream);
+                            }
                             $binaryData[$property->getName()][] = $binary;
                             $values[] = strlen($binary);
                         }
                     } else {
-                        $binary = stream_get_contents($property->getBinary());
+                        $stream = $property->getValueForStorage();
+                        if (null === $stream) {
+                            $binary = '';
+                        } else {
+                            $binary = stream_get_contents($stream);
+                            fclose($stream);
+                        }
                         $binaryData[$property->getName()][] = $binary;
                         $values = strlen($binary);
                     }
@@ -628,6 +711,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         foreach ($this->conn->fetchAll("SELECT name FROM phpcr_workspaces") as $row) {
             $workspaceNames[] = $row['name'];
         }
+
         return $workspaceNames;
     }
 
@@ -641,7 +725,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
         $row = $this->conn->fetchAssoc($sql, array($path, $this->workspaceId));
         if (!$row) {
-            throw new ItemNotFoundException("Item /".$path." not found.");
+            throw new ItemNotFoundException("Item ".$path." not found.");
         }
 
         $data = new \stdClass();
@@ -665,7 +749,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
             $name = $propertyNode->getAttribute('sv:name');
             $values = array();
-            $type = (int)$propertyNode->getAttribute('sv:type');
+            $type = PropertyType::valueFromName($propertyNode->getAttribute('sv:type'));
             foreach ($propertyNode->childNodes as $valueNode) {
                 switch ($type) {
                     case PropertyType::NAME:
@@ -697,14 +781,14 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 }
             }
 
-            if ($type == PropertyType::BINARY) {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+            if (PropertyType::BINARY == $type) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $data->{":" . $name} = $values;
                 } else {
                     $data->{":" . $name} = $values[0];
                 }
             } else {
-                if ($propertyNode->getAttribute('sv:multi-valued') == 1) {
+                if (1 == $propertyNode->getAttribute('sv:multi-valued')) {
                     $data->{$name} = $values;
                 } else {
                     $data->{$name} = $values[0];
@@ -739,6 +823,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         if ($nodeId = $this->conn->fetchColumn($query, array($path, $this->workspaceId))) {
             return $nodeId;
         }
+
         return false;
     }
 
@@ -800,6 +885,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             return true;
         } catch(\Exception $e) {
             $this->conn->rollBack();
+
             return false;
         }
     }
@@ -809,7 +895,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function deleteProperty($path)
     {
-        // TODO:
+        throw new NotImplementedException("Deleting properties by path is not yet implemented");
     }
 
     /**
@@ -834,6 +920,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         if (!$parent) {
             return "/";
         }
+
         return $parent;
     }
 
@@ -852,7 +939,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
                 if ($childDef->isMandatory() && !$childDef->isAutoCreated()) {
                     throw new RepositoryException(
-                        "Child " . $child->getName() . " is mandatory, but is not present while ".
+                        "Child " . $childDef->getName() . " is mandatory, but is not present while ".
                         "saving " . $def->getName() . " at " . $node->getPath()
                     );
                 } elseif ($childDef->isAutoCreated()) {
@@ -899,6 +986,10 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 }
             }
         }
+
+        foreach ($node->getProperties() as $property) {
+            $this->assertValidProperty($property);
+        }
     }
 
     private function getResponsibleNodeTypes($node)
@@ -913,6 +1004,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 $nodeTypes[] = $superType;
             }
         }
+
         return $nodeTypes;
     }
 
@@ -921,11 +1013,11 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function storeNode(\PHPCR\NodeInterface $node)
     {
-        $path = $node->getPath();
         $this->assertLoggedIn();
 
+        $path = $node->getPath();
+
         $nodeTypes = $this->getResponsibleNodeTypes($node);
-        $popertyDefs = array();
         foreach ($nodeTypes as $nodeType) {
             /* @var $nodeType \PHPCR\NodeType\NodeTypeDefinitionInterface */
             $this->validateNode($node, $nodeType);
@@ -949,37 +1041,60 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         $node = $property->getParent();
         $this->storeNode($node);
+
         return true;
     }
 
     /**
      * Validation if all the data is correct before writing it into the database.
      *
-     * @param int $type
-     * @param mixed $value
-     * @param string $path
+     * @param \PHPCR\PropertyInterface $property
      * @throws \PHPCR\ValueFormatException
      * @return void
      */
-    private function assertValidPropertyValue($type, $value, $path)
+    private function assertValidProperty($property)
     {
-        if ($type === PropertyType::NAME) {
-            if (strpos($value, ":") !== false) {
-                list($prefix, $localName) = explode(":", $value);
-
-                $this->getNamespaces();
-                if (!isset($this->namespaces[$prefix])) {
-                    throw new ValueFormatException("Invalid PHPCR NAME at " . $path . ": The namespace prefix " . $prefix . " does not exist.");
+        $type = $property->getType();
+        switch ($type) {
+            case PropertyType::NAME:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
                 }
-            }
-        } elseif ($type === PropertyType::PATH) {
-            if (!preg_match('((/[a-zA-Z0-9:_-]+)+)', $value)) {
-                throw new ValueFormatException("Invalid PATH at " . $path .": Segments are seperated by / and allowed chars are a-zA-Z0-9:_-");
-            }
-        } elseif ($type === PropertyType::URI) {
-            if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
-                throw new ValueFormatException("Invalid URI at " . $path .": Has to follow RFC 3986.");
-            }
+                foreach ($values as $value) {
+                    $pos = strpos($value, ":");
+                    if (false !== $pos) {
+                        $prefix = substr($value, 0, $pos);
+
+                        $this->getNamespaces();
+                        if (!isset($this->namespaces[$prefix])) {
+                            throw new ValueFormatException("Invalid PHPCR NAME at '" . $property->getPath() . "': The namespace prefix " . $prefix . " does not exist.");
+                        }
+                    }
+                }
+                break;
+            case PropertyType::PATH:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
+                }
+                foreach ($values as $value) {
+                    if (!preg_match('(((/|..)?[-a-zA-Z0-9:_]+)+)', $value)) {
+                        throw new ValueFormatException("Invalid PATH '$value' at '" . $property->getPath() ."': Segments are separated by / and allowed chars are -a-zA-Z0-9:_");
+                    }
+                }
+                break;
+            case PropertyType::URI:
+                $values = $property->getValue();
+                if (!$property->isMultiple()) {
+                    $values = array($values);
+                }
+                foreach ($values as $value) {
+                    if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {
+                        throw new ValueFormatException("Invalid URI '$value' at '" . $property->getPath() ."': Has to follow RFC 3986.");
+                    }
+                }
+                break;
         }
     }
 
@@ -1011,6 +1126,7 @@ $/xi";
         if (!$path) {
             throw new ItemNotFoundException("no item found with uuid ".$uuid);
         }
+
         return $path;
     }
 
@@ -1055,6 +1171,7 @@ $/xi";
 
         if (!$data) {
             $this->cache->save('phpcr_nodetype_' . $name, false);
+
             return false;
         }
 
@@ -1197,7 +1314,7 @@ $/xi";
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
-        throw new NotImplementedException("Not implemented yet");
+        throw new NotImplementedException("Cloning nodes is not implemented yet");
     }
 
     /**
@@ -1216,16 +1333,22 @@ $/xi";
             array($nodeId, $propertyName, $this->workspaceId)
         );
 
-        // TODO: Error Handling on the stream?
-        if (count($data) == 1) {
-            return fopen("data://text/plain,".$data[0]['data'], "r");
-        } else {
-            $streams = array();
-            foreach ($data as $row) {
-                $streams[$row['idx']] = fopen("data://text/plain,".$row['data'], "r");
-            }
+        $streams = array();
+        foreach ($data as $row) {
+            $stream = fopen('php://memory', 'rwb+');
+            fwrite($stream, $row['data']);
+            rewind($stream);
+
+            $streams[] = $stream;
+        }
+
+        // TODO even a multi value field could have only one value stored
+        // we need to also fetch if the property is multi valued instead of this count() check
+        if (count($data) > 1) {
             return $streams;
         }
+
+        return reset($streams);
     }
 
     /**
@@ -1233,7 +1356,7 @@ $/xi";
      */
     public function getProperty($path)
     {
-        throw new NotImplementedException("Not implemented yet");
+        throw new NotImplementedException("Getting properties by path is implemented yet");
     }
 
     /**
@@ -1258,22 +1381,70 @@ $/xi";
         }
 
         if ($language === QueryInterface::JCR_JQOM) {
+            $source   = $query->getSource();
+            $nodeType = $source->getNodeTypeName();
+
+            if (!$this->nodeTypeManager->hasNodeType($nodeType)) {
+                $msg = 'Selected node type does not exist: ' . $nodeType;
+                if ($alias = $source->getSelectorName()) {
+                    $msg .= ' AS ' . $alias;
+                }
+
+                throw new InvalidQueryException($msg);
+            }
+
             $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
             $sql = $qomWalker->walkQOMQuery($query);
 
             $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
+
             $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
-            $result = array();
+            // The list of columns is required to filter each records props
+            $columns = array();
+            foreach ($query->getColumns() AS $column) {
+                $columns[$column->getPropertyName()] = $column->getSelectorName();
+            }
+
+            if (array() == $columns) {
+                $selector = $source->getSelectorName();
+                if (null === $selector) {
+                    $selector = $source->getNodeTypeName();
+                }
+
+                $columns = array(
+                    'jcr:primaryType' => $selector,
+                    'jcr:createdBy'   => $selector,
+                    'jcr:created'     => $selector,
+                );
+            } else {
+                $columns['jcr:primaryType'] = null;
+            }
+
+            $results = array();
+            // This block feels really clunky - maybe this should be a QueryResultFormatter class?
             foreach ($data as $row) {
-                $result[] = array(
-                    array('dcr:name' => 'jcr:primaryType', 'dcr:value' => $row['type']),
+                $result = array(
                     array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
                     array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
                 );
+
+                // extract only the properties that have been requested in the query
+                $props = static::xmlToProps($row['props'], function ($name) use ($columns) {
+                    return array_key_exists($name, $columns);
+                });
+
+                foreach ($columns AS $columnName => $columnPrefix) {
+                    $result[] = array(
+                        'dcr:name'  => null === $columnPrefix ? $columnName : "{$columnPrefix}.{$columnName}",
+                        'dcr:value' => array_key_exists($columnName, $props) ? $props[$columnName] : null
+                    );
+                }
+
+                $results[] = $result;
             }
 
-            return $result;
+            return $results;
         }
 
         throw new NotImplementedException("JCQ-JQOM not yet implemented.");

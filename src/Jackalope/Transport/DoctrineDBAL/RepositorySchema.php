@@ -23,10 +23,11 @@ class RepositorySchema
         $workspace->addColumn('name', 'string');
         $workspace->setPrimaryKey(array('id'));
 
+        // TODO increase the size of 'path' and 'parent' but this causes issues on MySQL due to key length
         $nodes = $schema->createTable('phpcr_nodes');
         $nodes->addColumn('id', 'integer', array('autoincrement' => true));
-        $nodes->addColumn('path', 'string', array('length' => 500));
-        $nodes->addColumn('parent', 'string', array('length' => 500));
+        $nodes->addColumn('path', 'string');
+        $nodes->addColumn('parent', 'string');
         $nodes->addColumn('local_name', 'string');
         $nodes->addColumn('namespace', 'string');
         $nodes->addColumn('workspace_id', 'integer');
@@ -57,7 +58,7 @@ class RepositorySchema
 
         $foreignKeys = $schema->createTable('phpcr_nodes_foreignkeys');
         $foreignKeys->addColumn('source_id', 'integer');
-        $foreignKeys->addColumn('source_property_name', 'string');
+        $foreignKeys->addColumn('source_property_name', 'string', array('length' => 220));
         $foreignKeys->addColumn('target_id', 'integer');
         $foreignKeys->addColumn('type', 'smallint');
         $foreignKeys->setPrimaryKey(array('source_id', 'source_property_name', 'target_id'));
@@ -88,7 +89,7 @@ class RepositorySchema
         $propTypes->addColumn('required_type', 'integer');
         $propTypes->addColumn('query_operators', 'integer'); // BITMASK
         $propTypes->addColumn('default_value', 'string', array('notnull' => false));
-        $propTypes->setPrimaryKey(array('node_type_id', 'name'));
+        $propTypes->setPrimaryKey(array('node_type_id'));
 
         $childTypes = $schema->createTable('phpcr_type_childs');
         $childTypes->addColumn('node_type_id', 'integer');

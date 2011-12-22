@@ -60,7 +60,6 @@ foreach ($schema->toDropSql($dbConn->getDatabasePlatform()) as $sql) {
     try {
         $dbConn->exec($sql);
     } catch(PDOException $e) {
-        echo $e->getMessage();
     }
 }
 foreach ($schema->toSql($dbConn->getDatabasePlatform()) as $sql) {
