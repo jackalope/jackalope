@@ -68,16 +68,15 @@ class RepositoryFactoryDoctrineDBAL implements RepositoryFactoryInterface
         }
 
         if (isset($parameters['jackalope.factory'])) {
-            $factory = is_object($parameters['jackalope.factory']) ?
-                                 $parameters['jackalope.factory'] :
-                                 new $parameters['jackalope.factory'];
+            $factory = is_object($parameters['jackalope.factory'])
+                ? $parameters['jackalope.factory'] : new $parameters['jackalope.factory'];
         } else {
             $factory = new Factory();
         }
 
         $dbConn = $parameters['jackalope.doctrine_dbal_connection'];
 
-        $transport = $factory->get('Jackalope\\Transport\\DoctrineDBAL\\Client', array($dbConn));
+        $transport = $factory->get('Transport\DoctrineDBAL\Client', array($dbConn));
         if (isset($parameters['jackalope.check_login_on_server'])) {
             $transport->setCheckLoginOnServer($parameters['jackalope.check_login_on_server']);
         }
