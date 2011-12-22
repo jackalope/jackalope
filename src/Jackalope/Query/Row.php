@@ -102,6 +102,17 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
                 $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
             }
         }
+
+        // potentially this fix should be done inside the Jackrabbit Client
+        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
+            $this->defaultSelectorName = key($this->path);
+        }
+
+        // potentially this fix should be done inside the Jackrabbit Client
+        if (isset($this->values[''])) {
+            $this->values[$this->defaultSelectorName] = $this->values[''];
+            unset($this->values['']);
+        }
     }
 
     /**
