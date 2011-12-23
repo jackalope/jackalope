@@ -21,7 +21,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     protected $objectmanager;
 
     /**
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -39,7 +39,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * \Jackalope\Transport\QueryInterface::query()
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param array $rawData the data as returned by the transport
      * @param ObjectManager $objectManager
      */

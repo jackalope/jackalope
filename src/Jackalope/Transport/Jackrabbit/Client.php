@@ -32,6 +32,7 @@ use Jackalope\Transport\TransactionInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Query\SqlQuery;
 use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\FactoryInterface;
 
 /**
  * Connection to one Jackrabbit server.
@@ -163,10 +164,10 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * Create a transport pointing to a server url.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\FactoryInterface.
      * @param serverUri location of the server
      */
-    public function __construct($factory, $serverUri)
+    public function __construct(FactoryInterface $factory, $serverUri)
     {
         $this->factory = $factory;
         // append a slash if not there

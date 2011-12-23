@@ -31,6 +31,7 @@ use Jackalope\Transport\NodeTypeManagementInterface;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * Class to handle the communication between Jackalope and RDBMS via Doctrine DBAL.
@@ -126,7 +127,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     private $cache;
 
-    public function __construct($factory, Connection $conn, array $indexes = array(), Cache $cache = null)
+    public function __construct(FactoryInterface $factory, Connection $conn, array $indexes = array(), Cache $cache = null)
     {
         $this->factory = $factory;
         $this->conn = $conn;

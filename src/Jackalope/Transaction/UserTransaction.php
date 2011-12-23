@@ -8,6 +8,7 @@ use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\FactoryInterface;
 
 use LogicException;
 
@@ -20,7 +21,7 @@ class UserTransaction implements UserTransactionInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -47,11 +48,11 @@ class UserTransaction implements UserTransactionInterface
      * Registers the provided parameters as attribute to the instance.
      *
      * @param object $factory  an object factory implementing get() as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param \Jackalope\Transport\TransportInterface $transport
      * @param \PHPCR\SessionInterface $session
      */
-    public function __construct($factory, TransactionInterface $transport, SessionInterface $session)
+    public function __construct(FactoryInterface $factory, TransactionInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;

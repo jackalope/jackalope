@@ -83,7 +83,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * data itself.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param array $data array with fields <tt>type</tt> (integer or string
      *      from PropertyType) and <tt>value</tt> (data for creating the
      *      property value - array for multivalue property)
@@ -94,8 +94,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @param boolean $new optional: set to true to make this property aware
      *      its not yet existing on the server. defaults to false
      */
-    public function __construct($factory, array $data, $path, Session $session,
-                                ObjectManager $objectManager, $new = false)
+    public function __construct(FactoryInterface $factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 

@@ -2,7 +2,9 @@
 
 namespace Jackalope\Query;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * Implementation specific iterator class to efficiently iterate over the raw
@@ -22,11 +24,11 @@ class RowIterator implements \SeekableIterator, \Countable
      * Create the iterator.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param ObjectManager $objectManager
      * @param array $rows Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
-    public function __construct($factory, $objectmanager, $rows)
+    public function __construct(FactoryInterface $factory, $objectmanager, $rows)
     {
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;

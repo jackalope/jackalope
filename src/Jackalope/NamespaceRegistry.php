@@ -54,12 +54,12 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * Initializes the created object.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory
+     * @param object $factory  an object factory implementing "get" as described in \Jackalope\FactoryInterface
      * @param TransportInterface $transport
      *
-     * @see \Jackalope\Factory
+     * @see \Jackalope\FactoryInterface
      */
-    public function __construct($factory, TransportInterface $transport)
+    public function __construct(FactoryInterface $factory, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->transport = $transport;

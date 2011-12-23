@@ -72,7 +72,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * NodeTypeDefinition.
      *
      * @param object $factory  an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param DOMElement|NodeTypeDefinitionInterface|null
      *      $nodetype Either by XML or by NodeTypeDefinition or null for an
      *      empty definition
@@ -80,7 +80,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * @throws InvalidArgumentException If it is not possible to read data
      *      from $nodetype
      */
-    public function __construct($factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
+    public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
         $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;

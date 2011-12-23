@@ -70,14 +70,14 @@ class Repository implements RepositoryInterface
      * instantiate this class.
      *
      * @param object $factory  an object factory implementing "get" as
-     *      described in \Jackalope\Factory. If this is null, the
-     *      \Jackalope\Factory is instantiated. Note that the repository is the
+     *      described in \Jackalope\FactoryInterface. If this is null, the
+     *      \Jackalope\FactoryInterface is instantiated. Note that the repository is the
      *      only class accepting null as factory.
      * @param $transport transport implementation
      * @param array $options defines optional features to enable/disable (see
      *      $options property)
      */
-    public function __construct($factory = null, TransportInterface $transport, array $options = null)
+    public function __construct(FactoryInterface $factory = null, TransportInterface $transport, array $options = null)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;

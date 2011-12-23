@@ -67,9 +67,8 @@ class RepositoryFactoryJackrabbit implements RepositoryFactoryInterface
         }
 
         if (isset($parameters['jackalope.factory'])) {
-            $factory = is_object($parameters['jackalope.factory']) ?
-                                 $parameters['jackalope.factory'] :
-                                 new $parameters['jackalope.factory'];
+            $factory = $parameters['jackalope.factory'] instanceof FactoryInterface
+                ? $parameters['jackalope.factory'] : new $parameters['jackalope.factory'];
         } else {
             $factory = new Factory();
         }

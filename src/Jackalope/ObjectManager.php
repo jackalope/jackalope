@@ -118,11 +118,11 @@ class ObjectManager
      * Create the ObjectManager instance with associated session and transport
      *
      * @param object $factory an object factory implementing "get" as described
-     *      in \Jackalope\Factory
+     *      in \Jackalope\FactoryInterface
      * @param TransportInterface $transport
      * @param SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
+    public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;

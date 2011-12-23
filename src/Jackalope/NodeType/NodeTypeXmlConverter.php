@@ -39,7 +39,7 @@ class NodeTypeXmlConverter
      * Everything inside jackalope has to accept the factory in the
      * constructor. We define the constructor but to nothing at all.
      */
-    public function __construct($factory)
+    public function __construct(FactoryInterface $factory)
     {
     }
 
