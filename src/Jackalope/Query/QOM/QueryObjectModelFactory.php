@@ -2,8 +2,9 @@
 
 namespace Jackalope\Query\QOM;
 
-
 use Jackalope\ObjectManager;
+use Jackalope\FactoryInterface;
+
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 
 /**

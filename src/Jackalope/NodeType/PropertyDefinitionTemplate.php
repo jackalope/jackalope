@@ -6,6 +6,8 @@ use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
 
+use Jackalope\FactoryInterface;
+
 /**
  * {@inheritDoc}
  *

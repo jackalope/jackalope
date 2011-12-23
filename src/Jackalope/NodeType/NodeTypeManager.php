@@ -13,6 +13,7 @@ use PHPCR\NodeType\NodeTypeExistsException;
 
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}

@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
 
 use Jackalope\Helper;
-
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}

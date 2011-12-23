@@ -7,7 +7,7 @@ use DOMElement;
 use PHPCR\NodeType\ItemDefinitionInterface;
 
 use Jackalope\Helper;
-
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}

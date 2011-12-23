@@ -2,7 +2,9 @@
 
 namespace Jackalope\Query;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * A NodeIterator object. Returned by QueryResult->getNodes().
