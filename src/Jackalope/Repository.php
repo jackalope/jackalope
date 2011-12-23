@@ -52,6 +52,8 @@ class Repository implements RepositoryInterface
         'transactions' => true,
         // this is JACKALOPE_OPTION_STREAM_WRAPPER
         'stream_wrapper' => true,
+        // this is OPTION_LOCKING_SUPPORTED
+        'locking' => true,
     );
 
     /**
@@ -154,6 +156,8 @@ class Repository implements RepositoryInterface
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
+            case self::OPTION_LOCKING_SUPPORTED:
+                return $this->options['locking'];
                 // TODO: return false for everything we know is not implemented in jackalope
         }
 
