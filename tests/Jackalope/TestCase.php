@@ -22,7 +22,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function getTransportStub()
     {
         $factory = new \Jackalope\Factory;
-        $transport = $this->getMock('\Jackalope\Transport\Jackrabbit\Client', array('getNode', 'getNodeTypes', 'getNodePathForIdentifier'), array($factory, 'http://example.com'));
+        $transport = $this->getMockBuilder('\Jackalope\Transport\Jackrabbit\Client')
+            ->disableOriginalConstructor()
+            ->getMock(array('getNode', 'getNodeTypes', 'getNodePathForIdentifier'), array($factory, 'http://example.com'));
 
         $transport->expects($this->any())
             ->method('getNode')

@@ -553,6 +553,18 @@ class ClientMock extends Client
     public $workspaceUri = 'testWorkspaceUri';
     public $workspaceUriRoot = 'testWorkspaceUriRoot';
 
+    /**
+     * overwrite client constructor which checks backend version
+     */
+    public function __construct($factory, $serverUri)
+    {
+        $this->factory = $factory;
+        // append a slash if not there
+        if ('/' !== substr($serverUri, -1)) {
+            $serverUri .= '/';
+        }
+        $this->server = $serverUri;
+    }
     public function buildNodeTypesRequestMock(Array $params)
     {
         return $this->buildNodeTypesRequest($params);
