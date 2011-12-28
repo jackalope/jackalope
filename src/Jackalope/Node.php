@@ -76,7 +76,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * Jackalope implementation to allow for custom implementations of Nodes.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param array $rawData in the format as returned from
      *      \Jackalope\Transport\TransportInterface
      * @param string $path the absolute path of this node
@@ -89,8 +89,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @private
      */
-    public function __construct(Factory $factory, $rawData, $path, Session $session,
-                                ObjectManager $objectManager, $new = false)
+    public function __construct(Factory $factory, $rawData, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;

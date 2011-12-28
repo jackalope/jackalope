@@ -14,6 +14,7 @@ use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NoSuchNodeTypeException;
 
 use Jackalope\Transport\curl;
+use Jackalope\FactoryInterface;
 
 /**
  * Request class for the Davex protocol
@@ -190,7 +191,7 @@ class Request
      * @param object $factory Ignored for now, as this class does not create objects
      * TODO: document other parameters
      */
-    public function __construct($factory, $curl, $method, $uri)
+    public function __construct(FactoryInterface $factory, $curl, $method, $uri)
     {
         $this->curl = $curl;
         $this->method = $method;

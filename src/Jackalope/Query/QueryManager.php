@@ -6,6 +6,7 @@ use PHPCR\Query\InvalidQueryException;
 
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -16,7 +17,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -29,10 +30,10 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      * Create the query manager - akquire through the session.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param ObjectManager $objectManager
      */
-    public function __construct($factory, ObjectManager $objectManager)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;

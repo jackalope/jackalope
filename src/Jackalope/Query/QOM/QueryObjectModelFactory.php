@@ -2,8 +2,9 @@
 
 namespace Jackalope\Query\QOM;
 
-
 use Jackalope\ObjectManager;
+use Jackalope\FactoryInterface;
+
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 
 /**
@@ -15,7 +16,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -28,12 +29,12 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      * Create the query object model factory - get this from the QueryManager
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param ObjectManager $objectManager only used to create the query (can
      *      be omitted if you do not want to execute the query but just use it
      *      with a parser)
      */
-    public function __construct($factory, ObjectManager $objectManager = null)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;

@@ -151,7 +151,7 @@ foreach ($ri as $file) {
 
                     $propertyNode = $dom->createElement('sv:property');
                     $propertyNode->setAttribute('sv:name', $attr);
-                    $propertyNode->setAttribute('sv:type', $jcrTypeConst); // TODO: Name! not int
+                    $propertyNode->setAttribute('sv:type', $valueData['type']);
                     $propertyNode->setAttribute('sv:multi-valued', $valueData['multiValued'] ? "1" : "0");
 
                     foreach ($valueData['value'] as $value) {

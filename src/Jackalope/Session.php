@@ -87,14 +87,14 @@ class Session implements SessionInterface
      * Builds the corresponding workspace instance
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param Repository $repository
      * @param string $workspaceName the workspace name that is used
      * @param SimpleCredentials $credentials the credentials that where
      *      used to log in, in order to implement Session::getUserID()
      * @param TransportInterface $transport the transport implementation
      */
-    public function __construct($factory, Repository $repository, $workspaceName, SimpleCredentials $credentials, TransportInterface $transport)
+    public function __construct(FactoryInterface $factory, Repository $repository, $workspaceName, SimpleCredentials $credentials, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->repository = $repository;

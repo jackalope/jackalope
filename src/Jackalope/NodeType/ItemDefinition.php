@@ -7,7 +7,7 @@ use DOMElement;
 use PHPCR\NodeType\ItemDefinitionInterface;
 
 use Jackalope\Helper;
-
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -18,7 +18,7 @@ class ItemDefinition implements ItemDefinitionInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -64,11 +64,11 @@ class ItemDefinition implements ItemDefinitionInterface
      *  TODO: document this format. Property and Node add more to this.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param array $definition The property definition data as array
      * @param NodeTypeManager $nodeTypeManager
      */
-    public function __construct($factory, array $definition, NodeTypeManager $nodeTypeManager)
+    public function __construct(FactoryInterface $factory, array $definition, NodeTypeManager $nodeTypeManager)
     {
         $this->factory = $factory;
         $this->fromArray($definition);

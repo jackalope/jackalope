@@ -119,15 +119,14 @@ abstract class Item implements ItemInterface
      * Initialize basic information common to nodes and properties
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param string $path The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager
      * @param boolean $new can be set to true to tell the object that it has
      *      been created locally
      */
-    protected function __construct($factory, $path, Session $session,
-                                   ObjectManager $objectManager, $new = false)
+    protected function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         $this->factory = $factory;
         $this->session = $session;

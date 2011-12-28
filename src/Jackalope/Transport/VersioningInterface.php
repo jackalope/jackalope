@@ -68,6 +68,6 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\ReferentialIntegrityException
      * @throws PHPCR\Version\VersionException
      */
-    public function removeVersion($versionPath, $versionName);
+    function removeVersion($versionPath, $versionName);
 
 }

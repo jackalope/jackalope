@@ -32,6 +32,7 @@ use Jackalope\Transport\TransactionInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Query\SqlQuery;
 use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\FactoryInterface;
 
 /**
  * Connection to one Jackrabbit server.
@@ -193,9 +194,10 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * Create a transport pointing to a server url.
      *
+     * @param FactoryInterface $factory the object factory
      * @param serverUri location of the server
      */
-    public function __construct($factory, $serverUri)
+    public function __construct(FactoryInterface $factory, $serverUri)
     {
         $this->factory = $factory;
         // append a slash if not there
@@ -673,8 +675,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     public function removeVersion($versionPath, $versionName)
     {
-        $versionPath = $this->encodeAndValidatePathForDavex($versionPath);
-        $request = $this->getRequest(Request::DELETE, $versionPath . '/' . $versionName);
+        $path = $this->encodeAndValidatePathForDavex($versionPath . '/' . $versionName);
+        $request = $this->getRequest(Request::DELETE, $path);
         $request->setTransactionId($this->transactionToken);
         $resp = $request->execute();
         return $resp;

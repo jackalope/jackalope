@@ -2,6 +2,8 @@
 
 namespace Jackalope\Query;
 
+use Jackalope\FactoryInterface;
+
 use PHPCR\RepositoryException;
 
 /**
@@ -21,7 +23,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     protected $objectmanager;
 
     /**
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 
@@ -69,11 +71,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
      * Create new Row instance.
      *
      * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     *      described in \Jackalope\FactoryInterface
      * @param ObjectManager $objectManager
      * @param array $columns array of array with fields dcr:name and dcr:value
      */
-    public function __construct($factory, $objectmanager, $columns)
+    public function __construct(FactoryInterface $factory, $objectmanager, $columns)
     {
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
@@ -101,6 +103,17 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
                 $this->columns[] = $column;
                 $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
             }
+        }
+
+        // potentially this fix should be done inside the Jackrabbit Client
+        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
+            $this->defaultSelectorName = key($this->path);
+        }
+
+        // potentially this fix should be done inside the Jackrabbit Client
+        if (isset($this->values[''])) {
+            $this->values[$this->defaultSelectorName] = $this->values[''];
+            unset($this->values['']);
         }
     }
 

@@ -118,11 +118,11 @@ class ObjectManager
      * Create the ObjectManager instance with associated session and transport
      *
      * @param object $factory an object factory implementing "get" as described
-     *      in \Jackalope\Factory
+     *      in \Jackalope\FactoryInterface
      * @param TransportInterface $transport
      * @param SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
+    public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;
@@ -895,22 +895,16 @@ class ObjectManager
 
         if (isset($this->objectsByPath['Node'][$path])) {
             $node = $this->objectsByPath['Node'][$path];
+            $node->setDeleted();
         }
 
         if (isset($this->objectsByPath['Version\\Version'][$path])) {
             $version = $this->objectsByPath['Version\\Version'][$path];
+            $version->setDeleted();
         }
 
         unset($this->objectsByPath['Node'][$path]);
         unset($this->objectsByPath['Version\\Version'][$path]);
-
-        if (isset($node)) {
-            $node->setDeleted();
-        }
-
-        if (isset($version)) {
-            $version->setDeleted();
-        }
     }
 
     /**
