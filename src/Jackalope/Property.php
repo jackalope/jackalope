@@ -82,8 +82,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * For binary properties, the value is the length of the data(s), not the
      * data itself.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param array $data array with fields <tt>type</tt> (integer or string
      *      from PropertyType) and <tt>value</tt> (data for creating the
      *      property value - array for multivalue property)

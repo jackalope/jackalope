@@ -18,7 +18,7 @@ class ItemDefinition implements ItemDefinitionInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -63,8 +63,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      *  TODO: document this format. Property and Node add more to this.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param array $definition The property definition data as array
      * @param NodeTypeManager $nodeTypeManager
      */

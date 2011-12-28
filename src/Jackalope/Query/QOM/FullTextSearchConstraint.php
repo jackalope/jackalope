@@ -3,7 +3,7 @@
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\FullTextSearchInterface;
-
+use PHPCR\Query\QOM\StaticOperandInterface;
 /**
  * {@inheritDoc}
  *
@@ -30,7 +30,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      * Create a new full text search constraint
      *
      * @param string $propertyName
-     * @param \PHPCR\Query\QOM\StaticOperandInterface $fullTextSearchExpression
+     * @param string $fullTextSearchExpression
      * @param string $selectorName
      */
     public function __construct($propertyName, $fullTextSearchExpression, $selectorName = null)

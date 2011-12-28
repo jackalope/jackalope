@@ -17,7 +17,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -29,8 +29,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
     /**
      * Create the query manager - akquire through the session.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)

@@ -22,7 +22,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -71,8 +71,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * Optionally initializes the data from XML, an array or another
      * NodeTypeDefinition.
      *
-     * @param object $factory  an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
+     * @param NodeTypeManager $nodeTypeManager
      * @param DOMElement|NodeTypeDefinitionInterface|null
      *      $nodetype Either by XML or by NodeTypeDefinition or null for an
      *      empty definition

@@ -9,7 +9,7 @@ use IteratorAggregate;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NamespaceException;
-    
+
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
 
@@ -29,7 +29,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -54,10 +54,10 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * Initializes the created object.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory
      * @param TransportInterface $transport
      *
-     * @see \Jackalope\FactoryInterface
+     * @throws ItemNotFoundException If property not found
      */
     public function __construct(FactoryInterface $factory, TransportInterface $transport)
     {
@@ -219,6 +219,8 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      * Throws the NamespaceException if trying to use one of the
      * built-in prefixes or a prefix that begins with the characters "xml"
      * (in any combination of case)
+     *
+     * @param string $prefix the prefix name to check
      *
      * @return void
      *

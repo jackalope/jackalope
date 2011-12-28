@@ -25,13 +25,13 @@ class ClientTest extends JackrabbitTestCase
         );
     }
 
-    public function getRequestMock($response = '', $changeMethods = array(), $args = array(null, null, null))
+    public function getRequestMock($response = '', $changeMethods = array())
     {
-        $factory = new \Jackalope\Factory;
-        array_unshift($args, $factory);
         $defaultMockMethods = array('execute', 'executeDom', 'executeJson');
         $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
-        $request = $this->getMock('Jackalope\Transport\Jackrabbit\Request', $mockMethods, $args);
+        $request = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Request')
+            ->disableOriginalConstructor()
+            ->getMock($mockMethods);
 
         $request
             ->expects($this->any())

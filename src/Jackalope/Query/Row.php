@@ -2,9 +2,10 @@
 
 namespace Jackalope\Query;
 
-use Jackalope\FactoryInterface;
-
 use PHPCR\RepositoryException;
+
+use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
 
 /**
  * {@inheritDoc}
@@ -18,12 +19,12 @@ use PHPCR\RepositoryException;
 class Row implements \Iterator, \PHPCR\Query\RowInterface
 {
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectmanager;
 
     /**
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -70,12 +71,11 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
     /**
      * Create new Row instance.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      * @param array $columns array of array with fields dcr:name and dcr:value
      */
-    public function __construct(FactoryInterface $factory, $objectmanager, $columns)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $columns)
     {
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
@@ -233,6 +233,8 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
     /**
      * Implement Iterator
+     *
+     * @return whether the current position is valid
      */
     public function valid()
     {

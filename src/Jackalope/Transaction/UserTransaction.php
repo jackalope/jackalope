@@ -21,7 +21,7 @@ class UserTransaction implements UserTransactionInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -47,10 +47,9 @@ class UserTransaction implements UserTransactionInterface
     /**
      * Registers the provided parameters as attribute to the instance.
      *
-     * @param object $factory  an object factory implementing get() as
-     *      described in \Jackalope\FactoryInterface
-     * @param \Jackalope\Transport\TransportInterface $transport
-     * @param \PHPCR\SessionInterface $session
+     * @param FactoryInterface $factory the object factory
+     * @param TransportInterface $transport
+     * @param SessionInterface $session
      */
     public function __construct(FactoryInterface $factory, TransactionInterface $transport, SessionInterface $session)
     {

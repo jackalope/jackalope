@@ -47,7 +47,7 @@ class RequestTest extends JackrabbitTestCase
     public function testExecuteDom()
     {
         $factory = new \Jackalope\Factory;
-        $request = $this->getMock('Jackalope\Transport\Jackrabbit\Request', array('execute'), array($factory, null,null,null));
+        $request = $this->getMock('Jackalope\Transport\Jackrabbit\Request', array('execute'), array($factory, $this->getCurlFixture(),null, null));
         $request->expects($this->once())
             ->method('execute')
             ->will($this->returnValue('<xml/>'));

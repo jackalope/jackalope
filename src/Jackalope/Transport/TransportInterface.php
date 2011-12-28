@@ -17,7 +17,7 @@ use Jackalope\NodeType\NodeTypeManager;
  * See the README.md in this folder for general information about the transport
  * layer.
 
- * This interface is now synchronized with what we had for davex as per 2011-04-13
+ * This interface is now synchronized with what we had for davex as per 2011-12-28
  * TODO: keep this in sync with Transport/Jackrabbit/Client.php
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
@@ -197,6 +197,8 @@ interface TransportInterface
      * Same format as getNode with just one property. Again, for binary
      * properties just returns the size and not the actual data.
      *
+     * @param string $path absolute path to the property to get
+     *
      * @return stdClass a json struct with the property type and property
      *      value(s)
      *
@@ -220,7 +222,7 @@ interface TransportInterface
     /**
      * Retrieve a stream of a binary property value
      *
-     * @param $path The path to the property with the binary data
+     * @param string $path absolute path to the property containing binary data
      *
      * @return resource with binary data
      */
@@ -235,7 +237,7 @@ interface TransportInterface
      * Returns the path of all accessible REFERENCE properties in the workspace
      * that point to the node
      *
-     * @param string $path
+     * @param string $path absolute path to the node we need the references to
      * @param string $name name of referring REFERENCE properties to be returned;
      *       if null then all referring REFERENCEs are returned
      *
@@ -247,7 +249,7 @@ interface TransportInterface
      * Returns the path of all accessible WEAKREFERENCE properties in the
      * workspace that point to the node
      *
-     * @param string $path
+     * @param string $path absolute path to the node we need the references to
      * @param string $name name of referring WEAKREFERENCE properties to be
      *      returned; if null then all referring WEAKREFERENCEs are returned
      *

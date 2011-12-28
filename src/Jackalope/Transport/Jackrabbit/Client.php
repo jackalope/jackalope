@@ -154,8 +154,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * Create a transport pointing to a server url.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\FactoryInterface.
-     * @param serverUri location of the server
+     * @param FactoryInterface $factory the object factory
+     * @param string serverUri location of the server
      */
     public function __construct(FactoryInterface $factory, $serverUri)
     {
@@ -503,7 +503,11 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $path the path for which we need the references
+     * @param string $name the name of the referencing properties or null for all
+     * @param bool $weak_reference whether to get weak or strong references
+     *
+     * @return array list of paths to nodes that reference $path
      */
     protected function getNodeReferences($path, $name = null, $weak_reference = false)
     {
@@ -793,6 +797,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      * @param array $properties of this node
      * @param array $children nodes of this node
      * @param array $buffer list of xml strings to set multivalue properties
+     *
+     * @return string the xml for the node
      */
     protected function createNodeMarkup($path, $properties, $children, array &$buffer)
     {
