@@ -58,16 +58,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     const NS_DAV = 'DAV:';
 
     /**
-     * Representation of a XML string header.
-     *
-     * @todo TODO: seems not to be used anymore.
-     *
-     * @var string
-     */
-    const REGISTERED_NAMESPACES =
-        '<?xml version="1.0" encoding="UTF-8"?>< xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>';
-
-    /**
      * The factory to instantiate objects
      * @var Factory
      */
@@ -103,8 +93,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      *
      * "$server/$workspace/jcr%3aroot
      * (make sure you never hardcode the jcr%3aroot, its ugly)
-     * @todo TODO: apparently, jackrabbit handles the root node by name - it is invisible everywhere for the api,
-     *             but needed when talking to the backend... could that name change?
+     * @todo apparently, jackrabbit handles the root node by name - it is invisible everywhere for the api,
+     *       but needed when talking to the backend... could that name change?
      *
      * @var string
      */
@@ -561,7 +551,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             throw new RepositoryException($e->getMessage());
         }
 
-        // TODO: not sure what this means
         throw new RepositoryException();
     }
 
@@ -639,13 +628,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     public function query(QueryInterface $query)
     {
-        if ($query instanceof SqlQuery
-            || $query instanceof QueryObjectModelInterface
-        ) {
-            $querystring = $query->getStatementSql2();
-        } else {
-            throw new UnsupportedRepositoryOperationException('Unknown query type: '.$query->getLanguage());
-        }
+        // TODO handle bind variables
+        $querystring = $query->getStatement();
         $limit = $query->getLimit();
         $offset = $query->getOffset();
 
@@ -681,12 +665,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
                 $sets = array();
                 foreach ($column->childNodes as $childNode) {
                     $sets[$childNode->tagName] = $childNode->nodeValue;
-                }
-
-                // TODO this can happen inside joins
-                // probabably caused by https://issues.apache.org/jira/browse/JCR-3089
-                if (!isset($sets['dcr:value'])) {
-                    continue;
                 }
 
                 // TODO if this bug is fixed, spaces may be urlencoded instead of the escape sequence: https://issues.apache.org/jira/browse/JCR-2997
