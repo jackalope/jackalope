@@ -85,7 +85,7 @@ abstract class Item implements ItemInterface
         self::STATE_DELETED,
     );
 
-    /** @var object   The jackalope object factory for this object */
+    /** @var FactoryInterface   The jackalope object factory for this object */
     protected $factory;
 
     /** @var Session    The session this item belongs to */
@@ -118,8 +118,7 @@ abstract class Item implements ItemInterface
     /**
      * Initialize basic information common to nodes and properties
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param string $path The normalized and absolute path to this item
      * @param Session $session
      * @param ObjectManager $objectManager

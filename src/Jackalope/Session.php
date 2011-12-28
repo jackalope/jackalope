@@ -4,17 +4,18 @@ namespace Jackalope;
 
 use ArrayIterator;
 use Exception;
-    
+
 use PHPCR\PropertyType;
 use PHPCR\RepositoryInterface;
 use PHPCR\SessionInterface;
+use PHPCR\NodeInterface;
 use PHPCR\SimpleCredentials;
 use PHPCR\CredentialsInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemExistsException;
 use PHPCR\UnsupportedRepositoryOperationException;
-    
+
 use PHPCR\Security\AccessControlException;
 
 use Jackalope\Transport\TransportInterface;
@@ -38,7 +39,7 @@ class Session implements SessionInterface
 
     /**
      * The factory to instantiate objects
-     * @var object
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -86,8 +87,7 @@ class Session implements SessionInterface
      *
      * Builds the corresponding workspace instance
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param Repository $repository
      * @param string $workspaceName the workspace name that is used
      * @param SimpleCredentials $credentials the credentials that where
@@ -498,7 +498,7 @@ class Session implements SessionInterface
      *
      * @return void
      */
-    private function exportSystemViewRecursive($node, $stream, $skipBinary, $noRecurse, $root=false)
+    private function exportSystemViewRecursive(NodeInterface $node, $stream, $skipBinary, $noRecurse, $root=false)
     {
         fwrite($stream, '<sv:node');
         if ($root) {
@@ -582,7 +582,7 @@ class Session implements SessionInterface
      *
      * @return void
      */
-    private function exportDocumentViewRecursive($node, $stream, $skipBinary, $noRecurse, $root=false)
+    private function exportDocumentViewRecursive(NodeInterface $node, $stream, $skipBinary, $noRecurse, $root=false)
     {
         //TODO: encode name according to spec
         $nodename = $this->escapeXmlName($node->getName());
@@ -767,6 +767,8 @@ class Session implements SessionInterface
      * Implementation specific: register session in session registry for the
      * stream wrapper.
      *
+     * @param Session $session the session to register
+     *
      * @private
      */
     protected static function registerSession(Session $session)
@@ -778,6 +780,8 @@ class Session implements SessionInterface
     /**
      * Implementation specific: unregister session in session registry on
      * logout.
+     *
+     * @param Session $session the session to unregister
      *
      * @private
      */
@@ -793,7 +797,7 @@ class Session implements SessionInterface
      *
      * @private
      *
-     * @return an id for this session
+     * @return string an id for this session
      */
     public function getRegistryKey()
     {
@@ -804,7 +808,7 @@ class Session implements SessionInterface
      * Implementation specific: get a session from the session registry for the
      * stream wrapper.
      *
-     * @param $key key for the session
+     * @param string $key key for the session
      *
      * @return the session or null if none is registered with the given key
      *

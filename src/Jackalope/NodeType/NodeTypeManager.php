@@ -27,7 +27,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 {
     /**
      * The factory to instantiate objects.
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
     /**
@@ -66,8 +66,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Create the node type manager for a session.
      *
      * There may be only one instance per session
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
@@ -321,9 +320,14 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Internally create a node type object
      *
-     * @api
+     * @param NodeTypeDefinitionInterface $ntd
+     * @param bool $allowUpdate whether updating the definition is to be allowed or not
+     *
+     * @return NodeType the new node type
+     *
+     * @throws \PHPCR\NodeType\NodeTypeExistsException
      */
     protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {

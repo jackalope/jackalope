@@ -75,10 +75,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * This is only to be called by the Factory::get() method even inside the
      * Jackalope implementation to allow for custom implementations of Nodes.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param array $rawData in the format as returned from
-     *      \Jackalope\Transport\TransportInterface
+     *      \Jackalope\Transport\TransportInterface::getNode
      * @param string $path the absolute path of this node
      * @param Session $session
      * @param ObjectManager $objectManager
@@ -770,10 +769,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Adds the mixin node type named $mixinName to this node.
+     * {@inheritDoc}
      *
-     * Jackalope only validates type conflicts on save. It is possible to add
-     * mixin types after the first save.
+     * Jackalope validates type conflicts only on save, not immediatly.
+     *It is possible to add mixin types after the first save.
      *
      * @api
      */
@@ -1031,8 +1030,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * @throws ItemNotFoundException If child not found
+     * @param string $name the name of the child node to unset
+     * @param bool $check whether a state check should be done - set to false
+     *      during internal update operations
+     *
      * @return void
+     *
+     * @throws ItemNotFoundException If there is no child with $name
      *
      * @private
      */
@@ -1076,8 +1080,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Removes the reference in the internal node storage
      *
-     * @throws ItemNotFoundException If property not found
+     * @param string $name the name of the property to unset.
+     *
      * @return void
+     *
+     * @throws ItemNotFoundException If this node has no property with name $name
      *
      * @private
      */
@@ -1124,9 +1131,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $path . $p;
     }
 
-    /** filter the list of names according to the filter expression / array
+    /**
+     * Filter the list of names according to the filter expression / array
+     *
      * @param string|array $filter according to getNodes|getProperties
      * @param array $names list of names to filter
+     *
      * @return the names in $names that match a filter
      */
     protected static function filterNames($filter, $names)

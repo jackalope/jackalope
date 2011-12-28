@@ -53,8 +53,7 @@ class SqlQuery implements QueryInterface
     /**
      * Create a new SQL2 query instance
      *
-     * @param object $factory an object factory implementing "get" as described
-     *      in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param string $statement The SQL statement for this query
      * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)

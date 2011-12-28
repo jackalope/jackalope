@@ -17,8 +17,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     /**
      * Create a new node definition template instance.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param NodeTypeManager $nodeTypeManager
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)

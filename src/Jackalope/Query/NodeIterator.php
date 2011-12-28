@@ -11,15 +11,26 @@ use Jackalope\FactoryInterface;
  */
 class NodeIterator implements \SeekableIterator, \Countable
 {
+    /**
+     * @var ObjectManager
+     */
     protected $objectmanager;
 
+    /**
+     * @var FactoryInterface
+     */
     protected $factory;
 
     protected $rows;
 
     protected $position = 0;
 
-    public function __construct(FactoryInterface $factory, $objectmanager, $rows)
+    /**
+     * @param FactoryInterface $factory the object factory
+     * @param ObjectManager $objectmanager
+     * @param array $rows
+     */
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
     {
         // OPTIMIZE: we could pre-fetch several nodes here, assuming the user wants more than one node
         $this->factory = $factory;

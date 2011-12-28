@@ -44,8 +44,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * Constructor
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
      * @param SourceInterface $source
@@ -89,7 +88,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getConstraint()
+    public function getConstraint()
     {
         return $this->constraint;
     }
@@ -99,7 +98,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getOrderings()
+    public function getOrderings()
     {
         return $this->orderings;
     }
@@ -109,7 +108,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getColumns()
+    public function getColumns()
     {
         return $this->columns;
     }
@@ -119,7 +118,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getBindVariableNames()
+    public function getBindVariableNames()
     {
         // TODO: can we inherit from SqlQuery?
         throw new \Jackalope\NotImplementedException();
@@ -130,7 +129,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getStatement()
+    public function getStatement()
     {
         $converter = new \PHPCR\Util\QOM\QomToSql2QueryConverter(new \PHPCR\Util\QOM\Sql2Generator());
         return $converter->convert($this);
@@ -141,7 +140,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getLanguage()
+    public function getLanguage()
     {
         return self::JCR_JQOM;
     }

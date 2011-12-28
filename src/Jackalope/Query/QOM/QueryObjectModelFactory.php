@@ -16,7 +16,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 {
     /**
      * The factory to instantiate objects
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -28,8 +28,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * Create the query object model factory - get this from the QueryManager
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager only used to create the query (can
      *      be omitted if you do not want to execute the query but just use it
      *      with a parser)

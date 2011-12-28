@@ -27,6 +27,10 @@ interface WritingInterface extends TransportInterface
      *
      * Note: There is a minimal implemenation in BaseTransport
      *
+     * @param string $name The name to check
+     *
+     * @return always true, if the name is not valid a RepositoryException is thrown
+     *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      *
      * @throws RepositoryException if the name contains invalid characters
@@ -62,10 +66,11 @@ interface WritingInterface extends TransportInterface
      * This method does not need to load the node but can execute the clone
      * directly in the storage.
      *
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $dstAbsPath Absolute destination path (must include the
-     *      new node name)
      * @param string $srcWorkspace The workspace where the source node can be found
+     * @param string $srcAbsPath Absolute source path to the node
+     * @param string $destAbsPath Absolute destination path (must include the
+     *      new node name)
+     * @param bool $removeExisting whether to remove existing nodes at $destAbsPath
      *
      * @return void
      *

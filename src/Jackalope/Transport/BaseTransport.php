@@ -20,7 +20,7 @@ abstract class BaseTransport
      * and is supported by this implementation
      *
      * Note that the rest of jackalope might not properly check paths in
-     * getNode requests and similar so you transport should call this whenever
+     * getNode requests and similar so your transport should call this whenever
      * it needs to look up something in the storage to give a good error
      * message and not just not found.
      *
@@ -30,6 +30,8 @@ abstract class BaseTransport
      * Paths have to be normalized before being checked, i.e. /node/./ is / and /my/node/.. is /my
      *
      * @param string $path The path to validate
+     *
+     * @return bool always true, if the name is not valid a RepositoryException is thrown
      *
      * @throws RepositoryException if the path contains invalid characters
      */
@@ -46,6 +48,8 @@ abstract class BaseTransport
         ) {
             throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
         }
+
+        return true;
     }
 
     /**
@@ -55,6 +59,10 @@ abstract class BaseTransport
      * If it can't be avoided, extending transports may overwrite this method to add
      * additional checks. But this will reduce interchangeability, thus it is better to
      * properly encode and decode characters that are not natively allowed by the storage.
+     *
+     * @param string $name The name to check
+     *
+     * @return always true, if the name is not valid a RepositoryException is thrown
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      *

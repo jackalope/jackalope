@@ -1487,7 +1487,11 @@ $/xi";
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $path the path for which we need the references
+     * @param string $name the name of the referencing properties or null for all
+     * @param bool $weak_reference whether to get weak or strong references
+     *
+     * @return array list of paths to nodes that reference $path
      */
     protected function getNodeReferences($path, $name = null, $weakReference = false)
     {

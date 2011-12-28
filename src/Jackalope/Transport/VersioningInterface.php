@@ -15,7 +15,7 @@ interface VersioningInterface extends TransportInterface
      *
      * @see VersionManager::checkin
      *
-     * @param string $path
+     * @param string $path absolute path to the node
      *
      * @return string path to the new version
      *
@@ -29,7 +29,7 @@ interface VersioningInterface extends TransportInterface
      *
      * @see VersionManager::checkout
      *
-     * @param string $path
+     * @param string $path absolute path to the node
      *
      * @return void
      *
@@ -61,9 +61,8 @@ interface VersioningInterface extends TransportInterface
     /**
      * Remove a version given the path to the version node and the name of the version.
      *
-     * @param $versionPath The path to the version node
+     * @param $versionPath absolute path to the version node
      * @param $versionName The name of the version
-     * @return void
      *
      * @throws PHPCR\ReferentialIntegrityException
      * @throws PHPCR\Version\VersionException

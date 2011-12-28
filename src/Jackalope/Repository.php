@@ -69,11 +69,10 @@ class Repository implements RepositoryInterface
      * Use RepositoryFactoryDoctrineDBAL or RepositoryFactoryJackrabbit to
      * instantiate this class.
      *
-     * @param object $factory  an object factory implementing "get" as
-     *      described in \Jackalope\FactoryInterface. If this is null, the
-     *      \Jackalope\FactoryInterface is instantiated. Note that the repository is the
-     *      only class accepting null as factory.
-     * @param $transport transport implementation
+     * @param FactoryInterface $factory the object factory to use. If this is
+     *      null, the \Jackalope\Factory is instantiated. Note that the
+     *      repository is the only class accepting null as factory.
+     * @param TransportInterface $transport transport implementation
      * @param array $options defines optional features to enable/disable (see
      *      $options property)
      */
