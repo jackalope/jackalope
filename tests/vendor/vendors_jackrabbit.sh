@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-JAR=jackrabbit-standalone-2.3.1-jackalope-SNAPSHOT.jar
+JAR=jackrabbit-standalone-2.4-SNAPSHOT.jar
 
 if [ ! -f "$DIR/$JAR" ]; then
     wget http://s3-eu-west-1.amazonaws.com/patched-jackrabbit/$JAR
