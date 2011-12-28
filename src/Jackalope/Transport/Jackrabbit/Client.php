@@ -37,10 +37,19 @@ use Jackalope\NodeType\NodeTypeManager;
  * Connection to one Jackrabbit server.
  *
  * This class handles the communication between Jackalope and Jackrabbit over
- * Davex. Once the login method has been called, the workspace is set and can not be
- * changed anymore.
+ * Davex. Once the login method has been called, the workspace is set and can
+ * not be changed anymore.
+ *
+ * We make one exception to the rule that nothing may be cached in the
+ * transport: Repository descriptors are considered immutable and cached
+ * (because they are also used in startup to check the backend version is
+ * compatible).
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ *
+ * @author David Buchmann <david@liip.ch>
+ * @author Christian Stocker <chregu@liip.ch>
+ * @author Tobias Ebnöther <ebi@liip.ch>
  */
 class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {
@@ -68,7 +77,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -84,6 +93,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     /**
      * Workspace name the transport is bound to
+     *
+     * Set once login() has been executed and may not be changed later on.
+     *
      * @var string
      */
     protected $workspace;
@@ -110,7 +122,10 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     protected $workspaceUriRoot;
 
     /**
-     * Set of credentials necessary to connect to the server or else.
+     * Set of credentials necessary to connect to the server.
+     *
+     * Set once login() has been executed and may not be changed later on.
+     *
      * @var CredentialsInterface
      */
     protected $credentials;
@@ -153,6 +168,21 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     protected $checkLoginOnServer = true;
 
     /**
+     * Cached result of the repository descriptors.
+     *
+     * This is our exception to the rule that nothing may be cached in transport.
+     *
+     * @var array of strings as returned by getRepositoryDescriptors
+     */
+    protected $descriptors = null;
+
+    /**
+     * minimal version numbers needed for the transport to work properly
+     */
+    const VERSION_MAJOR = 2;
+    const VERSION_MINOR = 4;
+
+    /**
       * The transaction token received by a LOCKing request
       *
       * Is FALSE while no transaction running.
@@ -163,7 +193,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * Create a transport pointing to a server url.
      *
-     * @param object $factory  an object factory implementing "get" as described in \Jackalope\Factory.
      * @param serverUri location of the server
      */
     public function __construct($factory, $serverUri)
@@ -174,6 +203,25 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             $serverUri .= '/';
         }
         $this->server = $serverUri;
+
+        $descriptors = $this->getRepositoryDescriptors();
+        if (! isset($descriptors['jcr.repository.version'])) {
+            throw new UnsupportedRepositoryOperationException("The backend at $serverUri does not provide the jcr.repository.version descriptor");
+        }
+
+        $version = array();
+        if (! preg_match('/^(\\d+)\\.(\\d+)/', $descriptors['jcr.repository.version'], $version)) {
+            throw new UnsupportedRepositoryOperationException("The backend at $serverUri provides an unparseable version information: ".
+                $descriptors['jcr.repository.version']);
+        }
+
+        if (self::VERSION_MAJOR != $version[1] // major version upgrade will need changes in transport for sure
+            || self::VERSION_MINOR > $version[2]
+        ) {
+            throw new UnsupportedRepositoryOperationException("The backend at $serverUri is an unsupported version of jackrabbit: \"".
+                $descriptors['jcr.repository.version'].
+                '". Need at least "'.self::VERSION_MAJOR.'.'.self::VERSION_MINOR.'"');
+        }
     }
 
     /**
@@ -317,32 +365,34 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     public function getRepositoryDescriptors()
     {
-        $request = $this->getRequest(Request::REPORT, $this->server);
-        $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
-        $dom = $request->executeDom();
+        if (null == $this->descriptors) {
+            $request = $this->getRequest(Request::REPORT, $this->server);
+            $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
+            $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'repositorydescriptors-report'
-            || $dom->firstChild->namespaceURI != self::NS_DCR
-        ) {
-            throw new RepositoryException('Error talking to the backend. '.$dom->saveXML());
-        }
+            if ($dom->firstChild->localName != 'repositorydescriptors-report'
+                || $dom->firstChild->namespaceURI != self::NS_DCR
+            ) {
+                throw new RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            }
 
-        $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
-        $descriptors = array();
-        foreach ($descs as $desc) {
-            $values = array();
-            foreach ($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
-                $values[] = $value->textContent;
-            }
-            if ($desc->childNodes->length == 2) {
-                //there was one type and one value => this is a single value property
-                //TODO: is this the correct assumption? or should the backend tell us specifically?
-                $descriptors[$desc->firstChild->textContent] = $values[0];
-            } else {
-                $descriptors[$desc->firstChild->textContent] = $values;
+            $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
+            $this->descriptors = array();
+            foreach ($descs as $desc) {
+                $values = array();
+                foreach ($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
+                    $values[] = $value->textContent;
+                }
+                if ($desc->childNodes->length == 2) {
+                    //there was one type and one value => this is a single value property
+                    //TODO: is this the correct assumption? or should the backend tell us specifically?
+                    $this->descriptors[$desc->firstChild->textContent] = $values[0];
+                } else {
+                    $this->descriptors[$desc->firstChild->textContent] = $values;
+                }
             }
         }
-        return $descriptors;
+        return $this->descriptors;
     }
 
     /**
