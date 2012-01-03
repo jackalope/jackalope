@@ -39,6 +39,7 @@ use Jackalope\FactoryInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author Luis Cordova <cordoval@gmail.com>
  */
 class Client extends BaseTransport implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
 {
@@ -721,6 +722,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function getNode($path)
     {
+        $path = $this->assertValidPath($path);
         $this->assertLoggedIn();
 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
@@ -1513,4 +1515,37 @@ $/xi";
         }
         return $references;
     }
+
+    private function assertValidPath($path)
+    {
+        if (! (strpos($path, '//') === false
+              && strpos($path, '/../') === false
+              && preg_match('/^[\w{}\/#:^+~*\[\]\. -]*$/i', $path))
+        ) {
+            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
+        if ('/' != substr($path, 0, 1)) {
+            //sanity check
+            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
+        }
+    }
+
+    // TODO: remove once transport is split
+    public function checkinItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function checkoutItem($path)
+    {
+        throw new NotImplementedException();
+    }
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
+        throw new NotImplementedException();
+    }
+    public function getVersionHistory($path)
+    {
+        throw new NotImplementedException();
+    }
+
 }
