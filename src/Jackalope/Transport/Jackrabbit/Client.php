@@ -48,9 +48,13 @@ use Jackalope\FactoryInterface;
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *
- * @author David Buchmann <david@liip.ch>
  * @author Christian Stocker <chregu@liip.ch>
+ * @author David Buchmann <david@liip.ch>
  * @author Tobias Ebnöther <ebi@liip.ch>
+ * @author Roland Schilter <roland.schilter@liip.ch>
+ * @author Uwe Jäger <uwej711@googlemail.com>
+ * @author Lukas Kahwe Smith <smith@pooteeweet.org>
+ * @author Daniel Barsotti <daniel.barsotti@liip.ch>
  */
 class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {

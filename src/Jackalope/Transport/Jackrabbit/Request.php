@@ -21,6 +21,12 @@ use Jackalope\FactoryInterface;
  * Request class for the Davex protocol
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ *
+ * @author Christian Stocker <chregu@liip.ch>
+ * @author David Buchmann <david@liip.ch>
+ * @author Roland Schilter <roland.schilter@liip.ch>
+ * @author Jordi Boggiano <j.boggiano@seld.be>
+ * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
 class Request
 {
