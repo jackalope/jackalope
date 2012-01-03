@@ -55,6 +55,11 @@ use Jackalope\FactoryInterface;
 class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {
     /**
+     * minimal version needed for the backend server
+     */
+    const VERSION = "2.3.6";
+
+    /**
      * Description of the namspace to be used for communication with the server.
      * @var string
      */
@@ -168,12 +173,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     protected $descriptors = null;
 
     /**
-     * minimal version numbers needed for the transport to work properly
-     */
-    const VERSION_MAJOR = 2;
-    const VERSION_MINOR = 4;
-
-    /**
       * The transaction token received by a LOCKing request
       *
       * Is FALSE while no transaction running.
@@ -195,25 +194,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             $serverUri .= '/';
         }
         $this->server = $serverUri;
-
-        $descriptors = $this->getRepositoryDescriptors();
-        if (! isset($descriptors['jcr.repository.version'])) {
-            throw new UnsupportedRepositoryOperationException("The backend at $serverUri does not provide the jcr.repository.version descriptor");
-        }
-
-        $version = array();
-        if (! preg_match('/^(\\d+)\\.(\\d+)/', $descriptors['jcr.repository.version'], $version)) {
-            throw new UnsupportedRepositoryOperationException("The backend at $serverUri provides an unparseable version information: ".
-                $descriptors['jcr.repository.version']);
-        }
-
-        if (self::VERSION_MAJOR != $version[1] // major version upgrade will need changes in transport for sure
-            || self::VERSION_MINOR > $version[2]
-        ) {
-            throw new UnsupportedRepositoryOperationException("The backend at $serverUri is an unsupported version of jackrabbit: \"".
-                $descriptors['jcr.repository.version'].
-                '". Need at least "'.self::VERSION_MAJOR.'.'.self::VERSION_MINOR.'"');
-        }
     }
 
     /**
@@ -279,7 +259,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
 
 
-        $request = $this->factory->get('Transport\\Jackrabbit\\Request', array($this->curl, $method, $uri));
+        $request = $this->factory->get('Transport\\Jackrabbit\\Request', array($this, $this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
         foreach ($this->defaultHeaders as $header) {
             $request->addHeader($header);
@@ -382,6 +362,16 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
                 } else {
                     $this->descriptors[$desc->firstChild->textContent] = $values;
                 }
+            }
+
+            if (! isset($this->descriptors['jcr.repository.version'])) {
+                throw new UnsupportedRepositoryOperationException("The backend at {$this->server} does not provide the jcr.repository.version descriptor");
+            }
+
+            if (! version_compare(self::VERSION, $this->descriptors['jcr.repository.version'], '<=')) {
+                throw new UnsupportedRepositoryOperationException("The backend at {$this->server} is an unsupported version of jackrabbit: \"".
+                    $this->descriptors['jcr.repository.version'].
+                    '". Need at least "'.self::VERSION.'"');
             }
         }
         return $this->descriptors;
