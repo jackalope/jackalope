@@ -8,7 +8,9 @@ class WorkspaceTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\Transport\Jackrabbit\Client', array(), array($factory, 'http://example.com'));
+        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+            ->disableOriginalConstructor()
+            ->getMock(array());
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);
         $name = 'a3lkjas';
         $w = new Workspace($factory, $session, $objManager, $name);
@@ -20,7 +22,9 @@ class WorkspaceTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\Transport\Jackrabbit\Client', array(), array($factory, 'http://example.com'));
+        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+            ->disableOriginalConstructor()
+            ->getMock(array());
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);
         $name = 'a3lkjas';
 
