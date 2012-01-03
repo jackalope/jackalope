@@ -38,8 +38,13 @@ use Jackalope\FactoryInterface;
  * Connection to one Jackrabbit server.
  *
  * This class handles the communication between Jackalope and Jackrabbit over
- * Davex. Once the login method has been called, the workspace is set and can not be
- * changed anymore.
+ * Davex. Once the login method has been called, the workspace is set and can
+ * not be changed anymore.
+ *
+ * We make one exception to the rule that nothing may be cached in the
+ * transport: Repository descriptors are considered immutable and cached
+ * (because they are also used in startup to check the backend version is
+ * compatible).
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *
@@ -54,6 +59,11 @@ use Jackalope\FactoryInterface;
 class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
 {
     /**
+     * minimal version needed for the backend server
+     */
+    const VERSION = "2.3.6";
+
+    /**
      * Description of the namspace to be used for communication with the server.
      * @var string
      */
@@ -67,7 +77,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -83,6 +93,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
     /**
      * Workspace name the transport is bound to
+     *
+     * Set once login() has been executed and may not be changed later on.
+     *
      * @var string
      */
     protected $workspace;
@@ -109,7 +122,10 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     protected $workspaceUriRoot;
 
     /**
-     * Set of credentials necessary to connect to the server or else.
+     * Set of credentials necessary to connect to the server.
+     *
+     * Set once login() has been executed and may not be changed later on.
+     *
      * @var CredentialsInterface
      */
     protected $credentials;
@@ -150,6 +166,15 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      * @var bool
      */
     protected $checkLoginOnServer = true;
+
+    /**
+     * Cached result of the repository descriptors.
+     *
+     * This is our exception to the rule that nothing may be cached in transport.
+     *
+     * @var array of strings as returned by getRepositoryDescriptors
+     */
+    protected $descriptors = null;
 
     /**
       * The transaction token received by a LOCKing request
@@ -238,7 +263,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
 
 
-        $request = $this->factory->get('Transport\\Jackrabbit\\Request', array($this->curl, $method, $uri));
+        $request = $this->factory->get('Transport\\Jackrabbit\\Request', array($this, $this->curl, $method, $uri));
         $request->setCredentials($this->credentials);
         foreach ($this->defaultHeaders as $header) {
             $request->addHeader($header);
@@ -316,32 +341,47 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     public function getRepositoryDescriptors()
     {
-        $request = $this->getRequest(Request::REPORT, $this->server);
-        $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
-        $dom = $request->executeDom();
+        if (null == $this->descriptors) {
+            $request = $this->getRequest(Request::REPORT, $this->server);
+            $request->setBody($this->buildReportRequest('dcr:repositorydescriptors'));
+            $dom = $request->executeDom();
 
-        if ($dom->firstChild->localName != 'repositorydescriptors-report'
-            || $dom->firstChild->namespaceURI != self::NS_DCR
-        ) {
-            throw new RepositoryException('Error talking to the backend. '.$dom->saveXML());
-        }
+            if ($dom->firstChild->localName != 'repositorydescriptors-report'
+                || $dom->firstChild->namespaceURI != self::NS_DCR
+            ) {
+                throw new RepositoryException('Error talking to the backend. '.$dom->saveXML());
+            }
 
-        $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
-        $descriptors = array();
-        foreach ($descs as $desc) {
-            $values = array();
-            foreach ($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
-                $values[] = $value->textContent;
+            $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
+            $this->descriptors = array();
+            foreach ($descs as $desc) {
+                $name = $desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorkey')->item(0)->textContent;
+
+                $values = array();
+                $valuenodes = $desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue');
+                foreach ($valuenodes as $value) {
+                    $values[] = $value->textContent;
+                }
+                if ($valuenodes->length == 1) {
+                    //there was one type and one value => this is a single value property
+                    //TODO: is this the correct assumption? or should the backend tell us specifically?
+                    $this->descriptors[$name] = $values[0];
+                } else {
+                    $this->descriptors[$name] = $values;
+                }
             }
-            if ($desc->childNodes->length == 2) {
-                //there was one type and one value => this is a single value property
-                //TODO: is this the correct assumption? or should the backend tell us specifically?
-                $descriptors[$desc->firstChild->textContent] = $values[0];
-            } else {
-                $descriptors[$desc->firstChild->textContent] = $values;
+
+            if (! isset($this->descriptors['jcr.repository.version'])) {
+                throw new UnsupportedRepositoryOperationException("The backend at {$this->server} does not provide the jcr.repository.version descriptor");
+            }
+
+            if (! version_compare(self::VERSION, $this->descriptors['jcr.repository.version'], '<=')) {
+                throw new UnsupportedRepositoryOperationException("The backend at {$this->server} is an unsupported version of jackrabbit: \"".
+                    $this->descriptors['jcr.repository.version'].
+                    '". Need at least "'.self::VERSION.'"');
             }
         }
-        return $descriptors;
+        return $this->descriptors;
     }
 
     /**
@@ -388,9 +428,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         if (count($paths) == 0) {
             return array();
         }
-        $url = array_shift($paths);
 
-        if (count($paths) == 0) {
+        if (count($paths) == 1) {
+            $url = array_shift($paths);
             try {
                 return array($url => $this->getNode($url));
             } catch (ItemNotFoundException $e) {
@@ -399,9 +439,9 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
         $body = array();
 
-        $url = $this->encodeAndValidatePathForDavex($url).".0.json";
+        $url = $this->encodeAndValidatePathForDavex("/").".0.json";
         foreach ($paths as $path) {
-            $body[] = http_build_query(array(":get"=>$path));
+            $body[] = http_build_query(array(":include"=>$path));
         }
         $body = implode("&",$body);
         $request = $this->getRequest(Request::POST, $url);

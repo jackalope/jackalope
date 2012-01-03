@@ -136,6 +136,11 @@ class Request
     const INFINITY = 'infinity';
 
     /**
+     * @var Client
+     */
+    protected $client;
+
+    /**
      * @var curl
      */
     protected $curl;
@@ -193,16 +198,26 @@ class Request
     protected $transactionId = false;
 
     /**
+     * Whether we already did a version check in handling an error.
+     * Doing this once per php process is enough.
+     *
+     * @var bool
+     */
+    static protected $versionChecked = false;
+
+    /**
      * Initiaties the NodeTypes request object.
      *
      * @param FactoryInterface $factory Ignored for now, as this class does not create objects
+     * @param Client $client The jackrabbit client instance
      * @param curl $curl The cURL object to use in this request
      * @param string $method the HTTP method to use, one of the class constants
      * @param string|array $uri the remote url for this request, including protocol,
      *      host name, workspace and path to the object to manipulate. May be an array of uri
      */
-    public function __construct(FactoryInterface $factory, curl $curl, $method, $uri)
+    public function __construct(FactoryInterface $factory, Client $client, curl $curl, $method, $uri)
     {
+        $this->client = $client;
         $this->curl = $curl;
         $this->setMethod($method);
         $this->setUri($uri);
@@ -486,6 +501,21 @@ class Request
      */
     protected function handleError(curl $curl, $response, $httpCode)
     {
+        // first: check if the backend is too old for us
+        if (! self::$versionChecked) {
+            // avoid endless loops.
+            self::$versionChecked = true;
+            try {
+                // getting the descriptors triggers a version check
+                $this->client->getRepositoryDescriptors();
+            } catch(\Exception $e) {
+                if ($e instanceof \PHPCR\UnsupportedRepositoryOperationException) {
+                    throw $e;
+                }
+                //otherwise ignore exception here as to not confuse what happened
+            }
+        }
+
         switch ($curl->errno()) {
             case CURLE_COULDNT_RESOLVE_HOST:
             case CURLE_COULDNT_CONNECT:
