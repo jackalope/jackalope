@@ -355,16 +355,19 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             $descs = $dom->getElementsByTagNameNS(self::NS_DCR, 'descriptor');
             $this->descriptors = array();
             foreach ($descs as $desc) {
+                $name = $desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorkey')->item(0)->textContent;
+
                 $values = array();
-                foreach ($desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue') as $value) {
+                $valuenodes = $desc->getElementsByTagNameNS(self::NS_DCR, 'descriptorvalue');
+                foreach ($valuenodes as $value) {
                     $values[] = $value->textContent;
                 }
-                if ($desc->childNodes->length == 2) {
+                if ($valuenodes->length == 1) {
                     //there was one type and one value => this is a single value property
                     //TODO: is this the correct assumption? or should the backend tell us specifically?
-                    $this->descriptors[$desc->firstChild->textContent] = $values[0];
+                    $this->descriptors[$name] = $values[0];
                 } else {
-                    $this->descriptors[$desc->firstChild->textContent] = $values;
+                    $this->descriptors[$name] = $values;
                 }
             }
 

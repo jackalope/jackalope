@@ -38,16 +38,24 @@ class RequestTest extends JackrabbitTestCase
         return $curl;
     }
 
+    public function getClientMock()
+    {
+        return $this->getMockBuilder('Jackalope\\Transport\\Jackrabbit\\Client')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+    }
+
     public function getRequest($fixture = null, $httpCode = 200, $errno = null)
     {
         $factory = new \Jackalope\Factory;
-        return new RequestMock($factory, $this->getCurlFixture($fixture, $httpCode, $errno), 'GET', 'http://foo/');
+        return new RequestMock($factory, $this->getClientMock(), $this->getCurlFixture($fixture, $httpCode, $errno), 'GET', 'http://foo/');
     }
 
     public function testExecuteDom()
     {
         $factory = new \Jackalope\Factory;
-        $request = $this->getMock('Jackalope\Transport\Jackrabbit\Request', array('execute'), array($factory, $this->getCurlFixture(),null, null));
+        $request = $this->getMock('Jackalope\\Transport\\Jackrabbit\\Request', array('execute'), array($factory, $this->getClientMock(), $this->getCurlFixture(),null, null));
         $request->expects($this->once())
             ->method('execute')
             ->will($this->returnValue('<xml/>'));
