@@ -750,6 +750,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         foreach ($dom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'property') as $propertyNode) {
             $name = $propertyNode->getAttribute('sv:name');
             $values = array();
+            // FIXME: why is there numbers in sv:type? this is creating errors in all tests
             $type = PropertyType::valueFromName($propertyNode->getAttribute('sv:type'));
             foreach ($propertyNode->childNodes as $valueNode) {
                 switch ($type) {
