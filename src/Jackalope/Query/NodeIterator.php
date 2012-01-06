@@ -2,22 +2,35 @@
 
 namespace Jackalope\Query;
 
-use Jackalope\ObjectManager, Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * A NodeIterator object. Returned by QueryResult->getNodes().
  */
 class NodeIterator implements \SeekableIterator, \Countable
 {
+    /**
+     * @var ObjectManager
+     */
     protected $objectmanager;
 
+    /**
+     * @var FactoryInterface
+     */
     protected $factory;
 
     protected $rows;
 
     protected $position = 0;
 
-    public function __construct($factory, $objectmanager, $rows)
+    /**
+     * @param FactoryInterface $factory the object factory
+     * @param ObjectManager $objectmanager
+     * @param array $rows
+     */
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
     {
         // OPTIMIZE: we could pre-fetch several nodes here, assuming the user wants more than one node
         $this->factory = $factory;

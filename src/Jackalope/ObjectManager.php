@@ -44,7 +44,7 @@ class ObjectManager
 {
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -125,12 +125,11 @@ class ObjectManager
     /**
      * Create the ObjectManager instance with associated session and transport
      *
-     * @param object $factory an object factory implementing "get" as described
-     *      in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param TransportInterface $transport
      * @param SessionInterface $session
      */
-    public function __construct($factory, TransportInterface $transport, SessionInterface $session)
+    public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
     {
         $this->factory = $factory;
         $this->transport = $transport;
@@ -1017,7 +1016,7 @@ class ObjectManager
      *
      * @see ObjectManager::removeItem()
      */
-    protected function performRemove($absPath, $item)
+    protected function performRemove($absPath, ItemInterface $item)
     {
         // was any parent moved?
         foreach ($this->nodesMove as $dst) {
@@ -1289,7 +1288,7 @@ class ObjectManager
      * This function will return an array containing zero, one or more of the
      * above strings.
      *
-     * @param type $absPath the path to get permissions
+     * @param string $absPath absolute path to node to get permissions for it
      *
      * @return array of string
      */
@@ -1404,7 +1403,7 @@ class ObjectManager
      * transaction has begun, was committed or rolled back so that the item has
      * a chance to save or restore his internal state.
      *
-     * @param $method string The method to call on each item for the
+     * @param string $method The method to call on each item for the
      *      notification (must be beginTransaction, commitTransaction or
      *      rollbackTransaction)
      * @return void
@@ -1436,9 +1435,9 @@ class ObjectManager
      * @return boolean true if the node has an unsaved move operation, false
      *      otherwise
      */
-    public function isNodeMoved($srcPath)
+    public function isNodeMoved($absPath)
     {
-        return array_key_exists($srcPath, $this->nodesMove);
+        return array_key_exists($absPath, $this->nodesMove);
     }
 
     /**
@@ -1449,11 +1448,11 @@ class ObjectManager
      *
      * @return boolean true if the current changed state has no node at this place
      */
-    public function isItemDeleted($srcPath)
+    public function isItemDeleted($absPath)
     {
-        return array_key_exists($srcPath, $this->itemsRemove) &&
-             ! (array_key_exists($srcPath, $this->itemsAdd) ||
-                array_search($srcPath, $this->nodesMove) !== false);
+        return array_key_exists($absPath, $this->itemsRemove) &&
+             ! (array_key_exists($absPath, $this->itemsAdd) ||
+                array_search($absPath, $this->nodesMove) !== false);
     }
 
     /**

@@ -10,6 +10,7 @@ use PHPCR\Query\QOM\ColumnInterface;
 
 use Jackalope\ObjectManager;
 use Jackalope\Query\SqlQuery;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -43,8 +44,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * Constructor
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
      * @param SourceInterface $source
@@ -52,7 +52,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      * @param array $orderings
      * @param array $columns
      */
-    public function __construct($factory, ObjectManager $objectManager = null,
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null,
                                 SourceInterface $source, ConstraintInterface $constraint = null,
                                 array $orderings, array $columns)
     {
@@ -88,7 +88,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getConstraint()
+    public function getConstraint()
     {
         return $this->constraint;
     }
@@ -98,7 +98,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getOrderings()
+    public function getOrderings()
     {
         return $this->orderings;
     }
@@ -108,7 +108,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getColumns()
+    public function getColumns()
     {
         return $this->columns;
     }
@@ -118,7 +118,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getBindVariableNames()
+    public function getBindVariableNames()
     {
         // TODO: can we inherit from SqlQuery?
         throw new \Jackalope\NotImplementedException();
@@ -129,7 +129,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getStatement()
+    public function getStatement()
     {
         $converter = new \PHPCR\Util\QOM\QomToSql2QueryConverter(new \PHPCR\Util\QOM\Sql2Generator());
         return $converter->convert($this);
@@ -140,7 +140,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      *
      * @api
      */
-    function getLanguage()
+    public function getLanguage()
     {
         return self::JCR_JQOM;
     }

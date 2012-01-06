@@ -24,7 +24,7 @@ class Workspace implements WorkspaceInterface
 {
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
     /**
@@ -54,13 +54,12 @@ class Workspace implements WorkspaceInterface
     /**
      * Instantiate a workspace referencing a workspace in the storage.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param Session $session
      * @param ObjectManager $objectManager
      * @param string $name the workspace name that is used
      */
-    public function __construct($factory, Session $session, ObjectManager $objectManager, $name)
+    public function __construct(FactoryInterface $factory, Session $session, ObjectManager $objectManager, $name)
     {
         $this->factory = $factory;
         $this->session = $session;

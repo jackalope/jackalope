@@ -10,7 +10,7 @@ class ItemTest extends TestCase
     protected function getItem($factory = null, $path = null, $session = null, $objectManager = null, $new = false)
     {
         if (! $factory) {
-            $factory = new \Jackalope\Factory;
+            $factory = $this->getMockBuilder('Jackalope\FactoryInterface')->disableOriginalConstructor()->getMock();
         }
         if (! $path) {
             $path = '/';
@@ -29,7 +29,7 @@ class ItemTest extends TestCase
      */
     protected function getObjectManagerMockWithPath($path)
     {
-        $factory = new \Jackalope\Factory;
+        $factory = $this->getMockBuilder('Jackalope\FactoryInterface')->disableOriginalConstructor()->getMock();
         $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes', 'getNodeByPath'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
         $om->expects($this->once())
             ->method('getNodeByPath')
@@ -113,7 +113,7 @@ class ItemTest extends TestCase
     public function testGetSession()
     {
         $session = $this->getSessionMock();
-        $item = $this->getItem($session);
+        $item = $this->getItem(null, null, $session);
         $this->assertEquals($session, $item->getSession());
     }
 
@@ -149,7 +149,7 @@ class ItemTest extends TestCase
      */
     public function testRemoveRoot()
     {
-        $item = $this->getItem('/');
+        $item = $this->getItem(null, '/');
         $item->remove();
     }
 
@@ -158,10 +158,11 @@ class ItemTest extends TestCase
 
 class TestItem extends Item
 {
-    public function __construct($factory,$path,$session,$objectManager,$new)
+    public function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory,$path,$session,$objectManager,$new);
     }
+
     public function refresh($keep)
     {
         // tested in extending classes

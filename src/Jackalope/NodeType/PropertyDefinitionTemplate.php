@@ -6,6 +6,8 @@ use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
 
+use Jackalope\FactoryInterface;
+
 /**
  * {@inheritDoc}
  *
@@ -16,11 +18,10 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     /**
      * Create a new property definition template.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param NodeTypeManager $nodeTypeManager
      */
-    public function __construct($factory, NodeTypeManager $nodeTypeManager)
+    public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)
     {
         $this->factory = $factory;
         $this->nodeTypeManager = $nodeTypeManager;

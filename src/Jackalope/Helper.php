@@ -18,8 +18,9 @@ class Helper
      * The attribute can contain the string 'false' which is interpreted as
      * false, everything else is true.
      *
-     * @param DOMElement node to fetch from
-     * @param string attribute to fetch
+     * @param DOMElement $node to fetch from
+     * @param string $attribute name to fetch
+     *
      * @return bool the value converted to bool
      */
     public static function getBoolAttribute(DOMElement $node, $attribute)

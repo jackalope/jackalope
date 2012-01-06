@@ -11,6 +11,7 @@ use PHPCR\Version\VersionManagerInterface;
 
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -23,17 +24,16 @@ class VersionManager implements VersionManagerInterface {
      * @var ObjectManager
      */
     protected $objectmanager;
-    /** @var object   The jackalope object factory for this object */
+    /** @var FactoryInterface   The jackalope object factory for this object */
     protected $factory;
 
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      */
-    public function __construct($factory, ObjectManager $objectmanager)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager)
     {
         $this->objectmanager = $objectmanager;
         $this->factory = $factory;

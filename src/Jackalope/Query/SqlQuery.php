@@ -8,6 +8,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\Query\QueryInterface;
 
 use Jackalope\ObjectManager;
+use Jackalope\FactoryInterface;
 
 /**
  * Query implementation for the SQL2 language
@@ -52,15 +53,14 @@ class SqlQuery implements QueryInterface
     /**
      * Create a new SQL2 query instance
      *
-     * @param object $factory an object factory implementing "get" as described
-     *      in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param string $statement The SQL statement for this query
      * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
      * @param string $path If this query is loaded from workspace with
      *      QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct($factory, $statement, ObjectManager $objectManager = null, $path = null)
+    public function __construct(FactoryInterface $factory, $statement, ObjectManager $objectManager = null, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;

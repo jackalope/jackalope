@@ -25,13 +25,13 @@ class ClientTest extends JackrabbitTestCase
         );
     }
 
-    public function getRequestMock($response = '', $changeMethods = array(), $args = array(null, null, null))
+    public function getRequestMock($response = '', $changeMethods = array())
     {
-        $factory = new \Jackalope\Factory;
-        array_unshift($args, $factory);
         $defaultMockMethods = array('execute', 'executeDom', 'executeJson');
         $mockMethods = array_merge(array_diff($defaultMockMethods, $changeMethods), array_diff($changeMethods, $defaultMockMethods));
-        $request = $this->getMock('Jackalope\Transport\Jackrabbit\Request', $mockMethods, $args);
+        $request = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Request')
+            ->disableOriginalConstructor()
+            ->getMock($mockMethods);
 
         $request
             ->expects($this->any())
@@ -553,6 +553,18 @@ class ClientMock extends Client
     public $workspaceUri = 'testWorkspaceUri';
     public $workspaceUriRoot = 'testWorkspaceUriRoot';
 
+    /**
+     * overwrite client constructor which checks backend version
+     */
+    public function __construct($factory, $serverUri)
+    {
+        $this->factory = $factory;
+        // append a slash if not there
+        if ('/' !== substr($serverUri, -1)) {
+            $serverUri .= '/';
+        }
+        $this->server = $serverUri;
+    }
     public function buildNodeTypesRequestMock(Array $params)
     {
         return $this->buildNodeTypesRequest($params);

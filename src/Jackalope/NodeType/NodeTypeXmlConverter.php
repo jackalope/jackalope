@@ -11,6 +11,7 @@ use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 
 use Jackalope\Helper;
+use Jackalope\FactoryInterface;
 
 /**
  * Converter to generate NodeType elements array from storage XML (jackrabbit
@@ -38,8 +39,10 @@ class NodeTypeXmlConverter
      *
      * Everything inside jackalope has to accept the factory in the
      * constructor. We define the constructor but to nothing at all.
+     *
+     * @param FactoryInterface $factory the object factory
      */
-    public function __construct($factory)
+    public function __construct(FactoryInterface $factory)
     {
     }
 

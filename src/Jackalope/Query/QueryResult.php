@@ -4,7 +4,7 @@ namespace Jackalope\Query;
 
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
-use Jackalope\Factory;
+use Jackalope\FactoryInterface;
 
 use PHPCR\Query\QueryResultInterface;
 
@@ -16,12 +16,12 @@ use IteratorAggregate;
 class QueryResult implements IteratorAggregate, QueryResultInterface
 {
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectmanager;
 
     /**
-     * @var \Jackalope\Factory
+     * @var FactoryInterface
      */
     protected $factory;
 
@@ -38,12 +38,11 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * The raw data format is documented in
      * \Jackalope\Transport\QueryInterface::query()
      *
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param array $rawData the data as returned by the transport
      * @param ObjectManager $objectManager
      */
-    public function __construct(Factory $factory, $rawData, ObjectManager $objectmanager)
+    public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectmanager)
     {
         $this->factory = $factory;
         $this->rows = $rawData;

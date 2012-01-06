@@ -10,6 +10,7 @@ use PHPCR\Version\VersionException;
 use Jackalope\Node;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -29,8 +30,12 @@ class VersionHistory extends Node
 
     /**
      * FIXME: is this sane? we do not call the parent constructor
+     *
+     * @param FactoryInterface $factory the object factory
+     * @param ObjectManager $objectmanager
+     * @param string $absPath the repository path of this version history.
      */
-    public function __construct($factory, ObjectManager $objectmanager,$absPath)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager,$absPath)
     {
         $this->objectmanager = $objectmanager;
         $this->path = $absPath;

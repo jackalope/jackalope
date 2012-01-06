@@ -13,6 +13,7 @@ use PHPCR\NodeType\NodeTypeExistsException;
 
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -26,11 +27,12 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 {
     /**
      * The factory to instantiate objects.
-     * @var \Jackalope\Factory
+     * @var FactoryInterface
      */
     protected $factory;
     /**
      * @var ObjectManager
+     */
     protected $objectManager;
 
     /**
@@ -64,11 +66,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Create the node type manager for a session.
      *
      * There may be only one instance per session
-     * @param object $factory an object factory implementing "get" as
-     *      described in \Jackalope\Factory
+     * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      */
-    public function __construct($factory, ObjectManager $objectManager)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;
@@ -319,9 +320,14 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Internally create a node type object
      *
-     * @api
+     * @param NodeTypeDefinitionInterface $ntd
+     * @param bool $allowUpdate whether updating the definition is to be allowed or not
+     *
+     * @return NodeType the new node type
+     *
+     * @throws \PHPCR\NodeType\NodeTypeExistsException
      */
     protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
