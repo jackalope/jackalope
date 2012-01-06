@@ -3,14 +3,17 @@
 namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockManagerInterface,
-    Jackalope\ObjectManager;
+    Jackalope\ObjectManager,
+    Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
  *
  * @api
+ *
+ * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class LockManager implements LockManagerInterface
+class LockManager implements \IteratorAggregate, LockManagerInterface
 {
     /**
      * @var \Jackalope\ObjectManager
@@ -34,6 +37,11 @@ class LockManager implements LockManagerInterface
     {
         $this->objectmanager = $objectManager;
         $this->factory = $factory;
+    }
+
+    public function getIterator() {
+        // TODO: return an iterator over getLockTokens() results
+        return new ArrayIterator($this);
     }
 
     /**
@@ -83,7 +91,7 @@ class LockManager implements LockManagerInterface
      */
     function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
     {
-        throw new NotImplementedException();
+        return $this->objectmanager->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
     }
 
     /**
@@ -93,7 +101,7 @@ class LockManager implements LockManagerInterface
      */
     function isLocked($absPath)
     {
-        throw new NotImplementedException();
+        return $this->objectmanager->isLocked($absPath);
     }
 
     /**
@@ -113,6 +121,6 @@ class LockManager implements LockManagerInterface
      */
     function unlock($absPath)
     {
-        throw new NotImplementedException();
+        $this->objectmanager->unlock($absPath);
     }
 }

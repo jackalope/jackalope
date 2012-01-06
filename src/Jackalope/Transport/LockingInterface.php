@@ -9,5 +9,9 @@ namespace Jackalope\Transport;
  */
 interface LockingInterface extends TransportInterface
 {
-    // Empty for now...
+    function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
+
+    function isLocked($absPath);
+
+    function unlock($absPath, $lockToken);
 }

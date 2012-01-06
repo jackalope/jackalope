@@ -11,15 +11,46 @@ use PHPCR\Lock\LockInterface;
  */
 class Lock implements LockInterface
 {
+    /** @var string */
+    protected $lockOwner;
+
+    /** @var boolean */
+    protected $isDeep;
+
+    /** @var \PHPCR\NodeInterface */
+    protected $node;
+
+    /** @var string */
+    protected $lockToken;
+
+    /** @var integer */
+    protected $secondsRemaining;
+
+    /** @var boolean */
+    protected $isLive;
+
+    /** @var boolean */
+    protected $isSessionScoped;
+
+    /** @var boolean */
+    protected $isLockOwningSession;
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    function getLockOwner()
+    public function getLockOwner()
     {
-        throw new NotImplementedException();
+        return $this->lockOwner;
+    }
+
+    /**
+     * @param string $owner
+     */
+    public function setLockOwner($owner)
+    {
+        $this->lockOwner = $owner;
     }
 
     /**
@@ -27,9 +58,17 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function isDeep()
+    public function isDeep()
     {
-        throw new NotImplementedException();
+        return $this->isDeep;
+    }
+
+    /**
+    * @param boolean $isDeep
+    */
+    public function setIsDeep($isDeep)
+    {
+        $this->isDeep = $isDeep;
     }
 
     /**
@@ -37,9 +76,17 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function getNode()
+    public function getNode()
     {
-        throw new NotImplementedException();
+        return $this->node;
+    }
+
+    /**
+     * @param \PHPCR\NodeInterface $node
+     */
+    public function setNode(\PHPCR\NodeInterface $node)
+    {
+        $this->node = $node;
     }
 
     /**
@@ -47,9 +94,17 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function getLockToken()
+    public function getLockToken()
     {
-        throw new NotImplementedException();
+        return $this->lockToken;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setLockToken($token)
+    {
+        $this->lockToken = $token;
     }
 
     /**
@@ -57,9 +112,9 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function getSecondsRemaining()
+    public function getSecondsRemaining()
     {
-        throw new NotImplementedException();
+        return $this->secondsRemaining;
     }
 
     /**
@@ -67,9 +122,17 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function isLive()
+    public function isLive()
     {
-        throw new NotImplementedException();
+        return $this->isLive;
+    }
+
+    /**
+    * @param boolean $isLive
+    */
+    public function setIsLive($isLive)
+    {
+        $this->isLive = $isLive;
     }
 
     /**
@@ -77,9 +140,17 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function isSessionScoped()
+    public function isSessionScoped()
     {
-        throw new NotImplementedException();
+        return $this->isSessionScoped;
+    }
+
+    /**
+     * @param boolean $isSessionScoped
+     */
+    public function setIsSessionScoped($isSessionScoped)
+    {
+        $this->isSessionScoped = $isSessionScoped;
     }
 
     /**
@@ -87,17 +158,25 @@ class Lock implements LockInterface
      *
      * @api
      */
-    function isLockOwningSession()
+    public function isLockOwningSession()
     {
-        throw new NotImplementedException();
+        return $this->isLockOwningSession;
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @api
+     * @param boolean $isLockOwningSession
      */
-    function refresh()
+    public function setIsLockOwningSession($isLockOwningSession)
+    {
+        $this->isLockOwningSession = $isLockOwningSession;
+    }
+
+    /**
+    * {@inheritDoc}
+    *
+    * @api
+    */
+    public function refresh()
     {
         throw new NotImplementedException();
     }
