@@ -81,7 +81,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      */
     function holdsLock($absPath)
     {
-        throw new NotImplementedException();
+        return $this->objectmanager->holdsLock($absPath);
     }
 
     /**

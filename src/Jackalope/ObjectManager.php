@@ -1584,4 +1584,23 @@ class ObjectManager
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
     }
+
+    public function holdsLock($absPath)
+    {
+        if (!isset($this->objectsByPath['Node'][$absPath])) {
+            throw new \PHPCR\PathNotFoundException("The node '$absPath' does not exist");
+        }
+
+        $node = $this->objectsByPath['Node'][$absPath];
+
+        if ($node->hasProperty('jcr:mixinTypes')
+            && $node->hasProperty('jcr:lockIsDeep')
+            && $node->hasProperty('jcr:lockOwner'))
+        {
+            $val = $node->getPropertyValue('jcr:mixinTypes');
+            return reset($val) === 'mix:lockable';
+        }
+
+        return false;
+    }
 }
