@@ -55,8 +55,8 @@ class QOMWalker
         $sql = "SELECT ";
         $sql .= $this->walkColumns($qom->getColumns()) . " ";
         $sql .= $this->walkSource($qom->getSource());
-        if ($contraint = $qom->getConstraint()) {
-            $sql .= " AND " . $this->walkConstraint($contraint);
+        if ($constraint = $qom->getConstraint()) {
+            $sql .= " AND " . $this->walkConstraint($constraint);
         }
         if ($orderings = $qom->getOrderings()) {
             $sql .= " " . $this->walkOrderings($orderings);
@@ -113,14 +113,14 @@ class QOMWalker
             return $this->walkNotConstraint($constraint);
         } elseif ($constraint instanceof QOM\ComparisonInterface) {
             return $this->walkComparisonConstraint($constraint);
-        } elseif ($contraint instanceof QOM\DescendantNodeInterface) {
+        } elseif ($constraint instanceof QOM\DescendantNodeInterface) {
             return $this->walkDescendantNodeConstraint($constraint);
         } elseif ($constraint instanceof QOM\ChildNodeInterface) {
             return $this->walkChildNodeConstraint($constraint);
         } elseif ($constraint instanceof QOM\PropertyExistenceInterface) {
             return $this->walkPropertyExistanceConstraint($constraint);
         } elseif ($constraint instanceof QOM\SameNodeInterface) {
-            return $this->walkSameNodeConstraint($contraint);
+            return $this->walkSameNodeConstraint($constraint);
         } else {
             throw new \PHPCR\Query\InvalidQueryException("Constraint " . get_class($constraint) . " not yet supported.");
         }
