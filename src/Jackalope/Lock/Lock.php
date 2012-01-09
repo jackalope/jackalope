@@ -47,6 +47,7 @@ class Lock implements LockInterface
 
     /**
      * @param string $owner
+     * @private
      */
     public function setLockOwner($owner)
     {
@@ -65,6 +66,7 @@ class Lock implements LockInterface
 
     /**
     * @param boolean $isDeep
+     * @private
     */
     public function setIsDeep($isDeep)
     {
@@ -83,6 +85,7 @@ class Lock implements LockInterface
 
     /**
      * @param \PHPCR\NodeInterface $node
+     * @private
      */
     public function setNode(\PHPCR\NodeInterface $node)
     {
@@ -101,6 +104,7 @@ class Lock implements LockInterface
 
     /**
      * @param string $token
+     * @private
      */
     public function setLockToken($token)
     {
@@ -129,6 +133,7 @@ class Lock implements LockInterface
 
     /**
     * @param boolean $isLive
+     * @private
     */
     public function setIsLive($isLive)
     {
@@ -147,6 +152,7 @@ class Lock implements LockInterface
 
     /**
      * @param boolean $isSessionScoped
+     * @private
      */
     public function setIsSessionScoped($isSessionScoped)
     {
@@ -165,6 +171,7 @@ class Lock implements LockInterface
 
     /**
      * @param boolean $isLockOwningSession
+     * @private
      */
     public function setIsLockOwningSession($isLockOwningSession)
     {

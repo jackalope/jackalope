@@ -4,6 +4,7 @@ namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockManagerInterface,
     Jackalope\ObjectManager,
+    Jackalope\FactoryInterface,
     Jackalope\NotImplementedException;
 
 /**
@@ -29,11 +30,11 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param \Jackalope\Factory $factory An object factory implementing "get" as described in \Jackalope\Factory
+     * @param \Jackalope\FactoryInterface $factory An object factory implementing "get" as described in \Jackalope\FactoryInterface
      * @param \Jackalope\ObjectManager $objectManager
      * @return \Jackalope\Lock\LockManager
      */
-    public function __construct($factory, ObjectManager $objectManager)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
         $this->objectmanager = $objectManager;
         $this->factory = $factory;

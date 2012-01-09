@@ -1518,15 +1518,11 @@ class ObjectManager
 
     public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
     {
-        if (! $this->transport instanceof LockingInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support locking');
-        }
-
         // If the node does not exist, Jackrabbit will return an HTTP 412 error which is
         // the same as if the node was not assigned the 'mix:lockable' mixin. To avoid
         // problems in determining which of those error it would be, it's easier to detect
         // non-existing nodes earlier.
-        if (!isset($this->objectsByPath['Node'][$absPath])) {
+        if (!$this->session->nodeExists($absPath)) {
             throw new \PHPCR\PathNotFoundException("Unable to lock unexisting node '$absPath'");
         }
 
@@ -1561,25 +1557,17 @@ class ObjectManager
 
     public function isLocked($absPath)
     {
-        if (! $this->transport instanceof LockingInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support locking');
-        }
-
         return $this->transport->isLocked($absPath);
     }
 
     public function unlock($absPath)
     {
-        if (! $this->transport instanceof LockingInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support locking');
-        }
-
-        if (!isset($this->objectsByPath['Node'][$absPath])) {
+        if (!$this->session->nodeExists($absPath)) {
             throw new \PHPCR\PathNotFoundException("Unable to unlock unexisting node '$absPath'");
         }
 
         if (!array_key_exists($absPath, $this->locks)) {
-            throw new \PHPCR\Lock\LockException("Unable to find a lock active lock for the node '$absPath'");
+            throw new \PHPCR\Lock\LockException("Unable to find an active lock for the node '$absPath'");
         }
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
@@ -1587,7 +1575,7 @@ class ObjectManager
 
     public function holdsLock($absPath)
     {
-        if (!isset($this->objectsByPath['Node'][$absPath])) {
+        if (!$this->session->nodeExists($absPath)) {
             throw new \PHPCR\PathNotFoundException("The node '$absPath' does not exist");
         }
 
