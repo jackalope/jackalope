@@ -1593,14 +1593,8 @@ class ObjectManager
 
         $node = $this->objectsByPath['Node'][$absPath];
 
-        if ($node->hasProperty('jcr:mixinTypes')
+        return $node->isNodeType('mix:lockable')
             && $node->hasProperty('jcr:lockIsDeep')
-            && $node->hasProperty('jcr:lockOwner'))
-        {
-            $val = $node->getPropertyValue('jcr:mixinTypes');
-            return reset($val) === 'mix:lockable';
-        }
-
-        return false;
+            && $node->hasProperty('jcr:lockOwner');
     }
 }
