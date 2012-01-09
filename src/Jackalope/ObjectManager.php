@@ -1526,12 +1526,10 @@ class ObjectManager
             throw new \PHPCR\PathNotFoundException("Unable to lock unexisting node '$absPath'");
         }
 
-        // TODO: this does not work, there seem to be a problem with setting the node state after
-        // a session.save it is always DIRTY when it should be clean.
-//        $state = $this->objectsByPath['Node'][$absPath]->getState();
-//        if ($state !== \Jackalope\Item::STATE_NEW || $state !== \Jackalope\Item::STATE_CLEAN) {
-//            throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath'");
-//        }
+        $state = $this->objectsByPath['Node'][$absPath]->getState();
+        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
+            throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
+        }
 
         try
         {
@@ -1568,6 +1566,11 @@ class ObjectManager
 
         if (!array_key_exists($absPath, $this->locks)) {
             throw new \PHPCR\Lock\LockException("Unable to find an active lock for the node '$absPath'");
+        }
+
+        $state = $this->objectsByPath['Node'][$absPath]->getState();
+        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
+            throw new \PHPCR\InvalidItemStateException("Cannot unlock the non-clean node '$absPath': current state = $state");
         }
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
