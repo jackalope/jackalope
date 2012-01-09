@@ -35,6 +35,12 @@ use Jackalope\Transport\TransactionInterface;
  * it keeps track which nodes are dirty and updates them with the transport
  * interface.
  *
+ * As not all transports have the same capabilities, we do some checks here,
+ * but only if the check is not already done at the entry point. For
+ * versioning, transactions, locking and so on, the check is done when the
+ * respective manager is requested from the session or workspace. As those
+ * managers are the only entry points we do not check here again.
+ *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  *
  * @private
@@ -800,9 +806,6 @@ class ObjectManager
      */
     public function checkin($absPath)
     {
-        if (! $this->transport instanceof VersioningInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
-        }
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
         $node = $this->getNodeByPath($path, 'Version\\Version');
         $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
@@ -826,9 +829,6 @@ class ObjectManager
      */
     public function checkout($absPath)
     {
-        if (! $this->transport instanceof VersioningInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
-        }
         $this->transport->checkoutItem($absPath); //FIXME: what about pending move operations?
     }
 
@@ -840,10 +840,6 @@ class ObjectManager
      */
     public function restore($removeExisting, $vpath, $absPath)
     {
-        if (! $this->transport instanceof VersioningInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
-        }
-
         if (null !== $absPath
             && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\\Version'][$absPath]))
         ) {
@@ -863,10 +859,6 @@ class ObjectManager
      */
     public function getVersionHistory($path)
     {
-        if (! $this->transport instanceof VersioningInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
-        }
-
         return $this->transport->getVersionHistory($this->resolveBackendPath($path));
     }
 
@@ -883,10 +875,6 @@ class ObjectManager
      */
     public function removeVersion($versionPath, $versionName)
     {
-        if (! $this->transport instanceof VersioningInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
-        }
-
         $this->transport->removeVersion($versionPath, $versionName);
 
         // Adjust the in memory state
@@ -1331,10 +1319,6 @@ class ObjectManager
      */
     public function beginTransaction()
     {
-        if (! $this->transport instanceof TransactionInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
-        }
-
         $this->notifyItems('beginTransaction');
         $this->transport->beginTransaction();
     }
@@ -1356,10 +1340,6 @@ class ObjectManager
      */
     public function commitTransaction()
     {
-        if (! $this->transport instanceof TransactionInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
-        }
-
         $this->notifyItems('commitTransaction');
         $this->transport->commitTransaction();
     }
@@ -1382,10 +1362,6 @@ class ObjectManager
      */
     public function rollbackTransaction()
     {
-        if (! $this->transport instanceof TransactionInterface) {
-            throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
-        }
-
         $this->transport->rollbackTransaction();
         $this->notifyItems('rollbackTransaction');
     }
