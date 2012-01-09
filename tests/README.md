@@ -7,8 +7,10 @@ jackalope as a PHPCR implementation.
 
 The folder ``tests/Jackalope`` contains unit tests for the jackalope
 implementation. You should only need those if you want to debug jackalope
-itself or implement new features. Again, make sure you have the test
-workspace in jackrabbit.
+itself or implement new features.
+
+For both, you need to have the test workspace created in the storage (see
+below).
 
 
 There is one bootstrap and one phpunit file per backend implementation.
@@ -27,11 +29,9 @@ which features are skipped for what backend.
 # Setup
 
 
-Jackalope bundles the extensive phpcr-api-tests suite to test compliance with the PHPCR standard. Additionally jackalope contains a set of unit tests.
+Jackalope bundles the extensive phpcr-api-tests suite to test compliance with
+the PHPCR standard. Additionally jackalope contains a set of unit tests.
 After setting tests up (see below), you can simply run them with phpunit
-
-    cd tests
-    phpunit
 
 You should only see success or skipped tests, no failures or errors.
 
@@ -49,6 +49,11 @@ You need to create a new workspace. The simplest way to do this is
 
 See also "Jackrabbit Doc":http://jackrabbit.apache.org/jackrabbit-configuration.html#JackrabbitConfiguration-Workspaceconfiguration
 
+Once you have jackrabbit with a tests workspace, run the tests.
+
+    cd /path/to/jackalope/tests
+    cp phpunit_jackrabbit.xml.dist phpunit.xml
+    phpunit
 
 ## Test setup for the Doctrine DBAL transport
 
@@ -59,8 +64,13 @@ To setup a new mysql database to run the tests against, you can do something lik
     sudo mysqladmin -u root -p  create jackalope_doctrine
     echo "grant all privileges on jackalope_doctrine.* to 'jackalope'@'localhost' identified by '1234test'; flush privileges;" | mysql -u root -p
 
-Test fixtures for functional tests are written in JCR System XML format. Use the converter script ``tests/convert_doctrine_fixtures.php`` to prepare the fixtures for doctrine tests.
+Test fixtures for functional tests are written in JCR System XML format. Use the converter script ``tests/generate_doctrine_dbal_fixture.php`` to prepare the fixtures for doctrine tests.
 The converted fixtures are written into **tests/fixtures/doctrine**. The converted fixtures are not tracked in the repository, you should regenerate them whenever the fixtures in tests/phpcr-api/fixtures change.
+
+    cd /path/to/jackalope/tests
+    cp phpunit_doctrine_dbal.xml.dist phpunit.xml
+    ./generate_doctrine_dbal_fixture.php
+    phpunit
 
 
 

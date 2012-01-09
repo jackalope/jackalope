@@ -4,8 +4,11 @@ A powerful implementation of the [PHPCR API](http://phpcr.github.com).
 
 You can use Jackalope with different storage backends. For now, we support:
 
-* *relational databases* with the DoctrineDBAL backend. Works with any database supported by doctrine (mysql, postgres, ...) and has no dependency on java or jackrabbit. For the moment, it is less feature complete.
-* *Jackrabbit* server backend supports many features and requires you to simply install a .jar file for the data store component.
+* *relational databases* with the DoctrineDBAL backend. Works with any
+    database supported by doctrine (mysql, postgres, ...) and has no dependency
+    on java or jackrabbit. For the moment, it is less feature complete.
+* *Jackrabbit* server backend supports many features and requires you to simply
+    install a .jar file for the data store component.
 
 
 Discuss on jackalope-dev@googlegroups.com
@@ -37,7 +40,8 @@ Make sure you have at least the version specified in [the protocol implementatio
 
 ## Jackalope - Doctrine DBAL
 
-Besides the Jackalope repository, you need [Doctrine DBAL](https://github.com/doctrine/dbal) (which bundles [Doctrine Common](https://github.com/doctrine/common) too) installed on your machine.
+Besides the Jackalope repository, you need [Doctrine DBAL](https://github.com/doctrine/dbal)
+(which bundles [Doctrine Common](https://github.com/doctrine/common) too) installed on your machine.
 
     # in your project directory
     cd lib/vendor
@@ -46,7 +50,8 @@ Besides the Jackalope repository, you need [Doctrine DBAL](https://github.com/do
     git submodule update --init
 
 See the wiki pages for how to set up testing:
-[DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) | [Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
+[DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) |
+[Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
 
 ## phpunit Tests
 
@@ -67,27 +72,36 @@ prepare anything special.
 
 Jackalope specific commands:
 
-* ``jackalope:init:dbal``: Initialize a database for jackalope with the Doctrine DBAL transport.
-* ``jackalope:run:jackrabbit [--jackrabbit_jar[="..."]] [start|stop|status]``: Start and stop the Jackrabbit server
+* ``jackalope:init:dbal``: Initialize a database for jackalope with the
+    Doctrine DBAL transport.
+* ``jackalope:run:jackrabbit [--jackrabbit_jar[="..."]] [start|stop|status]``:
+    Start and stop the Jackrabbit server
 
 Commands available from the phpcr-utils:
 
-* ``phpcr:workspace:create <name>``: Create the workspace name in the configured repository
-* ``phpcr:register-node-types --allow-update [cnd-file]``: Register namespaces and node types from a "Compact Node Type Definition" .cnd file
-* ``phpcr:dump [--sys_nodes[="..."]] [--props[="..."]] [path]``: Show the node names
-     under the specified path. If you set sys_nodes=yes you will also see system nodes.
-     If you set props=yes you will additionally see all properties of the dumped nodes.
+* ``phpcr:workspace:create <name>``: Create the workspace name in the
+    configured repository
+* ``phpcr:register-node-types --allow-update [cnd-file]``: Register namespaces
+    and node types from a "Compact Node Type Definition" .cnd file
+* ``phpcr:dump [--sys_nodes[="..."]] [--props[="..."]] [path]``: Show the node
+    names under the specified path. If you set sys_nodes=yes you will also see
+    system nodes. If you set props=yes you will additionally see all properties
+    of the dumped nodes.
 * ``phpcr:purge``: Remove all content from the configured repository in the
      configured workspace
-* ``phpcr:sql2``: Run a query in the JCR SQL2 language against the repository and dump
-     the resulting rows to the console.
+* ``phpcr:sql2``: Run a query in the JCR SQL2 language against the repository
+    and dump the resulting rows to the console.
 
 
 
 # Bootstrapping
 
-Jackalope relies on autoloading. Either set up your autoloading to find classes in the following folders or copy the
-autoload.jackrabbit.dist.php resp. autoload.dbal.dist.php file in src/ to autoload.php and adjust as needed.
+Jackalope relies on autoloading and the namespaces and folder structure follow
+PSR-0. Either set up your autoloading to find classes in the following folders
+or copy the ``autoload.jackrabbit.dist.php`` resp. ``autoload.dbal.dist.php``
+file in ``src/`` to ``autoload.php`` and adjust as needed.
+
+If you checked out everything as submodules, the paths will be
 
 * src/
 * lib/phpcr/src
@@ -96,6 +110,8 @@ autoload.jackrabbit.dist.php resp. autoload.dbal.dist.php file in src/ to autolo
 
 
 ## Bootstrapping Jackrabbit
+
+Minimalist sample code to get a PHPCR session with the jackrabbit backend.
 
     $jackrabbit_url = 'http://127.0.0.1:8080/server/';
     $user       = 'admin';
@@ -106,14 +122,17 @@ autoload.jackrabbit.dist.php resp. autoload.dbal.dist.php file in src/ to autolo
     $credentials = new SimpleCredentials($user, $pass);
     $session = $repository->login($credentials, $workspace);
 
+
 ## Bootstrapping Doctrine DBAL
 
-For Doctrine DBAL, you additionally need the doctrine repositories autoloaded. If you checked out as in the above instructions, those paths will be
+For Doctrine DBAL, you additionally need the doctrine repositories autoloaded.
+If you checked out as in the above instructions, those paths will be
 
 * lib/vendor/doctrine-dbal/lib
 * lib/vendor/doctrine-dbal/lib/vendor/doctrine-common/lib
 
-Then you need to make sure the commands are set up (see above "Enable the commands") and run
+Then you need to make sure the commands are set up (see above "Enable the
+commands") and run
 
     bin/jackalope jackalope:init:dbal
 
@@ -144,7 +163,8 @@ To initialize jackalope in your application, you do
 # Usage
 
 The entry point is to create the repository factory. The factory specifies the
-storage backend as well. From this point on, there are no differences in the usage.
+storage backend as well. From this point on, there are no differences in the
+usage (except for supported features, that is).
 
     // see Bootstrapping for how to get the session.
 
