@@ -52,6 +52,11 @@ class Workspace implements WorkspaceInterface
     protected $namespaceRegistry;
 
     /**
+     * @var \Jackalope\Lock\LockManager
+     */
+    protected $lockManager;
+
+    /**
      * Instantiate a workspace referencing a workspace in the storage.
      *
      * @param FactoryInterface $factory the object factory
@@ -140,7 +145,18 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support locking');
         }
 
-        return $this->factory->get('Lock\\LockManager', array($this->session->getObjectManager()));
+        if (is_null($this->lockManager)) {
+            $this->lockManager = $this->factory->get(
+                'Lock\\LockManager',
+                array(
+                    $this->session->getObjectManager(),
+                    $this->session,
+                    $this->session->getTransport()
+                )
+            );
+        }
+
+        return $this->lockManager;
     }
 
     /**

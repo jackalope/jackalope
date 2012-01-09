@@ -26,7 +26,6 @@ use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\NodeTypeManagementInterface;
 use Jackalope\Transport\NodeTypeCndManagementInterface;
 use Jackalope\Transport\TransactionInterface;
-use Jackalope\Transport\LockingInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -114,13 +113,6 @@ class ObjectManager
      * @var array
      */
     protected $nodesMove = array();
-
-    /**
-     * Contains a list of nodes locks
-     *
-     * @var array(absPath => Lock)
-     */
-    protected $locks = array();
 
     /**
      * Create the ObjectManager instance with associated session and transport
@@ -1514,78 +1506,5 @@ class ObjectManager
         // objectsByPath and the calling parent node can forget it
 
         return true;
-    }
-
-    public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
-    {
-        // If the node does not exist, Jackrabbit will return an HTTP 412 error which is
-        // the same as if the node was not assigned the 'mix:lockable' mixin. To avoid
-        // problems in determining which of those error it would be, it's easier to detect
-        // non-existing nodes earlier.
-        if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("Unable to lock unexisting node '$absPath'");
-        }
-
-        $state = $this->objectsByPath['Node'][$absPath]->getState();
-        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
-            throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
-        }
-
-        try
-        {
-            $res = $this->transport->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
-        }
-        catch (\PHPCR\RepositoryException $ex)
-        {
-            // Check if it's a 412 error, otherwise re-throw the same exception
-            if (preg_match('/Response \(HTTP 412\):/', $ex->getMessage()))
-            {
-                throw new \PHPCR\Lock\LockException("Unable to lock the non-lockable node '$absPath': " . $ex->getMessage(), 412);
-            }
-
-            // Any other exception will simply be rethrown
-            throw $ex;
-        }
-
-        // Store the lock for further use
-        $this->locks[$absPath] = $res;
-
-        return $res;
-    }
-
-    public function isLocked($absPath)
-    {
-        return $this->transport->isLocked($absPath);
-    }
-
-    public function unlock($absPath)
-    {
-        if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("Unable to unlock unexisting node '$absPath'");
-        }
-
-        if (!array_key_exists($absPath, $this->locks)) {
-            throw new \PHPCR\Lock\LockException("Unable to find an active lock for the node '$absPath'");
-        }
-
-        $state = $this->objectsByPath['Node'][$absPath]->getState();
-        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
-            throw new \PHPCR\InvalidItemStateException("Cannot unlock the non-clean node '$absPath': current state = $state");
-        }
-
-        $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
-    }
-
-    public function holdsLock($absPath)
-    {
-        if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("The node '$absPath' does not exist");
-        }
-
-        $node = $this->objectsByPath['Node'][$absPath];
-
-        return $node->isNodeType('mix:lockable')
-            && $node->hasProperty('jcr:lockIsDeep')
-            && $node->hasProperty('jcr:lockOwner');
     }
 }
