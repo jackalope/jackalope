@@ -1506,7 +1506,10 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $tokenDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'href', 'No lock token in the received lock');
         $lock->setLockToken($tokenDom->textContent);
 
-        // TODO: get seconds remaining from <D:timeout>
+        // Extract the timeout
+        $timeoutDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'timeout', 'No lock timeout in the received lock');
+        $lock->setTimeout($this->parseTimeout($timeoutDom->nodeValue));
+
         // TODO: determine if the lock is live
         // TODO: determine if the lock is owned by this session
         // TODO: get the lock owning node !!!SEE REMARK BELOW!!
@@ -1544,5 +1547,30 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $list->item(0);
     }
 
+    /**
+     * Parse the timeout value from a WebDAV response.
+     *
+     * The timeout value follows the syntax defined in RFC2518: Timeout Header.
+     * Here we just parse the values in the form "Second-XXXX" or "Infinite". Any other value will
+     * produce an error.
+     *
+     * The function returns a positive number or zero in case of a normal timeout value and PHP_INT_MAX
+     * in case of an "Infinite" value.
+     *
+     * @param string $timeoutValue The timeout in seconds or PHP_INT_MAX for infinite
+     * @return void
+     */
+    protected function parseTimeout($timeoutValue)
+    {
+        if ($timeoutValue === 'Inifite') {
+            return PHP_INT_MAX;
+        }
+
+        if (preg_match('/Second\-([\d]+)/', $timeoutValue, $matches)) {
+            return $matches[1];
+        }
+
+        throw new \InvalidArgumentException("Invalid timeout value '$timeoutValue'");
+    }
 
 }

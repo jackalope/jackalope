@@ -23,9 +23,6 @@ class Lock implements LockInterface
     /** @var string */
     protected $lockToken;
 
-    /** @var integer */
-    protected $secondsRemaining;
-
     /** @var boolean */
     protected $isLive;
 
@@ -34,6 +31,17 @@ class Lock implements LockInterface
 
     /** @var boolean */
     protected $isLockOwningSession;
+
+    /** @var DateTime */
+    protected $createdTimestamp;
+
+    /** @var int */
+    protected $timeout;
+
+    public function __construct()
+    {
+        $this->createdTimestamp = time();
+    }
 
     /**
      * {@inheritDoc}
@@ -118,7 +126,11 @@ class Lock implements LockInterface
      */
     public function getSecondsRemaining()
     {
-        return $this->secondsRemaining;
+        if ($this->timeout === PHP_INT_MAX) {
+            return PHP_INT_MAX;
+        }
+
+        return $this->timeout - (time() - $this->createdTimestamp);
     }
 
     /**
@@ -176,6 +188,16 @@ class Lock implements LockInterface
     public function setIsLockOwningSession($isLockOwningSession)
     {
         $this->isLockOwningSession = $isLockOwningSession;
+    }
+
+    /**
+     * Set the lock timeout in seconds
+     * @param int $timeout
+     * @private
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
     }
 
     /**
