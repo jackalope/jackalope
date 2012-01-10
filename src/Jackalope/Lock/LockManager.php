@@ -85,6 +85,14 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      */
     function getLock($absPath)
     {
+        // The locks are only cached in the LockManager if the lock was created
+        // by him. Otherwise we don't have the Lock cached.
+
+        // TODO:
+        // If i'm the owner and the lock is in cache then return it
+        // else do a propfind on jackrabbit (see isLocked) and return the
+        // resulting lock
+
         throw new NotImplementedException();
     }
 
@@ -123,6 +131,10 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      */
     function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
     {
+        if (!$isSessionScoped) {
+            throw new NotImplementedException("Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.");
+        }
+
         // If the node does not exist, Jackrabbit will return an HTTP 412 error which is
         // the same as if the node was not assigned the 'mix:lockable' mixin. To avoid
         // problems in determining which of those error it would be, it's easier to detect
