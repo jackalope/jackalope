@@ -47,6 +47,7 @@ class QOMWalker
         if (!isset($this->alias[$selectorAlias])) {
             $this->alias[$selectorAlias] = "n" . count($this->alias);
         }
+
         return $this->alias[$selectorAlias];
     }
 
@@ -61,6 +62,7 @@ class QOMWalker
         if ($orderings = $qom->getOrderings()) {
             $sql .= " " . $this->walkOrderings($orderings);
         }
+
         return $sql;
     }
 
@@ -121,9 +123,9 @@ class QOMWalker
             return $this->walkPropertyExistanceConstraint($constraint);
         } elseif ($constraint instanceof QOM\SameNodeInterface) {
             return $this->walkSameNodeConstraint($constraint);
-        } else {
-            throw new \PHPCR\Query\InvalidQueryException("Constraint " . get_class($constraint) . " not yet supported.");
         }
+
+        throw new \PHPCR\Query\InvalidQueryException("Constraint " . get_class($constraint) . " not yet supported.");
     }
 
     public function walkSameNodeConstraint(QOM\SameNodeInterface $constraint)
@@ -211,9 +213,9 @@ class QOMWalker
             return "!=";
         } elseif ($operator == QOM\QueryObjectModelConstantsInterface::JCR_OPERATOR_LIKE) {
             return "LIKE";
-        } else {
-            return $operator; // no-op for simplicity, not standard conform (but using the constants is a pain)
         }
+
+        return $operator; // no-op for simplicity, not standard conform (but using the constants is a pain)
     }
 
     /**
@@ -244,24 +246,22 @@ class QOMWalker
                 return $alias . ".path";
             } elseif ($property == "jcr:uuid") {
                 return $alias . ".identifier";
-            } else {
-                return $this->sqlXpathExtractValue($alias, $property);
             }
-        } elseif ($operand instanceof QOM\LengthInterface) {
 
+            return $this->sqlXpathExtractValue($alias, $property);
+        } elseif ($operand instanceof QOM\LengthInterface) {
             $alias = $this->getTableAlias($operand->getPropertyValue()->getSelectorName());
             $property = $operand->getPropertyValue()->getPropertyName();
             if ($property == "jcr:path") {
                 return $alias . ".path";
             } elseif ($property == "jcr:uuid") {
                 return $alias . ".identifier";
-            } else {
-                return $this->sqlXpathExtractValue($alias, $property);
             }
 
-        } else {
-            throw new \PHPCR\Query\InvalidQueryException("Dynamic operand " . get_class($operand) ." not yet supported.");
+            return $this->sqlXpathExtractValue($alias, $property);
         }
+
+        throw new \PHPCR\Query\InvalidQueryException("Dynamic operand " . get_class($operand) . " not yet supported.");
     }
 
     public function walkOrderings(array $orderings)
@@ -292,9 +292,9 @@ class QOMWalker
             return "EXTRACTVALUE($alias.props, 'count(//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1])') = 1";
         } elseif ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
             return "xpath_exists('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces().") = 't'";
-        } else {
-            throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
         }
+
+        throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
     }
 
     /**
@@ -310,9 +310,9 @@ class QOMWalker
             return "EXTRACTVALUE($alias.props, '//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]')";
         } elseif ($this->platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
             return "(xpath('//sv:property[@sv:name=\"" . $property . "\"]/sv:value[1]/text()', CAST($alias.props AS xml), ".$this->sqlXpathPostgreSQLNamespaces()."))[1]::text";
-        } else {
-            throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
         }
+
+        throw new \Jackalope\NotImplementedException("Xpath evaluations cannot be executed with '" . $this->platform->getName() . "' yet.");
     }
 
     private function sqlXpathPostgreSQLNamespaces()
