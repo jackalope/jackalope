@@ -88,6 +88,9 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         // The locks are only cached in the LockManager if the lock was created
         // by him. Otherwise we don't have the Lock cached.
 
+        // Also see: https://issues.apache.org/jira/browse/JCR-2029
+        // About needing to fetch multiple nodes of a locked subtree to get the lock owner.
+
         // TODO:
         // If i'm the owner and the lock is in cache then return it
         // else do a propfind on jackrabbit (see isLocked) and return the
