@@ -32,16 +32,8 @@ class Lock implements LockInterface
     /** @var boolean */
     protected $isLockOwningSession;
 
-    /** @var DateTime */
-    protected $createdTimestamp;
-
     /** @var int */
     protected $timeout;
-
-    public function __construct()
-    {
-        $this->createdTimestamp = time();
-    }
 
     /**
      * {@inheritDoc}
@@ -126,11 +118,9 @@ class Lock implements LockInterface
      */
     public function getSecondsRemaining()
     {
-        if ($this->timeout === PHP_INT_MAX) {
-            return PHP_INT_MAX;
-        }
-
-        return $this->timeout - (time() - $this->createdTimestamp);
+        // The timeout does not seem to be correctly implemented in Jackrabbit. Thus we
+        // always return the max timeout value
+        return PHP_INT_MAX;
     }
 
     /**
