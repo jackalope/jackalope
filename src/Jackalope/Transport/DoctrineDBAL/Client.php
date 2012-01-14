@@ -650,8 +650,8 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 case PropertyType::DECIMAL:
                     $values = $property->getDecimal();
                     break;
-                case PropertyType::BOOLEAN:;
-                    $values = $property->getBoolean() ? "1" : "0";
+                case PropertyType::BOOLEAN:
+                    $values = array_map('intval', (array) $property->getBoolean());
                     break;
                 case PropertyType::LONG:
                     $values = $property->getLong();
