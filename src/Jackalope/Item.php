@@ -335,12 +335,11 @@ abstract class Item implements ItemInterface
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
-            } else { // assert($this instanceof Property)
-                if ($this->name == $otherItem->getName()
-                    && $this->getParent()->isSame($otherItem->getParent())
-                ) {
-                        return true;
-                }
+                // assert($this instanceof Property)
+            } elseif ($this->name == $otherItem->getName()
+                && $this->getParent()->isSame($otherItem->getParent())
+            ) {
+                return true;
             }
         }
         return false;
