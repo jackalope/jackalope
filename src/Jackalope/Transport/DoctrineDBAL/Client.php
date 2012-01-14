@@ -721,6 +721,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function getNode($path)
     {
+        $this->assertValidPath($path);
         $this->assertLoggedIn();
 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
