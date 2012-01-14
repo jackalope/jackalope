@@ -845,7 +845,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 // no we really don't know that path
                 throw new ItemNotFoundException("No item found at ".$path);
             }
-            $propertyName = str_replace($nodePath, "", $path);
+            $propertyName = str_replace($nodePath . "/", "", $path);
 
             $query = "SELECT props FROM phpcr_nodes WHERE id = ?";
             $xml = $this->conn->fetchColumn($query, array($nodeId));
