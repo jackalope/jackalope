@@ -731,8 +731,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
 
         $data = new \stdClass();
-        // TODO: only return jcr:uuid when this node implements mix:referencable
-        $data->{'jcr:uuid'} = $row['identifier'];
         $data->{'jcr:primaryType'} = $row['type'];
         $this->nodeIdentifiers[$path] = $row['identifier'];
 
@@ -797,6 +795,20 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 }
                 $data->{":" . $name} = $type;
             }
+        }
+
+        // If the node is referenceable, return jcr:uuid.
+        $is_referenceable = FALSE;
+        if (isset($data->{"jcr:mixinTypes"})) {
+            foreach ((array) $data->{"jcr:mixinTypes"} as $mixin) {
+                if ($this->nodeTypeManager->getNodeType($mixin)->isNodeType('mix:referenceable')) {
+                    $is_referenceable = TRUE;
+                    break;
+                }
+            }
+        }
+        if ($is_referenceable) {
+            $data->{'jcr:uuid'} = $row['identifier'];
         }
 
         return $data;
@@ -1027,7 +1039,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         $properties = $node->getProperties();
 
-        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getValue() : UUIDHelper::generateUUID();
+        if (isset($this->nodeIdentifiers[$path])) {
+            $nodeIdentifier = $this->nodeIdentifiers[$path];
+        }
+        elseif (isset($properties['jcr:uuid'])) {
+            $nodeIdentifier = $properties['jcr:uuid']->getValue();
+        }
+        else {
+            $nodeIdentifier = UUIDHelper::generateUUID();
+        }
         $type = isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured";
         $this->syncNode($nodeIdentifier, $path, $this->getParentPath($path), $type, $properties);
 
