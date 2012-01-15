@@ -28,8 +28,8 @@ use Jackalope\Transport\QueryInterface as QueryTransport;
 use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\NodeTypeManagementInterface;
+use Jackalope\Transport\StandardNodeTypes;
 use Jackalope\NodeType\NodeTypeManager;
-use Jackalope\NodeType\PHPCR2StandardNodeTypes;
 use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
 
@@ -1138,7 +1138,7 @@ $/xi";
     {
         $nodeTypes = array_flip($nodeTypes);
 
-        $data = PHPCR2StandardNodeTypes::getNodeTypeData();
+        $data = StandardNodeTypes::getNodeTypeData();
         $filteredData = array();
         foreach ($data as $nodeTypeData) {
             if (isset($nodeTypes[$nodeTypeData['name']])) {

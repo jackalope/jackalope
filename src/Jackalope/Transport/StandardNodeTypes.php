@@ -1,9 +1,9 @@
 <?php
 
-namespace Jackalope\NodeType;
+namespace Jackalope\Transport;
 
 /**
- * TODO move this to the DoctrineDBAL transport and make it extensible
+ * TODO make this extensible
  *
  * Utility class for transports that do not use jackrabbit to provide the
  * standard node type information.
@@ -11,7 +11,7 @@ namespace Jackalope\NodeType;
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class PHPCR2StandardNodeTypes
+class StandardNodeTypes
 {
     /**
      * Returns all the default nodes provided by the JCR 2.0 as well as the PHPCR
