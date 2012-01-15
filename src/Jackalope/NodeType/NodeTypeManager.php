@@ -96,15 +96,13 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             return;
         }
 
-        if (! is_null($name)) {
-            if (empty($this->primaryTypes[$name])
-                && empty($this->mixinTypes[$name])
-            ) {
-                //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
-                $nodetypes = $this->objectManager->getNodeType($name);
-            } else {
+        if (null !== $name) {
+            if (!empty($this->primaryTypes[$name]) || !empty($this->mixinTypes[$name])) {
                 return; //we already know this node
             }
+
+            //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
+            $nodetypes = $this->objectManager->getNodeType($name);
         } else {
             $nodetypes = $this->objectManager->getNodeTypes();
             $this->fetchedAllFromBackend = true;
@@ -114,9 +112,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             $nodetype = $this->factory->get('NodeType\\NodeType', array($this, $nodetype));
             $name = $nodetype->getName();
             //do not overwrite existing types. maybe they where changed locally
-            if (empty($this->primaryTypes[$name])
-                && empty($this->mixinTypes[$name])
-            ) {
+            if (empty($this->primaryTypes[$name]) && empty($this->mixinTypes[$name])) {
                 $this->addNodeType($nodetype);
             }
         }
@@ -222,9 +218,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         if (isset($this->mixinTypes[$nodeTypeName])) {
             return $this->mixinTypes[$nodeTypeName];
         }
-        if (is_null($nodeTypeName)) {
+        if (null === $nodeTypeName) {
             $nodeTypeName = 'nodeTypeName was <null>';
         }
+
         throw new NoSuchNodeTypeException($nodeTypeName);
     }
 
