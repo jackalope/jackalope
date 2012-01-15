@@ -276,7 +276,7 @@ interface TransportInterface
      *
      * If the transport does not support registering new node types, it can
      * just return types from the hard coded definition at
-     * Jackalope\NodeType\PHPCR2StandardNodeTypes
+     * Jackalope\Transport\StandardNodeTypes
      *
      * @param array string names of node types to fetch, if empty array all
      *      node types are retrieved
