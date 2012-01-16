@@ -681,8 +681,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                             $binaryData[$property->getName()][] = $binary;
                             $values = strlen($binary);
                         }
-                    }
-                    else {
+                    } else {
                         $values = $property->getLength();
                         if (!$property->isMultiple() && empty($values)) {
                             // TODO: not sure why this happens.
@@ -807,11 +806,11 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
 
         // If the node is referenceable, return jcr:uuid.
-        $is_referenceable = FALSE;
+        $is_referenceable = false;
         if (isset($data->{"jcr:mixinTypes"})) {
             foreach ((array) $data->{"jcr:mixinTypes"} as $mixin) {
                 if ($this->nodeTypeManager->getNodeType($mixin)->isNodeType('mix:referenceable')) {
-                    $is_referenceable = TRUE;
+                    $is_referenceable = true;
                     break;
                 }
             }
@@ -1050,11 +1049,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         if (isset($this->nodeIdentifiers[$path])) {
             $nodeIdentifier = $this->nodeIdentifiers[$path];
-        }
-        elseif (isset($properties['jcr:uuid'])) {
+        } elseif (isset($properties['jcr:uuid'])) {
             $nodeIdentifier = $properties['jcr:uuid']->getValue();
-        }
-        else {
+        } else {
             $nodeIdentifier = UUIDHelper::generateUUID();
         }
         $type = isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured";
@@ -1177,9 +1174,8 @@ $/xi";
             // TODO: check if user types can override standard types.
             return array_values(array_intersect_key($standardTypes, $nodeTypes) + array_intersect_key($userTypes, $nodeTypes));
         }
-        else {
-            return array_values($standardTypes + $userTypes);
-        }
+
+        return array_values($standardTypes + $userTypes);
     }
 
     /**
@@ -1226,13 +1222,13 @@ $/xi";
                     'isFulltextSearchable' => (bool)$propertyData['fulltext_searchable'],
                     'isQueryOrderable' => (bool)$propertyData['query_orderable'],
                     'queryOperators' => array (
-                      0 => 'jcr.operator.equal.to',
-                      1 => 'jcr.operator.not.equal.to',
-                      2 => 'jcr.operator.greater.than',
-                      3 => 'jcr.operator.greater.than.or.equal.to',
-                      4 => 'jcr.operator.less.than',
-                      5 => 'jcr.operator.less.than.or.equal.to',
-                      6 => 'jcr.operator.like',
+                        0 => 'jcr.operator.equal.to',
+                        1 => 'jcr.operator.not.equal.to',
+                        2 => 'jcr.operator.greater.than',
+                        3 => 'jcr.operator.greater.than.or.equal.to',
+                        4 => 'jcr.operator.less.than',
+                        5 => 'jcr.operator.less.than.or.equal.to',
+                        6 => 'jcr.operator.like',
                     ),
                     'defaultValue' => array($propertyData['default_value']),
                 );
