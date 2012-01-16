@@ -106,13 +106,13 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             }
         }
 
+        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
+            $this->defaultSelectorName = key($this->path);
+        }
+
         if (isset($this->values[''])) {
             $this->values[$this->defaultSelectorName] = $this->values[''];
             unset($this->values['']);
-        }
-
-        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
-            $this->defaultSelectorName = key($this->path);
         }
     }
 
