@@ -80,6 +80,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
 
+        // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
         foreach ($columns as $column) {
             $selectorName = '';
             if (isset($column['dcr:selectorName'])) {
@@ -105,15 +106,13 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
             }
         }
 
-        // potentially this fix should be done inside the Jackrabbit Client
-        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
-            $this->defaultSelectorName = key($this->path);
-        }
-
-        // potentially this fix should be done inside the Jackrabbit Client
         if (isset($this->values[''])) {
             $this->values[$this->defaultSelectorName] = $this->values[''];
             unset($this->values['']);
+        }
+
+        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
+            $this->defaultSelectorName = key($this->path);
         }
     }
 
