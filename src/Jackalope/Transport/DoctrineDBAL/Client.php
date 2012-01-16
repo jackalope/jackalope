@@ -1056,6 +1056,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         $properties = $node->getProperties();
 
+        $path = $node->getPath();
         if (isset($this->nodeIdentifiers[$path])) {
             $nodeIdentifier = $this->nodeIdentifiers[$path];
         } elseif (isset($properties['jcr:uuid'])) {
@@ -1065,7 +1066,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
         $type = isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured";
 
-        $path = $node->getPath();
         $this->syncNode($nodeIdentifier, $path, $this->getParentPath($path), $type, $properties);
 
         return true;
@@ -1391,12 +1391,12 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             } catch (\Exception $e) {
                 throw new InvalidQueryException('Invalid query: '.$query->getStatement());
             }
+
             $language = QueryInterface::JCR_JQOM;
         }
 
         if ($language !== QueryInterface::JCR_JQOM) {
             throw new NotImplementedException("Query language '$language' not yet implemented.");
-
         }
 
         $source   = $query->getSource();
@@ -1412,11 +1412,11 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
 
         $qomWalker = new Query\QOMWalker($this->nodeTypeManager, $this->conn->getDatabasePlatform(), $this->getNamespaces());
-        $query = $qomWalker->walkQOMQuery($query);
+        $sql = $qomWalker->walkQOMQuery($query);
 
-        $query = $this->conn->getDatabasePlatform()->modifyLimitQuery($query, $limit, $offset);
+        $sql = $this->conn->getDatabasePlatform()->modifyLimitQuery($sql, $limit, $offset);
 
-        $data = $this->conn->fetchAll($query, array($this->workspaceId));
+        $data = $this->conn->fetchAll($sql, array($this->workspaceId));
 
         // The list of columns is required to filter each records props
         $columns = array();
@@ -1424,7 +1424,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             $columns[$column->getPropertyName()] = $column->getSelectorName();
         }
 
-        if (array() == $columns) {
+        if (empty($columns)) {
             $selector = $source->getSelectorName();
             if (null === $selector) {
                 $selector = $source->getNodeTypeName();
@@ -1513,7 +1513,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         $type = $weakReference ? PropertyType::WEAKREFERENCE : PropertyType::REFERENCE;
 
-        $query = 'SELECT CONCAT(n.path, '/', fk.source_property_name) as path, fk.source_property_name FROM phpcr_nodes n'.
+        $query = "SELECT CONCAT(n.path, '/', fk.source_property_name) as path, fk.source_property_name FROM phpcr_nodes n".
             '   INNER JOIN phpcr_nodes_foreignkeys fk ON n.id = fk.source_id'.
             '   WHERE fk.target_id = ? AND fk.type = ?';
         $properties = $this->conn->fetchAll($query, array($targetId, $type));
