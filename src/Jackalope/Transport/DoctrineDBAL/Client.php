@@ -657,9 +657,21 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                     $values = $property->getLong();
                     break;
                 case PropertyType::BINARY:
-                    if ($property->isMultiple()) {
-                        $values = array();
-                        foreach ($property->getValueForStorage() as $stream) {
+                    if ($property->isNew() || $property->isModified()) {
+                        if ($property->isMultiple()) {
+                            $values = array();
+                            foreach ($property->getValueForStorage() as $stream) {
+                                if (null === $stream) {
+                                    $binary = '';
+                                } else {
+                                    $binary = stream_get_contents($stream);
+                                    fclose($stream);
+                                }
+                                $binaryData[$property->getName()][] = $binary;
+                                $values[] = strlen($binary);
+                            }
+                        } else {
+                            $stream = $property->getValueForStorage();
                             if (null === $stream) {
                                 $binary = '';
                             } else {
@@ -667,18 +679,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                                 fclose($stream);
                             }
                             $binaryData[$property->getName()][] = $binary;
-                            $values[] = strlen($binary);
+                            $values = strlen($binary);
                         }
-                    } else {
-                        $stream = $property->getValueForStorage();
-                        if (null === $stream) {
-                            $binary = '';
-                        } else {
-                            $binary = stream_get_contents($stream);
-                            fclose($stream);
+                    }
+                    else {
+                        $values = $property->getLength();
+                        if (!$property->isMultiple() && empty($values)) {
+                            // TODO: not sure why this happens.
+                            $values = array(0);
                         }
-                        $binaryData[$property->getName()][] = $binary;
-                        $values = strlen($binary);
                     }
                     break;
                 case PropertyType::DATE:
