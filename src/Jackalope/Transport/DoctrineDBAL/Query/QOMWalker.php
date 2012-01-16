@@ -98,7 +98,7 @@ class QOMWalker
         $subTypes = $this->nodeTypeManager->getSubtypes($source->getNodeTypeName());
         foreach ($subTypes as $subType) {
             /* @var $subType PHPCR\NodeType\NodeTypeInterface */
-            $sql .= ", '" . $subType . "'";
+            $sql .= ", '" . $subType->getName() . "'";
         }
         $sql .= ')';
 
