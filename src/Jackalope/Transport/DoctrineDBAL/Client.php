@@ -650,16 +650,28 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 case PropertyType::DECIMAL:
                     $values = $property->getDecimal();
                     break;
-                case PropertyType::BOOLEAN:;
-                    $values = $property->getBoolean() ? "1" : "0";
+                case PropertyType::BOOLEAN:
+                    $values = array_map('intval', (array) $property->getBoolean());
                     break;
                 case PropertyType::LONG:
                     $values = $property->getLong();
                     break;
                 case PropertyType::BINARY:
-                    if ($property->isMultiple()) {
-                        $values = array();
-                        foreach ($property->getValueForStorage() as $stream) {
+                    if ($property->isNew() || $property->isModified()) {
+                        if ($property->isMultiple()) {
+                            $values = array();
+                            foreach ($property->getValueForStorage() as $stream) {
+                                if (null === $stream) {
+                                    $binary = '';
+                                } else {
+                                    $binary = stream_get_contents($stream);
+                                    fclose($stream);
+                                }
+                                $binaryData[$property->getName()][] = $binary;
+                                $values[] = strlen($binary);
+                            }
+                        } else {
+                            $stream = $property->getValueForStorage();
                             if (null === $stream) {
                                 $binary = '';
                             } else {
@@ -667,18 +679,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                                 fclose($stream);
                             }
                             $binaryData[$property->getName()][] = $binary;
-                            $values[] = strlen($binary);
+                            $values = strlen($binary);
                         }
-                    } else {
-                        $stream = $property->getValueForStorage();
-                        if (null === $stream) {
-                            $binary = '';
-                        } else {
-                            $binary = stream_get_contents($stream);
-                            fclose($stream);
+                    }
+                    else {
+                        $values = $property->getLength();
+                        if (!$property->isMultiple() && empty($values)) {
+                            // TODO: not sure why this happens.
+                            $values = array(0);
                         }
-                        $binaryData[$property->getName()][] = $binary;
-                        $values = strlen($binary);
                     }
                     break;
                 case PropertyType::DATE:
@@ -721,6 +730,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function getNode($path)
     {
+        $this->assertValidPath($path);
         $this->assertLoggedIn();
 
         $sql = "SELECT * FROM phpcr_nodes WHERE path = ? AND workspace_id = ?";
@@ -730,8 +740,6 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         }
 
         $data = new \stdClass();
-        // TODO: only return jcr:uuid when this node implements mix:referencable
-        $data->{'jcr:uuid'} = $row['identifier'];
         $data->{'jcr:primaryType'} = $row['type'];
         $this->nodeIdentifiers[$path] = $row['identifier'];
 
@@ -798,6 +806,20 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             }
         }
 
+        // If the node is referenceable, return jcr:uuid.
+        $is_referenceable = FALSE;
+        if (isset($data->{"jcr:mixinTypes"})) {
+            foreach ((array) $data->{"jcr:mixinTypes"} as $mixin) {
+                if ($this->nodeTypeManager->getNodeType($mixin)->isNodeType('mix:referenceable')) {
+                    $is_referenceable = TRUE;
+                    break;
+                }
+            }
+        }
+        if ($is_referenceable) {
+            $data->{'jcr:uuid'} = $row['identifier'];
+        }
+
         return $data;
     }
 
@@ -845,7 +867,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
                 // no we really don't know that path
                 throw new ItemNotFoundException("No item found at ".$path);
             }
-            $propertyName = str_replace($nodePath, "", $path);
+            $propertyName = str_replace($nodePath . "/", "", $path);
 
             $query = "SELECT props FROM phpcr_nodes WHERE id = ?";
             $xml = $this->conn->fetchColumn($query, array($nodeId));
@@ -1026,7 +1048,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
         $properties = $node->getProperties();
 
-        $nodeIdentifier = (isset($properties['jcr:uuid'])) ? $properties['jcr:uuid']->getValue() : UUIDHelper::generateUUID();
+        if (isset($this->nodeIdentifiers[$path])) {
+            $nodeIdentifier = $this->nodeIdentifiers[$path];
+        }
+        elseif (isset($properties['jcr:uuid'])) {
+            $nodeIdentifier = $properties['jcr:uuid']->getValue();
+        }
+        else {
+            $nodeIdentifier = UUIDHelper::generateUUID();
+        }
         $type = isset($properties['jcr:primaryType']) ? $properties['jcr:primaryType']->getValue() : "nt:unstructured";
         $this->syncNode($nodeIdentifier, $path, $this->getParentPath($path), $type, $properties);
 
@@ -1136,23 +1166,20 @@ $/xi";
      */
     public function getNodeTypes($nodeTypes = array())
     {
-        $nodeTypes = array_flip($nodeTypes);
-
-        $data = StandardNodeTypes::getNodeTypeData();
-        $filteredData = array();
-        foreach ($data as $nodeTypeData) {
-            if (isset($nodeTypes[$nodeTypeData['name']])) {
-                $filteredData[$nodeTypeData['name']] = $nodeTypeData;
-            }
+        $standardTypes = array();
+        foreach (StandardNodeTypes::getNodeTypeData() as $nodeTypeData) {
+            $standardTypes[$nodeTypeData['name']] = $nodeTypeData;
         }
+        $userTypes = $this->fetchUserNodeTypes();
 
-        foreach ($nodeTypes as $type => $val) {
-            if (!isset($filteredData[$type]) && $result = $this->fetchUserNodeType($type)) {
-                $filteredData[$type] = $result;
-            }
+        if ($nodeTypes) {
+            $nodeTypes = array_flip($nodeTypes);
+            // TODO: check if user types can override standard types.
+            return array_values(array_intersect_key($standardTypes, $nodeTypes) + array_intersect_key($userTypes, $nodeTypes));
         }
-
-        return array_values($filteredData);
+        else {
+            return array_values($standardTypes + $userTypes);
+        }
     }
 
     /**
@@ -1161,79 +1188,76 @@ $/xi";
      * @param string $name
      * @return array
      */
-    private function fetchUserNodeType($name)
+    private function fetchUserNodeTypes()
     {
-        if ($result = $this->cache->fetch('phpcr_nodetype_' . $name)) {
+        if ($result = $this->cache->fetch('phpcr_nodetypes')) {
             return $result;
         }
 
-        $query = "SELECT * FROM phpcr_type_nodes WHERE name = ?";
-        $data = $this->conn->fetchAssoc($query, array($name));
-
-        if (!$data) {
-            $this->cache->save('phpcr_nodetype_' . $name, false);
-
-            return false;
-        }
-
-        $result = array(
-            'name' => $data['name'],
-            'isAbstract' => (bool)$data['is_abstract'],
-            'isMixin' => (bool)($data['is_mixin']),
-            'isQueryable' => (bool)$data['is_queryable'],
-            'hasOrderableChildNodes' => (bool)$data['orderable_child_nodes'],
-            'primaryItemName' => $data['primary_item'],
-            'declaredSuperTypeNames' => array_filter(explode(' ', $data['supertypes'])),
-            'declaredPropertyDefinitions' => array(),
-            'declaredNodeDefinitions' => array(),
-        );
-
-        $query = "SELECT * FROM phpcr_type_props WHERE node_type_id = ?";
-        $props = $this->conn->fetchAll($query, array($data['node_type_id']));
-
-        foreach ($props as $propertyData) {
-            $result['declaredPropertyDefinitions'][] = array(
-                'declaringNodeType' => $data['name'],
-                'name' => $propertyData['name'],
-                'isAutoCreated' => (bool)$propertyData['auto_created'],
-                'isMandatory' => (bool)$propertyData['mandatory'],
-                'isProtected' => (bool)$propertyData['protected'],
-                'onParentVersion' => $propertyData['on_parent_version'],
-                'requiredType' => $propertyData['required_type'],
-                'multiple' => (bool)$propertyData['multiple'],
-                'isFulltextSearchable' => (bool)$propertyData['fulltext_searchable'],
-                'isQueryOrderable' => (bool)$propertyData['query_orderable'],
-                'queryOperators' => array (
-                  0 => 'jcr.operator.equal.to',
-                  1 => 'jcr.operator.not.equal.to',
-                  2 => 'jcr.operator.greater.than',
-                  3 => 'jcr.operator.greater.than.or.equal.to',
-                  4 => 'jcr.operator.less.than',
-                  5 => 'jcr.operator.less.than.or.equal.to',
-                  6 => 'jcr.operator.like',
-                ),
-                'defaultValue' => array($propertyData['default_value']),
+        $result = array();
+        $query = "SELECT * FROM phpcr_type_nodes";
+        foreach ($this->conn->fetchAll($query) as $data) {
+            $name = $data['name'];
+            $result[$name] = array(
+                'name' => $name,
+                'isAbstract' => (bool)$data['is_abstract'],
+                'isMixin' => (bool)($data['is_mixin']),
+                'isQueryable' => (bool)$data['queryable'],
+                'hasOrderableChildNodes' => (bool)$data['orderable_child_nodes'],
+                'primaryItemName' => $data['primary_item'],
+                'declaredSuperTypeNames' => array_filter(explode(' ', $data['supertypes'])),
+                'declaredPropertyDefinitions' => array(),
+                'declaredNodeDefinitions' => array(),
             );
+
+            $query = "SELECT * FROM phpcr_type_props WHERE node_type_id = ?";
+            $props = $this->conn->fetchAll($query, array($data['node_type_id']));
+
+            foreach ($props as $propertyData) {
+                $result[$name]['declaredPropertyDefinitions'][] = array(
+                    'declaringNodeType' => $data['name'],
+                    'name' => $propertyData['name'],
+                    'isAutoCreated' => (bool)$propertyData['auto_created'],
+                    'isMandatory' => (bool)$propertyData['mandatory'],
+                    'isProtected' => (bool)$propertyData['protected'],
+                    'onParentVersion' => $propertyData['on_parent_version'],
+                    'requiredType' => $propertyData['required_type'],
+                    'multiple' => (bool)$propertyData['multiple'],
+                    'isFulltextSearchable' => (bool)$propertyData['fulltext_searchable'],
+                    'isQueryOrderable' => (bool)$propertyData['query_orderable'],
+                    'queryOperators' => array (
+                      0 => 'jcr.operator.equal.to',
+                      1 => 'jcr.operator.not.equal.to',
+                      2 => 'jcr.operator.greater.than',
+                      3 => 'jcr.operator.greater.than.or.equal.to',
+                      4 => 'jcr.operator.less.than',
+                      5 => 'jcr.operator.less.than.or.equal.to',
+                      6 => 'jcr.operator.like',
+                    ),
+                    'defaultValue' => array($propertyData['default_value']),
+                );
+            }
+
+            $query = "SELECT * FROM phpcr_type_childs WHERE node_type_id = ?";
+            $childs = $this->conn->fetchAll($query, array($data['node_type_id']));
+
+            foreach ($childs as $childData) {
+                $result[$name]['declaredNodeDefinitions'][] = array(
+                    'declaringNodeType' => $data['name'],
+                    'name' => $childData['name'],
+                    'isAutoCreated' => (bool)$childData['auto_created'],
+                    'isMandatory' => (bool)$childData['mandatory'],
+                    'isProtected' => (bool)$childData['protected'],
+                    'onParentVersion' => $childData['on_parent_version'],
+                    'allowsSameNameSiblings' => false,
+                    'defaultPrimaryTypeName' => $childData['default_type'],
+                    'requiredPrimaryTypeNames' => array_filter(explode(" ", $childData['primary_types'])),
+                );
+            }
+
         }
 
-        $query = "SELECT * FROM phpcr_type_childs WHERE node_type_id = ?";
-        $childs = $this->conn->fetchAll($query, array($data['node_type_id']));
-
-        foreach ($childs as $childData) {
-            $result['declaredNodeDefinitions'][] = array(
-                'declaringNodeType' => $data['name'],
-                'name' => $childData['name'],
-                'isAutoCreated' => (bool)$childData['auto_created'],
-                'isMandatory' => (bool)$childData['mandatory'],
-                'isProtected' => (bool)$childData['protected'],
-                'onParentVersion' => $childData['on_parent_version'],
-                'allowsSameNameSiblings' => false,
-                'defaultPrimaryTypeName' => $childData['default_type'],
-                'requiredPrimaryTypeNames' => array_filter(explode(" ", $childData['primary_types'])),
-            );
-        }
-
-        $this->cache->save('phpcr_nodetype_' . $name, $result);
+        $this->cache->save('phpcr_nodetype', $result);
 
         return $result;
     }
