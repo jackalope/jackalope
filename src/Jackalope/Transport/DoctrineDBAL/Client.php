@@ -28,6 +28,7 @@ use Jackalope\Transport\QueryInterface as QueryTransport;
 use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\NodeTypeManagementInterface;
+use Jackalope\Transport\TransactionInterface;
 use Jackalope\Transport\StandardNodeTypes;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NotImplementedException;
@@ -40,7 +41,7 @@ use Jackalope\FactoryInterface;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class Client extends BaseTransport implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface
+class Client extends BaseTransport implements QueryTransport, WritingInterface, WorkspaceManagementInterface, NodeTypeManagementInterface, TransactionInterface
 {
     /**
      * @var Doctrine\DBAL\Connection
@@ -80,7 +81,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     /**
      * @var array
      */
-    private $fetchedUserNamespaces = false;
+    private $fetchedNamespaces = false;
 
     /**
      * Check if an initial request on login should be send to check if repository exists
@@ -93,15 +94,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     /**
      * @var array
      */
-    private $namespaces = array(
-        NamespaceRegistryInterface::PREFIX_EMPTY => NamespaceRegistryInterface::NAMESPACE_EMPTY,
-        NamespaceRegistryInterface::PREFIX_JCR => NamespaceRegistryInterface::NAMESPACE_JCR,
-        NamespaceRegistryInterface::PREFIX_NT => NamespaceRegistryInterface::NAMESPACE_NT,
-        NamespaceRegistryInterface::PREFIX_MIX => NamespaceRegistryInterface::NAMESPACE_MIX,
-        NamespaceRegistryInterface::PREFIX_XML => NamespaceRegistryInterface::NAMESPACE_XML,
-        NamespaceRegistryInterface::PREFIX_SV => NamespaceRegistryInterface::NAMESPACE_SV,
-        'phpcr' => 'http://github.com/jackalope/jackalope', // TODO: Namespace?
-    );
+    private $namespaces = array();
 
     /**
      * Indexes
@@ -331,9 +324,19 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function getNamespaces()
     {
-        if ($this->fetchedUserNamespaces === false) {
+        if ($this->fetchedNamespaces === false) {
             $data = $this->conn->fetchAll('SELECT * FROM phpcr_namespaces');
-            $this->fetchedUserNamespaces = true;
+            $this->fetchedNamespaces = true;
+
+            $this->namespaces = array(
+                NamespaceRegistryInterface::PREFIX_EMPTY => NamespaceRegistryInterface::NAMESPACE_EMPTY,
+                NamespaceRegistryInterface::PREFIX_JCR => NamespaceRegistryInterface::NAMESPACE_JCR,
+                NamespaceRegistryInterface::PREFIX_NT => NamespaceRegistryInterface::NAMESPACE_NT,
+                NamespaceRegistryInterface::PREFIX_MIX => NamespaceRegistryInterface::NAMESPACE_MIX,
+                NamespaceRegistryInterface::PREFIX_XML => NamespaceRegistryInterface::NAMESPACE_XML,
+                NamespaceRegistryInterface::PREFIX_SV => NamespaceRegistryInterface::NAMESPACE_SV,
+                'phpcr' => 'http://github.com/jackalope/jackalope', // TODO: Namespace?
+            );
 
             foreach ($data as $row) {
                 $this->namespaces[$row['prefix']] = $row['uri'];
@@ -1493,7 +1496,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             throw $e;
         }
 
-        if ($this->fetchedUserNamespaces) {
+        if ($this->fetchedNamespaces) {
             $this->namespaces[$prefix] = $uri;
         }
     }
@@ -1505,7 +1508,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     {
         $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
 
-        if ($this->fetchedUserNamespaces) {
+        if ($this->fetchedNamespaces) {
             unset($this->namespaces[$prefix]);
         }
     }
@@ -1551,5 +1554,67 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             }
         }
         return $references;
+    }
+
+    /**
+     * Initiates a "local transaction" on the root node
+     *
+     * @return string The received transaction token
+     *
+     * @throws \PHPCR\RepositoryException If no transaction token received.
+     */
+    public function beginTransaction()
+    {
+        $this->assertLoggedIn();
+
+        try {
+            $this->conn->beginTransaction();
+        } catch (\Exception $e) {
+            throw new RepositoryException('Begin transaction failed: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Commits a transaction started with {@link beginTransaction()}
+     */
+    public function commitTransaction()
+    {
+        $this->assertLoggedIn();
+
+        try {
+            $this->conn->commit();
+        } catch (\Exception $e) {
+            throw new RepositoryException('Commit transaction failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Rolls back a transaction started with {@link beginTransaction()}
+     */
+    public function rollbackTransaction()
+    {
+        $this->assertLoggedIn();
+
+        try {
+            $this->fetchedNamespaces = false;
+            // TODO: how will this work if the cache is used on multiple servers?
+            $this->cache->delete('phpcr_nodetype');
+
+            $this->conn->rollback();
+        } catch (\Exception $e) {
+            throw new RepositoryException('Rollback transaction failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Sets the default transaction timeout
+     *
+     * @param int $seconds The value of the timeout in seconds
+     */
+    public function setTransactionTimeout($seconds)
+    {
+        $this->assertLoggedIn();
+
+        throw new NotImplementedException("Setting a transaction timeout is not yet implemented");
     }
 }
