@@ -99,6 +99,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         NamespaceRegistryInterface::PREFIX_NT => NamespaceRegistryInterface::NAMESPACE_NT,
         NamespaceRegistryInterface::PREFIX_MIX => NamespaceRegistryInterface::NAMESPACE_MIX,
         NamespaceRegistryInterface::PREFIX_XML => NamespaceRegistryInterface::NAMESPACE_XML,
+        NamespaceRegistryInterface::PREFIX_SV => NamespaceRegistryInterface::NAMESPACE_SV,
         'phpcr' => 'http://github.com/jackalope/jackalope', // TODO: Namespace?
     );
 
@@ -1474,6 +1475,10 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             'prefix' => $prefix,
             'uri' => $uri,
         ));
+
+        if ($this->fetchedUserNamespaces) {
+            $this->namespaces[$prefix] = $uri;
+        }
     }
 
     /**
@@ -1482,6 +1487,10 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     public function unregisterNamespace($prefix)
     {
         $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
+
+        if ($this->fetchedUserNamespaces) {
+            unset($this->namespaces[$prefix]);
+        }
     }
 
     /**
