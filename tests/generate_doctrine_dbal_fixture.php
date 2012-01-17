@@ -47,12 +47,47 @@ foreach ($ri as $file) {
     $dataSetBuilder = new PHPUnit_Extensions_Database_XmlDataSetBuilder();
     $dataSetBuilder->addRow('phpcr_workspaces', array('id' => 1, 'name' => 'tests'));
 
+    // Extract the namespaces from the document.
+    $namespaces = array(
+        'xml' => 'http://www.w3.org/XML/1998/namespace',
+        'mix' => "http://www.jcp.org/jcr/mix/1.0",
+        'nt' => "http://www.jcp.org/jcr/nt/1.0",
+        'xs' => "http://www.w3.org/2001/XMLSchema",
+        'jcr' => "http://www.jcp.org/jcr/1.0",
+        'sv' => "http://www.jcp.org/jcr/sv/1.0",
+        'rep' => "internal"
+    );
+
+    // Extract the non-standard namespaces and register them as custom
+    // namespaces.
+    $xpath = new DOMXPath($srcDom);
+    foreach ($xpath->query('namespace::*') as $node) {
+        $ns_uri = $node->nodeValue;
+        $ns_prefix = $srcDom->documentElement->lookupPrefix($ns_uri);
+
+        if (!in_array($ns_uri, $namespaces)) {
+            $namespaces[$ns_prefix] = $ns_uri;
+            $dataSetBuilder->addRow('phpcr_namespaces', array(
+                'prefix' => $ns_prefix,
+                'uri' => $ns_uri,
+            ));
+        }
+    }
+
+    $dom = new \DOMDocument('1.0', 'UTF-8');
+    $rootNode = $dom->createElement('sv:node');
+    foreach ($namespaces as $namespace => $uri) {
+        $rootNode->setAttribute('xmlns:' . $namespace, $uri);
+    }
+    $dom->appendChild($rootNode);
+
     $nodes = $srcDom->getElementsByTagNameNS('http://www.jcp.org/jcr/sv/1.0', 'node');
     $nodeId = 1;
     $nodeIds = array();
 
     // is this a system-view?
     if ($nodes->length > 0) {
+        // Create the root node.
         $id = \PHPCR\Util\UUIDHelper::generateUUID();
         $dataSetBuilder->addRow("phpcr_nodes", array(
             'id' => $nodeId++,
@@ -122,15 +157,6 @@ foreach ($ri as $file) {
                 $nodeId = count($nodeIds)+1;
                 $nodeIds[$id] = $nodeId;
             }
-
-            $namespaces = array(
-                'mix' => "http://www.jcp.org/jcr/mix/1.0",
-                'nt' => "http://www.jcp.org/jcr/nt/1.0",
-                'xs' => "http://www.w3.org/2001/XMLSchema",
-                'jcr' => "http://www.jcp.org/jcr/1.0",
-                'sv' => "http://www.jcp.org/jcr/sv/1.0",
-                'rep' => "internal"
-            );
 
             $dom = new \DOMDocument('1.0', 'UTF-8');
             $rootNode = $dom->createElement('sv:node');
