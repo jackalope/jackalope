@@ -1454,9 +1454,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
             foreach ($columns AS $columnName => $columnPrefix) {
                 $result[] = array(
-                    'dcr:name'  => $columnName,
+                    'dcr:name' => null === $columnPrefix ? $columnName : "{$columnPrefix}.{$columnName}",
                     'dcr:value' => array_key_exists($columnName, $props) ? $props[$columnName] : null,
-                    'dcr:selectorName' => $columnPrefix,
+                    'dcr:selectorName' => $columnPrefix ?: $selector,
                 );
             }
 

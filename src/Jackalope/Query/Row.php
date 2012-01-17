@@ -82,15 +82,14 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
         // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
         foreach ($columns as $column) {
-            $selectorName = '';
-            if (isset($column['dcr:selectorName'])) {
+            $pos = strpos($column['dcr:name'], '.');
+            if (false !== $pos) {
+                $selectorName = substr($column['dcr:name'], 0, $pos);
+                $column['dcr:name'] = substr($column['dcr:name'], $pos + 1);
+            } elseif (isset($column['dcr:selectorName'])) {
                 $selectorName = $column['dcr:selectorName'];
             } else {
-                $pos = strpos($column['dcr:name'], '.');
-                if (false !== $pos) {
-                    $selectorName = substr($column['dcr:name'], 0, $pos);
-                    $column['dcr:name'] = substr($column['dcr:name'], $pos+1);
-                }
+                $selectorName = '';
             }
 
             if ('jcr:score' === $column['dcr:name']) {
