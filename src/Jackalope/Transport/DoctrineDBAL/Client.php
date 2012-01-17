@@ -1471,10 +1471,27 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function registerNamespace($prefix, $uri)
     {
-        $this->conn->insert('phpcr_namespaces', array(
-            'prefix' => $prefix,
-            'uri' => $uri,
-        ));
+        if (isset($this->namespaces[$prefix]) && $this->namespaces[$prefix] === $uri) {
+            return;
+        }
+
+        $this->conn->beginTransaction();
+
+        try {
+            $this->conn->delete('phpcr_namespaces', array('prefix' => $prefix));
+            $this->conn->delete('phpcr_namespaces', array('uri' => $uri));
+
+            $this->conn->insert('phpcr_namespaces', array(
+                'prefix' => $prefix,
+                'uri' => $uri,
+            ));
+
+            $this->conn->commit();
+        } catch (\Exception $e) {
+            $this->conn->rollback();
+
+            throw $e;
+        }
 
         if ($this->fetchedUserNamespaces) {
             $this->namespaces[$prefix] = $uri;
