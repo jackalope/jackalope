@@ -1425,27 +1425,26 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             $columns[$column->getPropertyName()] = $column->getSelectorName();
         }
 
-        if (empty($columns)) {
-            $selector = $source->getSelectorName();
-            if (null === $selector) {
-                $selector = $source->getNodeTypeName();
-            }
+        $selector = $source->getSelectorName();
+        if (null === $selector) {
+            $selector = $source->getNodeTypeName();
+        }
 
+        if (empty($columns)) {
             $columns = array(
-                'jcr:primaryType' => $selector,
                 'jcr:createdBy'   => $selector,
                 'jcr:created'     => $selector,
             );
-        } else {
-            $columns['jcr:primaryType'] = null;
         }
+
+        $columns['jcr:primaryType'] = $selector;
 
         $results = array();
         // This block feels really clunky - maybe this should be a QueryResultFormatter class?
         foreach ($data as $row) {
             $result = array(
                 array('dcr:name' => 'jcr:path', 'dcr:value' => $row['path'], 'dcr:selectorName' => $row['type']),
-                array('dcr:name' => 'jcr:score', 'dcr:value' => 0)
+                array('dcr:name' => 'jcr:score', 'dcr:value' => 0, 'dcr:selectorName' => $row['type'])
             );
 
             // extract only the properties that have been requested in the query
@@ -1455,8 +1454,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
 
             foreach ($columns AS $columnName => $columnPrefix) {
                 $result[] = array(
-                    'dcr:name'  => null === $columnPrefix ? $columnName : "{$columnPrefix}.{$columnName}",
-                    'dcr:value' => array_key_exists($columnName, $props) ? $props[$columnName] : null
+                    'dcr:name'  => $columnName,
+                    'dcr:value' => array_key_exists($columnName, $props) ? $props[$columnName] : null,
+                    'dcr:selectorName' => $columnPrefix,
                 );
             }
 
