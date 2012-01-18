@@ -79,9 +79,14 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     private $nodeTypeManager;
 
     /**
-     * @var array
+     * @var bool
      */
     private $fetchedNamespaces = false;
+
+    /**
+     * @var bool
+     */
+    private $inTransaction = false;
 
     /**
      * Check if an initial request on login should be send to check if repository exists
@@ -1184,7 +1189,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     private function fetchUserNodeTypes()
     {
-        if ($result = $this->cache->fetch('phpcr_nodetypes')) {
+        if (!$this->inTransaction && $result = $this->cache->fetch('phpcr_nodetypes')) {
             return $result;
         }
 
@@ -1250,7 +1255,9 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             }
         }
 
-        $this->cache->save('phpcr_nodetype', $result);
+        if (!$this->inTransaction) {
+            $this->cache->save('phpcr_nodetype', $result);
+        }
 
         return $result;
     }
@@ -1565,10 +1572,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function beginTransaction()
     {
+        if ($this->inTransaction) {
+            throw new RepositoryException('Begin transaction failed: transaction already open');
+        }
+
         $this->assertLoggedIn();
 
         try {
             $this->conn->beginTransaction();
+            $this->inTransaction = true;
         } catch (\Exception $e) {
             throw new RepositoryException('Begin transaction failed: '.$e->getMessage());
         }
@@ -1579,9 +1591,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function commitTransaction()
     {
+        if (!$this->inTransaction) {
+            throw new RepositoryException('Commit transaction failed: no transaction open');
+        }
+
         $this->assertLoggedIn();
 
         try {
+            $this->inTransaction = false;
+
             $this->conn->commit();
         } catch (\Exception $e) {
             throw new RepositoryException('Commit transaction failed: ' . $e->getMessage());
@@ -1593,12 +1611,15 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
      */
     public function rollbackTransaction()
     {
+        if (!$this->inTransaction) {
+            throw new RepositoryException('Rollback transaction failed: no transaction open');
+        }
+
         $this->assertLoggedIn();
 
         try {
+            $this->inTransaction = false;
             $this->fetchedNamespaces = false;
-            // TODO: how will this work if the cache is used on multiple servers?
-            $this->cache->delete('phpcr_nodetype');
 
             $this->conn->rollback();
         } catch (\Exception $e) {
