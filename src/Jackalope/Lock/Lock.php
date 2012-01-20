@@ -32,8 +32,12 @@ class Lock implements LockInterface
     /** @var boolean */
     protected $isLockOwningSession;
 
-    /** @var int */
-    protected $timeout;
+    /**
+     * The unix timestamp (seconds since 1970) at which this lock will expire
+     *
+     * @var int
+     */
+    protected $expire;
 
     /**
      * {@inheritDoc}
@@ -120,7 +124,11 @@ class Lock implements LockInterface
     {
         // The timeout does not seem to be correctly implemented in Jackrabbit. Thus we
         // always return the max timeout value
-        return PHP_INT_MAX;
+        if (null === $this->expire) {
+            return PHP_INT_MAX;
+        }
+
+        return $this->expire - time();
     }
 
     /**
@@ -181,13 +189,19 @@ class Lock implements LockInterface
     }
 
     /**
-     * Set the lock timeout in seconds
-     * @param int $timeout
+     * Set the lock expire timestamp
+     *
+     * Set to null for unknown / infinite timeout
+     *
+     * @param int $expire timestamp when this lock will expire in seconds of unix epoch
+     *
      * @private
+     *
+     * @see http://ch.php.net/manual/en/function.time.php
      */
-    public function setTimeout($timeout)
+    public function setExpireTime($expire)
     {
-        $this->timeout = $timeout;
+        $this->expire = $expire;
     }
 
     /**

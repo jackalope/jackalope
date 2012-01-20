@@ -79,6 +79,11 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     const NS_DAV = 'DAV:';
 
     /**
+     * Jackrabbit 2.3.6 returns this weird number to say its an infinite lock
+     */
+    const JCR_INFINITE_LOCK_TIMEOUT = 2147483;
+
+    /**
      * The factory to instantiate objects
      * @var FactoryInterface
      */
@@ -1255,7 +1260,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $lockScope = $isSessionScoped ? '<dcr:exclusive-session-scoped xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>' : '<D:exclusive/>';
 
         $request = $this->getRequest(Request::LOCK, $absPath);
-        $request->addHeader('Timeout: ' . $timeout);
+        $request->addHeader('Timeout: Second-' . $timeout);
         $request->setDepth($depth);
 
         $request->setBody('<?xml version="1.0" encoding="utf-8"?>'.
@@ -1508,7 +1513,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
         // Extract the timeout
         $timeoutDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'timeout', 'No lock timeout in the received lock');
-        $lock->setTimeout($this->parseTimeout($timeoutDom->nodeValue));
+        $lock->setExpireTime($this->parseTimeout($timeoutDom->nodeValue));
 
         // TODO: determine if the lock is live
         // TODO: determine if the lock is owned by this session
@@ -1548,27 +1553,39 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     }
 
     /**
-     * Parse the timeout value from a WebDAV response.
+     * Parse the timeout value from a WebDAV response and calculate the expire
+     * timestamp.
      *
      * The timeout value follows the syntax defined in RFC2518: Timeout Header.
-     * Here we just parse the values in the form "Second-XXXX" or "Infinite". Any other value will
-     * produce an error.
+     * Here we just parse the values in the form "Second-XXXX" or "Infinite".
+     * Any other value will produce an error.
      *
-     * The function returns a positive number or zero in case of a normal timeout value and PHP_INT_MAX
-     * in case of an "Infinite" value.
+     * The function returns the unix epoch timestamp for the second when this
+     * lock will expire in case of normal timeout, or PHP_INT_MAX in case of an
+     * "Infinite" timeout.
      *
      * @param string $timeoutValue The timeout in seconds or PHP_INT_MAX for infinite
-     * @return void
+     *
+     * @return int the expire timestamp to be used with Lock::setExpireTime,
+     *      that is when this lock expires in seconds since 1970 or null for inifinite
+     *
+     * @throws InvalidArgumentException if the timeout value can not be parsed
      */
     protected function parseTimeout($timeoutValue)
     {
         if ($timeoutValue === 'Inifite') {
-            return PHP_INT_MAX;
+            return null;
         }
 
         if (preg_match('/Second\-([\d]+)/', $timeoutValue, $matches)) {
-            return $matches[1];
+            $time = $matches[1];
         }
+
+        if (self::JCR_INFINITE_LOCK_TIMEOUT == $time || self::JCR_INFINITE_LOCK_TIMEOUT - 1 == $time) {
+            // prevent glitches due to second boundary during request
+            return null;
+        }
+        return time() + $time;
 
         throw new \InvalidArgumentException("Invalid timeout value '$timeoutValue'");
     }
