@@ -108,7 +108,7 @@ class Repository implements RepositoryInterface
 
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
         if ($this->options['transactions']) {
-            $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session));
+            $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session, $session->getObjectManager()));
             $session->getWorkspace()->setTransactionManager($utx);
         }
 

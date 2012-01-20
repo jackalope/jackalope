@@ -9,6 +9,7 @@ use PHPCR\SessionInterface;
 
 use Jackalope\Transport\TransactionInterface;
 use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
 
 use LogicException;
 
@@ -32,6 +33,11 @@ class UserTransaction implements UserTransactionInterface
     protected $session;
 
     /**
+     * @var \Jackalope\ObjectManager
+     */
+    protected $objectManager;
+
+    /**
      * Instance of an implementation of the TransactionInterface transport
      * @var \Jackalope\Transport\TransactionInterface
      */
@@ -51,12 +57,13 @@ class UserTransaction implements UserTransactionInterface
      * @param TransportInterface $transport
      * @param SessionInterface $session
      */
-    public function __construct(FactoryInterface $factory, TransactionInterface $transport, SessionInterface $session)
+    public function __construct(FactoryInterface $factory, TransactionInterface $transport,
+                                SessionInterface $session, ObjectManager $om)
     {
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
-        $this->objectManager = $session->getObjectManager();
+        $this->objectManager = $om;
     }
 
     /**

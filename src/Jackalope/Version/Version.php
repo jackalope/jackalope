@@ -31,7 +31,11 @@ class Version extends Node implements VersionInterface {
      */
     public function getCreated()
     {
-        throw new NotImplementedException();
+        if (!$this->hasProperty('jcr:created')) {
+            return null;
+        }
+
+        return $this->getProperty('jcr:created')->getValue();
     }
 
     /**
