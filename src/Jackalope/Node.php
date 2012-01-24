@@ -387,10 +387,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->setModified();
     }
     
-    /*
+   /**
+    * Returns the orderBefore commands to be applied to the childnodes
+    *  to get from the original order to the new one
+    *
+    * Maybe this could be optimized, so that it needs less orderBefore 
+    *  commands on the backend
+    *
+    * @return array
+    *
     * @private
     */
-  
     public function getOrderCommands() 
     {
         $reorders = array();
