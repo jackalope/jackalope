@@ -133,7 +133,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
+    public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null)
     {
         if (!$isSessionScoped) {
             throw new NotImplementedException("Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.");
@@ -154,18 +154,8 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
             throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
         }
 
-        try {
-            $lock = $this->transport->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
-        } catch (\PHPCR\RepositoryException $ex) {
-            // Check if it's a 412 error, otherwise re-throw the same exception
-            if (preg_match('/Response \(HTTP 412\):/', $ex->getMessage()))
-            {
-                throw new \PHPCR\Lock\LockException("Unable to lock the non-lockable node '$absPath': " . $ex->getMessage(), 412);
-            }
-
-            // Any other exception will simply be rethrown
-            throw $ex;
-        }
+        $lock = $this->transport->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
+        $lock->setLockManager($this);
 
         // Store the lock for further use
         $this->locks[$absPath] = $lock;
@@ -181,6 +171,10 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      */
     public function isLocked($absPath)
     {
+        if (!$this->session->nodeExists($absPath)) {
+            throw new \PHPCR\PathNotFoundException("There is no node at '$absPath'");
+        }
+
         return $this->transport->isLocked($absPath);
     }
 
@@ -217,5 +211,37 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         }
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
+    }
+
+    /**
+     * The session logout needs to call this so we are able to release any
+     * session based locks that where created through this lock manager.
+     *
+     * @private
+     */
+    public function logout()
+    {
+        foreach($this->locks as $path => $lock) {;
+            if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
+                try {
+                    $this->unlock($path);
+                } catch (\Exception $e) {
+                    // ignore exceptions here, we don't care too much. would be nice to log though
+                }
+            }
+            $lock->setIsLive(false);
+        }
+    }
+
+    /**
+     * for the locks to get the session to get their root node
+     *
+     * @return Session
+     *
+     * @private
+     */
+    public function getSession()
+    {
+        return $this->session;
     }
 }

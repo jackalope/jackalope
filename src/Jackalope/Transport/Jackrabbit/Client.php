@@ -1252,9 +1252,11 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * {@inheritDoc}
      */
-    public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
+    public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null)
     {
         $timeout = $timeoutHint === PHP_INT_MAX ? 'infinite' : $timeoutHint;
+        $ownerInfo = (null === $ownerInfo) ? $this->credentials->getUserID() : (string) $ownerInfo;
+
         $depth = $isDeep ? Request::INFINITY : 0;
 
         $lockScope = $isSessionScoped ? '<dcr:exclusive-session-scoped xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>' : '<D:exclusive/>';
@@ -1267,12 +1269,22 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             '<D:lockinfo xmlns:D="' . self::NS_DAV . '">'.
             '  <D:lockscope>' . $lockScope . '</D:lockscope>'.
             '  <D:locktype><D:write/></D:locktype>'.
-            '  <D:owner/>' .
+            '  <D:owner>' . $ownerInfo . '</D:owner>' .
             '</D:lockinfo>');
 
-        $dom = $request->executeDom();
+        try {
+            $dom = $request->executeDom();
+            return $this->generateLockFromDavResponse($dom, true, $absPath);
+        } catch (\PHPCR\RepositoryException $ex) {
+            // TODO: can we move that into the request handling code that determines the correct exception to throw?
+            // Check if it's a 412 error, otherwise re-throw the same exception
+            if (preg_match('/Response \(HTTP 412\):/', $ex->getMessage())) {
+                throw new \PHPCR\Lock\LockException("Unable to lock the non-lockable node '$absPath': " . $ex->getMessage(), 412);
+            }
 
-        return $this->generateLockFromDavResponse($dom);
+            // Any other exception will simply be rethrown
+            throw $ex;
+        }
     }
 
     /**
@@ -1290,11 +1302,14 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $lockInfo->childNodes->length > 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function unlock($absPath, $lockToken)
     {
         $request = $this->getRequest(Request::UNLOCK, $absPath);
         $request->setLockToken($lockToken);
-        $dom = $request->execute();
+        $request->execute();
     }
 
     // protected helper methods //
@@ -1468,11 +1483,17 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     }
 
     /**
-     * Extract the information from a LOCK DAV response and create the corresponding Lock object.
+     * Extract the information from a LOCK DAV response and create the
+     * corresponding Lock object.
+     *
      * @param DOMElement $response
+     * @param bool $owning whether the current session is owning the lock (aka
+     *      we created it in this request)
+     * @param string $path the owning node path, if we created this node
+     *
      * @return \Jackalope\Lock\Lock
      */
-    protected function generateLockFromDavResponse($response)
+    protected function generateLockFromDavResponse($response, $owning = false, $path = null)
     {
         $lock = new Lock();
         $lockDom = $this->getRequiredDomElementByTagNameNS($response, self::NS_DAV, 'activelock', "No lock received");
@@ -1515,12 +1536,15 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $timeoutDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'timeout', 'No lock timeout in the received lock');
         $lock->setExpireTime($this->parseTimeout($timeoutDom->nodeValue));
 
-        // TODO: determine if the lock is live
-        // TODO: determine if the lock is owned by this session
-        // TODO: get the lock owning node !!!SEE REMARK BELOW!!
+        $lock->setIsLockOwningSession($owning);
+        if (null !== $path) {
+            $lock->setNodePath($path);
+        } else {
+            // TODO: get the lock owning node !!!SEE REMARK BELOW!!
             // Note that $n->getLock()->getNode() (where $n is a locked node) will only
             // return $n if $n is the lock holder. If $n is in the subgraph of the lock
             // holder, $h, then this call will return $h.
+        }
 
         return $lock;
     }

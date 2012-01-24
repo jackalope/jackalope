@@ -4,6 +4,8 @@ namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockInterface;
 
+use Jackalope\NotImplementedException;
+
 /**
  * {@inheritDoc}
  *
@@ -11,20 +13,25 @@ use PHPCR\Lock\LockInterface;
  */
 class Lock implements LockInterface
 {
+    /**
+     * @var LockManager
+     */
+    protected $lockManager;
+
     /** @var string */
     protected $lockOwner;
 
     /** @var boolean */
     protected $isDeep;
 
-    /** @var \PHPCR\NodeInterface */
-    protected $node;
+    /** @var string */
+    protected $path;
 
     /** @var string */
     protected $lockToken;
 
     /** @var boolean */
-    protected $isLive;
+    protected $isLive = true;
 
     /** @var boolean */
     protected $isSessionScoped;
@@ -84,16 +91,22 @@ class Lock implements LockInterface
      */
     public function getNode()
     {
-        return $this->node;
+        if (null == $this->path) {
+            throw new NotImplementedException;
+            // TODO either here or in transport figure out the owning node
+            // we might want to delay this until actually requested, as we need to walk up the tree to find the owning node
+        }
+        return $this->lockManager->getSession()->getNode($this->path);
     }
 
     /**
-     * @param \PHPCR\NodeInterface $node
+     * @param string $path the path to our owning node
+     *
      * @private
      */
-    public function setNode(\PHPCR\NodeInterface $node)
+    public function setNodePath($path)
     {
-        $this->node = $node;
+        $this->path = $path;
     }
 
     /**
@@ -138,11 +151,17 @@ class Lock implements LockInterface
      */
     public function isLive()
     {
+        if ($this->isLive) {
+            $this->isLive = $this->lockManager->isLocked($this->path);
+        }
         return $this->isLive;
     }
 
     /**
-    * @param boolean $isLive
+     * Can be used by the lock manager to tell the lock its no longer live
+     *
+     * @param boolean $isLive
+     *
      * @private
     */
     public function setIsLive($isLive)
@@ -212,5 +231,17 @@ class Lock implements LockInterface
     public function refresh()
     {
         throw new NotImplementedException();
+    }
+
+    /**
+     * Set the lock manager to be used with isLive requests and such
+     *
+     * @param LockManager $lm
+     *
+     * @private
+     */
+    public function setLockManager(LockManager $lm)
+    {
+        $this->lockManager = $lm;
     }
 }
