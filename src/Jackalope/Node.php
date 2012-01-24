@@ -68,6 +68,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @var array
      */
     protected $nodes = array();
+    
+    /**
+     * list of the original (at load time) child node names and order
+     *
+     * Only used,if you use orderBefore()
+     *
+     * @var array
+     */
+     
+    protected $originalNodesOrder = null;
 
     /**
      * Create a new node instance with data from the storage layer
@@ -366,20 +376,79 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         if ($srcChildRelPath == $destChildRelPath) {
             //nothing to move
-            return;
+            return ;
         }
-        $oldpos = array_search($srcChildRelPath, $this->nodes);
+        
+        if ($this->originalNodesOrder == null) {
+            $this->originalNodesOrder = $this->nodes;
+        }
+       
+        $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
+        $this->setModified();
+    }
+    
+    /*
+    * @private
+    */
+  
+    public function getOrderCommands() {
+        $reorders = array();
+        if (!$this->originalNodesOrder) {
+            return $reorders;
+        }
+        //check for deleted nodes
+        $newIndex = array_flip($this->nodes);
+        
+        foreach($this->originalNodesOrder as $k => $v) {
+            if (!isset($newIndex[$v])) {
+                unset($this->orignalNodesOrder[$k]);
+            }
+        }
+        $this->originalNodesOrder = array_values($this->originalNodesOrder);
+        $len = count($this->nodes) - 1;
+        $oldIndex = array_flip($this->originalNodesOrder);
+        //go backwards on the new node order and arrange them this way
+        for($i = $len; $i >= 0; $i--) {
+            //get the name of the child node
+            $c = $this->nodes[$i];
+            //check if it's not the last node
+            if (isset($this->nodes[$i + 1])) {
+                // get the name of the next node
+                $next = $this->nodes[$i + 1];
+                //if in the old order $c and next are not neighbors already, do the reorder command
+                if ($oldIndex[$c] + 1 != $oldIndex[$next]) {
+                    $reorders[] = array($c,$next);
+                    $this->orderBeforeArray($c,$next,$this->originalNodesOrder);
+                    $oldIndex = array_flip($this->originalNodesOrder);
+                }
+            } else {
+                //check if it's not already at the end of the nodes
+                if ($oldIndex[$c] != $len) {
+                    $reorders[] = array($c,null);
+                    $this->orderBeforeArray($c,null,$this->originalNodesOrder);
+                    $oldIndex = array_flip($this->originalNodesOrder);
+                }
+            }
+        }
+        $this->originalNodesOrder = null;
+        return $reorders;
+    }
+    
+    protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes) {
+        // renumber the nodes so there are no gaps
+        $nodes = array_values($nodes);
+        $oldpos = array_search($srcChildRelPath, $nodes);
         if ($oldpos === false) {
             throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
         }
 
         if ($destChildRelPath == null) {
             //null means move to end
-            unset($this->nodes[$oldpos]);
-            $this->nodes[] = $srcChildRelPath;
+            unset($nodes[$oldpos]);
+            $nodes[] = $srcChildRelPath;
         } else {
             //insert somewhere specified by dest path
-            $newpos = array_search($destChildRelPath, $this->nodes);
+            $newpos = array_search($destChildRelPath, $nodes);
             if ($newpos === false) {
                 throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             }
@@ -387,11 +456,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 //we first unset, so
                 $newpos--;
             }
-            unset($this->nodes[$oldpos]);
-            array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
+            unset($nodes[$oldpos]);
+            array_splice($nodes, $newpos, 0, $srcChildRelPath);
         }
-        $this->setModified();
-        //TODO: this is not enough to persist the reordering with the transport
+        // renumber the nodes again so there are no gaps
+        $nodes = array_values($nodes);
+        return $nodes;
     }
 
     /**
