@@ -391,7 +391,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     * @private
     */
   
-    public function getOrderCommands() {
+    public function getOrderCommands() 
+    {
         $reorders = array();
         if (!$this->originalNodesOrder) {
             return $reorders;
@@ -408,7 +409,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $len = count($this->nodes) - 1;
         $oldIndex = array_flip($this->originalNodesOrder);
         //go backwards on the new node order and arrange them this way
-        for($i = $len; $i >= 0; $i--) {
+        for ($i = $len; $i >= 0; $i--) {
             //get the name of the child node
             $c = $this->nodes[$i];
             //check if it's not the last node
@@ -434,7 +435,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return $reorders;
     }
     
-    protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes) {
+    protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
+    {
         // renumber the nodes so there are no gaps
         $nodes = array_values($nodes);
         $oldpos = array_search($srcChildRelPath, $nodes);
