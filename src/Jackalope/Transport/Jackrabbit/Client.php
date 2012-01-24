@@ -790,7 +790,8 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request->execute();
     }
 
-    public function reorderNodes($path,$reorders) {
+    public function reorderNodes($path,$reorders) 
+    {
         if (count($reorders) == 0) {
             return;
         }
