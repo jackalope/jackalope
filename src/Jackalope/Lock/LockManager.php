@@ -63,7 +63,8 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         $this->transport = $transport;
     }
 
-    public function getIterator() {
+    public function getIterator()
+    {
         // TODO: return an iterator over getLockTokens() results
         return new ArrayIterator($this);
     }
@@ -73,7 +74,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function addLockToken($lockToken)
+    public function addLockToken($lockToken)
     {
         throw new NotImplementedException();
     }
@@ -83,7 +84,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function getLock($absPath)
+    public function getLock($absPath)
     {
         // The locks are only cached in the LockManager if the lock was created
         // by him. Otherwise we don't have the Lock cached.
@@ -104,7 +105,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function getLockTokens()
+    public function getLockTokens()
     {
         throw new NotImplementedException();
     }
@@ -114,7 +115,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function holdsLock($absPath)
+    public function holdsLock($absPath)
     {
         if (!$this->session->nodeExists($absPath)) {
             throw new \PHPCR\PathNotFoundException("The node '$absPath' does not exist");
@@ -132,7 +133,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
+    public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo)
     {
         if (!$isSessionScoped) {
             throw new NotImplementedException("Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.");
@@ -153,12 +154,9 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
             throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
         }
 
-        try
-        {
+        try {
             $lock = $this->transport->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
-        }
-        catch (\PHPCR\RepositoryException $ex)
-        {
+        } catch (\PHPCR\RepositoryException $ex) {
             // Check if it's a 412 error, otherwise re-throw the same exception
             if (preg_match('/Response \(HTTP 412\):/', $ex->getMessage()))
             {
@@ -181,7 +179,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function isLocked($absPath)
+    public function isLocked($absPath)
     {
         return $this->transport->isLocked($absPath);
     }
@@ -191,7 +189,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function removeLockToken($lockToken)
+    public function removeLockToken($lockToken)
     {
         throw new NotImplementedException();
     }
@@ -201,7 +199,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    function unlock($absPath)
+    public function unlock($absPath)
     {
         if (!$this->session->nodeExists($absPath)) {
             throw new \PHPCR\PathNotFoundException("Unable to unlock unexisting node '$absPath'");
