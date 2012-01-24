@@ -153,7 +153,7 @@ class Repository implements RepositoryInterface
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
-                // TODO: return false for everything we know is not implemented in jackalope
+            // TODO: return false for everything we know is not implemented in jackalope
         }
 
         // handle the rest by the transport to allow non-feature complete transports
