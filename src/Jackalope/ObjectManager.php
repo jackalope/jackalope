@@ -756,6 +756,12 @@ class ObjectManager
                                 $this->transport->storeProperty($property);
                             }
                         }
+                        //order nodes
+                        $reorders = $item->getOrderCommands();
+                        if (count($reorders) > 0) {
+                            $this->transport->reorderNodes($item->getPath(),$reorders);
+                        }
+                       
                     } elseif ($item instanceof PropertyInterface) {
                         if ($item->getValue() === null) {
                             $this->transport->deleteProperty($path);
