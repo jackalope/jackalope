@@ -951,6 +951,16 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function reorderNodes($absPath, $reorders)
+    {
+        $this->assertLoggedIn();
+
+        throw new NotImplementedException("Moving nodes is not yet implemented");
+    }
+    
+    /**
      * Get parent path of a path.
      *
      * @param string $path
