@@ -466,6 +466,8 @@ class Request
         $curl->setopt(CURLOPT_URL, reset($this->uri));
         $curl->setopt(CURLOPT_HTTPHEADER, $headers);
         $curl->setopt(CURLOPT_POSTFIELDS, $this->body);
+        // TODO: uncomment next line to get verbose information from CURL
+        //$curl->setopt(CURLOPT_VERBOSE, 1);
         if ($getCurlObject) {
             $curl->parseResponseHeaders();
         }

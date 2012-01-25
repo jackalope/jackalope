@@ -702,6 +702,9 @@ class Session implements SessionInterface
     {
         //OPTIMIZATION: flush object manager to help garbage collector
         $this->logout = true;
+        if ($this->getRepository()->getDescriptor(RepositoryInterface::OPTION_LOCKING_SUPPORTED)) {
+            $this->getWorkspace()->getLockManager()->logout();
+        }
         self::unregisterSession($this);
         $this->getTransport()->logout();
     }

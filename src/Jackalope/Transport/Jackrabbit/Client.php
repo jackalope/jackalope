@@ -29,10 +29,13 @@ use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\NodeTypeCndManagementInterface;
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\Transport\LockingInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Query\SqlQuery;
 use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\Lock\Lock;
 use Jackalope\FactoryInterface;
+
 
 /**
  * Connection to one Jackrabbit server.
@@ -56,7 +59,7 @@ use Jackalope\FactoryInterface;
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Daniel Barsotti <daniel.barsotti@liip.ch>
  */
-class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface
+class Client extends BaseTransport implements QueryTransport, PermissionInterface, WritingInterface, VersioningInterface, NodeTypeCndManagementInterface, TransactionInterface, LockingInterface
 {
     /**
      * minimal version needed for the backend server
@@ -74,6 +77,11 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      * @var string
      */
     const NS_DAV = 'DAV:';
+
+    /**
+     * Jackrabbit 2.3.6 returns this weird number to say its an infinite lock
+     */
+    const JCR_INFINITE_LOCK_TIMEOUT = 2147483;
 
     /**
      * The factory to instantiate objects
@@ -1241,6 +1249,69 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null)
+    {
+        $timeout = $timeoutHint === PHP_INT_MAX ? 'infinite' : $timeoutHint;
+        $ownerInfo = (null === $ownerInfo) ? $this->credentials->getUserID() : (string) $ownerInfo;
+
+        $depth = $isDeep ? Request::INFINITY : 0;
+
+        $lockScope = $isSessionScoped ? '<dcr:exclusive-session-scoped xmlns:dcr="http://www.day.com/jcr/webdav/1.0"/>' : '<D:exclusive/>';
+
+        $request = $this->getRequest(Request::LOCK, $absPath);
+        $request->addHeader('Timeout: Second-' . $timeout);
+        $request->setDepth($depth);
+
+        $request->setBody('<?xml version="1.0" encoding="utf-8"?>'.
+            '<D:lockinfo xmlns:D="' . self::NS_DAV . '">'.
+            '  <D:lockscope>' . $lockScope . '</D:lockscope>'.
+            '  <D:locktype><D:write/></D:locktype>'.
+            '  <D:owner>' . $ownerInfo . '</D:owner>' .
+            '</D:lockinfo>');
+
+        try {
+            $dom = $request->executeDom();
+            return $this->generateLockFromDavResponse($dom, true, $absPath);
+        } catch (\PHPCR\RepositoryException $ex) {
+            // TODO: can we move that into the request handling code that determines the correct exception to throw?
+            // Check if it's a 412 error, otherwise re-throw the same exception
+            if (preg_match('/Response \(HTTP 412\):/', $ex->getMessage())) {
+                throw new \PHPCR\Lock\LockException("Unable to lock the non-lockable node '$absPath': " . $ex->getMessage(), 412);
+            }
+
+            // Any other exception will simply be rethrown
+            throw $ex;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isLocked($absPath)
+    {
+        $request = $this->getRequest(Request::PROPFIND, $absPath);
+        $request->setBody($this->buildPropfindRequest(array('D:lockdiscovery')));
+        $request->setDepth(0);
+        $dom = $request->executeDom();
+
+        $lockInfo = $this->getRequiredDomElementByTagNameNS($dom, self::NS_DAV, 'lockdiscovery');
+
+        return $lockInfo->childNodes->length > 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unlock($absPath, $lockToken)
+    {
+        $request = $this->getRequest(Request::UNLOCK, $absPath);
+        $request->setLockToken($lockToken);
+        $request->execute();
+    }
+
     // protected helper methods //
 
     /**
@@ -1410,4 +1481,137 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         }
         return $uri;
     }
+
+    /**
+     * Extract the information from a LOCK DAV response and create the
+     * corresponding Lock object.
+     *
+     * @param DOMElement $response
+     * @param bool $owning whether the current session is owning the lock (aka
+     *      we created it in this request)
+     * @param string $path the owning node path, if we created this node
+     *
+     * @return \Jackalope\Lock\Lock
+     */
+    protected function generateLockFromDavResponse($response, $owning = false, $path = null)
+    {
+        $lock = new Lock();
+        $lockDom = $this->getRequiredDomElementByTagNameNS($response, self::NS_DAV, 'activelock', "No lock received");
+
+        //var_dump($response->saveXML($lockDom));
+
+        // Check this is not a transaction lock
+        $type = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'locktype', 'No lock type received');
+        if (!$type->childNodes->length) {
+            $tagName = $type->childNodes->item(0)->localName;
+            if ($tagName !== 'write') {
+                throw new RepositoryException("Invalid lock type '$tagName'");
+            }
+        }
+
+        // Extract the lock scope
+        $scopeDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'lockscope', 'No lock scope in the received lock');
+        if ($this->getRequiredDomElementByTagNameNS($scopeDom, self::NS_DCR, 'exclusive-session-scoped')) {
+            $lock->setIsSessionScoped(true);
+        } elseif ($this->getRequiredDomElementByTagNameNS($scopeDom, self::NS_DAV, 'exclusive')) {
+            $lock->setIsSessionScoped(false);
+        } else {
+            // Unknown XML found in the <D:lockscope> tag
+            throw new RepositoryException('Invalid lock scope received: ' . $response->saveHTML($scopeDom));
+        }
+
+        // Extract the depth
+        $depthDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'depth', 'No depth in the received lock');
+        $lock->setIsDeep($depthDom->textContent === 'infinity');
+
+        // Extract the owner
+        $ownerDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'owner', 'No owner in the received lock');
+        $lock->setLockOwner($ownerDom->textContent);
+
+        // Extract the lock token
+        $tokenDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'href', 'No lock token in the received lock');
+        $lock->setLockToken($tokenDom->textContent);
+
+        // Extract the timeout
+        $timeoutDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'timeout', 'No lock timeout in the received lock');
+        $lock->setExpireTime($this->parseTimeout($timeoutDom->nodeValue));
+
+        $lock->setIsLockOwningSession($owning);
+        if (null !== $path) {
+            $lock->setNodePath($path);
+        } else {
+            // TODO: get the lock owning node !!!SEE REMARK BELOW!!
+            // Note that $n->getLock()->getNode() (where $n is a locked node) will only
+            // return $n if $n is the lock holder. If $n is in the subgraph of the lock
+            // holder, $h, then this call will return $h.
+        }
+
+        return $lock;
+    }
+
+    /**
+     * Retrieve a child DOM element from a DOM element.
+     * If the element is not found and $errorMessage is set, then a RepositoryException is thrown.
+     * If the element is not found and $errorMessage is empty, then false is returned.
+     *
+     * @throws \PHPCR\RepositoryException When the element is not found and an $errorMessage is set
+     *
+     * @param \DOMNode $dom The DOM element which content should be searched
+     * @param string $namespace The namespace of the searched element
+     * @param string $element The name of the searched element
+     * @param string $errorMessage The error message in case the element is not found
+     * @return bool|\DOMNode
+     */
+    protected function getRequiredDomElementByTagNameNS($dom, $namespace, $element, $errorMessage = '')
+    {
+        $list = $dom->getElementsByTagNameNS($namespace, $element);
+
+        if (!$list->length) {
+            if ($errorMessage) {
+                throw new RepositoryException($errorMessage);
+            }
+            return false;
+        }
+
+        return $list->item(0);
+    }
+
+    /**
+     * Parse the timeout value from a WebDAV response and calculate the expire
+     * timestamp.
+     *
+     * The timeout value follows the syntax defined in RFC2518: Timeout Header.
+     * Here we just parse the values in the form "Second-XXXX" or "Infinite".
+     * Any other value will produce an error.
+     *
+     * The function returns the unix epoch timestamp for the second when this
+     * lock will expire in case of normal timeout, or PHP_INT_MAX in case of an
+     * "Infinite" timeout.
+     *
+     * @param string $timeoutValue The timeout in seconds or PHP_INT_MAX for infinite
+     *
+     * @return int the expire timestamp to be used with Lock::setExpireTime,
+     *      that is when this lock expires in seconds since 1970 or null for inifinite
+     *
+     * @throws InvalidArgumentException if the timeout value can not be parsed
+     */
+    protected function parseTimeout($timeoutValue)
+    {
+        if ($timeoutValue === 'Inifite') {
+            return null;
+        }
+
+        if (preg_match('/Second\-([\d]+)/', $timeoutValue, $matches)) {
+            $time = $matches[1];
+        }
+
+        if (self::JCR_INFINITE_LOCK_TIMEOUT == $time || self::JCR_INFINITE_LOCK_TIMEOUT - 1 == $time) {
+            // prevent glitches due to second boundary during request
+            return null;
+        }
+        return time() + $time;
+
+        throw new \InvalidArgumentException("Invalid timeout value '$timeoutValue'");
+    }
+
 }
