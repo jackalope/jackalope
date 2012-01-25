@@ -801,6 +801,28 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * {@inheritDoc}
      */
+    public function reorderNodes($absPath, $reorders)
+    {
+        if (count($reorders) == 0) {
+            return;
+        }
+        $body = "";
+        foreach($reorders as $r) {
+            $body .= '>'.$absPath.'/'.$r[0] . ' : '. $r[1] . '#before'."\r";
+        }
+        $body = ":diff=".trim($body);
+        $url = $this->encodeAndValidatePathForDavex("/");
+        $request = $this->getRequest(Request::POST, $url);
+        $request->setBody($body);
+        $request->setContentType('application/x-www-form-urlencoded');
+
+        $request->setTransactionId($this->transactionToken);
+        $request->execute();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
         throw new NotImplementedException();
