@@ -13,6 +13,7 @@ use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\Transport\LockingInterface;
 
 /**
  * {@inheritDoc}
@@ -49,6 +50,11 @@ class Workspace implements WorkspaceInterface
      * @var NamespaceRegistry
      */
     protected $namespaceRegistry;
+
+    /**
+     * @var \Jackalope\Lock\LockManager
+     */
+    protected $lockManager;
 
     /**
      * Instantiate a workspace referencing a workspace in the storage.
@@ -135,8 +141,22 @@ class Workspace implements WorkspaceInterface
      */
     public function getLockManager()
     {
-        // TODO: also check for interface on transport
-        throw new UnsupportedRepositoryOperationException();
+        if (! $this->session->getTransport() instanceof LockingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support locking');
+        }
+
+        if (is_null($this->lockManager)) {
+            $this->lockManager = $this->factory->get(
+                'Lock\\LockManager',
+                array(
+                    $this->session->getObjectManager(),
+                    $this->session,
+                    $this->session->getTransport()
+                )
+            );
+        }
+
+        return $this->lockManager;
     }
 
     /**

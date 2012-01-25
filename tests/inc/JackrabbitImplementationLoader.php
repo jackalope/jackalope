@@ -28,7 +28,6 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'WorkspaceManagement',
                     'ShareableNodes',
                     'AccessControlManagement',
-                    'Locking',
                     'LifecycleManagement',
                     'RetentionAndHold',
                     'SameNameSiblings',
