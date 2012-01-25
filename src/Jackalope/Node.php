@@ -64,19 +64,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $deletedProperties = array();
 
     /**
-     * list of the child node names
+     * list of the child node names in the current order
      * @var array
      */
     protected $nodes = array();
-    
+
     /**
      * list of the original (at load time) child node names and order
      *
-     * Only used,if you use orderBefore()
+     * used to calculate reordering operations if orderBefore() was used
      *
      * @var array
      */
-     
+
     protected $originalNodesOrder = null;
 
     /**
@@ -368,37 +368,35 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * \PHPCR\ConstraintViolationException is expected. VersionException and
      * LockException are not tested immediatly but thrown on save.
      *
-     * TODO: Make the backend actually pick up the move
-     *
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath)
     {
         if ($srcChildRelPath == $destChildRelPath) {
             //nothing to move
-            return ;
+            return;
         }
-        
-        if ($this->originalNodesOrder == null) {
+
+        if (null == $this->originalNodesOrder) {
             $this->originalNodesOrder = $this->nodes;
         }
-       
+
         $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
         $this->setModified();
     }
-    
+
    /**
     * Returns the orderBefore commands to be applied to the childnodes
     *  to get from the original order to the new one
     *
-    * Maybe this could be optimized, so that it needs less orderBefore 
+    * Maybe this could be optimized, so that it needs less orderBefore
     *  commands on the backend
     *
     * @return array
     *
     * @private
     */
-    public function getOrderCommands() 
+    public function getOrderCommands()
     {
         $reorders = array();
         if (!$this->originalNodesOrder) {
@@ -406,7 +404,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
         //check for deleted nodes
         $newIndex = array_flip($this->nodes);
-        
+
         foreach($this->originalNodesOrder as $k => $v) {
             if (!isset($newIndex[$v])) {
                 unset($this->orignalNodesOrder[$k]);
@@ -441,7 +439,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->originalNodesOrder = null;
         return $reorders;
     }
-    
+
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
         // renumber the nodes so there are no gaps
