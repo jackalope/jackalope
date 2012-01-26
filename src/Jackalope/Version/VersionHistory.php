@@ -23,7 +23,11 @@ class VersionHistory extends Node
     protected $path; //TODO if we would use parent constructor, this would be present
 
     /**
-     * @var PHPCR\Version\Version
+     * @var PHPCR\Version\VersionInterface
+     */
+    protected $versionNode = null;
+    /**
+     * @var PHPCR\Version\VersionInterface
      */
     protected $rootVersion = null;
     /**
@@ -46,7 +50,8 @@ class VersionHistory extends Node
 
         // will trigger exception required by VersionManager.getVersionHistory
         // in case there is no such node or it is not versionable
-        $this->getRootVersion();
+        $uuid = $this->objectmanager->getVersionHistory($this->path);
+        $this->versionNode = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
     }
 
     /**
@@ -56,7 +61,7 @@ class VersionHistory extends Node
      */
     public function getVersionableIdentifier()
     {
-        throw new NotImplementedException();
+        return $this->versionNode->getPropertyValue('jcr:versionableUuid');
     }
 
     /**
@@ -67,9 +72,7 @@ class VersionHistory extends Node
     public function getRootVersion()
     {
         if (! $this->rootVersion) {
-            $uuid = $this->objectmanager->getVersionHistory($this->path);
-            $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
-            $this->rootVersion = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\\Version');
+            $this->rootVersion = $this->objectmanager->getNode('jcr:rootVersion', $this->versionNode->getPath(), 'Version\\Version');
         }
         return $this->rootVersion;
     }
@@ -92,8 +95,9 @@ class VersionHistory extends Node
     public function getAllVersions()
     {
         if (!$this->versions) {
-            $results[$this->rootVersion->getName()] = $this->rootVersion;
-            $this->versions = array_merge($results, $this->getEventualSuccessors($this->rootVersion));
+            $rootVersion = $this->getRootVersion();
+            $results[$rootVersion->getName()] = $rootVersion;
+            $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
         }
         return new ArrayIterator($this->versions);
     }
