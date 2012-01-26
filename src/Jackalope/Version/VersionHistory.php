@@ -23,6 +23,10 @@ class VersionHistory extends Node
     protected $path; //TODO if we would use parent constructor, this would be present
 
     /**
+     * @var PHPCR\Version\Version
+     */
+    protected $rootVersion = null;
+    /**
      * Cache of all versions to only fetch them once.
      * @var array
      */
@@ -35,10 +39,14 @@ class VersionHistory extends Node
      * @param ObjectManager $objectmanager
      * @param string $absPath the repository path of this version history.
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager,$absPath)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $absPath)
     {
         $this->objectmanager = $objectmanager;
         $this->path = $absPath;
+
+        // will trigger exception required by VersionManager.getVersionHistory
+        // in case there is no such node or it is not versionable
+        $this->getRootVersion();
     }
 
     /**
@@ -58,7 +66,12 @@ class VersionHistory extends Node
      */
     public function getRootVersion()
     {
-        throw new NotImplementedException();
+        if (! $this->rootVersion) {
+            $uuid = $this->objectmanager->getVersionHistory($this->path);
+            $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
+            $this->rootVersion = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\\Version');
+        }
+        return $this->rootVersion;
     }
 
     /**
@@ -79,12 +92,8 @@ class VersionHistory extends Node
     public function getAllVersions()
     {
         if (!$this->versions) {
-            $uuid = $this->objectmanager->getVersionHistory($this->path);
-            $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
-            $results = array();
-            $rootNode = $this->objectmanager->getNode('jcr:rootVersion', $node->getPath(), 'Version\\Version');
-            $results[$rootNode->getName()] = $rootNode;
-            $this->versions = array_merge($results, $this->getEventualSuccessors($rootNode));
+            $results[$this->rootVersion->getName()] = $this->rootVersion;
+            $this->versions = array_merge($results, $this->getEventualSuccessors($this->rootVersion));
         }
         return new ArrayIterator($this->versions);
     }
