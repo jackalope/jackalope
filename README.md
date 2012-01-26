@@ -22,7 +22,7 @@ Please see the file LICENSE in this folder.
 
 * libxml version >= 2.7.0 (due to a bug in libxml [http://bugs.php.net/bug.php?id=36501](http://bugs.php.net/bug.php?id=36501))
 * phpunit >= 3.5 (if you want to run the tests)
-
+* phpunit/DbUnit (if you want to run the Doctrine DBAL Transport tests)
 
 # Installation
 
@@ -48,10 +48,6 @@ Besides the Jackalope repository, you need [Doctrine DBAL](https://github.com/do
     git clone git://github.com/doctrine/dbal.git doctrine-dbal
     cd doctrine-dbal
     git submodule update --init
-
-See the wiki pages for how to set up testing:
-[DoctrineDBAL](https://github.com/jackalope/jackalope/wiki/DoctrineDBAL) |
-[Jackrabbit](https://github.com/jackalope/jackalope/wiki/Setup-with-jackrabbit).
 
 ## phpunit Tests
 
