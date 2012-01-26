@@ -116,9 +116,7 @@ class Version extends Node implements VersionInterface {
      */
     public function getFrozenNode()
     {
-        $frozen = $this->getNode('jcr:frozenNode');
-        //TODO: what should we do now? recreate the node with the data at that time?
-        throw new NotImplementedException();
+        return $this->getNode('jcr:frozenNode');
     }
 
     /**
@@ -129,6 +127,6 @@ class Version extends Node implements VersionInterface {
     public function remove()
     {
         // A version node cannot be removed, so always throw an Exception
-        throw new \PHPCR\RepositoryException();
+        throw new \PHPCR\RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
     }
 }
