@@ -1487,13 +1487,13 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      * corresponding Lock object.
      *
      * @param DOMElement $response
-     * @param bool $owning whether the current session is owning the lock (aka
+     * @param bool $sessionOwning whether the current session is owning the lock (aka
      *      we created it in this request)
      * @param string $path the owning node path, if we created this node
      *
      * @return \Jackalope\Lock\Lock
      */
-    protected function generateLockFromDavResponse($response, $owning = false, $path = null)
+    protected function generateLockFromDavResponse($response, $sessionOwning = false, $path = null)
     {
         $lock = new Lock();
         $lockDom = $this->getRequiredDomElementByTagNameNS($response, self::NS_DAV, 'activelock', "No lock received");
@@ -1536,11 +1536,12 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $timeoutDom = $this->getRequiredDomElementByTagNameNS($lockDom, self::NS_DAV, 'timeout', 'No lock timeout in the received lock');
         $lock->setExpireTime($this->parseTimeout($timeoutDom->nodeValue));
 
-        $lock->setIsLockOwningSession($owning);
+        $lock->setIsLockOwningSession($sessionOwning);
         if (null !== $path) {
             $lock->setNodePath($path);
         } else {
-            // TODO: get the lock owning node !!!SEE REMARK BELOW!!
+            throw new NotImplementedException('get the lock owning node or provide Lock with info so it can get it when requested');
+            // TODO: get the lock owning node
             // Note that $n->getLock()->getNode() (where $n is a locked node) will only
             // return $n if $n is the lock holder. If $n is in the subgraph of the lock
             // holder, $h, then this call will return $h.

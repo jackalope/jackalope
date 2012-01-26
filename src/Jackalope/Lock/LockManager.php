@@ -211,6 +211,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         }
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
+        $this->locks[$absPath]->setIsLive(false);
     }
 
     /**
@@ -224,12 +225,11 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         foreach($this->locks as $path => $lock) {;
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
                 try {
-                    $this->unlock($path);
+                    $this->unlock($path); // will tell the lock its no longer live
                 } catch (\Exception $e) {
                     // ignore exceptions here, we don't care too much. would be nice to log though
                 }
             }
-            $lock->setIsLive(false);
         }
     }
 

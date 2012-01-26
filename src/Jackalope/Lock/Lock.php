@@ -91,7 +91,7 @@ class Lock implements LockInterface
      */
     public function getNode()
     {
-        if (null == $this->path) {
+        if (null === $this->path) {
             throw new NotImplementedException;
             // TODO either here or in transport figure out the owning node
             // we might want to delay this until actually requested, as we need to walk up the tree to find the owning node
