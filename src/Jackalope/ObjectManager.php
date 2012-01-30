@@ -878,20 +878,24 @@ class ObjectManager
         $this->transport->removeVersion($versionPath, $versionName);
 
         // Adjust the in memory state
-        $path = $versionPath . '/' . $versionName;
-
-        if (isset($this->objectsByPath['Node'][$path])) {
-            $node = $this->objectsByPath['Node'][$path];
+        $absPath = $versionPath . '/' . $versionName;
+        if (isset($this->objectsByPath['Node'][$absPath])) {
+            $node = $this->objectsByPath['Node'][$absPath];
+            unset($this->objectsByUuid[$node->getIdentifier()]);
             $node->setDeleted();
         }
 
-        if (isset($this->objectsByPath['Version\\Version'][$path])) {
-            $version = $this->objectsByPath['Version\\Version'][$path];
+        if (isset($this->objectsByPath['Version\\Version'][$absPath])) {
+            $version = $this->objectsByPath['Version\\Version'][$absPath];
+            unset($this->objectsByUuid[$version->getIdentifier()]);
             $version->setDeleted();
         }
 
-        unset($this->objectsByPath['Node'][$path]);
-        unset($this->objectsByPath['Version\\Version'][$path]);
+        unset($this->objectsByPath['Node'][$absPath]);
+        unset($this->objectsByPath['Version\\Version'][$absPath]);
+
+        $this->cascadeDelete($absPath, false);
+        $this->cascadeDeleteVersion($absPath);
     }
 
     /**
@@ -991,12 +995,14 @@ class ObjectManager
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
      * @param ItemInterface $item The item that is being removed
+     * @param bool $sessionBased i.e. removing a version is dispatched
+     *      immediately, don't track for eventual refresh
      *
      * @return void
      *
      * @see ObjectManager::removeItem()
      */
-    protected function performRemove($absPath, ItemInterface $item)
+    protected function performRemove($absPath, ItemInterface $item, $sessionOperation = true)
     {
         // was any parent moved?
         foreach ($this->nodesMove as $dst) {
@@ -1006,7 +1012,6 @@ class ObjectManager
                 throw new RepositoryException('Internal error: Deleting ('.$absPath.') will fail because your move is dispatched to the server after the delete');
             }
         }
-
         if ($item instanceof Node) {
             unset($this->objectsByUuid[$item->getIdentifier()]);
         }
@@ -1015,10 +1020,54 @@ class ObjectManager
         if (isset($this->itemsAdd[$absPath])) {
             //this is a new unsaved node
             unset($this->itemsAdd[$absPath]);
-        } else {
+        } elseif ($sessionOperation) {
             // keep reference to object in case of refresh
             // the topmost item delete will be sent to backend and cascade delete
             $this->itemsRemove[$absPath] = $item;
+        }
+    }
+
+    /**
+     * Notify all cached children that they are deleted as well and clean up
+     * internal state
+     *
+     * @param $absPath parent node that was removed
+     * @param bool $sessionBased i.e. removing a version is dispatched
+     *      immediately, don't track for eventual refresh
+     */
+    protected function cascadeDelete($absPath, $sessionOperation = true)
+    {
+        foreach ($this->objectsByPath['Node'] as $path => $item) {
+            if (strpos($path, "$absPath/") === 0) {
+                // notify item and let it call removeItem again. save()
+                // makes sure no children of already deleted items are
+                // deleted again.
+                $this->performRemove($path, $item, $sessionOperation);
+                if (!$item->isDeleted()) {
+                    $item->setDeleted();
+                }
+            }
+        }
+    }
+
+    /**
+     * Notify all cached version children that they are deleted as well and clean up
+     * internal state
+     *
+     * @param $absPath parent version node that was removed
+     */
+    protected function cascadeDeleteVersion($absPath)
+    {
+        // delete all versions, similar to cascadeDelete
+        foreach ($this->objectsByPath['Version\\Version'] as $path => $item) {
+            if (strpos($path, "$absPath/") === 0) {
+                // versions are read only, we simple unset them
+                unset($this->objectsByUuid[$item->getIdentifier()]);
+                unset($this->objectsByPath['Version\\Version'][$absPath]);
+                if (!$item->isDeleted()) {
+                    $item->setDeleted();
+                }
+            }
         }
     }
 
@@ -1066,24 +1115,9 @@ class ObjectManager
             // property has no children
             return;
         }
+        $this->cascadeDelete($absPath);
 
-        // notify all cached children that they are deleted as well and clean up internal state
-        $todelete = array();
-        foreach ($this->objectsByPath['Node'] as $path => $item) {
-            if (strpos($path, "$absPath/") === 0) {
-                // notify item and let it call removeItem again. save()
-                // makes sure no children of already deleted items are
-                // deleted again.
-                $this->performRemove($path, $item);
-                $todelete[] = $item;
-            }
-        }
-        // delay notification to still be able to access the uuid property in performRemove
-        foreach ($todelete as $item) {
-            if (! $item->isDeleted()) {
-                $item->setDeleted();
-            }
-        }
+
     }
 
     /**
@@ -1435,12 +1469,35 @@ class ObjectManager
      *
      * @see Node::refresh()
      */
-    public function getCachedNode($absPath)
+    public function getCachedNode($absPath, $class = 'Node')
     {
-        if (array_key_exists($absPath, $this->objectsByPath['Node'])) {
-            return $this->objectsByPath['Node'][$absPath];
+        if (array_key_exists($absPath, $this->objectsByPath[$class])) {
+            return $this->objectsByPath[$class][$absPath];
         } elseif (array_key_exists($absPath, $this->itemsRemove)) {
             return $this->itemsRemove[$absPath];
+        }
+        return null;
+    }
+
+    /**
+     * Get a node if it is already in cache or null otherwise.
+     *
+     * As getCachedNode but looking up the node by uuid.
+     *
+     * Note that this will never return you a removed node because the uuid is
+     * removed from the map.
+     *
+     * @see getCachedNode
+     *
+     * @param $uuid
+     * @param string $class
+     *
+     * @return NodeInterface or null
+     */
+    public function getCachedNodeByUuid($uuid, $class = 'Node')
+    {
+        if (array_key_exists($uuid, $this->objectsByUuid)) {
+            return $this->getCachedNode($this->objectsByUuid[$uuid], $class);
         }
         return null;
     }

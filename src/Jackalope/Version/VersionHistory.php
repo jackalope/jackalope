@@ -216,9 +216,34 @@ class VersionHistory extends Node
     public function removeVersion($versionName)
     {
         $uuid = $this->objectmanager->getVersionHistory($this->path);
-        $node = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
+        $historyNode = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
 
-        $this->objectmanager->removeVersion($node->getPath(), $versionName);
+        try {
+            $version = $this->objectmanager->getNodeByPath($historyNode->getPath().'/'.$versionName, 'Version\\Version');
+        } catch (\PHPCR\ItemNotFoundException $e) {
+            throw new VersionException("No version $versionName in the history", $e->getCode(), $e);
+        }
+
+        // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
+        if ($version->hasProperty('jcr:predecessors')) {
+            foreach ($version->getProperty('jcr:predecessors')->getString() as $preuuid) {
+                $pre = $this->objectmanager->getCachedNodeByUuid($preuuid, 'Version\\Version');
+                if ($pre) {
+                    $pre->setDirty();
+                }
+            }
+        }
+        if ($version->hasProperty('jcr:successor')) {
+            foreach($version->getProperty('jcr:successor')->getString() as $postuuid) {
+                $post = $this->objectmanager->getCachedNodeByUuid($postuuid, 'Version\\Version');
+                if ($post) {
+                    $post->setDirty();
+                }
+            }
+        }
+
+
+        $this->objectmanager->removeVersion($historyNode->getPath(), $versionName);
 
         if (!is_null($this->versions)) {
             unset($this->versions[$versionName]);
