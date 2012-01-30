@@ -57,6 +57,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeEnd',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeDown',
                     'Writing\\MoveMethodsTest::testNodeOrderBeforeUp',
+                    'Writing\\MoveMethodsTest::testNodeOrderBeforeUpAndDelete',
         );
     }
 
