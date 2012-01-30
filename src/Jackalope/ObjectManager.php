@@ -807,13 +807,15 @@ class ObjectManager
     public function checkin($absPath)
     {
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
+
         $node = $this->getNodeByPath($path, 'Version\\Version');
-        $predecessorUuids = $node->getProperty('jcr:predecessors')->getString();
-        if (!empty($predecessorUuids[0]) && isset($this->objectsByUuid[$predecessorUuids[0]])) {
-            $dirtyPath = $this->objectsByUuid[$predecessorUuids[0]];
-            unset($this->objectsByPath['Version\\Version'][$dirtyPath]);
-            unset($this->objectsByPath['Node'][$dirtyPath]); //FIXME: the node object should be told about this
-            unset($this->objectsByUuid[$predecessorUuids[0]]);
+        foreach($node->getProperty('jcr:predecessors')->getString() as $uuid) {
+            if (isset($this->objectsByUuid[$uuid])) {
+                $dirtyPath = $this->objectsByUuid[$uuid];
+                if (isset($this->objectsByPath['Version\\Version'][$dirtyPath])) {
+                    $this->objectsByPath['Version\\Version'][$dirtyPath]->setDirty();
+                }
+            }
         }
         return $node;
     }

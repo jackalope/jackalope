@@ -28,6 +28,11 @@ class VersionManager implements VersionManagerInterface {
     protected $factory;
 
     /**
+     * @var array of VersionHistory
+     */
+    protected $versionHistories = array();
+
+    /**
      * Create the version manager - there should be only one per session.
      *
      * @param FactoryInterface $factory the object factory
@@ -49,7 +54,11 @@ class VersionManager implements VersionManagerInterface {
          //FIXME: make sure this doc above is correct:
          // If this node is already checked-in, this method has no effect but returns
          // the current base version of this node.
-         return $this->objectmanager->checkin($absPath);
+         $version = $this->objectmanager->checkin($absPath);
+         if (array_key_exists($absPath, $this->versionHistories)) {
+             $this->versionHistories[$absPath]->notifyHistoryChanged();
+         }
+         return $version;
      }
 
     /**
@@ -91,7 +100,10 @@ class VersionManager implements VersionManagerInterface {
      */
     public function getVersionHistory($absPath)
     {
-        return $this->factory->get('Version\\VersionHistory', array($this->objectmanager,$absPath));
+        if (! isset($this->versionHistories[$absPath])) {
+            $this->versionHistories[$absPath] = $this->factory->get('Version\\VersionHistory', array($this->objectmanager, $absPath));
+        }
+        return $this->versionHistories[$absPath];
     }
 
     /**

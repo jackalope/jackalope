@@ -250,4 +250,14 @@ class VersionHistory extends Node
         }
     }
 
+    /**
+     * Tell the version history that it needs to reload, i.e. after a checkin operation
+     *
+     * @private
+     */
+    public function notifyHistoryChanged()
+    {
+        $this->versions = null;
+    }
+
 }
