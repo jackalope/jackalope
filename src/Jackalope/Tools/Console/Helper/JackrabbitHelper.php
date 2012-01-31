@@ -58,7 +58,7 @@ class JackrabbitHelper
 
     public function getServerPid()
     {
-        $pid = trim(shell_exec("pgrep -f -n {$this->jackrabbit_jar}"));
+        $pid = trim(shell_exec("pgrep -f -n '\-jar {$this->jackrabbit_jar}'"));
         //TODO: check it's a valid pid
         return $pid;
     }
