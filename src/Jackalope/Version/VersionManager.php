@@ -5,6 +5,7 @@ namespace Jackalope\Version;
 use PHPCR\NodeInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
+use PHPCR\InvalidItemStateException;
 
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
@@ -46,12 +47,17 @@ class VersionManager implements VersionManagerInterface {
      */
      public function checkin($absPath)
      {
+         if ($node = $this->objectManager->getCachedNode($absPath)) {
+             if ($node->isModified()) {
+                 throw new \PHPCR\InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
+             }
+         }
          $version = $this->objectManager->checkin($absPath);
          $version->setCachedPredecessorsDirty();
          if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
              $history->notifyHistoryChanged();
          }
-         if ($node = $this->objectManager->getCachedNode($absPath)) {
+         if ($node) {
              // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
              $node->setDirty();
          }
@@ -138,6 +144,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function restore($removeExisting, $version, $absPath = null)
     {
+        if ($this->objectManager->hasPendingChanges()) {
+            throw new \PHPCR\InvalidItemStateException('You may not call restore when there pending unsaved changes');
+        }
 
         if (is_string($version)) {
             if (! is_string($absPath)) {
