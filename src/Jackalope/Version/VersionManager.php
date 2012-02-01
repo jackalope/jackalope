@@ -51,6 +51,10 @@ class VersionManager implements VersionManagerInterface {
          if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
              $history->notifyHistoryChanged();
          }
+         if ($node = $this->objectManager->getCachedNode($absPath)) {
+             // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
+             $node->setDirty();
+         }
          return $version;
      }
 
@@ -62,6 +66,10 @@ class VersionManager implements VersionManagerInterface {
      public function checkout($absPath)
      {
          $this->objectManager->checkout($absPath);
+         if ($node = $this->objectManager->getCachedNode($absPath)) {
+             // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
+             $node->setDirty();
+         }
      }
 
     /**
@@ -83,7 +91,12 @@ class VersionManager implements VersionManagerInterface {
      */
     public function isCheckedOut($absPath)
     {
-        throw new NotImplementedException();
+        $node = $this->objectManager->getNode($absPath);
+        if (! $node->isNodeType('mix:simpleVersionable')) {
+            throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
+        }
+
+        return $node->getPropertyValue('jcr:isCheckedOut');
     }
 
     /**
@@ -125,17 +138,40 @@ class VersionManager implements VersionManagerInterface {
      */
     public function restore($removeExisting, $version, $absPath = null)
     {
-        //FIXME: This does not handle all cases
-        if (! $absPath) {
-            throw new NotImplementedException();
+
+        if (is_string($version)) {
+            if (! is_string($absPath)) {
+                throw new \InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
+            }
+            $vh = $this->getVersionHistory($absPath);
+            $version = $vh->getVersion($version);
+            $versionPath = $version->getPath();
+            $nodePath = $absPath;
+
+        } elseif (is_array($version)) {
+            // @codeCoverageIgnoreStart
+            throw new NotImplementedException('TODO: implement restoring a list of versions');
+            // @codeCoverageIgnoreEnd
+
+        } elseif ($version instanceof VersionInterface && is_string($absPath)) {
+            // @codeCoverageIgnoreStart
+            throw new NotImplementedException('TODO: implement restoring a version to a specified path');
+            // @codeCoverageIgnoreEnd
+
+        }  elseif ($version instanceof VersionInterface) {
+            $versionPath = $version->getPath();
+            $nodePath = $this->objectManager->getNode($version->getContainingHistory()->getVersionableIdentifier())->getPath();
+
+        } else {
+            throw new \InvalidArgumentException();
         }
-        if (! is_string($version)) {
-            throw new NotImplementedException();
+
+        $this->objectManager->restore($removeExisting, $versionPath, $nodePath);
+
+        $version->setCachedPredecessorsDirty();
+        if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
+            $history->notifyHistoryChanged();
         }
-        $vh = $this->getVersionHistory($absPath);
-        $version = $vh->getVersion($version);
-        $vpath = $version->getPath();
-        $this->objectManager->restore($removeExisting, $vpath, $absPath);
     }
 
     /**
@@ -145,7 +181,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function restoreByLabel($absPath, $versionLabel, $removeExisting)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -155,7 +193,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function merge($source, $srcWorkspace = null, $bestEffort = null, $isShallow = false)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -165,7 +205,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function doneMerge($absPath, VersionInterface $version)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -175,7 +217,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function cancelMerge($absPath, VersionInterface $version)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -185,7 +229,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function createConfiguration($absPath, VersionInterface $baseline)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -195,7 +241,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function setActivity(NodeInterface $activity)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -205,7 +253,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function getActivity()
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -215,7 +265,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function createActivity($title)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -225,7 +277,9 @@ class VersionManager implements VersionManagerInterface {
      */
     public function removeActivity(NodeInterface $activityNode)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
 }

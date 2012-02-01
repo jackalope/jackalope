@@ -48,17 +48,6 @@ interface VersioningInterface extends TransportInterface
     function restoreItem($removeExisting, $versionPath, $path);
 
     /**
-     * Get the uuid of the version history node at $path
-     *
-     * @param string $path the path to the node we want the version
-     *
-     * @return string uuid of the version history node
-     *
-     * TODO: Does this make any sense? We should maybe return the root version to make this more generic.
-     */
-    function getVersionHistory($path);
-
-    /**
      * Remove a version given the path to the version node and the name of the version.
      *
      * @param $versionPath absolute path to the version node

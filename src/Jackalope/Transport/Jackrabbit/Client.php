@@ -659,25 +659,6 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     /**
      * {@inheritDoc}
      */
-    public function getVersionHistory($path)
-    {
-        $path = $this->encodeAndValidatePathForDavex($path);
-        $request = $this->getRequest(Request::GET, $path."/jcr:versionHistory");
-        $request->setTransactionId($this->transactionToken);
-        try {
-            $resp = $request->execute();
-        } catch (PathNotFoundException $e) {
-            // does the node even exist? check only now to not generate unnecessary overhead
-            $this->getNode($path); // throws PathNotFoundException if not existing
-            // if we get here, the node exists, so it is not versionable
-            throw new UnsupportedRepositoryOperationException("Node at $path is not versionable", 0, $e);
-        }
-        return $resp;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function removeVersion($versionPath, $versionName)
     {
         $path = $this->encodeAndValidatePathForDavex($versionPath . '/' . $versionName);

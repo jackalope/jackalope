@@ -4,6 +4,7 @@ namespace Jackalope\Version;
 
 use ArrayIterator;
 
+use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionException;
 
@@ -19,21 +20,19 @@ use Jackalope\FactoryInterface;
  *
  * @api
  */
-class VersionHistory extends Node
+class VersionHistory extends Node implements VersionHistoryInterface
 {
     /**
-     * @var PHPCR\Version\VersionInterface
-     */
-    protected $versionNode = null;
-    /**
-     * @var PHPCR\Version\VersionInterface
-     */
-    protected $rootVersion = null;
-    /**
-     * Cache of all versions to only fetch them once.
+     * Cache of all versions to only build the list once
      * @var array
      */
     protected $versions = null;
+
+    /**
+     * Cache of the linear versions to only build the list once
+     * @var array
+     */
+    protected $linearVersions = null;
 
     /**
      * {@inheritDoc}
@@ -52,10 +51,7 @@ class VersionHistory extends Node
      */
     public function getRootVersion()
     {
-        if (! $this->rootVersion) {
-            $this->rootVersion = $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), 'Version\\Version');
-        }
-        return $this->rootVersion;
+        return $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), 'Version\\Version');
     }
 
     /**
@@ -65,7 +61,14 @@ class VersionHistory extends Node
      */
     public function getAllLinearVersions()
     {
-        throw new NotImplementedException();
+        // OPTIMIZE: special iterator that delays loading the versions
+        if (!$this->linearVersions) {
+            $version = $this->getRootVersion();
+            do {
+                $this->linearVersions[$version->getName()] = $version;
+            } while($version = $version->getLinearSuccessor());
+        }
+        return new ArrayIterator($this->linearVersions);
     }
 
     /**
@@ -75,6 +78,7 @@ class VersionHistory extends Node
      */
     public function getAllVersions()
     {
+        // OPTIMIZE: special iterator that delays loading the versions
         if (!$this->versions) {
             $rootVersion = $this->getRootVersion();
             $results[$rootVersion->getName()] = $rootVersion;
@@ -99,7 +103,8 @@ class VersionHistory extends Node
         $results = array();
         foreach ($successors as $successor) {
             $results[$successor->getName()] = $successor;
-            $results = array_merge($results, $this->getEventualSuccessors($successor)); //TODO: remove end recursion
+            // OPTIMIZE: use a stack instead of recursion
+            $results = array_merge($results, $this->getEventualSuccessors($successor));
         }
         return $results;
     }
@@ -111,7 +116,12 @@ class VersionHistory extends Node
      */
     public function getAllLinearFrozenNodes()
     {
-        throw new NotImplementedException();
+        // OPTIMIZE: special iterator that delays loading frozen nodes
+        $frozenNodes = array();
+        foreach($this->getAllLinearVersions() as $version) {
+            $frozenNodes[$version->getName()] = $version->getFrozenNode();
+        }
+        return new ArrayIterator($frozenNodes);
     }
 
     /**
@@ -121,7 +131,12 @@ class VersionHistory extends Node
      */
     public function getAllFrozenNodes()
     {
-        throw new NotImplementedException();
+        // OPTIMIZE: special iterator that delays loading frozen nodes
+        $frozenNodes = array();
+        foreach($this->getAllVersions() as $version) {
+            $frozenNodes[$version->getName()] = $version->getFrozenNode();
+        }
+        return new ArrayIterator($frozenNodes);
     }
 
     /**
@@ -146,7 +161,9 @@ class VersionHistory extends Node
      */
     public function getVersionByLabel($label)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -156,7 +173,9 @@ class VersionHistory extends Node
      */
     public function addVersionLabel($versionName, $label, $moveLabel)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -166,7 +185,9 @@ class VersionHistory extends Node
      */
     public function removeVersionLabel($label)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -176,7 +197,9 @@ class VersionHistory extends Node
      */
     public function hasVersionLabel($label, $version = null)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -186,7 +209,9 @@ class VersionHistory extends Node
      */
     public function getVersionLabels($version = null)
     {
+        // @codeCoverageIgnoreStart
         throw new NotImplementedException();
+        // @codeCoverageIgnoreEnd
     }
 
     /**

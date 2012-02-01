@@ -21,7 +21,7 @@ class Version extends Node implements VersionInterface {
      */
     public function getContainingHistory()
     {
-       throw new NotImplementedException();
+        return $this->objectManager->getNode($this->parentPath, '/', 'Version\\VersionHistory');
     }
 
     /**
@@ -31,10 +31,6 @@ class Version extends Node implements VersionInterface {
      */
     public function getCreated()
     {
-        if (!$this->hasProperty('jcr:created')) {
-            return null;
-        }
-
         return $this->getProperty('jcr:created')->getValue();
     }
 
@@ -45,7 +41,17 @@ class Version extends Node implements VersionInterface {
      */
     public function getLinearSuccessor()
     {
-        throw new NotImplementedException();
+        $successors = $this->getProperty("jcr:successors")->getString();
+        if (count($successors) > 1) {
+            // @codeCoverageIgnoreStart
+            throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
+            // @codeCoverageIgnoreEnd
+        }
+        if (count($successors) == 0) {
+            return null; // no successor
+        }
+        $uuid = reset($successors);
+        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
     /**
@@ -55,21 +61,14 @@ class Version extends Node implements VersionInterface {
      */
     public function getSuccessors()
     {
-        if (! $this->hasProperty('jcr:successors')) {
-            // no successors
-            return array();
-        }
-
-        /* predecessors is a multivalue property with REFERENCE.
+        /* successor is a multivalue property with REFERENCE.
          * get it as string so we can create the Version instances from uuid
          * with the objectManager
          */
         $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
-        if ($successors) {
-            foreach ($successors as $uuid) {
-                $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
-            }
+        foreach ($successors as $uuid) {
+            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
         return $results;
     }
@@ -81,7 +80,17 @@ class Version extends Node implements VersionInterface {
      */
     public function getLinearPredecessor()
     {
-        throw new NotImplementedException();
+        $predecessor = $this->getProperty("jcr:predecessors")->getString();
+        if (count($predecessor) > 1) {
+            // @codeCoverageIgnoreStart
+            throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
+            // @codeCoverageIgnoreEnd
+        }
+        if (count($predecessor) == 0) {
+            return null; // no successor
+        }
+        $uuid = reset($predecessor);
+        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
     /**
@@ -91,11 +100,6 @@ class Version extends Node implements VersionInterface {
      */
     public function getPredecessors()
     {
-        if (! $this->hasProperty('jcr:predecessors')) {
-            // no predecessors
-            return array();
-        }
-
         /*
          * predecessors is a multivalue property with REFERENCE.
          * get it as string so we can create the Version instances from uuid
@@ -138,15 +142,12 @@ class Version extends Node implements VersionInterface {
     public function setCachedPredecessorsDirty()
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
-        if ($this->hasProperty('jcr:predecessors')) {
-            foreach ($this->getProperty('jcr:predecessors')->getString() as $preuuid) {
-                $pre = $this->objectManager->getCachedNodeByUuid($preuuid, 'Version\\Version');
-                if ($pre) {
-                    $pre->setDirty();
-                }
+        foreach ($this->getProperty('jcr:predecessors')->getString() as $preuuid) {
+            $pre = $this->objectManager->getCachedNodeByUuid($preuuid, 'Version\\Version');
+            if ($pre) {
+                $pre->setDirty();
             }
         }
-
     }
 
     /**
@@ -156,12 +157,11 @@ class Version extends Node implements VersionInterface {
      */
     public function setCachedSuccessorsDirty()
     {
-        if ($this->hasProperty('jcr:successor')) {
-            foreach($this->getProperty('jcr:successor')->getString() as $postuuid) {
-                $post = $this->objectManager->getCachedNodeByUuid($postuuid, 'Version\\Version');
-                if ($post) {
-                    $post->setDirty();
-                }
+        // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
+        foreach($this->getProperty('jcr:successors')->getString() as $postuuid) {
+            $post = $this->objectManager->getCachedNodeByUuid($postuuid, 'Version\\Version');
+            if ($post) {
+                $post->setDirty();
             }
         }
     }

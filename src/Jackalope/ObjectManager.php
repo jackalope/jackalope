@@ -826,33 +826,31 @@ class ObjectManager
     }
 
     /**
-     * Removes the node's cache after it has been restored.
+     * Restore the node at $nodePath to the version at $versionPath
      *
-     * TODO: This is incomplete. Needs batch processing to avoid
-     * chicken-and-egg problems.
+     * Clears the node's cache after it has been restored.
+     *
+     * TODO: This is incomplete. Needs batch processing to implement restoring an array of versions
+     *
+     * @param bool $removeExisting whether to remove the existing current
+     *      version or create a new version after that version
+     * @param string $versionPath
+     * @param string $nodePath absolute path to the node
+     *
+     * @return void
      */
-    public function restore($removeExisting, $vpath, $absPath)
+    public function restore($removeExisting, $versionPath, $nodePath)
     {
-        if (null !== $absPath
-            && (isset($this->objectsByPath['Node'][$absPath]) || isset($this->objectsByPath['Version\\Version'][$absPath]))
-        ) {
-            unset($this->objectsByUuid[$this->objectsByPath['Node'][$absPath]->getIdentifier()]);
-            unset($this->objectsByPath['Version\Version'][$absPath]);
-            unset($this->objectsByPath['Node'][$absPath]);
-        }
-        $this->transport->restoreItem($removeExisting, $vpath, $absPath);  //FIXME: what about pending move operations?
-    }
+        // TODO: handle pending move operations?
 
-    /**
-     * Get the uuid of the version history node at $path
-     *
-     * @param string $path the path to the node we want the version
-     *
-     * @return string uuid of the version history node
-     */
-    public function getVersionHistory($path)
-    {
-        return $this->transport->getVersionHistory($this->resolveBackendPath($path));
+        if (isset($this->objectsByPath['Node'][$nodePath])) {
+            $this->objectsByPath['Node'][$nodePath]->setDirty();
+        }
+        if (isset($this->objectsByPath['Version\\Version'][$versionPath])) {
+            $this->objectsByPath['Version\\Version'][$versionPath]->setDirty();
+        }
+
+        $this->transport->restoreItem($removeExisting, $versionPath, $nodePath);
     }
 
     /**
