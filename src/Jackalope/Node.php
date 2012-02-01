@@ -1105,6 +1105,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function confirmSaved()
     {
+        foreach($this->properties as $property) {
+            if ($property->isModified()) {
+                $property->confirmSaved();
+            }
+        }
         $this->deletedProperties = array();
         parent::confirmSaved();
     }
