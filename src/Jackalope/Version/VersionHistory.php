@@ -15,13 +15,12 @@ use Jackalope\FactoryInterface;
 /**
  * {@inheritDoc}
  *
+ * A special node that represents a nt:versionHistory node
+ *
  * @api
  */
 class VersionHistory extends Node
 {
-    protected $objectmanager; //TODO if we would use parent constructor, this would be present
-    protected $path; //TODO if we would use parent constructor, this would be present
-
     /**
      * @var PHPCR\Version\VersionInterface
      */
@@ -37,31 +36,13 @@ class VersionHistory extends Node
     protected $versions = null;
 
     /**
-     * FIXME: is this sane? we do not call the parent constructor
-     *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectmanager
-     * @param string $absPath the repository path of this version history.
-     */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $absPath)
-    {
-        $this->objectmanager = $objectmanager;
-        $this->path = $absPath;
-
-        // will trigger exception required by VersionManager.getVersionHistory
-        // in case there is no such node or it is not versionable
-        $uuid = $this->objectmanager->getVersionHistory($this->path);
-        $this->versionNode = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @api
      */
     public function getVersionableIdentifier()
     {
-        return $this->versionNode->getPropertyValue('jcr:versionableUuid');
+        return $this->getPropertyValue('jcr:versionableUuid');
     }
 
     /**
@@ -72,7 +53,7 @@ class VersionHistory extends Node
     public function getRootVersion()
     {
         if (! $this->rootVersion) {
-            $this->rootVersion = $this->objectmanager->getNode('jcr:rootVersion', $this->versionNode->getPath(), 'Version\\Version');
+            $this->rootVersion = $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), 'Version\\Version');
         }
         return $this->rootVersion;
     }
@@ -215,35 +196,12 @@ class VersionHistory extends Node
      */
     public function removeVersion($versionName)
     {
-        $uuid = $this->objectmanager->getVersionHistory($this->path);
-        $historyNode = $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
+        $version = $this->getVersion($versionName);
 
-        try {
-            $version = $this->objectmanager->getNodeByPath($historyNode->getPath().'/'.$versionName, 'Version\\Version');
-        } catch (\PHPCR\ItemNotFoundException $e) {
-            throw new VersionException("No version $versionName in the history", $e->getCode(), $e);
-        }
+        $version->setCachedPredecessorsDirty();
+        $version->setCachedSuccessorsDirty();
 
-        // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
-        if ($version->hasProperty('jcr:predecessors')) {
-            foreach ($version->getProperty('jcr:predecessors')->getString() as $preuuid) {
-                $pre = $this->objectmanager->getCachedNodeByUuid($preuuid, 'Version\\Version');
-                if ($pre) {
-                    $pre->setDirty();
-                }
-            }
-        }
-        if ($version->hasProperty('jcr:successor')) {
-            foreach($version->getProperty('jcr:successor')->getString() as $postuuid) {
-                $post = $this->objectmanager->getCachedNodeByUuid($postuuid, 'Version\\Version');
-                if ($post) {
-                    $post->setDirty();
-                }
-            }
-        }
-
-
-        $this->objectmanager->removeVersion($historyNode->getPath(), $versionName);
+        $this->objectManager->removeVersion($this->getPath(), $versionName);
 
         if (!is_null($this->versions)) {
             unset($this->versions[$versionName]);
@@ -259,5 +217,4 @@ class VersionHistory extends Node
     {
         $this->versions = null;
     }
-
 }

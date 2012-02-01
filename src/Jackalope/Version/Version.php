@@ -62,7 +62,7 @@ class Version extends Node implements VersionInterface {
 
         /* predecessors is a multivalue property with REFERENCE.
          * get it as string so we can create the Version instances from uuid
-         * with the objectmanager
+         * with the objectManager
          */
         $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
@@ -99,7 +99,7 @@ class Version extends Node implements VersionInterface {
         /*
          * predecessors is a multivalue property with REFERENCE.
          * get it as string so we can create the Version instances from uuid
-         * with the objectmanager. see 3.13.2.6
+         * with the objectManager. see 3.13.2.6
          */
         $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
@@ -128,5 +128,41 @@ class Version extends Node implements VersionInterface {
     {
         // A version node cannot be removed, so always throw an Exception
         throw new \PHPCR\RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
+    }
+
+    /**
+     * Set all cached predecessors of this version dirty
+     *
+     * @private
+     */
+    public function setCachedPredecessorsDirty()
+    {
+        // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
+        if ($this->hasProperty('jcr:predecessors')) {
+            foreach ($this->getProperty('jcr:predecessors')->getString() as $preuuid) {
+                $pre = $this->objectManager->getCachedNodeByUuid($preuuid, 'Version\\Version');
+                if ($pre) {
+                    $pre->setDirty();
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Set all cached successors of this version dirty
+     *
+     * @private
+     */
+    public function setCachedSuccessorsDirty()
+    {
+        if ($this->hasProperty('jcr:successor')) {
+            foreach($this->getProperty('jcr:successor')->getString() as $postuuid) {
+                $post = $this->objectManager->getCachedNodeByUuid($postuuid, 'Version\\Version');
+                if ($post) {
+                    $post->setDirty();
+                }
+            }
+        }
     }
 }

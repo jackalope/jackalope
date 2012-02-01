@@ -23,14 +23,9 @@ class VersionManager implements VersionManagerInterface {
     /**
      * @var ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
     /** @var FactoryInterface   The jackalope object factory for this object */
     protected $factory;
-
-    /**
-     * @var array of VersionHistory
-     */
-    protected $versionHistories = array();
 
     /**
      * Create the version manager - there should be only one per session.
@@ -38,9 +33,9 @@ class VersionManager implements VersionManagerInterface {
      * @param FactoryInterface $factory the object factory
      * @param ObjectManager $objectManager
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
         $this->factory = $factory;
     }
 
@@ -51,12 +46,10 @@ class VersionManager implements VersionManagerInterface {
      */
      public function checkin($absPath)
      {
-         //FIXME: make sure this doc above is correct:
-         // If this node is already checked-in, this method has no effect but returns
-         // the current base version of this node.
-         $version = $this->objectmanager->checkin($absPath);
-         if (array_key_exists($absPath, $this->versionHistories)) {
-             $this->versionHistories[$absPath]->notifyHistoryChanged();
+         $version = $this->objectManager->checkin($absPath);
+         $version->setCachedPredecessorsDirty();
+         if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
+             $history->notifyHistoryChanged();
          }
          return $version;
      }
@@ -68,7 +61,7 @@ class VersionManager implements VersionManagerInterface {
      */
      public function checkout($absPath)
      {
-         $this->objectmanager->checkout($absPath);
+         $this->objectManager->checkout($absPath);
      }
 
     /**
@@ -100,10 +93,12 @@ class VersionManager implements VersionManagerInterface {
      */
     public function getVersionHistory($absPath)
     {
-        if (! isset($this->versionHistories[$absPath])) {
-            $this->versionHistories[$absPath] = $this->factory->get('Version\\VersionHistory', array($this->objectmanager, $absPath));
+        $node = $this->objectManager->getNode($absPath);
+        if (! $node->isNodeType('mix:simpleVersionable')) {
+            throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
-        return $this->versionHistories[$absPath];
+
+        return $this->objectManager->getNode($node->getProperty('jcr:versionHistory')->getString(), '/', 'Version\\VersionHistory');
     }
 
     /**
@@ -113,14 +108,14 @@ class VersionManager implements VersionManagerInterface {
      */
     public function getBaseVersion($absPath)
     {
-        $node = $this->objectmanager->getNodeByPath($absPath);
+        $node = $this->objectManager->getNodeByPath($absPath);
         try {
             //TODO: could check if node has versionable mixin type
             $uuid = $node->getProperty('jcr:baseVersion')->getString();
         } catch(PathNotFoundException $e) {
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");
         }
-        return $this->objectmanager->getNode($uuid, '/', 'Version\\Version');
+        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
     /**
@@ -140,7 +135,7 @@ class VersionManager implements VersionManagerInterface {
         $vh = $this->getVersionHistory($absPath);
         $version = $vh->getVersion($version);
         $vpath = $version->getPath();
-        $this->objectmanager->restore($removeExisting, $vpath, $absPath);
+        $this->objectManager->restore($removeExisting, $vpath, $absPath);
     }
 
     /**

@@ -808,16 +808,7 @@ class ObjectManager
     {
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
 
-        $node = $this->getNodeByPath($path, 'Version\\Version');
-        foreach($node->getProperty('jcr:predecessors')->getString() as $uuid) {
-            if (isset($this->objectsByUuid[$uuid])) {
-                $dirtyPath = $this->objectsByUuid[$uuid];
-                if (isset($this->objectsByPath['Version\\Version'][$dirtyPath])) {
-                    $this->objectsByPath['Version\\Version'][$dirtyPath]->setDirty();
-                }
-            }
-        }
-        return $node;
+        return $this->getNodeByPath($path, 'Version\\Version');
     }
     /**
      * Removes the cache of the predecessor version after the node has been
@@ -1473,7 +1464,7 @@ class ObjectManager
      */
     public function getCachedNode($absPath, $class = 'Node')
     {
-        if (array_key_exists($absPath, $this->objectsByPath[$class])) {
+        if (isset($this->objectsByPath[$class][$absPath])) {
             return $this->objectsByPath[$class][$absPath];
         } elseif (array_key_exists($absPath, $this->itemsRemove)) {
             return $this->itemsRemove[$absPath];

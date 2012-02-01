@@ -88,7 +88,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *      property value - array for multivalue property)
      * @param string $path the absolute path of this item
      * @param Session the session instance
-     * @param ObjectManager the objectmanager instance - the caller has to take
+     * @param ObjectManager the objectManager instance - the caller has to take
      *      care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware
      *      its not yet existing on the server. defaults to false
