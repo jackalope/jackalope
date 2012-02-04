@@ -79,7 +79,13 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
     const NS_DAV = 'DAV:';
 
     /**
-     * Jackrabbit 2.3.6 returns this weird number to say its an infinite lock
+     * Value of the <timeout> tag for infinite timeout (since jackrabbit 2.4)
+     */
+    const JCR_INFINITE = 'Infinite';
+
+    /**
+     * Jackrabbit 2.3.6+2.3.7 return this weird number to say its an infinite lock
+     * This has been fixed in 2.4
      */
     const JCR_INFINITE_LOCK_TIMEOUT = 2147483;
 
@@ -1586,14 +1592,16 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
      */
     protected function parseTimeout($timeoutValue)
     {
-        if ($timeoutValue === 'Inifite') {
+        if (self::JCR_INFINITE == $timeoutValue) {
             return null;
         }
 
-        if (preg_match('/Second\-([\d]+)/', $timeoutValue, $matches)) {
-            $time = $matches[1];
+        if (! preg_match('/Second\-([\d]+)/', $timeoutValue, $matches)) {
+            throw new RepositoryException("Unexpected response on lock from the backend, could not parse seconds out of '$timeoutValue'");
         }
+        $time = $matches[1];
 
+        // keep this hack for jackrabbit 2.3.7 for now. it reported a bogous value for the timeout
         if (self::JCR_INFINITE_LOCK_TIMEOUT == $time || self::JCR_INFINITE_LOCK_TIMEOUT - 1 == $time) {
             // prevent glitches due to second boundary during request
             return null;
