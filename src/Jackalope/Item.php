@@ -76,6 +76,11 @@ abstract class Item implements ItemInterface
      */
     protected $savedState;
 
+    /**
+     * @var int The state to take after this dirty node has been refreshed. One of the STATE_ constants
+     */
+    protected $postDirtyState = -1;
+
     /** @var array  The states an Item can take */
     protected $available_states = array(
         self::STATE_NEW,
@@ -260,7 +265,7 @@ abstract class Item implements ItemInterface
      */
     public function isNew()
     {
-        return $this->state === self::STATE_NEW;
+        return self::STATE_NEW === $this->state;
     }
 
     /**
@@ -270,7 +275,8 @@ abstract class Item implements ItemInterface
      */
     public function isModified()
     {
-        return $this->state === self::STATE_MODIFIED;
+        return self::STATE_MODIFIED === $this->state
+            || self::STATE_DIRTY === $this->state && self::STATE_MODIFIED === $this->postDirtyState;
     }
 
     /**
@@ -289,7 +295,7 @@ abstract class Item implements ItemInterface
      */
     public function isDirty()
     {
-        return $this->state === self::STATE_DIRTY;
+        return self::STATE_DIRTY === $this->state;
     }
 
     /**
@@ -300,7 +306,7 @@ abstract class Item implements ItemInterface
      */
     public function isDeleted()
     {
-        return $this->state === self::STATE_DELETED;
+        return self::STATE_DELETED === $this->state;
     }
 
     /**
@@ -312,7 +318,7 @@ abstract class Item implements ItemInterface
      */
     public function isClean()
     {
-        return $this->state === self::STATE_CLEAN;
+        return self::STATE_CLEAN === $this->state;
     }
 
     /**
@@ -403,8 +409,22 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function setDirty($keepChanges = false)
+    public function setDirty($keepChanges = false, $targetState = false)
     {
+        if (false === $targetState) {
+            $targetState = $this->getState();
+        }
+        switch($targetState) {
+            case self::STATE_DIRTY:
+                break;
+            case self::STATE_CLEAN:
+            case self::STATE_MODIFIED:
+                $this->postDirtyState = $targetState;
+                break;
+            default:
+                throw new RepositoryException('Setting a node dirty in state ' . $this->getState() . ' is not expected');
+        }
+
         $this->keepChanges = $keepChanges;
         $this->setState(self::STATE_DIRTY);
     }
@@ -438,7 +458,7 @@ abstract class Item implements ItemInterface
     public function confirmSaved()
     {
         $this->oldPath = null; // in case this item has been moved
-        $this->setState(self::STATE_DIRTY);
+        $this->setDirty(false, self::STATE_CLEAN);
     }
 
     /**
@@ -479,7 +499,7 @@ abstract class Item implements ItemInterface
         // The following test covers that special case, if the item is modified during the TRX,
         // we set the saved state to MODIFIED so that it can be restored as it is when the TRX
         // is rolled back.
-        if ($state === self::STATE_MODIFIED && $this->savedState === self::STATE_CLEAN) {
+        if (self::STATE_MODIFIED  === $state && self::STATE_CLEAN === $this->savedState) {
             $this->savedState = self::STATE_MODIFIED;
         }
     }
@@ -500,7 +520,13 @@ abstract class Item implements ItemInterface
 
         if ($this->isDirty()) {
             $this->refresh($this->keepChanges);
-            $this->setClean();
+
+            // check whether node|property updated state
+            if ($this->isDirty()) {
+                $this->setState($this->postDirtyState);
+            }
+            $this->keepChanges = false;
+            $this->postDirtyState = -1;
         }
 
         // For all the other cases, the state does not change
@@ -590,43 +616,42 @@ abstract class Item implements ItemInterface
             $this->savedState = self::STATE_NEW;
         }
 
-        if ($this->state === self::STATE_DELETED || $this->savedState === self::STATE_DELETED) {
+        if (self::STATE_DELETED === $this->state || self::STATE_DELETED === $this->savedState) {
 
             // Case 1) and 2)
             $this->state = self::STATE_DELETED;
 
-        } elseif ($this->savedState === self::STATE_NEW) {
+        } elseif (self::STATE_NEW === $this->savedState) {
 
             // Case 3)
             $this->state = self::STATE_NEW;
 
-        } elseif ($this->state === self::STATE_MODIFIED || $this->savedState === self::STATE_MODIFIED) {
+        } elseif (self::STATE_MODIFIED  === $this->state || self::STATE_MODIFIED === $this->savedState ) {
 
             // Case 4) and 5)
             $this->state = self::STATE_MODIFIED;
 
-        } elseif ($this->savedState === self::STATE_CLEAN) {
+        } elseif (self::STATE_CLEAN === $this->savedState) {
 
-            if ($this->state === self::STATE_CLEAN) {
+            if (self::STATE_CLEAN === $this->state) {
 
                 // Case 6) and 7), see the comment in the function setState()
                 $this->state = $this->savedState;
 
-            } elseif ($this->state === self::STATE_DIRTY) {
+            } elseif (self::STATE_DIRTY === $this->state) {
 
                 // Case 8)
                 $this->state = self::STATE_DIRTY;
             }
 
-        } elseif ($this->savedState === self::STATE_DIRTY) {
+        } elseif (self::STATE_DIRTY === $this->savedState) {
 
             // Case 9)
             $this->state = self::STATE_DIRTY;
 
         } else {
 
-            // There is some special case we didn't think of, for the moment throw an exception
-            // TODO: figure out if this might happen or not
+            // There might be some special case we do not handle. for the moment throw an exception
             throw new LogicException("There was an unexpected state transition during the transaction: " .
                                       "old state = {$this->savedState}, new state = {$this->state}");
         }
