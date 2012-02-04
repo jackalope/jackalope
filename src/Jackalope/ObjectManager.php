@@ -769,19 +769,15 @@ class ObjectManager
             }
         }
 
-        // commit changes to the local state
-        foreach ($this->itemsRemove as $path => $item) {
-            unset($this->objectsByPath['Node'][$path]);
-            // TODO: unset the node in $this->objectsByUuid if necessary
-        }
-
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
         $this->itemsRemove = array();
         $this->nodesMove = array();
 
         foreach ($this->itemsAdd as $path => $dummy) {
-            $item = $this->getNodeByPath($path);
-            $item->confirmSaved();
+            if (! isset($this->objectsByPath['Node'][$path])) {
+                throw new RepositoryException("Internal error: New node was not found in cache '$path'");
+            }
+            $this->objectsByPath['Node'][$path]->confirmSaved();
         }
         if (isset($this->objectsByPath['Node'])) {
             foreach ($this->objectsByPath['Node'] as $item) {
