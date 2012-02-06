@@ -410,7 +410,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 unset($this->orignalNodesOrder[$k]);
             }
         }
+        
+        //numerate the arrays without "holes"
         $this->originalNodesOrder = array_values($this->originalNodesOrder);
+        $this->nodes = array_values($this->nodes);
+        
         $len = count($this->nodes) - 1;
         $oldIndex = array_flip($this->originalNodesOrder);
         //go backwards on the new node order and arrange them this way
@@ -466,8 +470,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             unset($nodes[$oldpos]);
             array_splice($nodes, $newpos, 0, $srcChildRelPath);
         }
-        // renumber the nodes again so there are no gaps
-        $nodes = array_values($nodes);
         return $nodes;
     }
 
