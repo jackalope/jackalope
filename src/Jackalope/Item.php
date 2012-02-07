@@ -412,7 +412,7 @@ abstract class Item implements ItemInterface
     public function setDirty($keepChanges = false, $targetState = false)
     {
         if (false === $targetState) {
-            $targetState = $this->getState();
+            $targetState = $keepChanges ? $this->getState() : self::STATE_CLEAN;
         }
         switch($targetState) {
             case self::STATE_DIRTY:
