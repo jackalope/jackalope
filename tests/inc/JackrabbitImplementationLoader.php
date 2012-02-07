@@ -31,7 +31,6 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'LifecycleManagement',
                     'RetentionAndHold',
                     'SameNameSiblings',
-                    'OrderableChildNodes',
         );
 
         $this->unsupportedCases = array(
