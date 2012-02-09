@@ -279,6 +279,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function addNode($relPath, $primaryNodeTypeName = null)
     {
+        $this->checkState();
+
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
         // are we not the immediate parent?
@@ -340,7 +342,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
-        $this->nodes[] = $relPath;
+        $this->addChildNode($relPath, false); // no need to check , we just checked when entering this method
         //by definition, adding a node sets the parent to modified
         $this->setModified();
 
