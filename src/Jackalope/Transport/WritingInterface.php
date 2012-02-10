@@ -96,6 +96,17 @@ interface WritingInterface extends TransportInterface
     function moveNode($srcAbsPath, $dstAbsPath);
 
     /**
+     * Reorder the children at $path
+     *
+     * The $reorders is an array with pairs of child node names. The first name
+     * must be reordered to the position right before the second name.
+     *
+     * @param string $absPath absolute path to the parent node
+     * @param array $reorders list of reordering pars
+     */
+    function reorderNodes($absPath, $reorders);
+
+    /**
      * Deletes a node and the whole subtree under it
      *
      * @param string $path Absolute path to the node

@@ -36,7 +36,6 @@
                 <file>../src/Jackalope/Transport/curl.php</file>
 
                 <!-- ignore whats not implemented yet -->
-                <directory>../lib/phpcr/src/PHPCR/Lock</directory>
                 <directory>../lib/phpcr/src/PHPCR/Observation</directory>
                 <directory>../lib/phpcr/src/PHPCR/Retention</directory>
                 <directory>../lib/phpcr/src/PHPCR/Security</directory>
