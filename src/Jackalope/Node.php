@@ -64,10 +64,20 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $deletedProperties = array();
 
     /**
-     * list of the child node names
+     * ordered list of the child node names
+     *
      * @var array
      */
     protected $nodes = array();
+
+    /**
+     * ordered list of the child node names as known to be at the backend
+     *
+     * used to calculate reordering operations if orderBefore() was used
+     *
+     * @var array
+     */
+    protected $originalNodesOrder = null;
 
     /**
      * Create a new node instance with data from the storage layer
@@ -112,26 +122,33 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         if ($update) {
             // keep backup of old state so we can remove what needs to be removed
-            $oldNodes = array_flip($this->nodes);
-            $this->nodes = array(); // reset to avoid duplicates
+            $oldNodes = array_flip(array_values($this->nodes));
             $oldProperties = $this->properties;
         }
+        /*
+         * we collect all nodes coming from the backend. if we update with
+         * $keepChanges, we use this to update the node list rather than losing
+         * reorders
+         *
+         * properties are easy as they are not ordered.
+         */
+        $nodesInBackend = array();
 
         foreach ($rawData as $key => $value) {
             $node = false; // reset to avoid trouble
             if (is_object($value)) {
-                // this is a node. add it unless we update and the node is deleted in this session
-                if (! $update ||
-                    ! $keepChanges ||
-                    isset($oldNodes[$key]) || // it was here before reloading
-                    ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) ||
-                    ! $node->isDeleted()
+                // this is a node. add it if
+                if (! $update || // init new node
+                    ! $keepChanges || // want to discard changes
+                    isset($oldNodes[$key]) || // it was already existing before reloading
+                    ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing aobut it
                 ) {
+                    // for all those cases, if the node was moved away or is deleted in current session, we do not add it
                     if (! $this->objectManager->isNodeMoved($this->path . '/' . $key) &&
                         ! $this->objectManager->isItemDeleted($this->path . '/' . $key)
                     ) {
                         // otherwise we (re)load a node from backend but a child has been moved away already
-                        $this->nodes[] = $key;
+                        $nodesInBackend[] = $key;
                     }
                 }
                 if ($update) {
@@ -242,25 +259,58 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if ($update) {
-            // notify nodes that where not received again that they disappeared
-            foreach ($oldNodes as $name => $dummy) {
-                if (! $this->objectManager->purgeDisappearedNode($this->path . '/' . $name, $keepChanges)) {
-                    // do not drop, it was a new child and we are to keep changes
-                    $this->nodes[] = $name;
-                } else {
-                    $id = array_search($name, $this->nodes);
-                    if ($id) {
-                        unset($this->nodes[$id]);
+            if ($keepChanges) {
+                // we keep changes. merge new nodes to the right place
+                $previous = null;
+                $newFromBackend = array_diff($nodesInBackend, array_intersect($this->nodes, $nodesInBackend));
+
+                foreach ($newFromBackend as $name) {
+                    $pos = array_search($name, $nodesInBackend);
+                    if (is_array($this->originalNodesOrder)) {
+                        // update original order to send the correct reorderings
+                        array_splice($this->originalNodesOrder, $pos, 0, $name);
+                    }
+                    if ($pos === 0) {
+                        array_unshift($this->nodes, $name);
+                    } else {
+                        // do we find the predecessor of the new node in the list?
+                        $insert = array_search($nodesInBackend[$pos-1], $this->nodes);
+                        if (false !== $insert) {
+                            array_splice($this->nodes, $insert + 1, 0, $name);
+                        } else {
+                            // failed to find predecessor, add to the end
+                            $this->nodes[] = $name;
+                        }
                     }
                 }
+            } else {
+                // discard changes, just overwrite node list
+                $this->nodes = $nodesInBackend;
+                $this->originalNodesOrder = null;
             }
             foreach ($oldProperties as $name => $property) {
-                if (! ($property->isNew() && $keepChanges)) {
+                if (! ($keepChanges && ($property->isNew()))) {
                     // may not call remove(), we dont want another delete with the backend to be attempted
                     $this->properties[$name]->setDeleted();
                     unset($this->properties[$name]);
                 }
             }
+
+            // notify nodes that where not received again that they disappeared
+            foreach ($oldNodes as $name => $index) {
+                if ($this->objectManager->purgeDisappearedNode($this->path . '/' . $name, $keepChanges)) {
+                    // drop, it was not a new child
+                    if ($keepChanges) { // otherwise we overwrote $this->nodes with the backend
+                        $id = array_search($name, $this->nodes);
+                        if (false !== $id) {
+                            unset($this->nodes[$id]);
+                        }
+                    }
+                }
+            }
+        } else {
+            // new node loaded from backend
+            $this->nodes = $nodesInBackend;
         }
     }
 
@@ -343,6 +393,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addItem($path, $node);
         $this->addChildNode($relPath, false); // no need to check , we just checked when entering this method
+        if (is_array($this->originalNodesOrder)) {
+            // new nodes are added at the end
+            $this->originalNodesOrder[] = $relPath;
+        }
         //by definition, adding a node sets the parent to modified
         $this->setModified();
 
@@ -360,8 +414,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * \PHPCR\ConstraintViolationException is expected. VersionException and
      * LockException are not tested immediatly but thrown on save.
      *
-     * TODO: Make the backend actually pick up the move
-     *
      * @api
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath)
@@ -370,18 +422,103 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             //nothing to move
             return;
         }
-        $oldpos = array_search($srcChildRelPath, $this->nodes);
-        if ($oldpos === false) {
+
+        if (null == $this->originalNodesOrder) {
+            $this->originalNodesOrder = $this->nodes;
+        }
+
+        $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
+        $this->setModified();
+    }
+
+   /**
+    * Returns the orderBefore commands to be applied to the childnodes
+    * to get from the original order to the new one
+    *
+    * Maybe this could be optimized, so that it needs less orderBefore
+    *  commands on the backend
+    *
+    * @return array of arrays with 2 fields: name of node to order before second name
+    *
+    * @private
+    */
+    public function getOrderCommands()
+    {
+        $reorders = array();
+        if (!$this->originalNodesOrder) {
+            return $reorders;
+        }
+
+        //check for deleted nodes
+        $newIndex = array_flip($this->nodes);
+
+        foreach($this->originalNodesOrder as $k => $v) {
+            if (!isset($newIndex[$v])) {
+                unset($this->orignalNodesOrder[$k]);
+            }
+        }
+
+        // reindex the arrays to avoid holes in the indexes
+        $this->originalNodesOrder = array_values($this->originalNodesOrder);
+        $this->nodes = array_values($this->nodes);
+
+        $len = count($this->nodes) - 1;
+        $oldIndex = array_flip($this->originalNodesOrder);
+
+        //go backwards on the new node order and arrange them this way
+        for ($i = $len; $i >= 0; $i--) {
+            //get the name of the child node
+            $c = $this->nodes[$i];
+            //check if it's not the last node
+            if (isset($this->nodes[$i + 1])) {
+                // get the name of the next node
+                $next = $this->nodes[$i + 1];
+                //if in the old order $c and next are not neighbors already, do the reorder command
+                if ($oldIndex[$c] + 1 != $oldIndex[$next]) {
+                    $reorders[] = array($c,$next);
+                    $this->originalNodesOrder = $this->orderBeforeArray($c,$next,$this->originalNodesOrder);
+                    $oldIndex = array_flip($this->originalNodesOrder);
+                }
+            } else {
+                //check if it's not already at the end of the nodes
+                if ($oldIndex[$c] != $len) {
+                    $reorders[] = array($c,null);
+                    $this->originalNodesOrder = $this->orderBeforeArray($c,null,$this->originalNodesOrder);
+                    $oldIndex = array_flip($this->originalNodesOrder);
+                }
+            }
+        }
+        $this->originalNodesOrder = null;
+        return $reorders;
+    }
+
+    /**
+     * Perform the move operation
+     *
+     * @param string $srcChildRelPath name of the node to move
+     * @param string $destChildRelPath name of the node srcChildRelPath has to be ordered before, null to move to the end
+     * @param string $nodes the array of child nodes
+     *
+     * @return array The updated $nodes array with new order
+     *
+     * @throws \PHPCR\ItemNotFoundException if $srcChildRelPath or $destChildRelPath are not found
+     */
+    protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
+    {
+        // renumber the nodes so there are no gaps
+        $nodes = array_values($nodes);
+        $oldpos = array_search($srcChildRelPath, $nodes);
+        if (false === $oldpos) {
             throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
         }
 
         if ($destChildRelPath == null) {
             //null means move to end
-            unset($this->nodes[$oldpos]);
-            $this->nodes[] = $srcChildRelPath;
+            unset($nodes[$oldpos]);
+            $nodes[] = $srcChildRelPath;
         } else {
             //insert somewhere specified by dest path
-            $newpos = array_search($destChildRelPath, $this->nodes);
+            $newpos = array_search($destChildRelPath, $nodes);
             if ($newpos === false) {
                 throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             }
@@ -389,11 +526,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 //we first unset, so
                 $newpos--;
             }
-            unset($this->nodes[$oldpos]);
-            array_splice($this->nodes, $newpos, 0, $srcChildRelPath);
+            unset($nodes[$oldpos]);
+            array_splice($nodes, $newpos, 0, $srcChildRelPath);
         }
-        $this->setModified();
-        //TODO: this is not enough to persist the reordering with the transport
+        return $nodes;
     }
 
     /**
