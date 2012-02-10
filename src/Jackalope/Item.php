@@ -515,7 +515,7 @@ abstract class Item implements ItemInterface
     protected function checkState()
     {
         if ($this->state === self::STATE_DELETED) {
-            throw new InvalidItemStateException("The item was deleted");
+            throw new InvalidItemStateException('Item '.$this->path.' is deleted');
         }
 
         if ($this->isDirty()) {
