@@ -689,7 +689,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
         $body ='<D:searchrequest xmlns:D="DAV:"><JCR-SQL2><![CDATA['.$querystring.']]></JCR-SQL2>';
 
-        if (null !== $limit || null !== $limit) {
+        if (null !== $limit || null !== $offset) {
             $body .= '<D:limit>';
             if (null !== $limit) {
                 $body .= '<D:nresults>'.(int)$limit.'</D:nresults>';
