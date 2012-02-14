@@ -405,7 +405,9 @@ class ObjectManager
             if (count($finalParts) > 1 && $pathPart == '') {
                 array_pop($finalParts); //avoid trailing /
             }
-            $finalPath = implode('/', $finalParts);
+            $finalPath = count($finalParts) > 1 ?
+                implode('/', $finalParts) :
+                '/'; // first element is always the empty-name root element
         }
 
         return $finalPath;
@@ -761,7 +763,7 @@ class ObjectManager
                         if (count($reorders) > 0) {
                             $this->transport->reorderNodes($item->getPath(),$reorders);
                         }
-                       
+
                     } elseif ($item instanceof PropertyInterface) {
                         if ($item->getValue() === null) {
                             $this->transport->deleteProperty($path);

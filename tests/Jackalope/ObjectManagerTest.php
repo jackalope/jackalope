@@ -70,6 +70,7 @@ class ObjectManagerTest extends TestCase
 
             // normalization is also part of ::absolutePath
             array('/',          '../foo',       '/foo'),
+            array('/',          '../',           '/'),
             array('/',          'foo/../bar',   '/bar'),
             array('/',          'foo/./bar',    '/foo/bar'),
             array('/foo/nope',  '../bar',       '/foo/bar'),
