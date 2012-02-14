@@ -336,12 +336,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // are we not the immediate parent?
         if (strpos($relPath, '/') !== false) {
             // forward to real parent
+            $parentPath = dirname($relPath);
+            if ($parentPath === '\\') {
+                $parentPath = '/';
+            }
             try {
-                $parentNode = $this->objectManager->getNode(dirname($relPath), $this->path);
+                $parentNode = $this->objectManager->getNode($parentPath, $this->path);
             } catch(ItemNotFoundException $e) {
                 try {
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
-                    $prop = $this->objectManager->getPropertyByPath($this->getChildPath(dirname($relPath)));
+                    $prop = $this->objectManager->getPropertyByPath($this->getChildPath($parentPath));
                     if (! is_null($prop)) {
                         throw new ConstraintViolationException('Not allowed to add a node below a property');
                     }
