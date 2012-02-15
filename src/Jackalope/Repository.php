@@ -148,7 +148,7 @@ class Repository implements RepositoryInterface
     public function getDescriptor($key)
     {
         // handle some of the keys locally
-        switch($key) {
+        switch ($key) {
             case self::JACKALOPE_OPTION_STREAM_WRAPPER:
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:

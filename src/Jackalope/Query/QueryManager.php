@@ -45,7 +45,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      */
     public function createQuery($statement, $language)
     {
-        switch($language) {
+        switch ($language) {
             case QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
             case QueryInterface::JCR_JQOM:

@@ -154,7 +154,7 @@ class ObjectManager
     protected function resolveBackendPath($path)
     {
         // any current or parent moved?
-        foreach (array_reverse($this->nodesMove) as $src=>$dst) {
+        foreach (array_reverse($this->nodesMove) as $src => $dst) {
             if (strpos($path, $dst) === 0) {
                 $path = substr_replace($path, $src, 0, strlen($dst));
             }
@@ -343,7 +343,7 @@ class ObjectManager
         $n = $this->getNodeByPath($nodep);
         try {
             return $n->getProperty($name); //throws PathNotFoundException if there is no such property
-        } catch(PathNotFoundException $e) {
+        } catch (PathNotFoundException $e) {
             throw new ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -1155,7 +1155,7 @@ class ObjectManager
         }
 
         // propagate to current and children items of $curPath, updating internal path
-        foreach ($this->objectsByPath['Node'] as $path=>$item) {
+        foreach ($this->objectsByPath['Node'] as $path => $item) {
             // is it current or child?
             if (strpos($path, $curPath) === 0) {
                 // curPath = /foo

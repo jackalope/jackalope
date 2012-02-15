@@ -235,7 +235,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             $query = 'SELECT id FROM phpcr_workspaces WHERE name = ?';
 
             $id = $this->conn->fetchColumn($query, array($workspaceName));
-        } catch(\PDOException $e) {
+        } catch (\PDOException $e) {
             if (1045 == $e->getCode()) {
                 throw new \PHPCR\LoginException('Access denied with your credentials: '.$e->getMessage());
             }
@@ -485,7 +485,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
             $this->syncUserIndexes();
 
             $this->conn->commit();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->conn->rollback();
             throw $e;
         }
@@ -923,7 +923,7 @@ class Client extends BaseTransport implements QueryTransport, WritingInterface, 
         try {
             $this->conn->executeUpdate($query, $params);
             $this->conn->commit();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->conn->rollBack();
 
             return false;

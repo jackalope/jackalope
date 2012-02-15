@@ -74,7 +74,7 @@ EOF
 
         $helper = new JackrabbitHelper($jar);
 
-        switch(strtolower($cmd)) {
+        switch (strtolower($cmd)) {
             case 'start':
                 $helper->startServer();
                 break;

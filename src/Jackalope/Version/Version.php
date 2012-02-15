@@ -158,7 +158,7 @@ class Version extends Node implements VersionInterface {
     public function setCachedSuccessorsDirty()
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
-        foreach($this->getProperty('jcr:successors')->getString() as $postuuid) {
+        foreach ($this->getProperty('jcr:successors')->getString() as $postuuid) {
             $post = $this->objectManager->getCachedNodeByUuid($postuuid, 'Version\\Version');
             if ($post) {
                 $post->setDirty();

@@ -414,7 +414,7 @@ abstract class Item implements ItemInterface
         if (false === $targetState) {
             $targetState = $keepChanges ? $this->getState() : self::STATE_CLEAN;
         }
-        switch($targetState) {
+        switch ($targetState) {
             case self::STATE_DIRTY:
                 break;
             case self::STATE_CLEAN:

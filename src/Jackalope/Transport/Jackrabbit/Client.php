@@ -455,7 +455,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
 
         $url = $this->encodeAndValidatePathForDavex("/").".0.json";
         foreach ($paths as $path) {
-            $body[] = http_build_query(array(":include"=>$path));
+            $body[] = http_build_query(array(":include" => $path));
         }
         $body = implode("&",$body);
         $request = $this->getRequest(Request::POST, $url);
@@ -498,7 +498,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request = $this->getRequest(Request::GET, $path);
         $request->setTransactionId($this->transactionToken);
         $curl = $request->execute(true);
-        switch($curl->getHeader('Content-Type')) {
+        switch ($curl->getHeader('Content-Type')) {
             case 'text/xml; charset=utf-8':
                 return $this->decodeBinaryDom($curl->getResponse());
             case 'jcr-value/binary; charset=utf-8':
@@ -801,7 +801,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
             return;
         }
         $body = "";
-        foreach($reorders as $r) {
+        foreach ($reorders as $r) {
             $body .= '>'.$absPath.'/'.$r[0] . ' : '. $r[1] . '#before'."\r";
         }
         $body = ":diff=".trim($body);
@@ -839,7 +839,7 @@ class Client extends BaseTransport implements QueryTransport, PermissionInterfac
         $request->setTransactionId($this->transactionToken);
         try {
             $request->execute();
-        } catch(HTTPErrorException $e) {
+        } catch (HTTPErrorException $e) {
             // TODO: this will need to be changed when we refactor transport to use the diff format to store changes.
             if (strpos($e->getMessage(), "405") !== false && strpos($e->getMessage(), "MKCOL") !== false) {
                 // TODO: can the 405 exception be thrown for other reasons too?

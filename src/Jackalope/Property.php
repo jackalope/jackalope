@@ -399,14 +399,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $values = $this->isMultiple() ? $this->value : array($this->value);
 
         $results = array();
-        switch($this->type) {
+        switch ($this->type) {
             case PropertyType::REFERENCE:
                 try {
                     foreach ($values as $value) {
                         // OPTIMIZE: use objectManager->getNodes instead of looping
                         $results[] = $this->objectManager->getNode($value);
                     }
-                } catch(ItemNotFoundException $e) {
+                } catch (ItemNotFoundException $e) {
                     // @codeCoverageIgnoreStart
                     throw new RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
                     // @codeCoverageIgnoreEnd
@@ -445,7 +445,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $values = $this->isMultiple() ? $this->value : array($this->value);
 
         $results = array();
-        switch($this->type) {
+        switch ($this->type) {
             case PropertyType::PATH:
             case PropertyType::STRING:
             case PropertyType::NAME:

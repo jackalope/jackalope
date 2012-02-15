@@ -285,7 +285,7 @@ class Session implements SessionInterface
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->objectManager->getNodeByPath($absPath);
-        } catch(ItemNotFoundException $e) {
+        } catch (ItemNotFoundException $e) {
             return false;
         }
         return true;
@@ -302,7 +302,7 @@ class Session implements SessionInterface
             //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
             //would need to communicate to the lower layer that we do not want exceptions
             $this->getProperty($absPath);
-        } catch(PathNotFoundException $e) {
+        } catch (PathNotFoundException $e) {
             return false;
         }
         return true;
@@ -318,7 +318,7 @@ class Session implements SessionInterface
     {
         try {
             $parent = $this->objectManager->getNodeByPath(dirname($destAbsPath));
-        } catch(ItemNotFoundException $e) {
+        } catch (ItemNotFoundException $e) {
             throw new PathNotFoundException("Target path can not be found: $destAbsPath", $e->getCode(), $e);
         }
 
@@ -366,7 +366,7 @@ class Session implements SessionInterface
             try {
                 $this->objectManager->save();
                 $utx->commit();
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 // if anything goes wrong, rollback this mess
                 $utx->rollback();
                 // but do not eat the exception

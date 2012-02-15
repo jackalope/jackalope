@@ -66,7 +66,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             $version = $this->getRootVersion();
             do {
                 $this->linearVersions[$version->getName()] = $version;
-            } while($version = $version->getLinearSuccessor());
+            } while ($version = $version->getLinearSuccessor());
         }
         return new ArrayIterator($this->linearVersions);
     }
@@ -118,7 +118,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
         $frozenNodes = array();
-        foreach($this->getAllLinearVersions() as $version) {
+        foreach ($this->getAllLinearVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
         return new ArrayIterator($frozenNodes);
@@ -133,7 +133,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
         $frozenNodes = array();
-        foreach($this->getAllVersions() as $version) {
+        foreach ($this->getAllVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
         return new ArrayIterator($frozenNodes);

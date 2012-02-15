@@ -342,14 +342,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
             try {
                 $parentNode = $this->objectManager->getNode($parentPath, $this->path);
-            } catch(ItemNotFoundException $e) {
+            } catch (ItemNotFoundException $e) {
                 try {
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
                     $prop = $this->objectManager->getPropertyByPath($this->getChildPath($parentPath));
                     if (! is_null($prop)) {
                         throw new ConstraintViolationException('Not allowed to add a node below a property');
                     }
-                } catch(ItemNotFoundException $e) {
+                } catch (ItemNotFoundException $e) {
                     //ignore to throw the PathNotFoundException below
                 }
 
@@ -456,7 +456,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         //check for deleted nodes
         $newIndex = array_flip($this->nodes);
 
-        foreach($this->originalNodesOrder as $k => $v) {
+        foreach ($this->originalNodesOrder as $k => $v) {
             if (!isset($newIndex[$v])) {
                 unset($this->orignalNodesOrder[$k]);
             }
@@ -665,7 +665,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getPropertiesValues($filter=null, $dereference=true)
+    public function getPropertiesValues($filter = null, $dereference = true)
     {
         $this->checkState();
 
@@ -698,7 +698,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         try {
             $primary_item = null;
-            $mgr = $this->session->getWorkspace()->getNodeTypeManager();
             $item_name = $this->getPrimaryNodeType()->getPrimaryItemName();
 
             if ($item_name !== null) {
@@ -714,7 +713,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         return $primary_item;
     }
-
 
     /**
      * {@inheritDoc}
@@ -889,7 +887,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return true;
         }
         // is it an ancestor of any of the mixin types?
-        foreach($this->properties['jcr:mixinTypes'] as $mixin) {
+        foreach ($this->properties['jcr:mixinTypes'] as $mixin) {
             if ($ntm->getNodeType($mixin)->isNodeType($nodeTypeName)) {
                 return true;
             }
@@ -1126,7 +1124,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // Get properties and children from backend
         try {
             $json = $this->objectManager->getTransport()->getNode(is_null($this->oldPath) ? $this->path : $this->oldPath);
-        } catch(ItemNotFoundException $ex) {
+        } catch (ItemNotFoundException $ex) {
 
             // The node was deleted in another session
             if (! $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
@@ -1251,7 +1249,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function confirmSaved()
     {
-        foreach($this->properties as $property) {
+        foreach ($this->properties as $property) {
             if ($property->isModified()) {
                 $property->confirmSaved();
             }
@@ -1447,5 +1445,4 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $prop->rollbackTransaction();
         }
     }
-
 }

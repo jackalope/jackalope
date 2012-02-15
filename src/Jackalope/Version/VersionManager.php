@@ -131,7 +131,7 @@ class VersionManager implements VersionManagerInterface {
         try {
             //TODO: could check if node has versionable mixin type
             $uuid = $node->getProperty('jcr:baseVersion')->getString();
-        } catch(PathNotFoundException $e) {
+        } catch (PathNotFoundException $e) {
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");
         }
         return $this->objectManager->getNode($uuid, '/', 'Version\\Version');

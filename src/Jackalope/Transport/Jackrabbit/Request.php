@@ -510,7 +510,7 @@ class Request
             try {
                 // getting the descriptors triggers a version check
                 $this->client->getRepositoryDescriptors();
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 if ($e instanceof \PHPCR\UnsupportedRepositoryOperationException) {
                     throw $e;
                 }
@@ -537,7 +537,7 @@ class Request
                 $errMsg = $err->getElementsByTagNameNS(Client::NS_DCR, 'message')->item(0)->textContent;
 
                 $exceptionMsg = 'HTTP ' . $httpCode . ': ' . $errMsg;
-                switch($errClass) {
+                switch ($errClass) {
                     case 'javax.jcr.NoSuchWorkspaceException':
                         throw new NoSuchWorkspaceException($exceptionMsg);
                     case 'javax.jcr.nodetype.NoSuchNodeTypeException':
