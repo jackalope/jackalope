@@ -508,6 +508,7 @@ class ObjectManager
      */
     public function getNodes($identifiers, $class = 'Node')
     {
+        // TODO get paths for UUID's via a single query
         $paths = array();
         foreach ($identifiers as $key => $identifier) {
             if (UUIDHelper::isUUID($identifier)) {
