@@ -514,10 +514,6 @@ abstract class Item implements ItemInterface
      */
     protected function checkState()
     {
-        if ($this->state === self::STATE_DELETED) {
-            throw new InvalidItemStateException('Item '.$this->path.' is deleted');
-        }
-
         if ($this->isDirty()) {
             $this->refresh($this->keepChanges);
 
@@ -527,6 +523,10 @@ abstract class Item implements ItemInterface
             }
             $this->keepChanges = false;
             $this->postDirtyState = -1;
+        }
+
+        if ($this->state === self::STATE_DELETED) {
+            throw new InvalidItemStateException('Item '.$this->path.' is deleted');
         }
 
         // For all the other cases, the state does not change
