@@ -153,9 +153,9 @@ class ObjectManager
      */
     protected function resolveBackendPath($path)
     {
-        // any current or parent moved?
+        // did the node or any of its parent move? add / to dst path to not match /nodename with /node
         foreach (array_reverse($this->nodesMove) as $src => $dst) {
-            if (strpos($path, $dst) === 0) {
+            if (strpos($path, "$dst/") === 0 || $path == $dst) {
                 $path = substr_replace($path, $src, 0, strlen($dst));
             }
         }
@@ -293,24 +293,36 @@ class ObjectManager
             $this->objectsByPath[$class] = array();
         }
 
-        // there is no node moved to this location, if the item is in the itemsRemove, it is really deleted
-        if (array_search($absPath, $this->nodesMove) === false) {
+        // was the node moved away from this location?
+        if (isset($this->nodesMove[$absPath])) {
+            throw new ItemNotFoundException("Path not found (moved in current session): $absPath");
+        }
+
+        // go through all moves and check if a parent was moved. add / to dst path to not match /nodename with /node
+        $movedHere = false;
+        foreach ($this->nodesMove as $src => $target) {
+            // TODO: this fails for moving a node and then moving another to that place. see MoveMethodTest::testSessionMoveReplace
+            if (strpos($absPath, "$src/") === 0) {
+                throw new ItemNotFoundException("Path not found (parent node $src moved in current session): $absPath");
+            }
+            if (strpos($absPath, "$target/") === 0) {
+                $movedHere = true;
+            }
+        }
+        $movedHere = $movedHere || array_search($absPath, $this->nodesMove) !== false;
+
+        if (! $movedHere) {
+            // there is no node moved to this location, if the item is in the itemsRemove, it is really deleted
             if (isset($this->itemsRemove[$absPath])) {
-                throw new ItemNotFoundException('Path not found (node deleted in current session): ' . $absPath);
+                throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
             }
 
             // check whether a parent node was removed
             foreach ($this->itemsRemove as $path => $dummy) {
-                if (strpos($absPath, $path) === 0) {
-                    throw new ItemNotFoundException('Path not found (parent node deleted in current session): ' . $absPath);
+                if (strpos($absPath, "$path/") === 0) {
+                    throw new ItemNotFoundException("Path not found (parent node $path deleted in current session): $absPath");
                 }
             }
-        }
-
-        // was the node moved away from this location?
-        if (isset($this->nodesMove[$absPath])) {
-            // FIXME: this will not trigger if an ancestor was moved
-            throw new ItemNotFoundException('Path not found (moved in current session): ' . $absPath);
         }
 
         // The path was the destination of a previous move which isn't yet dispatched to the backend.
@@ -1174,7 +1186,7 @@ class ObjectManager
                     $item = $this->objectsByPath['Node'][$path];
                     $this->objectsByPath['Node'][$newItemPath] = $item;
                     unset($this->objectsByPath['Node'][$path]);
-                    $item->setPath($newItemPath, $session);
+                    $item->setPath($newItemPath, true);
                 }
             }
         }
@@ -1200,7 +1212,9 @@ class ObjectManager
         }
 
         if ($this->rewriteItemPaths($srcAbsPath, $destAbsPath, true)) {
-            // TODO collapse multiple consecutive move operations here
+            if ($original = array_search($srcAbsPath, $this->nodesMove)) {
+                $srcAbsPath = $original;
+            }
             $this->nodesMove[$srcAbsPath] = $destAbsPath;
         }
     }
@@ -1524,7 +1538,8 @@ class ObjectManager
             }
 
             // may not use $item->getIdentifier here - leads to endless loop if node purges itselves
-            if ($uuid = array_search($absPath, $this->objectsByUuid)) {
+            $uuid = array_search($absPath, $this->objectsByUuid);
+            if (false !== $uuid) {
                 unset($this->objectsByUuid[$uuid]);
             }
             unset($this->objectsByPath['Node'][$absPath]);

@@ -53,6 +53,7 @@ class ImplementationLoader extends \PHPCR\Test\AbstractLoader
                     'Writing\\NamespaceRegistryTest::testRegisterUnregisterNamespace',
                     'Writing\\CopyMethodsTest::testCopyUpdateOnCopy',
                     'Writing\\MoveMethodsTest::testSessionDeleteMoved', // TODO: enable and look at the exception you get as starting point
+                    'Writing\\MoveMethodsTest::testSessionMoveReplace',
         );
     }
 

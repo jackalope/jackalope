@@ -162,7 +162,16 @@ abstract class Item implements ItemInterface
     public function setPath($path, $move = false)
     {
         if ($move && is_null($this->oldPath)) {
+            try {
+                $this->checkState();
+            } catch (InvalidItemStateException $e) {
+                // do not break if object manager tells the move to a child that was removed in backend
+                return;
+            }
             $this->oldPath = $this->path;
+            // set this node to modified. this will result in a no-op on save
+            // but we need to have confirmSaved called so we remove oldPath
+            $this->setModified();
         }
         $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
