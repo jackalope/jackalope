@@ -1523,11 +1523,11 @@ class ObjectManager
                 return false;
             }
 
-            $uuid = $item->getIdentifier();
-            unset($this->objectsByPath['Node'][$absPath]);
-            if (array_key_exists($uuid, $this->objectsByUuid)) {
+            // may not use $item->getIdentifier here - leads to endless loop if node purges itselves
+            if ($uuid = array_search($absPath, $this->objectsByUuid)) {
                 unset($this->objectsByUuid[$uuid]);
             }
+            unset($this->objectsByPath['Node'][$absPath]);
             $item->setDeleted();
         }
         // if the node moved away from this node, we did not find it in
