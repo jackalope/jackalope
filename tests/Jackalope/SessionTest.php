@@ -13,7 +13,7 @@ class SessionTest extends TestCase
         $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->any())
@@ -47,7 +47,7 @@ class SessionTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->any())

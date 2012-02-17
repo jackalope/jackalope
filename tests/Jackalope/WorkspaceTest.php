@@ -8,7 +8,7 @@ class WorkspaceTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
-        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array());
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);
@@ -22,7 +22,7 @@ class WorkspaceTest extends TestCase
     {
         $factory = new \Jackalope\Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
-        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array());
         $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);

@@ -9,7 +9,7 @@ class RepositoryTest extends TestCase
         $factory = new \Jackalope\Factory;
         $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMockBuilder('Jackalope\Transport\Jackrabbit\Client')
+        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
         $transport->expects($this->once())
