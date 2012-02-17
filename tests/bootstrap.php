@@ -2,12 +2,6 @@
 /** make sure we get ALL infos from php */
 error_reporting(E_ALL | E_STRICT);
 
-// PHPUnit 3.4 compat
-if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
-    PHPUnit_Util_Filter::addDirectoryToFilter(__DIR__);
-    PHPUnit_Util_Filter::addFileToFilter(__DIR__.'/../src/Jackalope/Transport/curl.php');
-}
-
 /**
  * Bootstrap file for jackalope
  */
@@ -15,15 +9,10 @@ if (method_exists('PHPUnit_Util_Filter', 'addDirectoryToFilter')) {
 /**
  * autoloader: tests rely on an autoloader.
  */
-require __DIR__.'/../src/autoload.jackrabbit.dist.php';
+require __DIR__.'/../src/autoload.dist.php';
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
-require 'Jackalope/Transport/Jackrabbit/JackrabbitTestCase.php';
-require 'Jackalope/Transport/DoctrineDBAL/DoctrineDBALTestCase.php';
-
-### Load the implementation loader class ###
-require 'inc/JackrabbitImplementationLoader.php';
 
 /*
  * constants for the repository descriptor test for JCR 1.0/JSR-170 and JSR-283 specs

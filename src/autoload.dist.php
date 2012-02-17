@@ -9,6 +9,6 @@ $classLoader->register();
 $classLoader->registerNamespaces(array(
     'Jackalope' => __DIR__.'/',
     'PHPCR'   => array(__DIR__.'/../lib/phpcr-utils/src', __DIR__.'/../lib/phpcr/src'),
-    'Symfony\Component\Console' => __DIR__.'/../lib/phpcr-utils/lib/vendor',
-    'Symfony\Component\ClassLoader' => __DIR__.'/../lib/phpcr-utils/lib/vendor',
+    'Symfony\Component\Console' => $vendorDir,
+    'Symfony\Component\ClassLoader' => $vendorDir,
 ));

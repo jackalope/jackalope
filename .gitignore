@@ -6,18 +6,10 @@ test-reports
 .project
 .buildpath
 .settings/
+.idea/
 cscope.out
 doc/config/phpdoc.ini
 doc/html
 
-lib/vendor/doctrine-dbal
-
-tests/phpunit_jackrabbit.xml
-tests/phpunit_doctrine_dbal.xml
-tests/fixtures/doctrine
 tests/phpunit.xml
 
-tests/vendor/jackrabbit-standalone*.jar
-tests/vendor/jackrabbit
-
-jackrabbit/

@@ -1,6 +1,3 @@
-[submodule "tests/api"]
-	path = tests/phpcr-api
-	url = git://github.com/phpcr/phpcr-api-tests.git
 [submodule "lib/phpcr"]
 	path = lib/phpcr
 	url = git://github.com/phpcr/phpcr.git

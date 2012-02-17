@@ -1,0 +1,19 @@
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="true"
+         strict="false"
+         bootstrap="bootstrap.php">
+
+    <testsuites>
+        <testsuite name="Jackalope Tests">
+            <directory>./Jackalope</directory>
+        </testsuite>
+    </testsuites>
+
+</phpunit>

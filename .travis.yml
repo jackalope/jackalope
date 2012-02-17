@@ -4,13 +4,7 @@ php:
   - 5.3
   - 5.4
 
-env:
-  - TRANSPORT=jackrabbit
-
-before_script:
-  - ./tests/travis_${TRANSPORT}.sh
-
-script: phpunit -c tests/phpunit_${TRANSPORT}.xml.dist
+script: phpunit -c tests/phpunit.xml.dist
 
 notifications:
   irc: "irc.freenode.org#jackalope"
