@@ -802,7 +802,7 @@ class ObjectManager
         }
         if (isset($this->objectsByPath['Node'])) {
             foreach ($this->objectsByPath['Node'] as $item) {
-                if ($item->isModified()) {
+                if ($item->isModified() || $item->isMoved()) {
                     $item->confirmSaved();
                 }
             }
@@ -1184,6 +1184,11 @@ class ObjectManager
                     }
                 }
                 if (isset($this->objectsByPath['Node'][$path])) {
+                    if ($item instanceof Node) {
+                        foreach ($item->getProperties() as $property) {
+                            $property->setPath($newItemPath.'/'.basename($property->getPath()), true);
+                        }
+                    }
                     $item = $this->objectsByPath['Node'][$path];
                     $this->objectsByPath['Node'][$newItemPath] = $item;
                     unset($this->objectsByPath['Node'][$path]);

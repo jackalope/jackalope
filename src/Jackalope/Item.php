@@ -169,9 +169,6 @@ abstract class Item implements ItemInterface
                 return;
             }
             $this->oldPath = $this->path;
-            // set this node to modified. this will result in a no-op on save
-            // but we need to have confirmSaved called so we remove oldPath
-            $this->setModified();
         }
         $this->path = $path;
         $this->depth = $path === '/' ? 0 : substr_count($path, '/');
@@ -286,6 +283,16 @@ abstract class Item implements ItemInterface
     {
         return self::STATE_MODIFIED === $this->state
             || self::STATE_DIRTY === $this->state && self::STATE_MODIFIED === $this->postDirtyState;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @private
+     */
+    public function isMoved()
+    {
+        return isset($this->oldPath);
     }
 
     /**
