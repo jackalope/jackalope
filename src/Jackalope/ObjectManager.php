@@ -778,7 +778,11 @@ class ObjectManager
                         }
 
                     } elseif ($item instanceof PropertyInterface) {
-                        if ($item->getValue() === null) {
+                        if ($item->isDeleted()) {
+                            $this->transport->deleteProperty($path);
+                        //FIXME: isDeleted should work for all property types. Not sure, if it actually does
+                        // This "else if" line could be removed, if all do
+                        } else if ($item->getType() != \PHPCR\PropertyType::WEAKREFERENCE && $item->getValue() === null) {
                             $this->transport->deleteProperty($path);
                         } else {
                             $this->transport->storeProperty($item);
