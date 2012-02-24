@@ -241,18 +241,29 @@ class ObjectManager
         $nodes = $fetchPaths = array();
 
         foreach ($paths as $absPath) {
-            if (!empty($this->objectsByPath[$class][$absPath])) {
+            if (UUIDHelper::isUUID($absPath)) {
+                if (empty($this->objectsByUuid[$absPath])) {
+                     $fetchPaths[$absPath] = $absPath;
+                } else {
+                    $nodes[$this->transport->getNodePathForIdentifier($absPath)] = $this->objectsByUuid[$absPath];
+                }
+            } else if (!empty($this->objectsByPath[$class][$absPath])) {
                 // Return it from memory if we already have it
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
             } else {
                 $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
             }
         }
-
+        
         if (!empty($fetchPaths)) {
             $data = $this->transport->getNodes($fetchPaths, $class);
+            //var_dump($data);
             foreach ($data as $fetchPath => $item) {
+                
                 $absPath = array_search($fetchPath, $fetchPaths);
+                if (!$absPath) {
+                    $absPath = $fetchPath;
+                }
                 $nodes[$absPath] = $this->factory->get(
                     $class,
                     array(
@@ -266,11 +277,12 @@ class ObjectManager
                 if ($uuid = $nodes[$absPath]->getIdentifier()) {
                     $this->objectsByUuid[$uuid] = $absPath;
                 }
-
+                
                 $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
             }
         }
-
+        
+        
         return new ArrayIterator($nodes);
     }
 
@@ -511,7 +523,8 @@ class ObjectManager
         // TODO get paths for UUID's via a single query
         $paths = array();
         foreach ($identifiers as $key => $identifier) {
-            if (UUIDHelper::isUUID($identifier)) {
+                $paths[$key] = $identifier;
+            /*if (UUIDHelper::isUUID($identifier)) {
                 if (empty($this->objectsByUuid[$identifier])) {
                     try {
                         $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
@@ -519,11 +532,11 @@ class ObjectManager
                         // ignore
                     }
                 } else {
-                    $paths[$key] = $this->objectsByUuid[$identifier];
+                    $paths[$key] = $identifier; //$this->objectsByUuid[$identifier];
                 }
             } else {
-                $paths[$key] = $identifier;
             }
+            }*/
         }
         return $this->getNodesByPath($paths, $class);
     }
