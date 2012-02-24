@@ -591,7 +591,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $paths = $pathNameMap = $result = array();
         if (!empty($names)) {
             foreach ($names as $name) {
-                $result[$name] = $this->getNode($name);
                 $path = $this->objectManager->absolutePath($this->path, $name);
                 $paths[] = $path;
                 $pathNameMap[$path] = $name;
