@@ -40,6 +40,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             ->method('getNodePathForIdentifier')
             ->will($this->returnValue('/jcr:root/uuid/to/path'));
 
+        $transport->expects($this->any())
+            ->method('getNodes')
+            ->will($this->returnValue(array("/jcr:root/tests_level1_access_base" => array(), "/jcr:root/jcr:system" => array())));
+
         return $transport;
     }
 
