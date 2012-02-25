@@ -601,7 +601,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $result[$pathNameMap[$path]] = $node;
             }
         }
-
+        /* FIXME: Actually, the whole list should be lazy loaded and maybe only fetch a
+                   a few dozen child nodes at once. This approach here doesn't scale if you
+                   have many many many child nodes
+        */
+        
         return new ArrayIterator($result);
     }
 
