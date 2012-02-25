@@ -588,17 +588,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         $names = self::filterNames($filter, $this->nodes);
-        $paths = $pathNameMap = $result = array();
+        $result = array();
         if (!empty($names)) {
             foreach ($names as $name) {
-                $path = $this->objectManager->absolutePath($this->path, $name);
-                $paths[] = $path;
-                $pathNameMap[$path] = $name;
+                $paths[] = $this->objectManager->absolutePath($this->path, $name);
             }
-
             $nodes = $this->objectManager->getNodesByPath($paths);
             foreach ($nodes as $path => $node) {
-                $result[$pathNameMap[$path]] = $node;
+                $result[basename($path)] = $node;
             }
         }
         /* FIXME: Actually, the whole list should be lazy loaded and maybe only fetch a
