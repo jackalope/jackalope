@@ -189,6 +189,6 @@ interface WritingInterface extends TransportInterface
      * @return void
      */
     
-     function finishSave() 
+     function finishSave();
 
 }
