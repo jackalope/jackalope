@@ -1245,7 +1245,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * In addition to calling parent method, clean deletedProperties
+     * In addition to calling parent method, tell all properties and clean deletedProperties
      */
     public function confirmSaved()
     {
@@ -1256,6 +1256,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
         $this->deletedProperties = array();
         parent::confirmSaved();
+    }
+
+    /**
+     * In addition to calling parent method, tell all properties
+     */
+    public function setPath($path, $move = false)
+    {
+        parent::setPath($path, $move);
+        foreach ($this->properties as $property) {
+            $property->setPath($path.'/'.basename($property->getPath()), $move);
+        }
     }
 
     /**
