@@ -793,6 +793,11 @@ class ObjectManager
                 }
             }
         }
+        
+        if (method_exists($this->transport, "finishSave")) {
+            $this->transport->finishSave();
+        }
+
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
         $this->itemsRemove = array();
@@ -1252,7 +1257,7 @@ class ObjectManager
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
-        $this->transport->moveNode($srcAbsPath, $destAbsPath); // should throw the right exceptions
+        $this->transport->moveNode($srcAbsPath, $destAbsPath, true); // should throw the right exceptions
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
     }
 
