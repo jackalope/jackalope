@@ -181,5 +181,14 @@ interface WritingInterface extends TransportInterface
      * @param string $prefix The prefix to unregister.
      */
     function unregisterNamespace($prefix);
+    
+    /**
+     * Called after everything internally is done in the save() method
+     *  so the transport has a chance to do final stuff (or commit everything at once)
+     *
+     * @return void
+     */
+    
+     function finishSave() 
 
 }
