@@ -395,7 +395,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
-        $this->objectManager->addItem($path, $node);
+        $this->objectManager->addNode($path, $node);
         $this->addChildNode($relPath, false); // no need to check , we just checked when entering this method
         if (is_array($this->originalNodesOrder)) {
             // new nodes are added at the end
@@ -602,7 +602,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                    a few dozen child nodes at once. This approach here doesn't scale if you
                    have many many many child nodes
         */
-        
+
         return new ArrayIterator($result);
     }
 
@@ -1250,7 +1250,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function confirmSaved()
     {
         foreach ($this->properties as $property) {
-            if ($property->isModified()) {
+            if ($property->isModified() || $property->isNew()) {
                 $property->confirmSaved();
             }
         }
@@ -1368,7 +1368,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $this->properties[$name] = $property;
             if (! $internal) {
                 $this->setModified();
-                $this->objectManager->addItem($path, $property);
             }
         } else {
             if ($internal) {
