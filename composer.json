@@ -19,7 +19,7 @@
         "jackalope/jackalope-transport": "dev-master"
     },
     "provide": {
-        "phpcr/phpcr-implementation": "dev-master"
+        "phpcr/phpcr-implementation": "2.1.0-beta3"
     },
     "autoload": {
         "psr-0": { "Jackalope\\": "src/" }
