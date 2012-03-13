@@ -11,4 +11,17 @@ namespace Jackalope\Transport;
  */
 interface ObservationInterface extends TransportInterface
 {
+    /**
+     * Request the observation journal from the server
+     *
+     * @param integer $eventTypes A combination of one or more event type constants encoded as a bitmask.
+     * @param string $absPath an absolute path.
+     * @param boolean $isDeep Switch to define the given path as a reference to a child node.
+     * @param array $uuid array of identifiers.
+     * @param array $nodeTypeName array of node type names.
+     * @return \PHPCR\Observation\EventJournalInterface an EventJournal (or null).
+     *
+     * @throws \PHPCR\RepositoryException if an error occurs
+     */
+    function getEventJournal($eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null);
 }

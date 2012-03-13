@@ -35,6 +35,12 @@ class Event implements EventInterface
     protected $date;
 
     /**
+     * Internaly used to store the nodeType returned by the backend for further filtering of the event journal
+     * @var string
+     */
+    protected $nodeType;
+
+    /**
      * {@inheritDoc}
      * @api
      */
@@ -158,5 +164,21 @@ class Event implements EventInterface
     public function setDate($date)
     {
         $this->date = $date;
+    }
+
+    /**
+     * @param string $nodeType
+     */
+    public function setNodeType($nodeType)
+    {
+        $this->nodeType = $nodeType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNodeType()
+    {
+        return $this->nodeType;
     }
 }

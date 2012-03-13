@@ -5,6 +5,10 @@ namespace Jackalope\Observation;
 use PHPCR\Observation\ObservationManagerInterface,
     PHPCR\Observation\EventListenerInterface;
 
+use Jackalope\Transport\ObservationInterface,
+    Jackalope\FactoryInterface;
+
+
 /**
  * {@inheritDoc}
  *
@@ -12,14 +16,24 @@ use PHPCR\Observation\ObservationManagerInterface,
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class ObservationManager implements ObservationManagerInterface
+class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
 {
+    /**
+     * @var \Jackalope\Transport\ObservationInterface
+     */
+    protected $transport;
+
+
+    public function __construct(FactoryInterface $factory, ObservationInterface $transport)
+    {
+        $this->transport = $transport;
+    }
 
     /**
      * {@inheritDoc}
      * @api
      */
-    function addEventListener(
+    public function addEventListener(
         EventListenerInterface $listener,
         $eventTypes,
         $absPath,
@@ -35,7 +49,7 @@ class ObservationManager implements ObservationManagerInterface
      * {@inheritDoc}
      * @api
      */
-    function removeEventListener(EventListenerInterface $listener)
+    public function removeEventListener(EventListenerInterface $listener)
     {
         throw new \Jackalope\NotImplementedException();
     }
@@ -44,7 +58,7 @@ class ObservationManager implements ObservationManagerInterface
      * {@inheritDoc}
      * @api
      */
-    function getRegisteredEventListeners()
+    public function getRegisteredEventListeners()
     {
         throw new \Jackalope\NotImplementedException();
     }
@@ -53,7 +67,7 @@ class ObservationManager implements ObservationManagerInterface
      * {@inheritDoc}
      * @api
      */
-    function setUserData($userData)
+    public function setUserData($userData)
     {
         throw new \Jackalope\NotImplementedException();
     }
@@ -62,14 +76,17 @@ class ObservationManager implements ObservationManagerInterface
      * {@inheritDoc}
      * @api
      */
-    function getEventJournal(
-        $eventTypes = null,
-        $absPath = null,
-        $isDeep = null,
-        array $uuid = null,
-        array $nodeTypeName = null
-    )
+    public function getEventJournal($eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null)
     {
-        throw new \Jackalope\NotImplementedException();
+        return $this->transport->getEventJournal($eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
+    }
+
+    /**
+     * @return \Traversable The list of event listeners
+     * @see getRegisteredEventListeners
+     */
+    public function getIterator()
+    {
+        return $this->getRegisteredEventListeners();
     }
 }
