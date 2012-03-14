@@ -658,7 +658,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             */
         }
 
-        $value = PropertyType::convertType($value, $targettype);
+        $value = PropertyType::convertType($value, $targettype, $type);
 
         if (PropertyType::BINARY === $targettype) {
             $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
