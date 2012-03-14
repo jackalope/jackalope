@@ -92,9 +92,10 @@ class Session implements SessionInterface
      * @param string $workspaceName the workspace name that is used
      * @param SimpleCredentials $credentials the credentials that where
      *      used to log in, in order to implement Session::getUserID()
+     *      if they are null, getUserID returns null
      * @param TransportInterface $transport the transport implementation
      */
-    public function __construct(FactoryInterface $factory, Repository $repository, $workspaceName, SimpleCredentials $credentials, TransportInterface $transport)
+    public function __construct(FactoryInterface $factory, Repository $repository, $workspaceName, SimpleCredentials $credentials = null, TransportInterface $transport)
     {
         $this->factory = $factory;
         $this->repository = $repository;
@@ -124,6 +125,9 @@ class Session implements SessionInterface
      */
     public function getUserID()
     {
+        if (null == $this->credentials) {
+            return null;
+        }
         return $this->credentials->getUserID(); //TODO: what if its not simple credentials? what about anonymous login?
     }
 
@@ -134,6 +138,9 @@ class Session implements SessionInterface
      */
     public function getAttributeNames()
     {
+        if (null == $this->credentials) {
+            return array();
+        }
         return $this->credentials->getAttributeNames();
     }
 
@@ -144,6 +151,9 @@ class Session implements SessionInterface
      */
     public function getAttribute($name)
     {
+        if (null == $this->credentials) {
+            return null;
+        }
         return $this->credentials->getAttribute($name);
     }
 
