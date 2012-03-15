@@ -16,13 +16,8 @@ use Jackalope\FactoryInterface;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class EventJournal implements EventJournalInterface
+class EventJournal extends \ArrayIterator implements EventJournalInterface
 {
-    /**
-     * @var array
-     */
-    protected $events;
-
     /**
      * @var \Jackalope\FactoryInterface
      */
@@ -86,7 +81,6 @@ class EventJournal implements EventJournalInterface
     {
         $this->factory = $factory;
         $this->workspaceRootUri = $workspaceRootUri;
-        $this->events = array();
 
         $this->eventTypesCriterion = $eventTypes;
         $this->absPathCriterion = $absPath;
@@ -99,11 +93,9 @@ class EventJournal implements EventJournalInterface
               || ($isDeep !== null) || ($uuid !== null)
               || ($nodeTypeName !== null);
 
-        $this->constructEventJournal($data);
+        $events = $this->constructEventJournal($data);
 
-        if (!$this->alreadyFiltered) {
-            $this->filterEventJournal();
-        }
+        parent::__construct($events);
     }
 
     /**
@@ -116,86 +108,36 @@ class EventJournal implements EventJournalInterface
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function count()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function seek($position)
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function current()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function next()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function key()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function valid()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function rewind()
-    {
-        throw new \Jackalope\NotImplementedException();
-    }
-
-    protected function filterEventJournal()
-    {
-
-    }
-
-    /**
      * Construct the event journal from the DAVEX response returned by the server
      * @param \DOMDocument $data
-     * @return void
+     * @return array(Event)
      */
     protected function constructEventJournal(\DOMDocument $data)
     {
         //var_dump($data->saveXML());die;
 
+        $events = array();
         $entries = $data->getElementsByTagName('entry');
 
         foreach ($entries as $entry) {
 
             $userId = $this->extractUserId($entry);
-            $this->extractEvents($entry, $userId);
+            $moreEvents = $this->extractEvents($entry, $userId);
+            $events = array_merge($events, $moreEvents);
         }
+
+        return $events;
     }
 
+    /**
+     * Parse the events in an <entry> section
+     * @param \DOMElement $entry
+     * @param string $currentUserId The current user ID as extracted from the <entry> part
+     * @return array(Event)
+     */
     protected function extractEvents(\DOMElement $entry, $currentUserId)
     {
+        $events = array();
         $domEvents = $entry->getElementsByTagName('event');
 
         foreach ($domEvents as $domEvent) {
@@ -229,13 +171,16 @@ class EventJournal implements EventJournalInterface
 
             // TODO: extract the info
 
-            $this->events[] = $event;
+            $events[] = $event;
 
+            // TODO: Remove debug code
 //            var_dump($data->saveXML($domEvent));
 //            var_dump(str_repeat('-', 80));
 //            var_dump($event);
 //            var_dump(str_repeat('-', 80));
         }
+
+        return $events;
     }
 
     /**

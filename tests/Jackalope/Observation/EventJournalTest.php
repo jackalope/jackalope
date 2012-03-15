@@ -5,11 +5,13 @@ namespace Jackalope\Observation;
 use Jackalope\TestCase;
 use PHPCR\Observation\EventInterface;
 
+
 class EventJournalTest extends TestCase
 {
     protected $factory;
 
     protected $journal;
+
 
     public function setUp()
     {
@@ -67,20 +69,19 @@ EOF;
 
         $journal = new EventJournal($this->factory, new \DOMDocument(), $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName, $workspaceRootUri);
 
-        $this->assertAttributeEquals(array(), 'events', $journal);
-        $this->assertAttributeEquals($this->factory, 'factory', $journal);
-        $this->assertAttributeEquals($eventTypes, 'eventTypesCriterion', $journal);
-        $this->assertAttributeEquals($isDeep, 'isDeepCriterion', $journal);
-        $this->assertAttributeEquals($uuid, 'uuidCriterion', $journal);
-        $this->assertAttributeEquals($nodeTypeName, 'nodeTypeNameCriterion', $journal);
-        $this->assertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
-        $this->assertAttributeEquals(true, 'alreadyFiltered', $journal);
+        $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
+        $this->myAssertAttributeEquals($eventTypes, 'eventTypesCriterion', $journal);
+        $this->myAssertAttributeEquals($isDeep, 'isDeepCriterion', $journal);
+        $this->myAssertAttributeEquals($uuid, 'uuidCriterion', $journal);
+        $this->myAssertAttributeEquals($nodeTypeName, 'nodeTypeNameCriterion', $journal);
+        $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
+        $this->myAssertAttributeEquals(true, 'alreadyFiltered', $journal);
     }
 
     public function testContructorWithoutFilters()
     {
         // The journal contructed in setUp is unfiltered
-        $this->assertAttributeEquals(false, 'alreadyFiltered', $this->journal);
+        $this->myAssertAttributeEquals(false, 'alreadyFiltered', $this->journal);
     }
 
     // ----- EXTRACT USER ID --------------------------------------------------
@@ -119,14 +120,13 @@ EOF;
     public function testConstructEventJournal()
     {
         $journal = new EventJournal($this->factory, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
-        $this->assertAttributeEquals(array(), 'events', $this->journal);
 
         $data = new \DOMDocument();
         $data->loadXML($this->entryXml);
 
-        $this->getAndCallMethod($journal, 'constructEventJournal', array($data));
+        $events = $this->getAndCallMethod($journal, 'constructEventJournal', array($data));
 
-        $this->assertAttributeEquals(array($this->expectedEvent, $this->expectedEvent), 'events', $journal);
+        $this->assertEquals(array($this->expectedEvent, $this->expectedEvent), $events);
     }
 
     // ----- EXTRACT EVENTS ---------------------------------------------------
@@ -134,11 +134,10 @@ EOF;
     public function testExtractEvents()
     {
         $journal = new EventJournal($this->factory, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
-        $this->assertAttributeEquals(array(), 'events', $this->journal);
 
-        $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
+        $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
 
-        $this->assertAttributeEquals(array($this->expectedEvent), 'events', $journal);
+        $this->assertEquals(array($this->expectedEvent), $events);
     }
 
     // ----- EXTRACT EVENT TYPE -----------------------------------------------
@@ -204,6 +203,26 @@ EOF;
         $method = $class->getMethod($method);
         $method->setAccessible(true);
         return $method->invokeArgs($instance, $args);
+    }
+
+    /**
+     * This method is meant to replace the buggy assertAttributeEquals of PHPUnit which
+     * does not seem to work properly on classes that extend ArrayIterator.
+     *
+     * @see https://github.com/sebastianbergmann/phpunit/issues/523
+     *
+     * @param mixed $expectedValue The expected value
+     * @param string $attributeName The name of the attribute to test
+     * @param object $instance The instance on which to run the test
+     * @return void
+     */
+    protected function myAssertAttributeEquals($expectedValue, $attributeName, $instance)
+    {
+        $class = new \ReflectionClass(get_class($instance));
+        $prop = $class->getProperty($attributeName);
+        $prop->setAccessible(true);
+
+        $this->assertEquals($expectedValue, $prop->getValue($instance));
     }
 
     /**
