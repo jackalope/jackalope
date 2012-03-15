@@ -86,6 +86,7 @@ class EventJournal implements EventJournalInterface
     {
         $this->factory = $factory;
         $this->workspaceRootUri = $workspaceRootUri;
+        $this->events = array();
 
         $this->eventTypesCriterion = $eventTypes;
         $this->absPathCriterion = $absPath;
@@ -177,11 +178,11 @@ class EventJournal implements EventJournalInterface
         foreach ($entries as $entry) {
 
             $userId = $this->extractUserId($entry);
-            $this->extractEvent($entry, $userId);
+            $this->extractEvents($entry, $userId);
         }
     }
 
-    protected function extractEvent(\DOMElement $entry, $currentUserId)
+    protected function extractEvents(\DOMElement $entry, $currentUserId)
     {
         $domEvents = $entry->getElementsByTagName('event');
 
@@ -211,10 +212,12 @@ class EventJournal implements EventJournalInterface
 
             $userData = $this->getDomElement($domEvent, 'eventuserdata');
             if ($userData) {
-                $event->setUserData($userData);
+                $event->setUserData($userData->nodeValue);
             }
 
             // TODO: extract the info
+
+            $this->events[] = $event;
 
 //            var_dump($data->saveXML($domEvent));
 //            var_dump(str_repeat('-', 80));
@@ -233,7 +236,7 @@ class EventJournal implements EventJournalInterface
     {
         $authors = $entry->getElementsByTagName('author');
 
-        if (!$authors) {
+        if (!$authors->length) {
             throw new RepositoryException("User ID not found while building the event journal");
         }
 
@@ -309,7 +312,7 @@ class EventJournal implements EventJournalInterface
             case 'propertychanged': return EventInterface::PROPERTY_CHANGED;
             case 'nodemoved': return EventInterface::NODE_MOVED;
             case 'persist': return EventInterface::PERSIST;
-            default: throw new RepositoryException(sprintf("Invalid event type '%s'", $type->tagName));
+            default: throw new RepositoryException(sprintf("Invalid event type '%s'", $tagName));
         }
     }
 
