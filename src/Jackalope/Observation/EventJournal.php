@@ -183,8 +183,6 @@ class EventJournal implements EventJournalInterface
 
     protected function extractEvent(\DOMElement $entry, $currentUserId)
     {
-        // TODO: this is now wrong
-
         $domEvents = $entry->getElementsByTagName('event');
 
         foreach ($domEvents as $domEvent) {
@@ -225,6 +223,12 @@ class EventJournal implements EventJournalInterface
         }
     }
 
+    /**
+     * Extract a user id from the author tag in an entry section
+     * @throws \PHPCR\RepositoryException
+     * @param \DOMElement $entry
+     * @return void
+     */
     protected function extractUserId(\DOMElement $entry)
     {
         $authors = $entry->getElementsByTagName('author');
