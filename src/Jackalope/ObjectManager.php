@@ -725,7 +725,13 @@ class ObjectManager
                 //parent path has already been removed
                 continue;
             }
-            $this->transport->deleteNode($path);
+            if ($this->itemsRemove[$path] instanceof NodeInterface) {
+                $this->transport->deleteNode($path);
+            } elseif ($this->itemsRemove[$path] instanceof PropertyInterface) {
+                $this->transport->deleteProperty($path);
+            } else {
+                throw new RepositoryException("Internal error while deleting $path: unknown class ".get_class($this->itemsRemove[$path]));
+            }
             $last = $path;
         }
 
