@@ -94,9 +94,16 @@ class EventJournal implements EventJournalInterface
         $this->uuidCriterion = $uuid;
         $this->nodeTypeNameCriterion = $nodeTypeName;
 
-        $this->alreadyFiltered = $eventTypes === null && $absPath === null && $isDeep === null && $uuid === null && $nodeTypeName === null;
+        $this->alreadyFiltered =
+                 ($eventTypes !== null) || ($absPath !== null)
+              || ($isDeep !== null) || ($uuid !== null)
+              || ($nodeTypeName !== null);
 
         $this->constructEventJournal($data);
+
+        if (!$this->alreadyFiltered) {
+            $this->filterEventJournal();
+        }
     }
 
     /**
@@ -162,6 +169,11 @@ class EventJournal implements EventJournalInterface
     public function rewind()
     {
         throw new \Jackalope\NotImplementedException();
+    }
+
+    protected function filterEventJournal()
+    {
+
     }
 
     /**

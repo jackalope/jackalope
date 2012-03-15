@@ -74,6 +74,13 @@ EOF;
         $this->assertAttributeEquals($uuid, 'uuidCriterion', $journal);
         $this->assertAttributeEquals($nodeTypeName, 'nodeTypeNameCriterion', $journal);
         $this->assertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
+        $this->assertAttributeEquals(true, 'alreadyFiltered', $journal);
+    }
+
+    public function testContructorWithoutFilters()
+    {
+        // The journal contructed in setUp is unfiltered
+        $this->assertAttributeEquals(false, 'alreadyFiltered', $this->journal);
     }
 
     // ----- EXTRACT USER ID --------------------------------------------------
