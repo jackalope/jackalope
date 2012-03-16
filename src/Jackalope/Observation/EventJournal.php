@@ -150,8 +150,12 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
             $event->setType($this->extractEventType($domEvent));
 
             $date = $this->getDomElement($domEvent, 'eventdate', 'The event date was not found while building the event journal:\n' . $this->getEventDom($domEvent));
-            $event->setDate($date->nodeValue);
             $event->setUserId($currentUserId);
+
+            // The timestamps in Java contain milliseconds, it's not the case in PHP
+            // so we strip millis from the response
+            $event->setDate(substr($date->nodeValue, 0, -3));
+
 
             $id = $this->getDomElement($domEvent, 'eventidentifier');
             if ($id) {

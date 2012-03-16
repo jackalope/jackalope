@@ -52,7 +52,7 @@ EOF;
 
         // The object representation of the event defined above
         $this->expectedEvent = new Event();
-        $this->expectedEvent->setDate('1331652655099');
+        $this->expectedEvent->setDate('1331652655');
         $this->expectedEvent->setIdentifier('8fe5b853-a657-4ee3-b626-ec3b5407dc13');
         $this->expectedEvent->setNodeType('{http://www.jcp.org/jcr/nt/1.0}unstructured');
         $this->expectedEvent->setPath('/my_node%5b4%5d/jcr%3aprimaryType');
@@ -303,7 +303,7 @@ EOF;
     <eventtype>
         <propertyadded/>
     </eventtype>
-    <eventdate>{{DATE}}</eventdate>
+    <eventdate>{{DATE}}000</eventdate>
 </event>
 EOF;
         $entryHeader = <<<EOF
