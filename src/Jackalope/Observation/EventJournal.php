@@ -104,7 +104,11 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      */
     public function skipTo($date)
     {
-        throw new \Jackalope\NotImplementedException();
+        $event = $this->current();
+        while ($event && $event->getDate() < $date) {
+            $this->next();
+            $event = $this->current();
+        }
     }
 
     /**

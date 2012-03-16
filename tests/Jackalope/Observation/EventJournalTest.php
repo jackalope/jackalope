@@ -6,6 +6,9 @@ use Jackalope\TestCase;
 use PHPCR\Observation\EventInterface;
 
 
+/**
+ * Unit tests for the EventJournal
+ */
 class EventJournalTest extends TestCase
 {
     protected $factory;
@@ -188,6 +191,46 @@ EOF;
         $this->getAndCallMethod($this->journal, 'extractEventType', array($this->getDomElement($xml)));
     }
 
+    // ----- SKIP TO ----------------------------------------------------------
+
+    public function testSkipTo()
+    {
+        $xml = $this->buildSkipToTestData();
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+
+        $journal = new EventJournal($this->factory, $doc);
+        $firstEvent = $journal->current();
+
+        // ----- Skip to start of list
+
+        $journal->skipTo(-1);
+        $this->assertSame($firstEvent, $journal->current());
+
+        $journal->skipTo(100);
+        $this->assertSame($firstEvent, $journal->current());
+
+        $journal->skipTo(110);
+        $this->assertNotSame($firstEvent, $journal->current());
+        $this->assertNotSame($firstEvent, $journal->current());
+
+        // ----- Now skipping to an earlier date should not have any effect
+
+        $journal->skipTo(100);
+        $this->assertNotSame($firstEvent, $journal->current());
+
+        // ----- Skip to end of list
+
+        $journal->skipTo(490);
+        $this->assertEquals(490, $journal->current()->getDate());
+
+        $journal->next();
+        $this->assertEquals(500, $journal->current()->getDate());
+
+        $journal->next();
+        $this->assertNull($journal->current());
+    }
+
     // ----- PROTECTED METHODS ------------------------------------------------
 
     /**
@@ -248,4 +291,41 @@ EOF;
         $list = $doc->getElementsByTagName('wrapper');
         return $list->item(0);
     }
+
+    /**
+     * Build the XML data to contruct an EventJournal to test the skipTo method
+     * @return string
+     */
+    protected function buildSkipToTestData()
+    {
+        $event = <<<EOF
+<event xmlns="http://www.day.com/jcr/webdav/1.0">
+    <eventtype>
+        <propertyadded/>
+    </eventtype>
+    <eventdate>{{DATE}}</eventdate>
+</event>
+EOF;
+        $entryHeader = <<<EOF
+<entry>
+    <author>
+        <name>system</name>
+    </author>
+    <content type="application/vnd.apache.jackrabbit.event+xml">
+EOF;
+
+        $entryFooter = <<<EOF
+    </content>
+</entry>
+EOF;
+        $xml = $entryHeader;
+        for ($i = 100; $i <= 500; $i += 10) {
+
+            $xml .= str_replace('{{DATE}}', $i, $event);
+        }
+        $xml .= $entryFooter;
+
+        return $xml;
+    }
+
 }
