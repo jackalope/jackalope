@@ -254,6 +254,7 @@ class Workspace implements WorkspaceInterface
             $this->observationManager = $this->factory->get(
                 'Observation\\ObservationManager',
                 array(
+                    $this->session,
                     $this->session->getTransport()
                 )
             );

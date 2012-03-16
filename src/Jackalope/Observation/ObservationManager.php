@@ -3,10 +3,12 @@
 namespace Jackalope\Observation;
 
 use PHPCR\Observation\ObservationManagerInterface,
-    PHPCR\Observation\EventListenerInterface;
+    PHPCR\Observation\EventListenerInterface,
+    PHPCR\SessionInterface;
 
 use Jackalope\Transport\ObservationInterface,
     Jackalope\FactoryInterface;
+
 
 
 /**
@@ -23,10 +25,16 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     protected $transport;
 
+    /**
+     * @var \PHPCR\SessionInterface
+     */
+    protected $session;
 
-    public function __construct(FactoryInterface $factory, ObservationInterface $transport)
+
+    public function __construct(FactoryInterface $factory, SessionInterface $session, ObservationInterface $transport)
     {
         $this->transport = $transport;
+        $this->session = $session;
     }
 
     /**
@@ -78,7 +86,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     public function getEventJournal($eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null)
     {
-        return $this->transport->getEventJournal($eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
+        return $this->transport->getEventJournal($this->session, $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
     }
 
     /**

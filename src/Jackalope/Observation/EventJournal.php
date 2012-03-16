@@ -4,7 +4,8 @@ namespace Jackalope\Observation;
 
 use PHPCR\Observation\EventJournalInterface,
     PHPCR\Observation\EventInterface,
-    PHPCR\RepositoryException;
+    PHPCR\RepositoryException,
+    PHPCR\SessionInterface;
 
 use Jackalope\FactoryInterface;
 
@@ -22,6 +23,11 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      * @var \Jackalope\FactoryInterface
      */
     protected $factory;
+
+    /**
+     * @var \PHPCR\SessionInterface
+     */
+    protected $session;
 
     /**
      * @var string
@@ -59,6 +65,13 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      */
     protected $nodeTypeNameCriterion;
 
+    /**
+     * The UUID criterion will filter out events on the journal which target node's parent
+     * has not one of the specified UUIDs. In order to optimize, we will cache all the nodes
+     * with the specified UUIDs.
+     * @var array
+     */
+    protected $cachedNodesByUuid;
 
     /**
      * Construct a new EventJournal by extracting the $data that comes from the server.
@@ -68,7 +81,12 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      * filtered by the server if it gets null in all the criterion parameter, that is if $eventTypes,
      * $absPath, $isDeep, $uuid and $nodeTypeName are all equal to null.
      *
+     * We need the session in the event journal because if the backend didn't do any filtering on the
+     * events, it's up to the EventJournal to do it. And some filter criteria require to access the parent
+     * nodes which can only be done with the session.
+     *
      * @param \Jackalope\FactoryInterface $factory
+     * @param \PHPCR\SessionInterface $session
      * @param \DOMDocument $data The DOM data received from the DAVEX call to the server (might be already filtered or not)
      * @param int $eventTypes
      * @param string $absPath
@@ -76,10 +94,13 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      * @param array $uuid
      * @param array $nodeTypeName
      * @param string $workspaceRootUri The prefix to extract the path from the event href attribute
+     * @return \Jackalope\Observation\EventJournal
+     *
      */
-    public function __construct(FactoryInterface $factory, \DOMDocument $data, $eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null, $workspaceRootUri = '')
+    public function __construct(FactoryInterface $factory, SessionInterface $session, \DOMDocument $data, $eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null, $workspaceRootUri = '')
     {
         $this->factory = $factory;
+        $this->session = $session;
         $this->workspaceRootUri = $workspaceRootUri;
 
         $this->eventTypesCriterion = $eventTypes;
@@ -93,7 +114,18 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
               || ($isDeep !== null) || ($uuid !== null)
               || ($nodeTypeName !== null);
 
+        // Cache nodes for further filtering of the journal
+        if ($this->uuidCriterion) {
+            $this->cachedNodesByUuid = $this->session->getNodesByIdentifier($this->uuidCriterion);
+        }
+
+        // Construct the journal with the transport response
         $events = $this->constructEventJournal($data);
+
+        // Filter the events if required
+        if (!$this->alreadyFiltered) {
+            $events = $this->filterEvents($events);
+        }
 
         parent::__construct($events);
     }
@@ -111,6 +143,76 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
         }
     }
 
+    // ----- PROTECTED METHODS ------------------------------------------------
+
+    /**
+     * Get an array of event, filter them according to the filters properties of the class
+     * and return the filtered array.
+     * @param array(EventInterface) $events The unfiltered array of events
+     * @return array(EventInterface) The filered array of events
+     */
+    protected function filterEvents($events)
+    {
+        $filteredEvents = array();
+
+        foreach ($events as $event) {
+            if ($this->matchCriteria($event)) {
+                $filteredEvents[] = $event;
+            }
+        }
+
+        return $filteredEvents;
+    }
+
+    /**
+     * Return true if the given event match *all* (i.e. the criteria are ANDed) the filters
+     * properties of the class and false otherwise.
+     *
+     * @param \PHPCR\Observation\EventInterface $event
+     * @return boolean
+     */
+    protected function matchCriteria(EventInterface $event)
+    {
+        // Check the event type criterion
+        if ($this->eventTypesCriterion && $event->getType() !== $this->eventTypesCriterion) {
+            return false;
+        }
+
+        // Check the absPath and isDeep criteria
+        if ($this->absPathCriterion) {
+
+            if ($this->isDeepCriterion && !preg_match('/^' . $this->absPathCriterion . '/', $event->getPath())) {
+                // isDeep is true and the node path does not start with the given path
+                return false;
+            } elseif ($event->getPath() !== $this->absPathCriterion) {
+                // isDeep is false or not set and the path is not the searched path
+                return false;
+            }
+        }
+
+        // Check the uuid criterion
+        if ($this->uuidCriterion) {
+
+            // Foreach event in the journal
+            // Construct the parent path
+            // If one of the nodes in $this->cachedNodesByUuid has that path then:
+            //    It means the parent of the current node has a parent with the given UUID ==>
+            //    Keep the node
+            // Otherwise:
+            //    Filter it out
+
+        }
+
+        // Check the node type criterion
+        if ($this->nodeTypeNameCriterion) {
+
+            // TODO: implement naively (i.e. getting each node parent from the backend --> horrible performances)
+            // then find a way to optimize
+        }
+
+        return true;
+    }
+
     /**
      * Construct the event journal from the DAVEX response returned by the server
      * @param \DOMDocument $data
@@ -118,8 +220,6 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      */
     protected function constructEventJournal(\DOMDocument $data)
     {
-        //var_dump($data->saveXML());die;
-
         $events = array();
         $entries = $data->getElementsByTagName('entry');
 
@@ -180,12 +280,6 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
             // TODO: extract the info
 
             $events[] = $event;
-
-            // TODO: Remove debug code
-//            var_dump($data->saveXML($domEvent));
-//            var_dump(str_repeat('-', 80));
-//            var_dump($event);
-//            var_dump(str_repeat('-', 80));
         }
 
         return $events;

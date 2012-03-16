@@ -2,6 +2,9 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\SessionInterface;
+
+
 /**
  * Defines the methods needed for observation.
  *
@@ -14,6 +17,12 @@ interface ObservationInterface extends TransportInterface
     /**
      * Request the observation journal from the server
      *
+     * When getting the journal we need to pass the session to the returned EventJournal
+     * in order for it to be able to do filtering on the events if the backend didn't.
+     * Indeed some events filters criteria involve checking the parent node of the node
+     * issuing the event. The only way to do so is to use the session.
+     *
+     * @param \PHPCR\SessionInterface $session
      * @param integer $eventTypes A combination of one or more event type constants encoded as a bitmask.
      * @param string $absPath an absolute path.
      * @param boolean $isDeep Switch to define the given path as a reference to a child node.
@@ -23,5 +32,5 @@ interface ObservationInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if an error occurs
      */
-    function getEventJournal($eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null);
+    function getEventJournal(SessionInterface $session, $eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null);
 }
