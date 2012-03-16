@@ -116,7 +116,7 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
         // Cache nodes for further filtering of the journal
         if ($this->uuidCriterion) {
-            $this->cachedNodesByUuid = $this->session->getNodesByIdentifier($this->uuidCriterion);
+            //$this->cachedNodesByUuid = $this->session->getNodesByIdentifier($this->uuidCriterion);
         }
 
         // Construct the journal with the transport response
