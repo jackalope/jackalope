@@ -13,3 +13,7 @@ doc/html
 
 tests/phpunit.xml
 
+
+vendor/
+tests/jackalope-testing-composer.lock
+composer.phar
