@@ -36,6 +36,25 @@ class EventJournalTest extends TestCase
 </event>
 EOF;
 
+        // XML for event with eventinfo
+        $this->eventWithInfoXml = <<<EOX
+<event xmlns="http://www.day.com/jcr/webdav/1.0">
+    <href
+    xmlns="DAV:">http://localhost:8080/server/tests/jcr%3aroot/my_other</href>
+    <eventtype>
+        <nodemoved/>
+    </eventtype>
+    <eventdate>1332163767892</eventdate>
+    <eventuserdata>somedifferentdata</eventuserdata>
+    <eventprimarynodetype>{internal}root</eventprimarynodetype>
+    <eventmixinnodetype>{internal}AccessControllable</eventmixinnodetype>
+    <eventidentifier>1e80ac75-eff4-4350-bae6-7fae2a84e6f3</eventidentifier>
+    <eventinfo>
+        <destAbsPath>/my_other</destAbsPath>
+        <srcAbsPath>/my_node</srcAbsPath>
+    </eventinfo>
+</event>
+EOX;
         // XML for several events entries
         $this->entryXml = <<<EOF
 <entry>
@@ -49,6 +68,7 @@ EOF;
 EOF;
         $this->entryXml .= $this->eventXml . "\n";
         $this->entryXml .= $this->eventXml . "\n"; // The same event appears twice in this entry
+        $this->entryXml .= $this->eventWithInfoXml . "\n";
         $this->entryXml .= '</content></entry>';
 
         // The object representation of the event defined above
@@ -60,6 +80,17 @@ EOF;
         $this->expectedEvent->setType(EventInterface::PROPERTY_ADDED);
         $this->expectedEvent->setUserData('somedifferentdata');
         $this->expectedEvent->setUserId('system');
+
+        $this->expectedEventWithInfo = new Event();
+        $this->expectedEventWithInfo->setDate('1332163767');
+        $this->expectedEventWithInfo->setIdentifier('1e80ac75-eff4-4350-bae6-7fae2a84e6f3');
+        $this->expectedEventWithInfo->setNodeType('{internal}root');
+        $this->expectedEventWithInfo->setPath('/my_other');
+        $this->expectedEventWithInfo->setType(EventInterface::NODE_MOVED);
+        $this->expectedEventWithInfo->setUserData('somedifferentdata');
+        $this->expectedEventWithInfo->setUserId('system');
+        $this->expectedEventWithInfo->addInfo('destAbsPath', '/my_other');
+        $this->expectedEventWithInfo->addInfo('srcAbsPath', '/my_node');
     }
 
     public function testConstructor()
@@ -126,7 +157,7 @@ EOF;
 
         $events = $this->getAndCallMethod($journal, 'constructEventJournal', array($data));
 
-        $this->assertEquals(array($this->expectedEvent, $this->expectedEvent), $events);
+        $this->assertEquals(array($this->expectedEvent, $this->expectedEvent, $this->expectedEventWithInfo), $events);
     }
 
     // ----- EXTRACT EVENTS ---------------------------------------------------
@@ -187,6 +218,45 @@ EOF;
         $xml = '<eventtype>some string</eventtype>';
         $this->getAndCallMethod($this->journal, 'extractEventType', array($this->getDomElement($xml)));
     }
+
+    // ----- EVENTINFO ---------------------------------------------------
+
+    public function testEventInfo()
+    {
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+
+        $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventWithInfoXml), 'system'));
+        $eventWithInfo = $events[0];
+
+        $eventInfo = $eventWithInfo->getInfo();
+        $this->assertEquals($this->expectedEventWithInfo->getInfo(), $eventInfo);
+
+        $expectedInfo = array(
+            'destAbsPath' => '/my_other',
+            'srcAbsPath' => '/my_node'
+        );
+
+        $this->assertEquals(count($expectedInfo), count($eventInfo));
+
+        foreach ($expectedInfo as $key => $expectedValue) {
+            $value = $eventInfo[$key];
+            $this->assertSame($expectedValue, $value);
+        }
+    }
+
+    public function testEmptyEventInfo()
+    {
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+
+        // get an event that has no eventinfo
+        $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
+        $event = $events[0];
+        $eventInfo = $event->getInfo();
+
+        $this->assertInternalType('array', $eventInfo);
+        $this->assertEquals(0, count($eventInfo));
+    }
+
 
     // ----- SKIP TO ----------------------------------------------------------
 

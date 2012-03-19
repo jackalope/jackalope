@@ -200,7 +200,14 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
                 $event->setUserData($userData->nodeValue);
             }
 
-            // TODO: extract the info
+            $eventInfos = $this->getDomElement($domEvent, 'eventinfo');
+            if ($eventInfos) {
+                foreach ($eventInfos->childNodes as $info) {
+                    if ($info->nodeType == XML_ELEMENT_NODE) {
+                        $event->addInfo($info->tagName, $info->nodeValue);
+                    }
+                }
+            }
 
             $events[] = $event;
         }

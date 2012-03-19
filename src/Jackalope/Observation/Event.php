@@ -26,7 +26,7 @@ class Event implements EventInterface
     protected $identifier;
 
     /** @var array */
-    protected $info;
+    protected $info = array();
 
     /** @var string */
     protected $userData;
@@ -122,12 +122,13 @@ class Event implements EventInterface
     }
 
     /**
-     * @param mixed $info
+     * @param string $key
+     * @param string $value
      * @return void
      */
-    public function addInfo($info)
+    public function addInfo($key, $value)
     {
-        $this->info[] = $info;
+        $this->info[$key] = $value;
     }
 
     /**
