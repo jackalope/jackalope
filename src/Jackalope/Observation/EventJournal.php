@@ -80,9 +80,9 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
         $this->nodeTypeNameCriterion = $nodeTypeName;
 
         $this->alreadyFiltered =
-                 ($eventTypes !== null) || ($absPath !== null)
-              || ($isDeep !== null) || ($uuid !== null)
-              || ($nodeTypeName !== null);
+                 ($eventTypes === null) && ($absPath === null)
+              && ($isDeep === null) && ($uuid === null)
+              && ($nodeTypeName === null);
 
         // Construct the journal with the transport response
         $events = $this->constructEventJournal($data);
@@ -181,7 +181,13 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
             $href = $this->getDomElement($domEvent, 'href');
             if ($href) {
-                $event->setPath(str_replace($this->workspaceRootUri, '', $href->nodeValue));
+                $path = str_replace($this->workspaceRootUri, '', $href->nodeValue);
+                if (substr($path, -1) === '/') {
+                    // Jackrabbit might return paths with trailing slashes. Eliminate them if present.
+                    $path = substr($path, 0, -1);
+                }
+                $event->setPath($path);
+
             }
 
             $nodeType = $this->getDomElement($domEvent, 'eventprimarynodetype');

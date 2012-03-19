@@ -14,9 +14,6 @@ class NodeTypeEventFilterTest extends TestCase
 {
     public function testFilter()
     {
-        // TODO: check this test. I am not completely sure this actually makes sense.
-        // Basically it tests that the mock object returns what we asked it to return.
-
         $filter = $this->getFilter($this->getMyNodeMock(true), array('nt:unstructured'));
         $this->assertFilterMatch($filter, true);
 

@@ -35,19 +35,19 @@ class EventFilterChain implements EventFilterInterface
     {
         $filter = new EventFilterChain();
 
-        if ($eventTypes) {
+        if (!is_null($eventTypes)) {
             $filter->addFilter(new EventTypeEventFilter($eventTypes));
         }
 
-        if ($absPath) {
+        if (!is_null($absPath)) {
             $filter->addFilter(new PathEventFilter($absPath, $isDeep));
         }
 
-        if ($uuid) {
+        if (!is_null($uuid)) {
             $filter->addFilter(new UuidEventFilter($session, $uuid));
         }
 
-        if ($nodeTypeName) {
+        if (!is_null($nodeTypeName)) {
             $filter->addFilter(new NodeTypeEventFilter($session, $nodeTypeName));
         }
 
@@ -71,7 +71,7 @@ class EventFilterChain implements EventFilterInterface
     {
         foreach ($this->filters as $filter)
         {
-            if (!$filter->filter($event)) {
+            if (!$filter->match($event)) {
                 return false;
             }
         }

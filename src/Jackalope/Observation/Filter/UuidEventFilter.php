@@ -41,6 +41,11 @@ class UuidEventFilter implements EventFilterInterface
      */
     public function match(EventInterface $event)
     {
+        if (!$event->getPath()) {
+            // Some events (like PERSIST) do not contain a path
+            return false;
+        }
+
         // Algorithm:
         //  Construct the parent path
         //  If one of the nodes in $this->cachedNodesByUuid has that path then:

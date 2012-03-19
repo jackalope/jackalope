@@ -38,6 +38,11 @@ class NodeTypeEventFilter implements EventFilterInterface
      */
     public function match(EventInterface $event)
     {
+        if (!$event->getPath()) {
+            // Some events (like PERSIST) don't have a path
+            return false;
+        }
+
         $node = $this->session->getNode($event->getPath());
         foreach ($this->nodeTypes as $type) {
             if ($node->isNodeType($type)) {
