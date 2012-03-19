@@ -75,16 +75,7 @@ class UuidEventFilterTest extends TestCase
      */
     public function getMySessionMock($nodesByIdentifier)
     {
-        $factory = new \Jackalope\Factory;
-        $session = $this->getMock('\Jackalope\Session', array('getWorkspace', 'getRepository', 'getNodesByIdentifier'), array($factory), '', false);
-        $session
-            ->expects($this->any())
-            ->method('getWorkspace')
-            ->will($this->returnValue($this->getWorkspaceMock()));
-        $session
-            ->expects($this->any())
-            ->method('getRepository')
-            ->will($this->returnValue($this->getRepositoryMock()));
+        $session = $this->getSessionMock(array('getNodesByIdentifier'));
         $session
             ->expects($this->any())
             ->method('getNodesByIdentifier')

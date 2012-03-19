@@ -235,41 +235,6 @@ EOF;
     // ----- PROTECTED METHODS ------------------------------------------------
 
     /**
-     * Call a protected or private method on an object instance
-     * @param object $instance The instance to call the method on
-     * @param string $method The protected or private method to call
-     * @param array $args The arguments to the called method
-     * @return mixed The result of the method call
-     */
-    protected function getAndCallMethod($instance, $method, $args = array())
-    {
-        $class = new \ReflectionClass(get_class($instance));
-        $method = $class->getMethod($method);
-        $method->setAccessible(true);
-        return $method->invokeArgs($instance, $args);
-    }
-
-    /**
-     * This method is meant to replace the buggy assertAttributeEquals of PHPUnit which
-     * does not seem to work properly on classes that extend ArrayIterator.
-     *
-     * @see https://github.com/sebastianbergmann/phpunit/issues/523
-     *
-     * @param mixed $expectedValue The expected value
-     * @param string $attributeName The name of the attribute to test
-     * @param object $instance The instance on which to run the test
-     * @return void
-     */
-    protected function myAssertAttributeEquals($expectedValue, $attributeName, $instance)
-    {
-        $class = new \ReflectionClass(get_class($instance));
-        $prop = $class->getProperty($attributeName);
-        $prop->setAccessible(true);
-
-        $this->assertEquals($expectedValue, $prop->getValue($instance));
-    }
-
-    /**
      * Return an EventJournal instance without any filters set
      * @param \DOMDocument $data
      * @param string $workspaceRootUri
@@ -278,19 +243,6 @@ EOF;
     protected function getUnfilteredJournal(\DOMDocument $data, $workspaceRootUri)
     {
         return new EventJournal($this->factory, $this->session, $data, null, null, null, null, null, $workspaceRootUri);
-    }
-
-    /**
-     * Build a DOMElement from an xml string
-     * @param string $xml The xml extract to build the DOMElement from
-     * @return \DOMElement
-     */
-    protected function getDomElement($xml)
-    {
-        $doc = new \DOMDocument();
-        $doc->loadXML('<wrapper>' . $xml . '</wrapper>');
-        $list = $doc->getElementsByTagName('wrapper');
-        return $list->item(0);
     }
 
     /**

@@ -78,19 +78,4 @@ class EventTypeEventFilterTest extends TestCase
         }
     }
 
-    /**
-     * Get the value of a protected or private property of an object
-     * TODO: this should be moved in a test helper
-     * @param object $instance
-     * @param string $attributeName
-     * @return mixed
-     */
-    protected function getAttributeValue($instance, $attributeName)
-    {
-        $class = new \ReflectionClass(get_class($instance));
-        $prop = $class->getProperty($attributeName);
-        $prop->setAccessible(true);
-
-        return $prop->getValue($instance);
-    }
 }
