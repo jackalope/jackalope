@@ -74,10 +74,6 @@ EOF;
         $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName, $workspaceRootUri);
 
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
-        $this->myAssertAttributeEquals($eventTypes, 'eventTypesCriterion', $journal);
-        $this->myAssertAttributeEquals($isDeep, 'isDeepCriterion', $journal);
-        $this->myAssertAttributeEquals($uuid, 'uuidCriterion', $journal);
-        $this->myAssertAttributeEquals($nodeTypeName, 'nodeTypeNameCriterion', $journal);
         $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
         $this->myAssertAttributeEquals(true, 'alreadyFiltered', $journal);
     }

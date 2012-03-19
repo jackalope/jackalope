@@ -7,7 +7,9 @@ use PHPCR\Observation\EventJournalInterface,
     PHPCR\RepositoryException,
     PHPCR\SessionInterface;
 
-use Jackalope\FactoryInterface;
+use Jackalope\FactoryInterface,
+    Jackalope\Observation\Filter\EventFilterChain,
+    Jackalope\Observation\Filter\EventFilterInterface;
 
 
 /**
@@ -40,38 +42,6 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      */
     protected $alreadyFiltered;
 
-    /**
-     * @var int
-     */
-    protected $eventTypesCriterion;
-
-    /**
-     * @var string
-     */
-    protected $absPathCriterion;
-
-    /**
-     * @var boolean
-     */
-    protected $isDeepCriterion;
-
-    /**
-     * @var array
-     */
-    protected $uuidCriterion;
-
-    /**
-     * @var array
-     */
-    protected $nodeTypeNameCriterion;
-
-    /**
-     * The UUID criterion will filter out events on the journal which target node's parent
-     * has not one of the specified UUIDs. In order to optimize, we will cache all the nodes
-     * with the specified UUIDs.
-     * @var array
-     */
-    protected $cachedNodesByUuid;
 
     /**
      * Construct a new EventJournal by extracting the $data that comes from the server.
@@ -114,17 +84,13 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
               || ($isDeep !== null) || ($uuid !== null)
               || ($nodeTypeName !== null);
 
-        // Cache nodes for further filtering of the journal
-        if ($this->uuidCriterion) {
-            //$this->cachedNodesByUuid = $this->session->getNodesByIdentifier($this->uuidCriterion);
-        }
-
         // Construct the journal with the transport response
         $events = $this->constructEventJournal($data);
 
         // Filter the events if required
         if (!$this->alreadyFiltered) {
-            $events = $this->filterEvents($events);
+            $filter = EventFilterChain::constructFilterChain($this->session, $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
+            $events = $this->filterEvents($filter, $events);
         }
 
         parent::__construct($events);
@@ -151,66 +117,17 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      * @param array(EventInterface) $events The unfiltered array of events
      * @return array(EventInterface) The filered array of events
      */
-    protected function filterEvents($events)
+    protected function filterEvents(EventFilterInterface $filter, $events)
     {
         $filteredEvents = array();
 
         foreach ($events as $event) {
-            if ($this->matchCriteria($event)) {
+            if ($filter->match($event)) {
                 $filteredEvents[] = $event;
             }
         }
 
         return $filteredEvents;
-    }
-
-    /**
-     * Return true if the given event match *all* (i.e. the criteria are ANDed) the filters
-     * properties of the class and false otherwise.
-     *
-     * @param \PHPCR\Observation\EventInterface $event
-     * @return boolean
-     */
-    protected function matchCriteria(EventInterface $event)
-    {
-        // Check the event type criterion
-        if ($this->eventTypesCriterion && $event->getType() !== $this->eventTypesCriterion) {
-            return false;
-        }
-
-        // Check the absPath and isDeep criteria
-        if ($this->absPathCriterion) {
-
-            if ($this->isDeepCriterion && !preg_match('/^' . $this->absPathCriterion . '/', $event->getPath())) {
-                // isDeep is true and the node path does not start with the given path
-                return false;
-            } elseif ($event->getPath() !== $this->absPathCriterion) {
-                // isDeep is false or not set and the path is not the searched path
-                return false;
-            }
-        }
-
-        // Check the uuid criterion
-        if ($this->uuidCriterion) {
-
-            // Foreach event in the journal
-            // Construct the parent path
-            // If one of the nodes in $this->cachedNodesByUuid has that path then:
-            //    It means the parent of the current node has a parent with the given UUID ==>
-            //    Keep the node
-            // Otherwise:
-            //    Filter it out
-
-        }
-
-        // Check the node type criterion
-        if ($this->nodeTypeNameCriterion) {
-
-            // TODO: implement naively (i.e. getting each node parent from the backend --> horrible performances)
-            // then find a way to optimize
-        }
-
-        return true;
     }
 
     /**

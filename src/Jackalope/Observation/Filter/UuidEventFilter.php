@@ -19,6 +19,9 @@ class UuidEventFilter implements EventFilterInterface
     protected $uuids;
 
     /**
+     * The UUID criterion will filter out events on the journal which target node's parent
+     * has not one of the specified UUIDs. In order to optimize, we will cache all the nodes
+     * with the specified UUIDs.
      * @var array
      */
     protected $cachedNodesByUuid;
