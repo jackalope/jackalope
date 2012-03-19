@@ -472,9 +472,13 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function importXML($parentAbsPath, $in, $uuidBehavior)
+    public function importXML($parentAbsPath, $uri, $uuidBehavior)
     {
-        throw new NotImplementedException('Write');
+        ImportExport::importXML(
+            $this->getNode($parentAbsPath),
+            $this->workspace->getNamespaceRegistry(),
+            $uri,
+            $uuidBehavior);
     }
 
     /**
