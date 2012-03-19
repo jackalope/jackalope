@@ -14,6 +14,9 @@ class NodeTypeEventFilterTest extends TestCase
 {
     public function testFilter()
     {
+        // TODO: check this test. I am not completely sure this actually makes sense.
+        // Basically it tests that the mock object returns what we asked it to return.
+
         $filter = $this->getFilter($this->getMyNodeMock(true), array('nt:unstructured'));
         $this->assertFilterMatch($filter, true);
 
@@ -34,7 +37,7 @@ class NodeTypeEventFilterTest extends TestCase
     /**
      * Returns a mock object for the Session.
      * @param \PHPCR\NodeInterface $node The node returned by getNode
-     * @return \Jakalope\Session
+     * @return \PHPCR\SessionInterface
      */
     public function getMySessionMock($node)
     {
