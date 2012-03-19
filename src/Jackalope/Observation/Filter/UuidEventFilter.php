@@ -8,6 +8,9 @@ use PHPCR\SessionInterface,
 
 class UuidEventFilter implements EventFilterInterface
 {
+    /**
+     * @var \PHPCR\SessionInterface
+     */
     protected $session;
 
     /**

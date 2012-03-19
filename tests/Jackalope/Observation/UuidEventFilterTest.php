@@ -67,6 +67,12 @@ class UuidEventFilterTest extends TestCase
         return new UuidEventFilter($this->getMySessionMock($nodes), $uuids);
     }
 
+    /**
+     * Returns a mock object for the Session. Since we have to mock an additional
+     * method here, we cannot just use $this->getSessionMock().
+     * @param array $nodesByIdentifier An array of nodes returned by the function getNodesByIdentifier
+     * @return \Jakalope\Session
+     */
     public function getMySessionMock($nodesByIdentifier)
     {
         $factory = new \Jackalope\Factory;
@@ -87,7 +93,7 @@ class UuidEventFilterTest extends TestCase
     }
 
     /**
-     * Get a Jackalope\Node mock object that will return /uuid as path
+     * Get a Jackalope\Node mock object that will return "/uuid" as path
      * @param string $uuid
      * @return object
      */
