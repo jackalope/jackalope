@@ -3,7 +3,6 @@
 namespace Jackalope\Observation;
 
 use Jackalope\TestCase,
-    PHPCR\Observation\EventInterface,
     Jackalope\Observation\Event,
     Jackalope\Observation\Filter\UuidEventFilter;
 

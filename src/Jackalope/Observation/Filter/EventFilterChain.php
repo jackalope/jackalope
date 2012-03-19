@@ -48,7 +48,7 @@ class EventFilterChain implements EventFilterInterface
         }
 
         if ($nodeTypeName) {
-            // TODO: create a new TimeNameFilter and add it to the chain
+            $filter->addFilter(new NodeTypeEventFilter($session, $nodeTypeName));
         }
 
         return $filter;
