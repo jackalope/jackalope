@@ -23,7 +23,9 @@ class NodeTypeEventFilterTest extends TestCase
 
     protected function assertFilterMatch(NodeTypeEventFilter $filter, $expectedResult)
     {
-        $this->assertEquals($expectedResult, $filter->match(new Event()));
+        $event = new Event();
+        $event->setPath('/some/unexisting/path');
+        $this->assertEquals($expectedResult, $filter->match($event));
     }
 
     protected function getFilter($node, $nodeTypes)

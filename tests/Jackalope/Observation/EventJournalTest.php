@@ -18,7 +18,15 @@ class EventJournalTest extends TestCase
 
     public function setUp()
     {
-        $this->session = $this->getSessionMock();
+        $this->session = $this->getSessionMock(array('getNode', 'getNodesByIdentifier'));
+        $this->session
+            ->expects($this->any())
+            ->method('getNode')
+            ->will($this->returnValue(null));
+        $this->session
+            ->expects($this->any())
+            ->method('getNodesByIdentifier')
+            ->will($this->returnValue(array()));
         $this->factory = new \Jackalope\Factory();
         $this->journal = $this->getUnfilteredJournal(new \DOMDocument(), '');
 
@@ -106,13 +114,13 @@ EOF;
 
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
         $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
-        $this->myAssertAttributeEquals(true, 'alreadyFiltered', $journal);
+        $this->myAssertAttributeEquals(false, 'alreadyFiltered', $journal);
     }
 
     public function testContructorWithoutFilters()
     {
         // The journal contructed in setUp is unfiltered
-        $this->myAssertAttributeEquals(false, 'alreadyFiltered', $this->journal);
+        $this->myAssertAttributeEquals(true, 'alreadyFiltered', $this->journal);
     }
 
     // ----- EXTRACT USER ID --------------------------------------------------
