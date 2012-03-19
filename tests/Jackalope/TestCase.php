@@ -95,6 +95,18 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
     }
 
+    /**
+     * Get a mock object for a node. No methods are mocked but additional methods to
+     * mock can be specified with $methodsToMock.
+     * @param array $methodsToMock Array of method names to mock
+     * @return object
+     */
+    protected function getNodeMock($methodsToMock = array())
+    {
+        $node = $this->getMock('\Jackalope\Node', $methodsToMock, array(new \Jackalope\Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock()));
+        return $node;
+    }
+
     protected function getNodeTypeManager()
     {
         $factory = new \Jackalope\Factory;

@@ -62,16 +62,15 @@ class UuidEventFilterTest extends TestCase
     {
         $nodes = array();
         foreach ($uuids as $uuid) {
-            $nodes[] = $this->getNodeMock($uuid);
+            $nodes[] = $this->getMyNodeMock($uuid);
         }
         return new UuidEventFilter($this->getMySessionMock($nodes), $uuids);
     }
 
     /**
-     * Returns a mock object for the Session. Since we have to mock an additional
-     * method here, we cannot just use $this->getSessionMock().
+     * Returns a mock object for the Session.
      * @param array $nodesByIdentifier An array of nodes returned by the function getNodesByIdentifier
-     * @return \Jakalope\Session
+     * @return \Jackalope\Session
      */
     public function getMySessionMock($nodesByIdentifier)
     {
@@ -88,18 +87,13 @@ class UuidEventFilterTest extends TestCase
      * @param string $uuid
      * @return object
      */
-    protected function getNodeMock($uuid)
+    protected function getMyNodeMock($uuid)
     {
-        $node = $this->getMock(
-            '\Jackalope\Node',
-            array('getPath'),
-            array(new \Jackalope\Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock())
-        );
+        $node = $this->getNodeMock(array('getPath'));
         $node
             ->expects($this->any())
             ->method('getPath')
             ->will($this->returnValue('/' . $uuid));
-
         return $node;
     }
 }
