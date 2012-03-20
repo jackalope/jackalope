@@ -16,6 +16,20 @@ use PHPCR\NamespaceRegistryInterface;
 class ImportExport
 {
     /**
+     * Map of invalid xml names to escaping according to jcr/phpcr spec
+     * TODO: more invalid characters?
+     *
+     * @var array
+     */
+    public static $escaping = array(
+        ' ' => '_x0020_',
+        '<' => '_x003c_',
+        '>' => '_x003e_',
+        '"' => '_x0022_',
+        "'" => '_x0027_',
+    );
+
+    /**
      * Recursively export data to an xml stream.
      *
      * @param NodeInterface $node The node to start exporting at
@@ -50,10 +64,10 @@ class ImportExport
     }
 
     /**
-     * Helper method for escaping node names into valid xml according to
-     * the specification.
+     * Helper method for escaping node and property names into valid xml
+     * element and attribute names according to the jcr specification.
      *
-     * @param string $name A node name possibly containing characters illegal
+     * @param string $name A name possibly containing characters illegal
      *      in an XML document.
      *
      * @return string The name encoded to be valid xml
@@ -61,10 +75,24 @@ class ImportExport
     public static function escapeXmlName($name)
     {
         $name = preg_replace('/_(x[0-9a-fA-F]{4})/', '_x005f_\\1', $name);
-        return str_replace(
-            array(' '      , '<'      , '>'      , '"'      , "'"      ),
-            array('_x0020_', '_x003c_', '_x003e_', '_x0022_', '_x0027_'),
-            $name); // TODO: more invalid characters?
+        return str_replace(array_keys(self::$escaping), self::$escaping, $name);
+    }
+
+    /**
+     * Helper method to unescape node names that encoded invalid things for
+     * xml. At the same time, change document namespace prefix to repository
+     * prefix if needed.
+     *
+     * @param string $name A name encoded with escapeXmlName
+     *
+     * @return string the decoded name
+     */
+    public static function unescapeXmlName($name, $namespaceMap)
+    {
+        // FIXME this is not respecting the escaping properly
+        $name = str_replace(self::$escaping, array_keys(self::$escaping), $name);
+        $name = preg_replace('/_x005f_/', '', $name);
+        return self::cleanNamespace($name, $namespaceMap);
     }
 
     /**
@@ -80,16 +108,16 @@ class ImportExport
     {
         $use_errors = libxml_use_internal_errors(true);
 
-        $xml = new XMLReader;
+        $xml = new XMLReader2;
         $xml->open($uri);
-        //$xml->setParserProperty(XMLReader::VALIDATE, true);
-        if (libxml_get_errors()) {// || ! $xml->isValid()) {
+        if (libxml_get_errors()) {
             libxml_use_internal_errors($use_errors);
-            throw new \PHPCR\InvalidSerializedDataException;
+            throw new \PHPCR\InvalidSerializedDataException("Invalid xml file $uri");
         }
         $xml->read();
 
         if ('node' == $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI) {
+            // TODO: validate with DTD?
             self::importSystemView($parentNode, $ns, $xml, $uuidBehavior);
         } else {
             self::importDocumentView($parentNode, $ns, $xml, $uuidBehavior);
@@ -247,12 +275,14 @@ class ImportExport
      *
      * @param NodeInterface $parentNode
      * @param NamespaceRegistryInterface $ns
-     * @param XMLReader $xml
+     * @param XMLReader2 $xml
      * @param int $uuidBehavior
      * @param array $documentNamespaces hashmap of prefix => uri for namespaces in the document
      */
-    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader $xml, $uuidBehavior, $namespaceMap = array())
+    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
     {
+        // TODO: handle uuidbehaviour!
+        // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
         while ($xml->moveToNextAttribute()) {
             if ('xmlns' == $xml->prefix) {
                 try {
@@ -276,56 +306,72 @@ class ImportExport
         }
 
         // now get jcr:primaryType
-        if (! self::xmlReaderNextElement($xml)) {
+        if (! $xml->read()) {
             throw new \PHPCR\InvalidSerializedDataException('missing information to create node');
         }
         if ('property' != $xml->localName || NamespaceRegistryInterface::NAMESPACE_SV != $xml->namespaceURI) {
-            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName);
+            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"'.$xml->nodeType);
         }
         if (! $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV) || 'jcr:primaryType' != $xml->value) {
-            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName);
+            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"');
         }
-
-        self::xmlReaderNextElement($xml); // value child of property jcr:primaryType
-        $type = $xml->readInnerXml();
+        $xml->read(); // value child of property jcr:primaryType
+        $xml->read(); // text content
+        $type = $xml->value;
 
         if ('jcr:root' == $nodename) {
             // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
         }
         $nodename = self::cleanNamespace($nodename, $namespaceMap);
 
-        echo "Adding node $nodename\n";
+        // TODO logging echo "Adding node $nodename ($type)\n";
         $node = $parentNode->addNode($nodename, $type);
 
-        while (self::xmlReaderNextElement($xml)) {
-            if ('node' == $xml->localName) {
-                self::importSystemView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
-            } elseif ('property' == $xml->localName) {
-                $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV);
-                $name = $xml->value;
-                $xml->moveToAttributeNs('type', NamespaceRegistryInterface::NAMESPACE_SV);
-                $type = PropertyType::valueFromName($xml->value);
-                if ($xml->moveToAttributeNs('multiple', NamespaceRegistryInterface::NAMESPACE_SV)) {
-                    $multiple = strcasecmp($xml->value, 'true') === 0;
-                    $values = array();
-                } else {
-                    $multiple = false;
-                }
-                self::xmlReaderNextElement($xml);
-                if ($multiple) {
-                    while ('value' == $xml->localName) {
-                        $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
-                        self::xmlReaderNextElement($xml);
-                    }
-                } else {
-                    $values = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
-                }
-                $name = self::cleanNamespace($name, $namespaceMap);
+        $xml->read(); // </value>
+        $xml->read(); // </property>
 
-echo "Adding property $name\n";
-                $node->setProperty($name, $values, $type);
+        $xml->read(); // next thing
+
+        while (XMLReader::END_ELEMENT != $xml->nodeType && 'property' == $xml->localName) {
+            $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV);
+            $name = $xml->value;
+            $xml->moveToAttributeNs('type', NamespaceRegistryInterface::NAMESPACE_SV);
+            $type = PropertyType::valueFromName($xml->value);
+            if ($xml->moveToAttributeNs('multiple', NamespaceRegistryInterface::NAMESPACE_SV)) {
+                $multiple = strcasecmp($xml->value, 'true') === 0;
+            } else {
+                $multiple = false;
             }
+            $values = array();
+
+            $xml->moveToNextElement(); // go to the value child
+
+            while ('value' == $xml->localName) {
+                $xml->read();
+                $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
+                $xml->read(); // </value>
+                $xml->read(); // <value> or </property>
+            }
+
+            if (! $multiple && count($values) == 1) {
+                $values = reset($values); // unbox if it does not need to be multivalue
+            }
+            $name = self::cleanNamespace($name, $namespaceMap);
+
+            // TODO logging echo "Adding property $name\n";
+            $node->setProperty($name, $values, $type);
+            $xml->read();
         }
+
+        while (XMLReader::END_ELEMENT != $xml->nodeType && 'node' == $xml->localName) {
+            self::importSystemView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
+        }
+
+        if (XMLReader::END_ELEMENT != $xml->nodeType) {
+            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
+        }
+        $xml->read(); // </node>
+        // TODO logging echo "Done adding to ".$parentNode->getPath()."\n";
     }
 
     /**
@@ -344,25 +390,100 @@ echo "Adding property $name\n";
         return $name;
     }
 
-
     /**
-     * Helper function because I could not figure out how to tell XMLReader to
-     * skip irrelevant whitespace
+     * Import document in system view
      *
-     * @param \XMLReader $xml
+     * @param NodeInterface $parentNode
+     * @param NamespaceRegistryInterface $ns
+     * @param XMLReader2 $xml
+     * @param int $uuidBehavior
+     * @param array $documentNamespaces hashmap of prefix => uri for namespaces in the document
      */
-    private static function xmlReaderNextElement(XMLReader $xml)
+    private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
     {
-        while ($xml->read()) {
-            if (XMLReader::ELEMENT == $xml->nodeType) {
+        // TODO: handle uuidbehaviour!
+        // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
+        $nodename = $xml->name;
+        $properties = array();
+
+        while ($xml->moveToNextAttribute()) {
+            if ('xmlns' == $xml->prefix) {
+                try {
+                    $prefix = $ns->getPrefix($xml->value);
+                } catch(\PHPCR\NamespaceException $e) {
+                    $prefix = $xml->localName;
+                    $ns->registerNamespace($prefix, $xml->value);
+                }
+                $namespaceMap[$xml->localName] = $prefix;
+            } else {
+                $properties[self::unescapeXmlName($xml->name, $namespaceMap)] = $xml->value;
+            }
+        }
+        if (! array_search('jcr', $namespaceMap)) {
+            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
+        }
+        if (! array_search('nt', $namespaceMap)) {
+            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
+        }
+
+        if ('jcr:root' == $nodename) {
+            // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
+        }
+        $nodename = self::unescapeXmlName($nodename, $namespaceMap);
+
+        if (isset($properties['jcr:primaryType'])) {
+            $type = $properties['jcr:primaryType'];
+            unset($properties['jcr:primaryType']);
+        } else {
+            $type = 'nt:unstructured';
+        }
+
+        // TODO logging echo "Adding node $nodename ($type)\n";
+        $node = $parentNode->addNode($type);
+        foreach ($properties as $name => $value) {
+            // TODO logging echo "Adding property $name\n";
+            $node->setProperty($name, $value);
+        }
+        $xml->read(); // get to next element if there is one
+
+        while (XMLReader::ELEMENT == $xml->nodeType) {
+            self::importDocumentView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
+        }
+
+        if (XMLReader::END_ELEMENT != $xml->nodeType) {
+            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
+        }
+
+        // TODO logging echo "Done adding to ".$parentNode->getPath()."\n";
+    }
+}
+
+/**
+ * An XML reader that skips whitespace.
+ *
+ * (Can't we tell XMLReader or libxml2 to do that?
+ */
+class XMLReader2 extends XMLReader
+{
+    public function read()
+    {
+        while (parent::read()) {
+            if (self::WHITESPACE !== $this->nodeType &&
+                ! (self::SIGNIFICANT_WHITESPACE == $this->nodeType && '' == trim($this->value)) &&
+                self::COMMENT !== $this->nodeType
+            ) {
                 return true;
             }
         }
         return false;
     }
-
-    private static function importDocumentView()
+    public function moveToNextElement()
     {
-
+        while (parent::read()) {
+            if (self::ELEMENT == $this->nodeType) {
+                return true;
+            }
+        }
+        return false;
     }
 }
