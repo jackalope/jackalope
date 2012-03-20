@@ -40,11 +40,15 @@ class NodeTypeEventFilterTest extends TestCase
      */
     public function getMySessionMock($node)
     {
-        $session = $this->getSessionMock(array('getNode'));
+        $session = $this->getSessionMock(array('getNode', 'nodeExists'));
         $session
             ->expects($this->any())
             ->method('getNode')
             ->will($this->returnValue($node));
+        $session
+            ->expects($this->any())
+            ->method('nodeExists')
+            ->will($this->returnValue(true));
         return $session;
     }
 

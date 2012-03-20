@@ -43,6 +43,11 @@ class NodeTypeEventFilter implements EventFilterInterface
             return false;
         }
 
+        // An event might have been raised for a node that does not exist anymore
+        if (!$this->session->nodeExists($event->getPath())) {
+            return false;
+        }
+
         $node = $this->session->getNode($event->getPath());
         foreach ($this->nodeTypes as $type) {
             if ($node->isNodeType($type)) {
