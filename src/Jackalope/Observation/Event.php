@@ -141,12 +141,16 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $data
+     * @param string $data url-encoded string
      * @return void
      */
     public function setUserData($data)
     {
-        $this->userData = $data;
+        if (null === $data) {
+            $this->userData = null;
+        } else {
+            $this->userData = urldecode($data);
+        }
     }
 
     /**

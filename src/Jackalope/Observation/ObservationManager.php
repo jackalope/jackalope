@@ -77,7 +77,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     public function setUserData($userData)
     {
-        throw new \Jackalope\NotImplementedException();
+        $this->transport->setUserData($userData);
     }
 
     /**
