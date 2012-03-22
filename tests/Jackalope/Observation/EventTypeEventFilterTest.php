@@ -37,8 +37,8 @@ class EventTypeEventFilterTest extends TestCase
         }
     }
 
-    public function testMultipleTypeFilter() {
-
+    public function testMultipleTypeFilter()
+    {
         $this->assertMultiTypeFilter(array(EventInterface::NODE_REMOVED, EventInterface::PROPERTY_REMOVED));
         $this->assertMultiTypeFilter(array(EventInterface::PROPERTY_REMOVED, EventInterface::PROPERTY_ADDED, EventInterface::PROPERTY_CHANGED));
         $this->assertMultiTypeFilter(array(EventInterface::NODE_REMOVED, EventInterface::NODE_ADDED, EventInterface::NODE_MOVED, EventInterface::PERSIST));

@@ -294,14 +294,22 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
     protected function getEventTypeFromTagName($tagName)
     {
         switch (strtolower($tagName)) {
-            case 'nodeadded': return EventInterface::NODE_ADDED;
-            case 'noderemoved': return EventInterface::NODE_REMOVED;
-            case 'propertyadded': return EventInterface::PROPERTY_ADDED;
-            case 'propertyremoved': return EventInterface::PROPERTY_REMOVED;
-            case 'propertychanged': return EventInterface::PROPERTY_CHANGED;
-            case 'nodemoved': return EventInterface::NODE_MOVED;
-            case 'persist': return EventInterface::PERSIST;
-            default: throw new RepositoryException(sprintf("Invalid event type '%s'", $tagName));
+            case 'nodeadded':
+                return EventInterface::NODE_ADDED;
+            case 'noderemoved':
+                return EventInterface::NODE_REMOVED;
+            case 'propertyadded':
+                return EventInterface::PROPERTY_ADDED;
+            case 'propertyremoved':
+                return EventInterface::PROPERTY_REMOVED;
+            case 'propertychanged':
+                return EventInterface::PROPERTY_CHANGED;
+            case 'nodemoved':
+                return EventInterface::NODE_MOVED;
+            case 'persist':
+                return EventInterface::PERSIST;
+            default:
+                throw new RepositoryException(sprintf("Invalid event type '%s'", $tagName));
         }
     }
 
