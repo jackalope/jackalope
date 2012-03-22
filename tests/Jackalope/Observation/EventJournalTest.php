@@ -114,13 +114,6 @@ EOF;
 
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
         $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
-        $this->myAssertAttributeEquals(false, 'alreadyFiltered', $journal);
-    }
-
-    public function testContructorWithoutFilters()
-    {
-        // The journal contructed in setUp is unfiltered
-        $this->myAssertAttributeEquals(true, 'alreadyFiltered', $this->journal);
     }
 
     // ----- EXTRACT USER ID --------------------------------------------------
