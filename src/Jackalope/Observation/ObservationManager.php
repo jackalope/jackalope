@@ -14,6 +14,9 @@ use Jackalope\Transport\ObservationInterface,
 /**
  * {@inheritDoc}
  *
+ * Jackalope does not implement event listeners because we would need to poll Jackrabbit on
+ * a regular basis to check if an event occured but there is nothing like threads in PHP.
+ *
  * @api
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>

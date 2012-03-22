@@ -36,12 +36,6 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      */
     protected $workspaceRootUri;
 
-    /**
-     * Has the journal already been filtered by the server?
-     * @var bool
-     */
-    protected $alreadyFiltered;
-
 
     /**
      * Construct a new EventJournal by extracting the $data that comes from the server.
@@ -79,16 +73,11 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
         $this->uuidCriterion = $uuid;
         $this->nodeTypeNameCriterion = $nodeTypeName;
 
-        $this->alreadyFiltered =
-                 ($eventTypes === null) && ($absPath === null)
-              && ($isDeep === null) && ($uuid === null)
-              && ($nodeTypeName === null);
-
         // Construct the journal with the transport response
         $events = $this->constructEventJournal($data);
 
         // Filter the events if required
-        if (!$this->alreadyFiltered) {
+        if (($eventTypes !== null) || ($absPath !== null) || ($isDeep !== null) || ($uuid !== null) || ($nodeTypeName !== null)) {
             $filter = EventFilterChain::constructFilterChain($this->session, $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
             $events = $this->filterEvents($filter, $events);
         }
