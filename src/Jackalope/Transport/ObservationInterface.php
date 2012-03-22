@@ -33,4 +33,13 @@ interface ObservationInterface extends TransportInterface
      * @throws \PHPCR\RepositoryException if an error occurs
      */
     function getEventJournal(SessionInterface $session, $eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null);
+
+
+    /**
+     * Set user data to be included with subsequent requests.
+     * Setting userData to null (which it is by default) will result in no user data header being sent.
+     *
+     * @param mixed $userData null or string
+     */
+    function setUserData($userData);
 }
