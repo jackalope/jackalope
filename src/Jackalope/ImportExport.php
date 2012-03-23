@@ -6,14 +6,17 @@ use DOMDocument;
 use XMLReader;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
+use PHPCR\ImportUUIDBehaviourInterface;
 use PHPCR\NamespaceRegistryInterface;
 
 /**
  * Helper class with static methods to import and export data.
  *
+ * Implements the uuid behaviour interface to import the constants.
+ *
  * TODO: should we move this to phpcr-utils? it has no dependency on jackalope at all
  */
-class ImportExport
+class ImportExport implements ImportUUIDBehaviourInterface
 {
     /**
      * Map of invalid xml names to escaping according to jcr/phpcr spec
@@ -64,6 +67,44 @@ class ImportExport
     }
 
     /**
+     * Import the xml document from the stream into the repository
+     *
+     * @param NodeInterface $parentNode as in importXML
+     * @param string $uri as in importXML
+     * @param integer $uuidBehavior as in importXML
+     *
+     * @see PHPCR\SessionInterface::importXML
+     */
+    public static function importXML(NodeInterface $parentNode, NamespaceRegistryInterface $ns, $uri, $uuidBehavior)
+    {
+        $use_errors = libxml_use_internal_errors(true);
+
+        $xml = new XMLReader2;
+        $xml->open($uri);
+        if (libxml_get_errors()) {
+            libxml_use_internal_errors($use_errors);
+            throw new \PHPCR\InvalidSerializedDataException("Invalid xml file $uri");
+        }
+        $xml->read();
+
+        try {
+            if ('node' == $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI) {
+                // TODO: validate with DTD?
+                self::importSystemView($parentNode, $ns, $xml, $uuidBehavior);
+            } else {
+                self::importDocumentView($parentNode, $ns, $xml, $uuidBehavior);
+            }
+        } catch (\Exception $e) {
+            // restore libxml setting
+            libxml_use_internal_errors($use_errors);
+            // and rethrow exception to not hide it
+            throw $e;
+        }
+
+        libxml_use_internal_errors($use_errors);
+    }
+
+    /**
      * Helper method for escaping node and property names into valid xml
      * element and attribute names according to the jcr specification.
      *
@@ -96,34 +137,98 @@ class ImportExport
     }
 
     /**
-     * Import the xml document from the stream into the repository
+     * Helper function for importing to ensure prefix is same as in repository
      *
-     * @param NodeInterface $parentNode as in importXML
-     * @param string $uri as in importXML
-     * @param integer $uuidBehavior as in importXML
-     *
-     * @see PHPCR\SessionInterface::importXML
+     * @param string $name potentially namespace prefixed xml name
+     * @param array $namespaceMap of document prefix => repository prefix
      */
-    public static function importXML(NodeInterface $parentNode, NamespaceRegistryInterface $ns, $uri, $uuidBehavior)
+    private static function cleanNamespace($name, $namespaceMap)
     {
-        $use_errors = libxml_use_internal_errors(true);
-
-        $xml = new XMLReader2;
-        $xml->open($uri);
-        if (libxml_get_errors()) {
-            libxml_use_internal_errors($use_errors);
-            throw new \PHPCR\InvalidSerializedDataException("Invalid xml file $uri");
+        if ($pos = strpos($name, ':')) {
+            // map into repo namespace prefix
+            $prefix = substr($name, 0, $pos);
+            str_replace($prefix, $namespaceMap[$prefix], $name);
         }
-        $xml->read();
+        return $name;
+    }
 
-        if ('node' == $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI) {
-            // TODO: validate with DTD?
-            self::importSystemView($parentNode, $ns, $xml, $uuidBehavior);
-        } else {
-            self::importDocumentView($parentNode, $ns, $xml, $uuidBehavior);
+    /**
+     * Helper method for importing to add a node with the proper uuid behaviour
+     *
+     * @param \PHPCR\NodeInterface $parentNode the node to add this node to
+     * @param string $nodename the node name to use
+     * @param string $type the primary type name to use
+     * @param int $uuidBehaviour one of the constants of ImportUUIDBehaviourInterface
+     *
+     * @return NodeInterface the created node
+     *
+     * @throws ItemExistsException if IMPORT_UUID_COLLISION_THROW and
+     *      duplicate id
+     * @throws ConstraintViolationException if behaviour is remove or
+     *      replace and the node with the uuid is in the parent path.
+     */
+    private static function addNode(NodeInterface $parentNode, $nodename, $type, $properties, $uuidBehaviour)
+    {
+        $forceReferenceable = false;
+        if (isset($properties['jcr:uuid'])) {
+            if (self::IMPORT_UUID_CREATE_NEW == $uuidBehaviour) {
+                unset($properties['jcr:uuid']);
+                $forceReferenceable = true;
+            } else {
+                try {
+                    $existing = $parentNode->getSession()->getNodeByIdentifier($properties['jcr:uuid']['values']);
+                    switch ($uuidBehaviour) {
+                        case self::IMPORT_UUID_COLLISION_THROW:
+                            throw new \PHPCR\ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
+                        case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
+                        case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
+                            if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
+                                throw new \PHPCR\NodeType\ConstraintViolationException('Trying to remove/replace parent of the path we are adding to');
+                            }
+                            if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehaviour) {
+                                if ('jcr:root' == $nodename && $existing->getDepth() == 0) {
+                                    // special case replace root node properties with the properties we get here
+                                    // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
+                                } else {
+                                    // replace the found node. spec is not precise: do we keep the name or use the one of existing?
+                                    $parentNode = $existing->getParent();
+                                }
+                            }
+                            $existing->remove();
+                            break;
+                        default:
+                            throw new \PHPCR\UnsupportedRepositoryOperationException("Unexpected type $uuidBehaviour");
+                    }
+                } catch (\PHPCR\ItemNotFoundException $e) {
+                    // nothing to do, we can add the node without conflict
+                }
+            }
         }
 
-        libxml_use_internal_errors($use_errors);
+        // TODO logging echo "Adding node $nodename ($type)\n";
+        $node = $parentNode->addNode($nodename, $type);
+
+        foreach ($properties as $name => $info) {
+            // TODO logging echo "Adding property $name\n";
+            if ('jcr:primaryType' == $name) {
+                // handled in node constructor
+            } else if ('jcr:mixinTypes' == $name) {
+                if (is_array($info['values'])) {
+                    foreach ($info['values'] as $type) {
+                        $node->addMixin($type);
+                    }
+                } else {
+                    $node->addMixin($info['values']);
+                }
+            } else {
+                $node->setProperty($name, $info['values'], $info['type']);
+            }
+        }
+        if ($forceReferenceable && ! $node->isNodeType('mix:referenceable')) {
+            $node->addMixin('mix:referenceable');
+        }
+
+        return $node;
     }
 
 
@@ -156,7 +261,7 @@ class ImportExport
         // the order MUST be primary type, then mixins, if any, then jcr:uuid if its a referenceable node
         fwrite($stream, '<sv:property sv:name="jcr:primaryType" sv:type="Name"><sv:value>'.htmlspecialchars($node->getPropertyValue('jcr:primaryType')).'</sv:value></sv:property>');
         if ($node->hasProperty('jcr:mixinTypes')) {
-            fwrite($stream, '<sv:property sv:name="jcr:mixinTypes" sv:type="Name">');
+            fwrite($stream, '<sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">');
             foreach ($node->getPropertyValue('jcr:mixinTypes') as $type) {
                 fwrite($stream, '<sv:value>'.htmlspecialchars($type).'</sv:value>');
             }
@@ -281,7 +386,6 @@ class ImportExport
      */
     private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
     {
-        // TODO: handle uuidbehaviour!
         // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
         while ($xml->moveToNextAttribute()) {
             if ('xmlns' == $xml->prefix) {
@@ -317,21 +421,18 @@ class ImportExport
         }
         $xml->read(); // value child of property jcr:primaryType
         $xml->read(); // text content
-        $type = $xml->value;
+        $nodetype = $xml->value;
 
-        if ('jcr:root' == $nodename) {
-            // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
-        }
         $nodename = self::cleanNamespace($nodename, $namespaceMap);
 
-        // TODO logging echo "Adding node $nodename ($type)\n";
-        $node = $parentNode->addNode($nodename, $type);
+        $properties = array();
 
         $xml->read(); // </value>
         $xml->read(); // </property>
 
         $xml->read(); // next thing
 
+        // read the properties of the node. they must come first.
         while (XMLReader::END_ELEMENT != $xml->nodeType && 'property' == $xml->localName) {
             $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV);
             $name = $xml->value;
@@ -358,10 +459,13 @@ class ImportExport
             }
             $name = self::cleanNamespace($name, $namespaceMap);
 
-            // TODO logging echo "Adding property $name\n";
-            $node->setProperty($name, $values, $type);
+            $properties[$name] = array('values' => $values, 'type' => $type);
             $xml->read();
         }
+
+        $node = self::addNode($parentNode, $nodename, $nodetype, $properties, $uuidBehavior);
+
+        // if there are child nodes, they all come after the properties
 
         while (XMLReader::END_ELEMENT != $xml->nodeType && 'node' == $xml->localName) {
             self::importSystemView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
@@ -375,22 +479,6 @@ class ImportExport
     }
 
     /**
-     * Helper function to ensure prefix is same as in repository
-     *
-     * @param string $name potentially namespace prefixed xml name
-     * @param array $namespaceMap of document prefix => repository prefix
-     */
-    private static function cleanNamespace($name, $namespaceMap)
-    {
-        if ($pos = strpos($name, ':')) {
-            // map into repo namespace prefix
-            $prefix = substr($name, 0, $pos);
-            str_replace($prefix, $namespaceMap[$prefix], $name);
-        }
-        return $name;
-    }
-
-    /**
      * Import document in system view
      *
      * @param NodeInterface $parentNode
@@ -401,7 +489,6 @@ class ImportExport
      */
     private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
     {
-        // TODO: handle uuidbehaviour!
         // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
         $nodename = $xml->name;
         $properties = array();
@@ -416,7 +503,7 @@ class ImportExport
                 }
                 $namespaceMap[$xml->localName] = $prefix;
             } else {
-                $properties[self::unescapeXmlName($xml->name, $namespaceMap)] = $xml->value;
+                $properties[self::unescapeXmlName($xml->name, $namespaceMap)] = array('values' => $xml->value, 'type' => null);
             }
         }
         if (! array_search('jcr', $namespaceMap)) {
@@ -426,24 +513,17 @@ class ImportExport
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
         }
 
-        if ('jcr:root' == $nodename) {
-            // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
-        }
         $nodename = self::unescapeXmlName($nodename, $namespaceMap);
 
         if (isset($properties['jcr:primaryType'])) {
-            $type = $properties['jcr:primaryType'];
+            $type = $properties['jcr:primaryType']['values'];
             unset($properties['jcr:primaryType']);
         } else {
             $type = 'nt:unstructured';
         }
 
-        // TODO logging echo "Adding node $nodename ($type)\n";
-        $node = $parentNode->addNode($type);
-        foreach ($properties as $name => $value) {
-            // TODO logging echo "Adding property $name\n";
-            $node->setProperty($name, $value);
-        }
+        $node = self::addNode($parentNode, $nodename, $type, $properties, $uuidBehavior);
+
         $xml->read(); // get to next element if there is one
 
         while (XMLReader::ELEMENT == $xml->nodeType) {
