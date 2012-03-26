@@ -14,6 +14,7 @@ use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\TransactionInterface;
 use Jackalope\Transport\LockingInterface;
+use Jackalope\Transport\ObservationInterface;
 
 /**
  * {@inheritDoc}
@@ -52,9 +53,14 @@ class Workspace implements WorkspaceInterface
     protected $namespaceRegistry;
 
     /**
-     * @var \Jackalope\Lock\LockManager
+     * @var \PHPCR\Lock\LockManagerInterface
      */
     protected $lockManager;
+
+    /**
+     * @var \PHPCR\Observation\ObservationManagerInterface
+     */
+    protected $observationManager;
 
     /**
      * Instantiate a workspace referencing a workspace in the storage.
@@ -240,7 +246,21 @@ class Workspace implements WorkspaceInterface
      */
     public function getObservationManager()
     {
-        throw new UnsupportedRepositoryOperationException();
+        if (! $this->session->getTransport() instanceof ObservationInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support observation');
+        }
+
+        if (is_null($this->observationManager)) {
+            $this->observationManager = $this->factory->get(
+                'Observation\\ObservationManager',
+                array(
+                    $this->session,
+                    $this->session->getTransport()
+                )
+            );
+        }
+
+        return $this->observationManager;
     }
 
     /**
