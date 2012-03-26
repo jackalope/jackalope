@@ -6,17 +6,18 @@ use DOMDocument;
 use XMLReader;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
-use PHPCR\ImportUUIDBehaviourInterface;
+use PHPCR\ImportUUIDBehaviorInterface;
 use PHPCR\NamespaceRegistryInterface;
+use PHPCR\Util\NodeHelper;
 
 /**
  * Helper class with static methods to import and export data.
  *
- * Implements the uuid behaviour interface to import the constants.
+ * Implements the uuid behavior interface to import the constants.
  *
  * TODO: should we move this to phpcr-utils? it has no dependency on jackalope at all
  */
-class ImportExport implements ImportUUIDBehaviourInterface
+class ImportExport implements ImportUUIDBehaviorInterface
 {
     /**
      * Map of invalid xml names to escaping according to jcr/phpcr spec
@@ -78,6 +79,11 @@ class ImportExport implements ImportUUIDBehaviourInterface
     public static function importXML(NodeInterface $parentNode, NamespaceRegistryInterface $ns, $uri, $uuidBehavior)
     {
         $use_errors = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+
+        if (! file_exists($uri)) {
+            throw new \RuntimeException("File $uri does not exist or is not readable");
+        }
 
         $xml = new XMLReader2;
         $xml->open($uri);
@@ -85,8 +91,8 @@ class ImportExport implements ImportUUIDBehaviourInterface
             libxml_use_internal_errors($use_errors);
             throw new \PHPCR\InvalidSerializedDataException("Invalid xml file $uri");
         }
-        $xml->read();
 
+        $xml->read();
         try {
             if ('node' == $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI) {
                 // TODO: validate with DTD?
@@ -153,60 +159,70 @@ class ImportExport implements ImportUUIDBehaviourInterface
     }
 
     /**
-     * Helper method for importing to add a node with the proper uuid behaviour
+     * Helper method for importing to add a node with the proper uuid behavior
      *
      * @param \PHPCR\NodeInterface $parentNode the node to add this node to
      * @param string $nodename the node name to use
      * @param string $type the primary type name to use
-     * @param int $uuidBehaviour one of the constants of ImportUUIDBehaviourInterface
+     * @param int $uuidBehavior one of the constants of ImportUUIDBehaviorInterface
      *
      * @return NodeInterface the created node
      *
-     * @throws ItemExistsException if IMPORT_UUID_COLLISION_THROW and
+     * @throws \PHPCR\ItemExistsException if IMPORT_UUID_COLLISION_THROW and
      *      duplicate id
-     * @throws ConstraintViolationException if behaviour is remove or
+     * @throws \PHPCR\NodeType\ConstraintViolationException if behavior is remove or
      *      replace and the node with the uuid is in the parent path.
      */
-    private static function addNode(NodeInterface $parentNode, $nodename, $type, $properties, $uuidBehaviour)
+    private static function addNode(NodeInterface $parentNode, $nodename, $type, $properties, $uuidBehavior)
     {
         $forceReferenceable = false;
         if (isset($properties['jcr:uuid'])) {
-            if (self::IMPORT_UUID_CREATE_NEW == $uuidBehaviour) {
-                unset($properties['jcr:uuid']);
-                $forceReferenceable = true;
-            } else {
-                try {
-                    $existing = $parentNode->getSession()->getNodeByIdentifier($properties['jcr:uuid']['values']);
-                    switch ($uuidBehaviour) {
-                        case self::IMPORT_UUID_COLLISION_THROW:
-                            throw new \PHPCR\ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
-                        case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
-                        case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
-                            if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
-                                throw new \PHPCR\NodeType\ConstraintViolationException('Trying to remove/replace parent of the path we are adding to');
-                            }
-                            if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehaviour) {
-                                if ('jcr:root' == $nodename && $existing->getDepth() == 0) {
-                                    // special case replace root node properties with the properties we get here
-                                    // TODO http://www.day.com/specs/jcr/2.0/11_Import.html
-                                } else {
-                                    // replace the found node. spec is not precise: do we keep the name or use the one of existing?
-                                    $parentNode = $existing->getParent();
-                                }
-                            }
-                            $existing->remove();
+            try {
+                $existing = $parentNode->getSession()->getNodeByIdentifier($properties['jcr:uuid']['values']);
+                switch ($uuidBehavior) {
+                    case self::IMPORT_UUID_CREATE_NEW:
+                        unset($properties['jcr:uuid']);
+                        $forceReferenceable = true;
+                        break;
+                    case self::IMPORT_UUID_COLLISION_THROW:
+                        throw new \PHPCR\ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
+                    case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
+                    case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior &&
+                            'jcr:root' == $nodename &&
+                            $existing->getDepth() == 0
+                        ) {
                             break;
-                        default:
-                            throw new \PHPCR\UnsupportedRepositoryOperationException("Unexpected type $uuidBehaviour");
-                    }
-                } catch (\PHPCR\ItemNotFoundException $e) {
-                    // nothing to do, we can add the node without conflict
+                        }
+                        if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
+                            throw new \PHPCR\NodeType\ConstraintViolationException('Trying to remove/replace parent of the path we are adding to. '.$existing->getIdentifier(). ' at '.$existing->getPath());
+                        }
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+                            // replace the found node. spec is not precise: do we keep the name or use the one of existing?
+                            $parentNode = $existing->getParent();
+                        }
+                        $existing->remove();
+                        break;
+                    default:
+                        // @codeCoverageIgnoreStart
+                        throw new \PHPCR\RepositoryException("Unexpected type $uuidBehavior");
+                        // @codeCoverageIgnoreEnd
                 }
+            } catch (\PHPCR\ItemNotFoundException $e) {
+                // nothing to do, we can add the node without conflict
             }
         }
 
-        // TODO logging echo "Adding node $nodename ($type)\n";
-        $node = $parentNode->addNode($nodename, $type);
+
+        if ('jcr:root' == $nodename && isset($existing) && $existing->getDepth() == 0 && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+            // update the root node properties
+            // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
+            NodeHelper::deleteAllNodes($parentNode->getSession());
+            $node = $existing;
+        } else {
+            // TODO logging echo "Adding node $nodename ($type)\n";
+            $node = $parentNode->addNode($nodename, $type);
+        }
 
         foreach ($properties as $name => $info) {
             // TODO logging echo "Adding property $name\n";
@@ -220,10 +236,13 @@ class ImportExport implements ImportUUIDBehaviourInterface
                 } else {
                     $node->addMixin($info['values']);
                 }
+            } else if ('jcr:created' == $name || 'jcr:createdBy' == $name) {
+                // skip PROTECTED properties. TODO: get the names from node type instead of hardcode
             } else {
                 $node->setProperty($name, $info['values'], $info['type']);
             }
         }
+
         if ($forceReferenceable && ! $node->isNodeType('mix:referenceable')) {
             $node->addMixin('mix:referenceable');
         }
@@ -402,12 +421,15 @@ class ImportExport implements ImportUUIDBehaviourInterface
                 $nodename = $xml->value;
             }
         }
+
+        // @codeCoverageIgnoreStart
         if (! array_search('jcr', $namespaceMap)) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
         }
         if (! array_search('nt', $namespaceMap)) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
         }
+        // @codeCoverageIgnoreEnd
 
         // now get jcr:primaryType
         if (! $xml->read()) {
@@ -506,12 +528,15 @@ class ImportExport implements ImportUUIDBehaviourInterface
                 $properties[self::unescapeXmlName($xml->name, $namespaceMap)] = array('values' => $xml->value, 'type' => null);
             }
         }
+
+        // @codeCoverageIgnoreStart
         if (! array_search('jcr', $namespaceMap)) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
         }
         if (! array_search('nt', $namespaceMap)) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
         }
+        // @codeCoverageIgnoreEnd
 
         $nodename = self::unescapeXmlName($nodename, $namespaceMap);
 
@@ -524,15 +549,23 @@ class ImportExport implements ImportUUIDBehaviourInterface
 
         $node = self::addNode($parentNode, $nodename, $type, $properties, $uuidBehavior);
 
-        $xml->read(); // get to next element if there is one
-
-        while (XMLReader::ELEMENT == $xml->nodeType) {
+        // get current depth to detect self-closing tag. unfortunately, we do
+        // not get an END_ELEMENT for self-closing tags but read() just jumps
+        // to the next element, even moving up in the tree,
+        $depth = $xml->depth;
+        $xml->read(); // move out of current node to next
+        // while we are on element and at same depth, these are children of the current node
+        while (XMLReader::ELEMENT == $xml->nodeType && $xml->depth == $depth) {
             self::importDocumentView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
         }
 
-        if (XMLReader::END_ELEMENT != $xml->nodeType) {
-            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
+        if (XMLReader::END_ELEMENT != $xml->nodeType && $xml->depth != $depth - 1) {
+            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->name.'="'.$xml->value.'"');
         }
+
+        if (XMLReader::END_ELEMENT == $xml->nodeType) {
+            $xml->read(); // end of element
+        } // otherwise the previous element was self-closing and we are already on the next one
 
         // TODO logging echo "Done adding to ".$parentNode->getPath()."\n";
     }

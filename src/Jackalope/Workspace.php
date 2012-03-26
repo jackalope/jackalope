@@ -272,9 +272,13 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function importXML($parentAbsPath, $in, $uuidBehavior)
+    public function importXML($parentAbsPath, $uri, $uuidBehavior)
     {
-        throw new NotImplementedException('Write');
+        ImportExport::importXML(
+            $this->getSession()->getNode($parentAbsPath),
+            $this->getNamespaceRegistry(),
+            $uri,
+            $uuidBehavior);
     }
 
     /**
