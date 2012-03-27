@@ -149,6 +149,12 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
         return new NotConstraint($constraint);
     }
 
+    
+    function ParenthesisConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint)
+    {
+        return new ParenthesisConstraint($constraint);
+    }
+
     /**
      * {@inheritDoc}
      *
