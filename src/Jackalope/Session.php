@@ -18,6 +18,8 @@ use PHPCR\UnsupportedRepositoryOperationException;
 
 use PHPCR\Security\AccessControlException;
 
+use Jackalope\ImportExport\ImportExport;
+
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 
@@ -472,9 +474,13 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function importXML($parentAbsPath, $in, $uuidBehavior)
+    public function importXML($parentAbsPath, $uri, $uuidBehavior)
     {
-        throw new NotImplementedException('Write');
+        ImportExport::importXML(
+            $this->getNode($parentAbsPath),
+            $this->workspace->getNamespaceRegistry(),
+            $uri,
+            $uuidBehavior);
     }
 
     /**
