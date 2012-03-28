@@ -1,9 +1,9 @@
 <?php
 
-namespace Jackalope;
+namespace Jackalope\ImportExport;
 
-use DOMDocument;
 use XMLReader;
+
 use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
 use PHPCR\ImportUUIDBehaviorInterface;
@@ -15,7 +15,7 @@ use PHPCR\Util\NodeHelper;
  *
  * Implements the uuid behavior interface to import the constants.
  *
- * TODO: should we move this to phpcr-utils? it has no dependency on jackalope at all
+ * @author David Buchmann <david@liip.ch>
  */
 class ImportExport implements ImportUUIDBehaviorInterface
 {
@@ -85,7 +85,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             throw new \RuntimeException("File $uri does not exist or is not readable");
         }
 
-        $xml = new XMLReader2;
+        $xml = new FilteredXMLReader;
         $xml->open($uri);
         if (libxml_get_errors()) {
             libxml_use_internal_errors($use_errors);
@@ -136,7 +136,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      */
     public static function unescapeXmlName($name, $namespaceMap)
     {
-        // FIXME this is not respecting the escaping properly
+        // TODO: FIXME this is not respecting the escaping properly
         $name = str_replace(self::$escaping, array_keys(self::$escaping), $name);
         $name = preg_replace('/_x005f_/', '', $name);
         return self::cleanNamespace($name, $namespaceMap);
@@ -220,12 +220,12 @@ class ImportExport implements ImportUUIDBehaviorInterface
             NodeHelper::deleteAllNodes($parentNode->getSession());
             $node = $existing;
         } else {
-            // TODO logging echo "Adding node $nodename ($type)\n";
+            // logging echo "Adding node $nodename ($type)\n";
             $node = $parentNode->addNode($nodename, $type);
         }
 
         foreach ($properties as $name => $info) {
-            // TODO logging echo "Adding property $name\n";
+            // logging echo "Adding property $name\n";
             if ('jcr:primaryType' == $name) {
                 // handled in node constructor
             } else if ('jcr:mixinTypes' == $name) {
@@ -344,7 +344,6 @@ class ImportExport implements ImportUUIDBehaviorInterface
      */
     private static function exportDocumentViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root=false)
     {
-        //TODO: encode name according to spec
         $nodename = self::escapeXmlName($node->getName());
         fwrite($stream, "<$nodename");
         if ($root) {
@@ -399,13 +398,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *
      * @param NodeInterface $parentNode
      * @param NamespaceRegistryInterface $ns
-     * @param XMLReader2 $xml
+     * @param FilteredXMLReader $xml
      * @param int $uuidBehavior
      * @param array $documentNamespaces hashmap of prefix => uri for namespaces in the document
      */
-    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
+    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, $namespaceMap = array())
     {
-        // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
+        // logging echo "Adding child to ".$parentNode->getPath()."\n";
         while ($xml->moveToNextAttribute()) {
             if ('xmlns' == $xml->prefix) {
                 try {
@@ -497,7 +496,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
         }
         $xml->read(); // </node>
-        // TODO logging echo "Done adding to ".$parentNode->getPath()."\n";
+        // logging echo "Done adding to ".$parentNode->getPath()."\n";
     }
 
     /**
@@ -505,13 +504,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *
      * @param NodeInterface $parentNode
      * @param NamespaceRegistryInterface $ns
-     * @param XMLReader2 $xml
+     * @param FilteredXMLReader $xml
      * @param int $uuidBehavior
      * @param array $documentNamespaces hashmap of prefix => uri for namespaces in the document
      */
-    private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, XMLReader2 $xml, $uuidBehavior, $namespaceMap = array())
+    private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, $namespaceMap = array())
     {
-        // TODO logging echo "Adding child to ".$parentNode->getPath()."\n";
+        // logging echo "Adding child to ".$parentNode->getPath()."\n";
         $nodename = $xml->name;
         $properties = array();
 
@@ -554,6 +553,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
         // to the next element, even moving up in the tree,
         $depth = $xml->depth;
         $xml->read(); // move out of current node to next
+
+        // TODO: what about significant whitespace? maybe the read above should not even skip significant but empty whitespace...
+
         // while we are on element and at same depth, these are children of the current node
         while (XMLReader::ELEMENT == $xml->nodeType && $xml->depth == $depth) {
             self::importDocumentView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
@@ -567,36 +569,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $xml->read(); // end of element
         } // otherwise the previous element was self-closing and we are already on the next one
 
-        // TODO logging echo "Done adding to ".$parentNode->getPath()."\n";
+        // logging echo "Done adding to ".$parentNode->getPath()."\n";
     }
 }
 
-/**
- * An XML reader that skips whitespace.
- *
- * (Can't we tell XMLReader or libxml2 to do that?
- */
-class XMLReader2 extends XMLReader
-{
-    public function read()
-    {
-        while (parent::read()) {
-            if (self::WHITESPACE !== $this->nodeType &&
-                ! (self::SIGNIFICANT_WHITESPACE == $this->nodeType && '' == trim($this->value)) &&
-                self::COMMENT !== $this->nodeType
-            ) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public function moveToNextElement()
-    {
-        while (parent::read()) {
-            if (self::ELEMENT == $this->nodeType) {
-                return true;
-            }
-        }
-        return false;
-    }
-}

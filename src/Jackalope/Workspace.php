@@ -7,6 +7,7 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Transaction\UserTransactionInterface;
 
 use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\ImportExport\ImportExport;
 
 use Jackalope\Transport\QueryInterface;
 use Jackalope\Transport\WritingInterface;

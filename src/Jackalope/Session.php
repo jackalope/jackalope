@@ -18,6 +18,8 @@ use PHPCR\UnsupportedRepositoryOperationException;
 
 use PHPCR\Security\AccessControlException;
 
+use Jackalope\ImportExport\ImportExport;
+
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 
