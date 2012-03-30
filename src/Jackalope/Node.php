@@ -10,6 +10,7 @@ use LogicException;
 
 use PHPCR\PropertyType;
 use PHPCR\PropertyInterface;
+use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
@@ -546,6 +547,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
+
+        //try to get a namespace for the set property
+        if (strpos($name, ':') !== false) {
+            list($alias) = explode(':', $name);
+            $namespaces = $this->objectManager->getTransport()->getNamespaces();
+            if (!isset($namespaces[$alias])) {
+                throw new NamespaceException('the namespace ' . $alias . ' was not registered.');
+            }
+        }
 
         if (is_null($value)) {
             if (isset($this->properties[$name])) {
