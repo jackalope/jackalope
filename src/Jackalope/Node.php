@@ -550,11 +550,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         //try to get a namespace for the set property
         if (strpos($name, ':') !== false) {
-            list($alias) = explode(':', $name);
-            $namespaces = $this->objectManager->getTransport()->getNamespaces();
-            if (!isset($namespaces[$alias])) {
-                throw new NamespaceException('the namespace ' . $alias . ' was not registered.');
-            }
+            list($prefix) = explode(':', $name);
+            $this->session->getNamespaceURI($prefix);
         }
 
         if (is_null($value)) {
