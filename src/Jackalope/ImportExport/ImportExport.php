@@ -318,7 +318,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
         if (! $noRecurse) {
             foreach ($node as $child) {
-                self::exportSystemViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
+                if (! ($child->getDepth() == 1 && NodeHelper::isSystemItem($child))) {
+                    self::exportSystemViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
+                }
             }
         }
         fwrite($stream, '</sv:node>');
@@ -369,7 +371,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
         } else {
             fwrite($stream, '>');
             foreach ($node as $child) {
-                self::exportDocumentViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
+                if (! ($child->getDepth() == 1 && NodeHelper::isSystemItem($child))) {
+                    self::exportDocumentViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
+                }
             }
             fwrite($stream, "</$nodename>");
         }
