@@ -11,7 +11,7 @@ use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 
 /**
- * Query implementation for the SQL2 language
+ * Abstract Query implementation for the different Query-languages
  *
  * This can never be legally created if the transport does not implement
  * QueryInterface
@@ -24,7 +24,7 @@ abstract class Query implements QueryInterface
      */
     protected $factory;
     /**
-     * The sql2 query statement
+     * The query statement
      * @var string
      */
     protected $statement;
@@ -51,10 +51,10 @@ abstract class Query implements QueryInterface
     protected $path;
 
     /**
-     * Create a new SQL2 query instance
+     * Create a new query instance
      *
      * @param FactoryInterface $factory the object factory
-     * @param string $statement The SQL statement for this query
+     * @param string $statement The statement for this query
      * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
      * @param string $path If this query is loaded from workspace with
@@ -152,19 +152,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * Access the query statement from the transport layer
-     *
-     * @return string the sql2 query statement
-     *
-     * @private
-     */
-    public function getStatementSql2()
-    {
-        return $this->getStatement();
-        //TODO: should this expand bind variables? or the transport?
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @api
@@ -201,7 +188,7 @@ abstract class Query implements QueryInterface
      */
     public function storeAsNode($absPath)
     {
-        // when implementing this, use ->getStatementSql2() and not $this->statement
+        // when implementing this, use ->getStatement***() and not $this->statement
         // so this works for the extending QueryObjectModel as well
         throw new UnsupportedRepositoryOperationException('Not implemented: Write');
     }
