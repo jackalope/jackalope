@@ -8,13 +8,13 @@ namespace Jackalope\Query;
  * This can never be legally created if the transport does not implement
  * QueryInterface
  */
-class SQLQuery extends Query
+class SqlQuery extends Query
 {
 
     /**
      * Access the query statement from the transport layer
      *
-     * @return string the xpath query statement
+     * @return string the sql2 query statement
      *
      * @private
      */
@@ -25,7 +25,7 @@ class SQLQuery extends Query
     }
 
     /**
-     * Returns the constant QueryInterface::JCR-XPATH
+     * Returns the constant QueryInterface::JCR-SQL2
      *
      * @return string the query language.
      */
