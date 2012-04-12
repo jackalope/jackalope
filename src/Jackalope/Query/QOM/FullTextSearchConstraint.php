@@ -69,4 +69,8 @@ class FullTextSearchConstraint implements FullTextSearchInterface
     {
         return $this->searchExpression;
     }
+    
+    function getConstraints() {
+        return array($this);
+    }
 }
