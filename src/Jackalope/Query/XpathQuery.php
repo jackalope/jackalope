@@ -3,35 +3,35 @@
 namespace Jackalope\Query;
 
 /**
- * Query implementation for the SQL2 language
+ * Query implementation for the XPATH language
  *
  * This can never be legally created if the transport does not implement
  * QueryInterface
  */
-class SqlQuery extends Query
+class XpathQuery extends Query
 {
 
     /**
      * Access the query statement from the transport layer
      *
-     * @return string the sql2 query statement
+     * @return string the xpath query statement
      *
      * @private
      */
-    public function getStatementSql2()
+    public function getStatementXpath()
     {
         return $this->getStatement();
         //TODO: should this expand bind variables? or the transport?
     }
 
     /**
-     * Returns the constant QueryInterface::JCR-SQL2
+     * Returns the constant QueryInterface::JCR-XPATH
      *
      * @return string the query language.
      */
     public function getLanguage()
     {
-       return self::JCR_SQL2;
+       return self::JCR_XPATH;
     }
 
 }

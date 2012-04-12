@@ -48,6 +48,8 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
         switch ($language) {
             case QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
+            case QueryInterface::JCR_XPATH:
+                return $this->factory->get('Query\XpathQuery', array($statement, $this->objectManager));
             case QueryInterface::JCR_JQOM:
                 throw new InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
             default:
