@@ -42,6 +42,10 @@ class ComparisonConstraint implements ComparisonInterface
         $this->operand2 = $operand2;
     }
 
+    function getConstraints() {
+        return array($this);
+    }
+    
     /**
      * {@inheritDoc}
      *
