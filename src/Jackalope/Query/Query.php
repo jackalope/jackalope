@@ -164,13 +164,6 @@ abstract class Query implements QueryInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the query language.
-     */
-    abstract public function getLanguage();
-    
-    /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getStoredQueryPath()
