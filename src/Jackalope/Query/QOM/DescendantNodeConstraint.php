@@ -52,4 +52,9 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     {
         return $this->path;
     }
+    
+    function getConstraints() {
+        return array($this);
+    }
+    
 }
