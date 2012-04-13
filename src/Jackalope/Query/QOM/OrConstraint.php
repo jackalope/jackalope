@@ -44,11 +44,6 @@ class OrConstraint implements OrInterface
         return $this->constraint1;
     }
 
-    function getConstraints() {
-        $constraints = array_merge($this->getConstraint1()->getConstraints(), $this->getConstraint2()->getConstraints());
-        $constraints[] = $this;
-        return $constraints;
-    }
     /**
      * {@inheritDoc}
      *
@@ -57,5 +52,18 @@ class OrConstraint implements OrInterface
     function getConstraint2()
     {
         return $this->constraint2;
+    }
+    
+    /**
+     * Gets all constraints including itself
+     *
+     * @return array the constraints
+     *
+     * @api
+     */
+    function getConstraints() {
+        $constraints = array_merge($this->getConstraint1()->getConstraints(), $this->getConstraint2()->getConstraints());
+        $constraints[] = $this;
+        return $constraints;
     }
 }
