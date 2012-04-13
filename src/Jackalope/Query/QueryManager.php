@@ -66,12 +66,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
      */
     public function getQOMFactory()
     {
-        //FIXME: Is there a better way to do this?
-        try {
-            return $this->factory->get('Query\QOM\QueryObjectModelFactoryCustom', array($this->objectManager));
-        } catch (\InvalidArgumentException $e) {
-            return $this->factory->get('Query\QOM\QueryObjectModelFactory', array($this->objectManager));
-        }
+        return $this->factory->get('Query\QOM\QueryObjectModelFactory', array($this->objectManager));
     }
 
     /**
