@@ -142,6 +142,6 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      */
     public function getLanguage()
     {
-        return self::JCR_JQOM;
+        return self::JCR_SQL;
     }
 }
