@@ -174,6 +174,8 @@ class ObjectManager
      * @param string $absPath The absolute path of the node to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch
      *      data separately for Version and normal Node?
+     * @param object $object A (prefetched) object (de-serialized json) from the backend
+     *      only to be used if we get child nodes in one backend call
      *
      * @return NodeInterface
      *
@@ -184,7 +186,7 @@ class ObjectManager
      *
      * @see Session::getNode()
      */
-    public function getNodeByPath($absPath, $class = 'Node')
+    public function getNodeByPath($absPath, $class = 'Node', $object = null)
     {
         $this->verifyAbsolutePath($absPath);
         $absPath = $this->normalizePath($absPath);
@@ -194,12 +196,28 @@ class ObjectManager
             return $this->objectsByPath[$class][$absPath];
         }
 
-        $fetchPath = $this->getFetchPath($absPath, $class); // will throw error if path is deleted
+        if (!$object) {
+            $fetchPath = $this->getFetchPath($absPath, $class); // will throw error if path is deleted
+            $object = $this->transport->getNode($fetchPath);
+        }
+
+        foreach ($object as $name => $properties) {
+            if (is_object($properties)) {
+                $objVars = get_object_vars($properties);
+                $countObjVars = count($objVars);
+                //load childnodes if there's more than one objectvar
+                // or just one and this isn't jcr:uuid, then we assume it was
+                // fetched from the backend completely
+                if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
+                    $this->getNodeByPath($absPath . '/' . $name, $class, $properties);
+                }
+            }
+        }
 
         $node = $this->factory->get(
             $class,
             array(
-                $this->transport->getNode($fetchPath),
+                $object,
                 $absPath,
                 $this->session,
                 $this
