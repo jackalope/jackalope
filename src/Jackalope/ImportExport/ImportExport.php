@@ -517,8 +517,10 @@ class ImportExport implements ImportUUIDBehaviorInterface
         // logging echo "Adding child to ".$parentNode->getPath()."\n";
         $nodename = $xml->name;
         $properties = array();
+        $hasAttributes = false; // track whether there was any xml attribute on the element to calculate depth correctly
 
         while ($xml->moveToNextAttribute()) {
+            $hasAttributes = true;
             if ('xmlns' == $xml->prefix) {
                 try {
                     $prefix = $ns->getPrefix($xml->value);
@@ -532,14 +534,19 @@ class ImportExport implements ImportUUIDBehaviorInterface
             }
         }
 
-        // @codeCoverageIgnoreStart
-        if (! array_search('jcr', $namespaceMap)) {
+        $prefix_jcr = array_search(NamespaceRegistryInterface::PREFIX_JCR, $namespaceMap);
+        if (false === $prefix_jcr) {
+            $namespaceMap[NamespaceRegistryInterface::PREFIX_JCR] = NamespaceRegistryInterface::PREFIX_JCR;
+        } else if ($prefix_jcr !== NamespaceRegistryInterface::PREFIX_JCR) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
         }
-        if (! array_search('nt', $namespaceMap)) {
+
+        $prefix_nt = array_search(NamespaceRegistryInterface::PREFIX_NT, $namespaceMap);
+        if (false == $prefix_nt) {
+            $namespaceMap[NamespaceRegistryInterface::PREFIX_NT] = NamespaceRegistryInterface::PREFIX_NT;
+        } else if ($prefix_nt !== NamespaceRegistryInterface::PREFIX_NT) {
             throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
         }
-        // @codeCoverageIgnoreEnd
 
         $nodename = self::unescapeXmlName($nodename, $namespaceMap);
 
@@ -556,9 +563,14 @@ class ImportExport implements ImportUUIDBehaviorInterface
         // not get an END_ELEMENT for self-closing tags but read() just jumps
         // to the next element, even moving up in the tree,
         $depth = $xml->depth;
+        if (! $hasAttributes) {
+            // we where on an empty element, thus not inside its attributes. change depth to 1 deeper
+            // thanks XMLReader, great work :-(
+            $depth++;
+        }
         $xml->read(); // move out of current node to next
 
-        // TODO: what about significant whitespace? maybe the read above should not even skip significant but empty whitespace...
+        // TODO: what about significant whitespace? maybe the read above should not even skip significant empty whitespace...
 
         // while we are on element and at same depth, these are children of the current node
         while (XMLReader::ELEMENT == $xml->nodeType && $xml->depth == $depth) {
@@ -566,7 +578,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         if (XMLReader::END_ELEMENT != $xml->nodeType && $xml->depth != $depth - 1) {
-            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->name.'="'.$xml->value.'"');
+            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream: '.$xml->name.'="'.$xml->value.'"');
         }
 
         if (XMLReader::END_ELEMENT == $xml->nodeType) {
