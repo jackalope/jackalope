@@ -33,6 +33,8 @@ abstract class BaseTransport
 *)?
 $/xi";
 
+    protected $fetchDepth = 0;
+
     /**
      * Helper method to check whether the path conforms to the specification
      * and is supported by this implementation
@@ -97,6 +99,15 @@ $/xi";
         }
 
         return true;
+    }
+
+
+    public function setFetchDepth($depth) {
+        $this->fetchDepth = $depth;
+    }
+
+    public function getFetchDepth() {
+        return $this->fetchDepth;
     }
 
     // TODO: #46 add method to generate capabilities from implemented interfaces
