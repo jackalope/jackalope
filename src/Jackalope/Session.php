@@ -691,4 +691,18 @@ class Session implements SessionInterface
             return self::$sessionRegistry[$key];
         }
     }
+
+    public function setSessionOption($key, $value) {
+        if ($key == 'jackalope.fetch_depth') {
+            $this->getTransport()->setFetchDepth($value);
+        }
+
+    }
+
+    public function getSessionOption($key) {
+        if ($key == 'jackalope.fetch_depth') {
+            return $this->getTransport()->getFetchDepth();
+        }
+        return null;
+    }
 }
