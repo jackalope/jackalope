@@ -290,4 +290,8 @@ interface TransportInterface
      */
     function getNodeTypes($nodeTypes = array());
 
+    function setFetchDepth($depth);
+
+    function getFetchDepth();
+
 }

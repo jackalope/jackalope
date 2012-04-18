@@ -208,7 +208,7 @@ class ObjectManager
                 //load childnodes if there's more than one objectvar
                 // or just one and this isn't jcr:uuid, then we assume it was
                 // fetched from the backend completely
-                if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
+                if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
                     $this->getNodeByPath($absPath . '/' . $name, $class, $properties);
                 }
             }
