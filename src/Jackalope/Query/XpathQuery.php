@@ -25,13 +25,13 @@ class XpathQuery extends Query
     }
 
     /**
-     * Returns the constant QueryInterface::JCR-XPATH
+     * Returns the constant QueryInterface::XPATH
      *
      * @return string the query language.
      */
     public function getLanguage()
     {
-       return self::JCR_XPATH;
+       return self::XPATH;
     }
 
 }

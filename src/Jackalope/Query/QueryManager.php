@@ -48,7 +48,7 @@ class QueryManager implements \PHPCR\Query\QueryManagerInterface
         switch ($language) {
             case QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
-            case QueryInterface::JCR_XPATH:
+            case QueryInterface::XPATH:
                 return $this->factory->get('Query\XpathQuery', array($statement, $this->objectManager));
             case QueryInterface::JCR_SQL:
                 return $this->factory->get('Query\Sql1Query', array($statement, $this->objectManager));
