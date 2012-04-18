@@ -33,6 +33,14 @@ abstract class BaseTransport
 *)?
 $/xi";
 
+    /**
+    * The current fetchDepth
+    *
+    * @var int
+    *
+    * @see TransportInterface::getFetchDepth($depth)
+    */
+
     protected $fetchDepth = 0;
 
     /**
@@ -101,11 +109,16 @@ $/xi";
         return true;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     public function setFetchDepth($depth) {
         $this->fetchDepth = $depth;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFetchDepth() {
         return $this->fetchDepth;
     }
