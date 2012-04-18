@@ -63,11 +63,11 @@ interface TransportInterface
      *
      * What implementation of credentials is supported is transport specific.
      *
-     * @param CredentialsInterface the credentials to connect with the
+     * @param CredentialsInterface $credentials the credentials to connect with the
      *      backend
-     * @param workspaceName The workspace name to connect to.
+     * @param string $workspaceName The workspace name to connect to.
      *
-     * @return true on success (exceptions on failure)
+     * @return boolean true on success (exceptions on failure)
      *
      * @throws \PHPCR\LoginException if authentication or authorization (for
      *      the specified workspace) fails

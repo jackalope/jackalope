@@ -2,8 +2,8 @@
 
 namespace Jackalope\Transport;
 
-use PHPCR\PropertyInterface;
-use PHPCR\NodeInterface;
+use Jackalope\Property;
+use Jackalope\Node;
 
 /**
  * Defines the methods needed for Writing support
@@ -29,11 +29,11 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $name The name to check
      *
-     * @return always true, if the name is not valid a RepositoryException is thrown
+     * @return boolean always true, if the name is not valid a RepositoryException is thrown
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      *
-     * @throws RepositoryException if the name contains invalid characters
+     * @throws \PHPCR\RepositoryException if the name contains invalid characters
      */
     public function assertValidName($name);
 
@@ -137,24 +137,24 @@ interface WritingInterface extends TransportInterface
      * Transport stores the node at its path, with all properties and all
      * children.
      *
-     * @param NodeInterface $node the node to store
+     * @param Node $node the node to store
      *
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    function storeNode(NodeInterface $node);
+    function storeNode(Node $node);
 
     /**
      * Stores a property to its absolute path
      *
-     * @param PropertyInterface
+     * @param Property
      *
      * @return bool true on success
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    function storeProperty(PropertyInterface $property);
+    function storeProperty(Property $property);
 
 
     /**
@@ -181,14 +181,14 @@ interface WritingInterface extends TransportInterface
      * @param string $prefix The prefix to unregister.
      */
     function unregisterNamespace($prefix);
-    
+
     /**
      * Called after everything internally is done in the save() method
      *  so the transport has a chance to do final stuff (or commit everything at once)
      *
      * @return void
      */
-    
+
      function finishSave();
 
 }

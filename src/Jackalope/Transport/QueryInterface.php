@@ -2,7 +2,7 @@
 
 namespace Jackalope\Transport;
 
-use PHPCR\Query\QueryInterface as Query;
+use Jackalope\Query\Query;
 
 /**
  * Defines the methods needed for Query support
