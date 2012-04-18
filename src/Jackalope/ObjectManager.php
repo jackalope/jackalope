@@ -282,15 +282,7 @@ class ObjectManager
                 if (!$absPath) {
                     $absPath = $fetchPath;
                 }
-                $nodes[$absPath] = $this->factory->get(
-                    $class,
-                    array(
-                        $item,
-                        $absPath,
-                        $this->session,
-                        $this
-                    )
-                );
+                $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
 
                 if ($uuid = $nodes[$absPath]->getIdentifier()) {
                     $this->objectsByUuid[$uuid] = $absPath;
