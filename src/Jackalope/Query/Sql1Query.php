@@ -31,7 +31,7 @@ class Sql1Query extends Query
      */
     public function getLanguage()
     {
-       return self::JCR_SQL;
+       return self::SQL;
     }
 
 }
