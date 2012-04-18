@@ -159,6 +159,12 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     {
         $this->checkState();
 
+        // need to determine type to avoid unnecessary modification
+        // don't try to determine if the value changed anyway (i.e. null to delete)
+        if (PropertyType::UNDEFINED === $type && $this->value === $value) {
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+        }
+
         // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
             $this->setModified();
@@ -658,7 +664,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             */
         }
 
-        $value = PropertyType::convertType($value, $targettype);
+        $value = PropertyType::convertType($value, $targettype, $type);
 
         if (PropertyType::BINARY === $targettype) {
             $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams

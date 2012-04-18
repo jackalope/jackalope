@@ -19,6 +19,7 @@ or visit #jackalope on irc.freenode.net
 License: This code is licenced under the apache license.
 Please see the file LICENSE in this folder.
 
+
 # Install instructions
 
 Go to the repository of the storage backend you want and follow the instructions there.
@@ -26,10 +27,13 @@ Go to the repository of the storage backend you want and follow the instructions
 * [https://github.com/jackalope/jackalope-doctrine-dbal](jackalope-doctrine-dbal)
 * [https://github.com/jackalope/jackalope-jackrabbit](jackalope-jackrabbit)
 
+
 # Implementation notes
 
-See (doc/architecture.md) for an introduction how Jackalope is built. Have a
-look at the source files and generate the phpdoc.
+See [doc/architecture.md](https://github.com/jackalope/jackalope/blob/master/doc/architecture.md)
+for an introduction how Jackalope is built. Have a look at the source files and
+generate the phpdoc.
+
 
 # Contributors
 
@@ -41,3 +45,4 @@ look at the source files and generate the phpdoc.
 * Lukas Kahwe Smith <smith@pooteeweet.org>
 * Benjamin Eberlei <kontakt@beberlei.de>
 * Daniel Barsotti <daniel.barsotti@liip.ch>
+* [and many others](https://github.com/jackalope/jackalope/contributors)

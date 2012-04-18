@@ -738,7 +738,13 @@ class ObjectManager
                 //parent path has already been removed
                 continue;
             }
-            $this->transport->deleteNode($path);
+            if ($this->itemsRemove[$path] instanceof NodeInterface) {
+                $this->transport->deleteNode($path);
+            } elseif ($this->itemsRemove[$path] instanceof PropertyInterface) {
+                $this->transport->deleteProperty($path);
+            } else {
+                throw new RepositoryException("Internal error while deleting $path: unknown class ".get_class($this->itemsRemove[$path]));
+            }
             $last = $path;
         }
 
@@ -764,48 +770,35 @@ class ObjectManager
         }
         // create new items
         foreach ($nodesToCreate as $path => $dummy) {
-            $item = $this->getNodeByPath($path);
-            if ($item instanceof NodeInterface) {
-                $this->transport->storeNode($item);
-            } elseif ($item instanceof PropertyInterface) {
-                $this->transport->storeProperty($item);
-            } else {
-                throw new RepositoryException('Internal error: Unknown type '.get_class($item));
+            $node = $this->getNodeByPath($path);
+            if (! $node instanceof NodeInterface) {
+                throw new RepositoryException('Internal error: Unknown type '.get_class($node));
             }
+            $this->transport->storeNode($node);
         }
 
         // loop through cached nodes and commit all dirty and set them to clean.
         if (isset($this->objectsByPath['Node'])) {
-            foreach ($this->objectsByPath['Node'] as $path => $item) {
-                if ($item->isModified()) {
-                    if ($item instanceof NodeInterface) {
-                        foreach ($item->getProperties() as $property) {
-                            if ($property->isModified()) {
-                                $this->transport->storeProperty($property);
-                            }
+            foreach ($this->objectsByPath['Node'] as $path => $node) {
+                if ($node->isModified()) {
+                    if (! $node instanceof NodeInterface) {
+                        throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
+                    }
+                    foreach ($node->getProperties() as $property) {
+                        if ($property->isModified() || $property->isNew()) {
+                            $this->transport->storeProperty($property);
                         }
-                        //order nodes
-                        $reorders = $item->getOrderCommands();
-                        if (count($reorders) > 0) {
-                            $this->transport->reorderNodes($item->getPath(),$reorders);
-                        }
-
-                    } elseif ($item instanceof PropertyInterface) {
-                        if ($item->isDeleted()) {
-                            $this->transport->deleteProperty($path);
-                        //FIXME: isDeleted should work for all property types. Not sure, if it actually does
-                        // This "else if" line could be removed, if all do
-                        } else if ($item->getType() != \PHPCR\PropertyType::WEAKREFERENCE && $item->getValue() === null) {
-                            $this->transport->deleteProperty($path);
-                        } else {
-                            $this->transport->storeProperty($item);
-                        }
-                    } else {
-                        throw new RepositoryException('Internal Error: Unknown type '.get_class($item));
+                    }
+                    //order nodes
+                    $reorders = $node->getOrderCommands();
+                    if (count($reorders) > 0) {
+                        $this->transport->reorderNodes($node->getPath(),$reorders);
                     }
                 }
             }
         }
+
+        $this->transport->finishSave();
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
         $this->itemsRemove = array();
@@ -1201,11 +1194,6 @@ class ObjectManager
                     }
                 }
                 if (isset($this->objectsByPath['Node'][$path])) {
-                    if ($item instanceof Node) {
-                        foreach ($item->getProperties() as $property) {
-                            $property->setPath($newItemPath.'/'.basename($property->getPath()), true);
-                        }
-                    }
                     $item = $this->objectsByPath['Node'][$path];
                     $this->objectsByPath['Node'][$newItemPath] = $item;
                     unset($this->objectsByPath['Node'][$path]);
@@ -1265,7 +1253,7 @@ class ObjectManager
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
-        $this->transport->moveNode($srcAbsPath, $destAbsPath); // should throw the right exceptions
+        $this->transport->moveNode($srcAbsPath, $destAbsPath, true); // should throw the right exceptions
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
     }
 
@@ -1307,7 +1295,7 @@ class ObjectManager
      *
      * @throws ItemExistsException if a node already exists at that path
      */
-    public function addItem($absPath, ItemInterface $item)
+    public function addNode($absPath, NodeInterface $item)
     {
         if (! $this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1316,6 +1304,7 @@ class ObjectManager
         if (isset($this->objectsByPath['Node'][$absPath])) {
             throw new ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
+
         $this->objectsByPath['Node'][$absPath] = $item;
         // a new item never has a uuid, no need to add to objectsByUuid
 

@@ -10,6 +10,7 @@ use LogicException;
 
 use PHPCR\PropertyType;
 use PHPCR\PropertyInterface;
+use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
@@ -395,7 +396,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
-        $this->objectManager->addItem($path, $node);
+        $this->objectManager->addNode($path, $node);
         $this->addChildNode($relPath, false); // no need to check , we just checked when entering this method
         if (is_array($this->originalNodesOrder)) {
             // new nodes are added at the end
@@ -547,6 +548,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
 
+        //try to get a namespace for the set property
+        if (strpos($name, ':') !== false) {
+            list($prefix) = explode(':', $name);
+            //Check if the namespace exists. If not, throw an NamespaceException
+            $this->session->getNamespaceURI($prefix);
+        }
+
         if (is_null($value)) {
             if (isset($this->properties[$name])) {
                 $this->properties[$name]->remove();
@@ -588,20 +596,20 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         $names = self::filterNames($filter, $this->nodes);
-        $paths = $pathNameMap = $result = array();
+        $result = array();
         if (!empty($names)) {
             foreach ($names as $name) {
-                $result[$name] = $this->getNode($name);
-                $path = $this->objectManager->absolutePath($this->path, $name);
-                $paths[] = $path;
-                $pathNameMap[$path] = $name;
+                $paths[] = $this->objectManager->absolutePath($this->path, $name);
             }
-
             $nodes = $this->objectManager->getNodesByPath($paths);
             foreach ($nodes as $path => $node) {
-                $result[$pathNameMap[$path]] = $node;
+                $result[basename($path)] = $node;
             }
         }
+        /* FIXME: Actually, the whole list should be lazy loaded and maybe only fetch a
+                   a few dozen child nodes at once. This approach here doesn't scale if you
+                   have many many many child nodes
+        */
 
         return new ArrayIterator($result);
     }
@@ -1245,17 +1253,28 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * In addition to calling parent method, clean deletedProperties
+     * In addition to calling parent method, tell all properties and clean deletedProperties
      */
     public function confirmSaved()
     {
         foreach ($this->properties as $property) {
-            if ($property->isModified()) {
+            if ($property->isModified() || $property->isNew()) {
                 $property->confirmSaved();
             }
         }
         $this->deletedProperties = array();
         parent::confirmSaved();
+    }
+
+    /**
+     * In addition to calling parent method, tell all properties
+     */
+    public function setPath($path, $move = false)
+    {
+        parent::setPath($path, $move);
+        foreach ($this->properties as $property) {
+            $property->setPath($path.'/'.basename($property->getPath()), $move);
+        }
     }
 
     /**
@@ -1368,7 +1387,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $this->properties[$name] = $property;
             if (! $internal) {
                 $this->setModified();
-                $this->objectManager->addItem($path, $property);
             }
         } else {
             if ($internal) {

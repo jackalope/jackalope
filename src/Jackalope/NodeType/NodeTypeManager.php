@@ -219,7 +219,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             return $this->mixinTypes[$nodeTypeName];
         }
         if (null === $nodeTypeName) {
-            $nodeTypeName = 'nodeTypeName was <null>';
+            $nodeTypeName = 'nodeTypeName is <null>';
+        }
+        if ('' === $nodeTypeName) {
+            $nodeTypeName = 'nodeTypeName is empty string';
         }
 
         throw new NoSuchNodeTypeException($nodeTypeName);
