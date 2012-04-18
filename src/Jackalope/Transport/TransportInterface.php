@@ -311,7 +311,7 @@ interface TransportInterface
      *
      * @return int with the current fetchDepth
      *
-     * @see TransportInterface::getFetchDepth($depth)
+     * @see TransportInterface::setFetchDepth($depth)
      */
     function getFetchDepth();
 

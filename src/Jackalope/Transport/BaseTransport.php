@@ -38,7 +38,7 @@ $/xi";
     *
     * @var int
     *
-    * @see TransportInterface::getFetchDepth($depth)
+    * @see TransportInterface::setFetchDepth($depth)
     */
 
     protected $fetchDepth = 0;
