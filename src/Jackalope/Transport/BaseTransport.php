@@ -14,7 +14,7 @@ use PHPCR\RepositoryException;
  * @author David Buchmann <david@liip.ch>
  */
 
-abstract class BaseTransport
+abstract class BaseTransport implements TransportInterface
 {
     const VALIDATE_URI_RFC3986 = "
 /^
