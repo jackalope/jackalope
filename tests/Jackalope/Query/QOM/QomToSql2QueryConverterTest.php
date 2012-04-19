@@ -12,7 +12,8 @@ use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 
 class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 {
-    protected $converter;
+    protected $qf;
+    protected $qb;
 
     public function setUp()
     {
@@ -22,7 +23,8 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function doQuery($constraint) {
+    public function doQuery($constraint)
+    {
         $this->qb->andWhere($constraint);
         $this->qb->from($this->qf->selector("nt:base"));
         return $this->qb->getQuery()->getStatement();
