@@ -52,4 +52,15 @@ class PropertyExistence implements PropertyExistenceInterface
     {
         return $this->propertyName;
     }
+
+    /**
+     * Gets all constraints including itself
+     *
+     * @return array the constraints
+     *
+     * @api
+     */
+    function getConstraints() {
+        return array($this);
+    }
 }
