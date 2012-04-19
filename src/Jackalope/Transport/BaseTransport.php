@@ -34,6 +34,16 @@ abstract class BaseTransport implements TransportInterface
 $/xi";
 
     /**
+    * The current fetchDepth
+    *
+    * @var int
+    *
+    * @see TransportInterface::setFetchDepth($depth)
+    */
+
+    protected $fetchDepth = 0;
+
+    /**
      * Helper method to check whether the path conforms to the specification
      * and is supported by this implementation
      *
@@ -97,6 +107,20 @@ $/xi";
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setFetchDepth($depth) {
+        $this->fetchDepth = $depth;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFetchDepth() {
+        return $this->fetchDepth;
     }
 
     // TODO: #46 add method to generate capabilities from implemented interfaces

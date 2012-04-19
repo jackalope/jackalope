@@ -290,4 +290,29 @@ interface TransportInterface
      */
     function getNodeTypes($nodeTypes = array());
 
+    /**
+     * Sets the depth with which a transport should fetch childnodes
+     * If depth = 0 it only fetches the requested node
+     * If depth = 1 it also fetches its children
+     * If depth = 2 it also fetches its children and grandchildren
+     * and so on
+     *
+     * Be aware the the actual Session->getNode call does not return all
+     * the children. This setting only tells the transport to preemptively
+     * fetch all the children from the backend.
+     *
+     * @param int $depth The depth with which the nodes should be fetched.
+     */
+
+    function setFetchDepth($depth);
+
+    /**
+     * Returns the current fetchDepth
+     *
+     * @return int with the current fetchDepth
+     *
+     * @see TransportInterface::setFetchDepth($depth)
+     */
+    function getFetchDepth();
+
 }
