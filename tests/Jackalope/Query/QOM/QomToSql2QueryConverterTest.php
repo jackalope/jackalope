@@ -10,7 +10,7 @@ use PHPCR\Util\QOM\Sql1Generator;
 use PHPCR\Util\QOM\QomToSql1QueryConverter;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 
-class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
+class QomToSql2QueryConverterTest extends \PHPUnit_Framework_TestCase
 {
     protected $qf;
     protected $qb;
