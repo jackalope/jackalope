@@ -137,10 +137,9 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
             throw new NamespaceException("Prefix $prefix is not currently registered");
         }
 
-        //remove the prefix from the userNamespaces array
-        unset($this->userNamespaces[$prefix]);
-
         $this->transport->unregisterNamespace($prefix);
+        //remove the prefix from the local userNamespaces array
+        unset($this->userNamespaces[$prefix]);
     }
 
     /**
