@@ -112,14 +112,16 @@ $/xi";
     /**
      * {@inheritDoc}
      */
-    public function setFetchDepth($depth) {
+    public function setFetchDepth($depth)
+    {
         $this->fetchDepth = $depth;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getFetchDepth() {
+    public function getFetchDepth()
+    {
         return $this->fetchDepth;
     }
 
