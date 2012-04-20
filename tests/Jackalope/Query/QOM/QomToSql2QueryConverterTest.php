@@ -3,12 +3,12 @@
 namespace Jackalope\Query\QOM;
 
 use Jackalope\Query\QOM\QueryObjectModelFactory;
-use \PHPCR\Util\QOM\QueryBuilder;
+use Jackalope\Factory;
 
+use PHPCR\Util\QOM\QueryBuilder;
 use PHPCR\Util\QOM\Sql1Generator;
 use PHPCR\Util\QOM\QomToSql1QueryConverter;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
-
 
 class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,11 +17,9 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->qf = new QueryObjectModelFactory(new \Jackalope\Factory());
+        $this->qf = new QueryObjectModelFactory(new Factory());
         $this->qb = new QueryBuilder($this->qf );
-
     }
-
 
     public function doQuery($constraint)
     {
@@ -72,12 +70,16 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function testNotConstraint()
     {
-        $this->qb->where($this->qf->notConstraint($this->qf->comparison($this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo'))));
+        $this->qb->where(
+            $this->qf->notConstraint(
+                $this->qf->comparison(
+                    $this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')
+                )
+            )
+        );
         $this->qb->from($this->qf->selector("nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
         $this->assertSame("SELECT * FROM [nt:base] WHERE NOT bar = 'foo'", $statement);
     }
-
-
 }
 

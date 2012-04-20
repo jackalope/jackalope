@@ -3,12 +3,14 @@
 namespace Jackalope\Query\QOM;
 
 use Jackalope\Query\QOM\QueryObjectModelFactory;
-use \PHPCR\Util\QOM\QueryBuilder;
+use Jackalope\Factory;
 
+use PHPCR\Util\QOM\QueryBuilder;
 use PHPCR\Util\QOM\Sql1Generator;
 use PHPCR\Util\QOM\QomToSql1QueryConverter;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
-
+use PHPCR\Query\QOM\ConstraintInterface;
+use PHPCR\Query\QOM\SourceInterface;
 
 class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,10 +19,9 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->qf = new QueryObjectModelFactorySql1(new \Jackalope\Factory());
+        $this->qf = new QueryObjectModelFactorySql1(new Factory());
         $this->qb = new QueryBuilder($this->qf );
     }
-
 
     public function doQuery($constraint)
     {
@@ -71,24 +72,28 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function testNotConstraint()
     {
-        $this->qb->where($this->qf->notConstraint($this->qf->comparison($this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo'))));
+        $this->qb->where(
+            $this->qf->notConstraint(
+                $this->qf->comparison(
+                    $this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')
+                )
+            )
+        );
         $this->qb->from($this->qf->selector("nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
         $this->assertSame("SELECT s FROM nt:base WHERE NOT bar = 'foo'", $statement);
     }
-
-
 }
 
-class QueryObjectModelFactorySql1 extends \Jackalope\Query\QOM\QueryObjectModelFactory
+class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
 {
     /**
     * {@inheritDoc}
     *
     * @api
     */
-    function createQuery(\PHPCR\Query\QOM\SourceInterface $source,
-                        \PHPCR\Query\QOM\ConstraintInterface $constraint = null,
+    public function createQuery(SourceInterface $source,
+                        ConstraintInterface $constraint = null,
                         array $orderings,
                         array $columns,
                         $simpleQuery = false
