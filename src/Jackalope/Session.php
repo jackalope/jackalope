@@ -710,12 +710,13 @@ class Session implements SessionInterface
 
     public function setSessionOption($key, $value)
     {
-        if ($key == 'jackalope.fetch_depth') {
-            $this->getTransport()->setFetchDepth($value);
-        } else {
-            throw new InvalidArgumentException("Unknown option: $key");
+        switch ($key) {
+            case 'jackalope.fetch_depth':
+                $this->getTransport()->setFetchDepth($value);
+                break;
+            default:
+                throw new InvalidArgumentException("Unknown option: $key");
         }
-
     }
 
     /**
@@ -727,11 +728,11 @@ class Session implements SessionInterface
      *
      * @see setSessionOption($key, $value);
      */
-
     public function getSessionOption($key)
     {
-        if ($key == 'jackalope.fetch_depth') {
-            return $this->getTransport()->getFetchDepth();
+        switch ($key) {
+            case 'jackalope.fetch_depth':
+                return $this->getTransport()->getFetchDepth();
         }
 
         throw new InvalidArgumentException("Unknown option: $key");
