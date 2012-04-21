@@ -271,21 +271,7 @@ class ObjectManager
             $data = $this->transport->getNodes($fetchPaths, $class);
             foreach ($data as $fetchPath => $item) {
                 $absPath = array_search($fetchPath, $fetchPaths);
-                $nodes[$absPath] = $this->factory->get(
-                    $class,
-                    array(
-                        $item,
-                        $absPath,
-                        $this->session,
-                        $this
-                    )
-                );
-
-                if ($uuid = $nodes[$absPath]->getIdentifier()) {
-                    $this->objectsByUuid[$uuid] = $absPath;
-                }
-
-                $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
+                $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
             }
         }
 
