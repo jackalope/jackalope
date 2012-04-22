@@ -14,7 +14,9 @@ use PHPCR\CredentialsInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemExistsException;
+use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
+use InvalidArgumentException;
 
 use PHPCR\Security\AccessControlException;
 
@@ -692,17 +694,47 @@ class Session implements SessionInterface
         }
     }
 
-    public function setSessionOption($key, $value) {
-        if ($key == 'jackalope.fetch_depth') {
-            $this->getTransport()->setFetchDepth($value);
-        }
+    /**
+     * Sets a session specific option.
+     * Currently only 'jackalope.fetch_depth' is supported. This option sets the depth with which
+     *  nodes should be gotten from the backend.
+     *
+     * @param string $key the key to be set
+     * @param mixed $value the value to be set
+     *
+     * @throws InvalidArgumentException if the option is unknown
+     * @throws RepositoryException if this option is not supported and is a behaviour relevant option
+     *
+     * @see Jackalope\Transport\BaseTransport::setFetchDepth($value);
+     */
 
+    public function setSessionOption($key, $value)
+    {
+        switch ($key) {
+            case 'jackalope.fetch_depth':
+                $this->getTransport()->setFetchDepth($value);
+                break;
+            default:
+                throw new InvalidArgumentException("Unknown option: $key");
+        }
     }
 
-    public function getSessionOption($key) {
-        if ($key == 'jackalope.fetch_depth') {
-            return $this->getTransport()->getFetchDepth();
+    /**
+     * Gets a session specific option.
+     *
+     * @param string $key the key to be gotten
+     *
+     * @throws InvalidArgumentException if the option is unknown
+     *
+     * @see setSessionOption($key, $value);
+     */
+    public function getSessionOption($key)
+    {
+        switch ($key) {
+            case 'jackalope.fetch_depth':
+                return $this->getTransport()->getFetchDepth();
         }
-        return null;
+
+        throw new InvalidArgumentException("Unknown option: $key");
     }
 }

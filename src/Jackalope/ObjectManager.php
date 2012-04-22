@@ -272,27 +272,18 @@ class ObjectManager
                 $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
             }
         }
-        
+
         if (!empty($fetchPaths)) {
             $data = $this->transport->getNodes($fetchPaths, $class);
             //var_dump($data);
             foreach ($data as $fetchPath => $item) {
-                
-                $absPath = array_search($fetchPath, $fetchPaths);
-                if (!$absPath) {
-                    $absPath = $fetchPath;
-                }
-                $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
 
-                if ($uuid = $nodes[$absPath]->getIdentifier()) {
-                    $this->objectsByUuid[$uuid] = $absPath;
-                }
-                
-                $this->objectsByPath[$class][$absPath] = $nodes[$absPath];
+                $absPath = array_search($fetchPath, $fetchPaths);
+                $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
             }
         }
-        
-        
+
+
         return new ArrayIterator($nodes);
     }
 

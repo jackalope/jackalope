@@ -14,7 +14,7 @@ use PHPCR\RepositoryException;
  * @author David Buchmann <david@liip.ch>
  */
 
-abstract class BaseTransport
+abstract class BaseTransport implements TransportInterface
 {
     const VALIDATE_URI_RFC3986 = "
 /^
@@ -112,14 +112,16 @@ $/xi";
     /**
      * {@inheritDoc}
      */
-    public function setFetchDepth($depth) {
+    public function setFetchDepth($depth)
+    {
         $this->fetchDepth = $depth;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getFetchDepth() {
+    public function getFetchDepth()
+    {
         return $this->fetchDepth;
     }
 

@@ -52,4 +52,15 @@ class SameNode implements SameNodeInterface
     {
         return $this->path;
     }
+
+    /**
+     * Gets all constraints including itself
+     *
+     * @return array the constraints
+     *
+     * @api
+     */
+    function getConstraints() {
+        return array($this);
+    }
 }
