@@ -279,6 +279,9 @@ class ObjectManager
             foreach ($data as $fetchPath => $item) {
 
                 $absPath = array_search($fetchPath, $fetchPaths);
+                 if (!$absPath) {
+                    $absPath = $fetchPath;
+                }
                 $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
             }
         }
