@@ -39,7 +39,7 @@ class AndConstraint implements AndInterface
      *
      * @api
      */
-    function getConstraint1()
+    public function getConstraint1()
     {
         return $this->constraint1;
     }
@@ -49,7 +49,7 @@ class AndConstraint implements AndInterface
      *
      * @api
      */
-    function getConstraint2()
+    public function getConstraint2()
     {
         return $this->constraint2;
     }
@@ -61,9 +61,11 @@ class AndConstraint implements AndInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         $constraints = array_merge($this->getConstraint1()->getConstraints(), $this->getConstraint2()->getConstraints());
         $constraints[] = $this;
+
         return $constraints;
     }
 }

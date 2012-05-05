@@ -43,23 +43,14 @@ class ComparisonConstraint implements ComparisonInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @api
-     */
-    function getConstraint1()
-    {
-        return $this->constraint1;
-    }
-    
-    /**
      * Gets all constraints including itself
      *
      * @return array the constraints
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }
 
@@ -68,7 +59,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    function getOperand1()
+    public function getOperand1()
     {
         return $this->operand1;
     }
@@ -78,7 +69,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    function getOperator()
+    public function getOperator()
     {
         return $this->operator;
     }
@@ -88,7 +79,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    function getOperand2()
+    public function getOperand2()
     {
         return $this->operand2;
     }

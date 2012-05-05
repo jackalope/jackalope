@@ -38,7 +38,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      *
      * @api
      */
-    function getChildSelectorName()
+    public function getChildSelectorName()
     {
         return $this->childNodeSelectorName;
     }
@@ -48,7 +48,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      *
      * @api
      */
-    function getParentSelectorName()
+    public function getParentSelectorName()
     {
         return $this->parentSelectorName;
     }

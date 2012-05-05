@@ -45,7 +45,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -55,7 +55,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    function getPropertyName()
+    public function getPropertyName()
     {
         return $this->propertyName;
     }
@@ -65,7 +65,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    function getColumnName()
+    public function getColumnName()
     {
         return $this->columnName;
     }

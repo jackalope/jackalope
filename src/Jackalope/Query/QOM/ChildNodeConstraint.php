@@ -38,7 +38,7 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -48,7 +48,7 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @api
      */
-    function getParentPath()
+    public function getParentPath()
     {
         return $this->parentPath;
     }
@@ -60,7 +60,8 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }    
 }

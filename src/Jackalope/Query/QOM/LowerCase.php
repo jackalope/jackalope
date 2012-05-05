@@ -32,7 +32,7 @@ class LowerCase implements LowerCaseInterface
      *
      * @api
      */
-    function getOperand()
+    public function getOperand()
     {
         return $this->operand;
     }

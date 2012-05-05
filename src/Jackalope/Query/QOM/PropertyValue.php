@@ -38,7 +38,7 @@ class PropertyValue implements PropertyValueInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -48,7 +48,7 @@ class PropertyValue implements PropertyValueInterface
      *
      * @api
      */
-    function getPropertyName()
+    public function getPropertyName()
     {
         return $this->propertyName;
     }

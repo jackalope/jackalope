@@ -2,7 +2,9 @@
 
 namespace Jackalope\Query;
 
+use PHPCR\Query\RowInterface;
 use PHPCR\RepositoryException;
+use PHPCR\ItemNotFoundException;
 
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
@@ -16,7 +18,7 @@ use Jackalope\ObjectManager;
  *
  * @api
  */
-class Row implements \Iterator, \PHPCR\Query\RowInterface
+class Row implements \Iterator, RowInterface
 {
     /**
      * @var ObjectManager
@@ -145,7 +147,7 @@ class Row implements \Iterator, \PHPCR\Query\RowInterface
 
         $values = $this->getValues();
         if (!array_key_exists($columnName, $values)) {
-            throw new \PHPCR\ItemNotFoundException("Column '$columnName' not found");
+            throw new ItemNotFoundException("Column '$columnName' not found");
         }
 
         return $values[$columnName];

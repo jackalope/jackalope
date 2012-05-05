@@ -5,7 +5,14 @@ namespace Jackalope\Query\QOM;
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 
+use PHPCR\Query\QOM\QueryObjectModelConstantsInterface;
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
+use PHPCR\Query\QOM\SourceInterface;
+use PHPCR\Query\QOM\ConstraintInterface;
+use PHPCR\Query\QOM\JoinConditionInterface;
+use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\StaticOperandInterface;
+use PHPCR\Query\QOM\PropertyValueInterface;
 
 /**
  * {@inheritDoc}
@@ -44,11 +51,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function createQuery(\PHPCR\Query\QOM\SourceInterface $source,
-                         \PHPCR\Query\QOM\ConstraintInterface $constraint = null,
-                         array $orderings,
-                         array $columns
-    ) {
+    public function createQuery(SourceInterface $source, ConstraintInterface $constraint = null, array $orderings, array $columns)
+    {
         return $this->factory->get('Query\QOM\QueryObjectModel',
                                    array($this->objectManager, $source, $constraint, $orderings, $columns));
     }
@@ -61,7 +65,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function selector($nodeTypeName, $selectorName = null)
+    public function selector($nodeTypeName, $selectorName = null)
     {
         return new Selector($nodeTypeName, $selectorName);
     }
@@ -71,8 +75,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function join(\PHPCR\Query\QOM\SourceInterface $left, \PHPCR\Query\QOM\SourceInterface $right,
-                         $joinType, \PHPCR\Query\QOM\JoinConditionInterface $joinCondition)
+    public function join(SourceInterface $left, SourceInterface $right, $joinType, JoinConditionInterface $joinCondition)
     {
         return new Join($left, $right, $joinType, $joinCondition);
     }
@@ -82,7 +85,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function equiJoinCondition($selector1Name, $property1Name, $selector2Name, $property2Name)
+    public function equiJoinCondition($selector1Name, $property1Name, $selector2Name, $property2Name)
     {
         return new EquiJoinCondition($selector1Name, $property1Name, $selector2Name, $property2Name);
     }
@@ -92,7 +95,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function sameNodeJoinCondition($selector1Name, $selector2Name, $selector2Path = null)
+    public function sameNodeJoinCondition($selector1Name, $selector2Name, $selector2Path = null)
     {
         return new SameNodeJoinCondition($selector1Name, $selector2Name, $selector2Path);
     }
@@ -102,7 +105,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function childNodeJoinCondition($childSelectorName, $parentSelectorName)
+    public function childNodeJoinCondition($childSelectorName, $parentSelectorName)
     {
         return new ChildNodeJoinCondition($childSelectorName, $parentSelectorName);
     }
@@ -112,7 +115,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function descendantNodeJoinCondition($descendantSelectorName, $ancestorSelectorName)
+    public function descendantNodeJoinCondition($descendantSelectorName, $ancestorSelectorName)
     {
         return new DescendantNodeJoinCondition($descendantSelectorName, $ancestorSelectorName);
     }
@@ -122,8 +125,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function andConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
-                         \PHPCR\Query\QOM\ConstraintInterface $constraint2)
+    public function andConstraint(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
         return new AndConstraint($constraint1, $constraint2);
     }
@@ -133,8 +135,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function orConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint1,
-                        \PHPCR\Query\QOM\ConstraintInterface $constraint2)
+    public function orConstraint(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
         return new OrConstraint($constraint1, $constraint2);
     }
@@ -144,7 +145,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function notConstraint(\PHPCR\Query\QOM\ConstraintInterface $constraint)
+    public function notConstraint(ConstraintInterface $constraint)
     {
         return new NotConstraint($constraint);
     }
@@ -154,8 +155,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function comparison(\PHPCR\Query\QOM\DynamicOperandInterface $operand1, $operator,
-                               \PHPCR\Query\QOM\StaticOperandInterface $operand2)
+    public function comparison(DynamicOperandInterface $operand1, $operator, StaticOperandInterface $operand2)
     {
         return new ComparisonConstraint($operand1, $operator, $operand2);
     }
@@ -165,7 +165,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function propertyExistence($propertyName, $selectorName = null)
+    public function propertyExistence($propertyName, $selectorName = null)
     {
         return new PropertyExistence($selectorName, $propertyName);
     }
@@ -175,7 +175,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function fullTextSearch($propertyName, $fullTextSearchExpression, $selectorName = null)
+    public function fullTextSearch($propertyName, $fullTextSearchExpression, $selectorName = null)
     {
         return new FullTextSearchConstraint($propertyName, $fullTextSearchExpression, $selectorName);
     }
@@ -185,7 +185,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function sameNode($path, $selectorName = null)
+    public function sameNode($path, $selectorName = null)
     {
         return new SameNode($selectorName, $path);
     }
@@ -195,7 +195,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function childNode($path, $selectorName = null)
+    public function childNode($path, $selectorName = null)
     {
         return new ChildNodeConstraint($path, $selectorName);
     }
@@ -205,7 +205,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function descendantNode($path, $selectorName = null)
+    public function descendantNode($path, $selectorName = null)
     {
         return new DescendantNodeConstraint($path, $selectorName);
     }
@@ -215,7 +215,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function propertyValue($propertyName, $selectorName = null)
+    public function propertyValue($propertyName, $selectorName = null)
     {
         return new PropertyValue($selectorName, $propertyName);
     }
@@ -225,7 +225,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function length(\PHPCR\Query\QOM\PropertyValueInterface $propertyValue)
+    public function length(PropertyValueInterface $propertyValue)
     {
         return new Length($propertyValue);
     }
@@ -235,7 +235,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function nodeName($selectorName = null)
+    public function nodeName($selectorName = null)
     {
         return new NodeName($selectorName);
     }
@@ -245,7 +245,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function nodeLocalName($selectorName = null)
+    public function nodeLocalName($selectorName = null)
     {
         return new NodeLocalName($selectorName);
     }
@@ -255,7 +255,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function fullTextSearchScore($selectorName = null)
+    public function fullTextSearchScore($selectorName = null)
     {
         return new FullTextSearchScore($selectorName);
     }
@@ -265,7 +265,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function lowerCase(\PHPCR\Query\QOM\DynamicOperandInterface $operand)
+    public function lowerCase(DynamicOperandInterface $operand)
     {
         return new LowerCase($operand);
     }
@@ -275,7 +275,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function upperCase(\PHPCR\Query\QOM\DynamicOperandInterface $operand)
+    public function upperCase(DynamicOperandInterface $operand)
     {
         return new UpperCase($operand);
     }
@@ -285,7 +285,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function bindVariable($bindVariableName)
+    public function bindVariable($bindVariableName)
     {
         return new BindVariableValue($bindVariableName);
     }
@@ -295,7 +295,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function literal($literalValue)
+    public function literal($literalValue)
     {
         return new Literal($literalValue);
     }
@@ -305,9 +305,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function ascending(\PHPCR\Query\QOM\DynamicOperandInterface $operand)
+    public function ascending(DynamicOperandInterface $operand)
     {
-        return new Ordering($operand, \PHPCR\Query\QOM\QueryObjectModelConstantsInterface::JCR_ORDER_ASCENDING);
+        return new Ordering($operand, QueryObjectModelConstantsInterface::JCR_ORDER_ASCENDING);
     }
 
     /**
@@ -315,9 +315,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function descending(\PHPCR\Query\QOM\DynamicOperandInterface $operand)
+    public function descending(DynamicOperandInterface $operand)
     {
-        return new Ordering($operand, \PHPCR\Query\QOM\QueryObjectModelConstantsInterface::JCR_ORDER_DESCENDING);
+        return new Ordering($operand, QueryObjectModelConstantsInterface::JCR_ORDER_DESCENDING);
     }
 
     /**
@@ -325,7 +325,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    function column($propertyName, $columnName = null, $selectorName = null)
+    public function column($propertyName, $columnName = null, $selectorName = null)
     {
         return new Column($propertyName, $columnName, $selectorName);
     }

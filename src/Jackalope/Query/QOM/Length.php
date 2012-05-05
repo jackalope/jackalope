@@ -31,7 +31,7 @@ class Length implements LengthInterface
      *
      * @api
      */
-    function getPropertyValue()
+    public function getPropertyValue()
     {
         return $this->propertyValue;
     }

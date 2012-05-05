@@ -27,7 +27,7 @@ class UpperCase implements UpperCaseInterface
      *
      * @api
      */
-    function getOperand()
+    public function getOperand()
     {
         return $this->operand;
     }

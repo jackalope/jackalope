@@ -39,7 +39,7 @@ class Ordering implements OrderingInterface
      *
      * @api
      */
-    function getOperand()
+    public function getOperand()
     {
         return $this->operand;
     }
@@ -49,7 +49,7 @@ class Ordering implements OrderingInterface
      *
      * @api
      */
-    function getOrder()
+    public function getOrder()
     {
         return $this->order;
     }

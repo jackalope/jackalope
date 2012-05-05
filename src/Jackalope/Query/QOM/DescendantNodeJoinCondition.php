@@ -37,7 +37,7 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      *
      * @api
      */
-    function getDescendantSelectorName()
+    public function getDescendantSelectorName()
     {
         return $this->descendantSelectorName;
     }
@@ -47,7 +47,7 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      *
      * @api
      */
-    function getAncestorSelectorName()
+    public function getAncestorSelectorName()
     {
         return $this->ancestorSelectorNode;
     }

@@ -30,7 +30,7 @@ class Literal implements LiteralInterface
      *
      * @api
      */
-    function getLiteralValue()
+    public function getLiteralValue()
     {
         return $this->literalValue;
     }

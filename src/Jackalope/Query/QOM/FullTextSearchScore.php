@@ -31,7 +31,7 @@ class FullTextSearchScore implements FullTextSearchScoreInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }

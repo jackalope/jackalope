@@ -51,7 +51,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    function getSelector1Name()
+    public function getSelector1Name()
     {
         return $this->selector1Name;
     }
@@ -61,7 +61,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    function getProperty1Name()
+    public function getProperty1Name()
     {
         return $this->property1Name;
     }
@@ -71,7 +71,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    function getSelector2Name()
+    public function getSelector2Name()
     {
         return $this->selector2Name;
     }
@@ -81,7 +81,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    function getProperty2Name()
+    public function getProperty2Name()
     {
         return $this->property2Name;
     }

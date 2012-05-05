@@ -8,9 +8,13 @@ use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\OrderingInterface;
 use PHPCR\Query\QOM\ColumnInterface;
 
+use PHPCR\Util\QOM\Sql1Generator;
+use PHPCR\Util\QOM\QomToSql1QueryConverter;
+
 use Jackalope\ObjectManager;
 use Jackalope\Query\Sql1Query;
 use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -121,7 +125,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     public function getBindVariableNames()
     {
         // TODO: can we inherit from SqlQuery?
-        throw new \Jackalope\NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -131,7 +135,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      */
     public function getStatement()
     {
-        $converter = new \PHPCR\Util\QOM\QomToSql1QueryConverter(new \PHPCR\Util\QOM\Sql1Generator());
+        $converter = new QomToSql1QueryConverter(new Sql1Generator());
         return $converter->convert($this);
     }
 

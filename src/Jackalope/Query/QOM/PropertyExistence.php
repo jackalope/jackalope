@@ -38,7 +38,7 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -48,7 +48,7 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @api
      */
-    function getPropertyName()
+    public function getPropertyName()
     {
         return $this->propertyName;
     }
@@ -60,7 +60,8 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }
 }

@@ -31,7 +31,7 @@ class NodeLocalName implements NodeLocalNameInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }

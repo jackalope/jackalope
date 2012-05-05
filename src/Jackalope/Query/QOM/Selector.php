@@ -38,7 +38,7 @@ class Selector implements SelectorInterface
      *
      * @api
      */
-    function getNodeTypeName()
+    public function getNodeTypeName()
     {
         return $this->nodeTypeName;
     }
@@ -48,7 +48,7 @@ class Selector implements SelectorInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }

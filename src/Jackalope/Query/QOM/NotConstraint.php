@@ -32,7 +32,7 @@ class NotConstraint implements NotInterface
      *
      * @api
      */
-    function getConstraint()
+    public function getConstraint()
     {
         return $this->constraint;
     }
@@ -44,7 +44,8 @@ class NotConstraint implements NotInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         $constraints = $this->getConstraint()->getConstraints();
         $constraints[] = $this;
         return $constraints;

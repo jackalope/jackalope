@@ -38,7 +38,7 @@ class SameNode implements SameNodeInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -48,7 +48,7 @@ class SameNode implements SameNodeInterface
      *
      * @api
      */
-    function getPath()
+    public function getPath()
     {
         return $this->path;
     }
@@ -60,7 +60,8 @@ class SameNode implements SameNodeInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }
 }

@@ -2,6 +2,7 @@
 namespace Jackalope\Query;
 
 use PHPCR\Query\QueryInterface;
+use PHPCR\Query\QueryManagerInterface;
 use PHPCR\Query\InvalidQueryException;
 
 use Jackalope\ObjectManager;
@@ -13,7 +14,7 @@ use Jackalope\FactoryInterface;
  *
  * @api
  */
-class QueryManager implements \PHPCR\Query\QueryManagerInterface
+class QueryManager implements QueryManagerInterface
 {
     /**
      * The factory to instantiate objects

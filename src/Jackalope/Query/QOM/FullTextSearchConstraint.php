@@ -45,7 +45,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -55,7 +55,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    function getPropertyName()
+    public function getPropertyName()
     {
         return $this->propertyName;
     }
@@ -65,7 +65,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    function getFullTextSearchExpression()
+    public function getFullTextSearchExpression()
     {
         return $this->searchExpression;
     }
@@ -77,7 +77,8 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }
 }

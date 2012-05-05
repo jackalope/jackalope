@@ -54,7 +54,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    function getLeft()
+    public function getLeft()
     {
         return $this->left;
     }
@@ -64,7 +64,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    function getRight()
+    public function getRight()
     {
         return $this->right;
     }
@@ -74,7 +74,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    function getJoinType()
+    public function getJoinType()
     {
         return $this->joinType;
     }
@@ -84,7 +84,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    function getJoinCondition()
+    public function getJoinCondition()
     {
         return $this->joinCondition;
     }

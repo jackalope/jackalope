@@ -31,7 +31,7 @@ class BindVariableValue implements BindVariableValueInterface
      *
      * @api
      */
-    function getBindVariableName()
+    public function getBindVariableName()
     {
         return $this->bindVariableName;
     }

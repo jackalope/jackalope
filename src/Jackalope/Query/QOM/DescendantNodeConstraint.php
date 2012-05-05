@@ -38,7 +38,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }
@@ -48,7 +48,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @api
      */
-    function getAncestorPath()
+    public function getAncestorPath()
     {
         return $this->path;
     }
@@ -60,7 +60,8 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @api
      */
-    function getConstraints() {
+    public function getConstraints()
+    {
         return array($this);
     }
     

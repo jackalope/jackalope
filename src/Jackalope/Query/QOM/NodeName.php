@@ -31,7 +31,7 @@ class NodeName implements NodeNameInterface
      *
      * @api
      */
-    function getSelectorName()
+    public function getSelectorName()
     {
         return $this->selectorName;
     }

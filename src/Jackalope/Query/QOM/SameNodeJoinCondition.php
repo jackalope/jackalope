@@ -45,7 +45,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    function getSelector1Name()
+    public function getSelector1Name()
     {
         return $this->selector1Name;
     }
@@ -55,7 +55,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    function getSelector2Name()
+    public function getSelector2Name()
     {
         return $this->selector2Name;
     }
@@ -65,7 +65,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    function getSelector2Path()
+    public function getSelector2Path()
     {
         return $this->selector2Path;
     }
