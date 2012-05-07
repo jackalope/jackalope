@@ -153,7 +153,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if ($pos = strpos($name, ':')) {
             // map into repo namespace prefix
             $prefix = substr($name, 0, $pos);
-            str_replace($prefix, $namespaceMap[$prefix], $name);
+            if (isset($namespaceMap[$prefix])) {
+                // the values we remap are not xml names but attribute values.
+                // the namespace declaration is not obligatory
+                str_replace($prefix, $namespaceMap[$prefix], $name);
+            }
         }
         return $name;
     }
@@ -417,6 +421,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
                     $prefix = $xml->localName;
                     $ns->registerNamespace($prefix, $xml->value);
                 }
+                // @codeCoverageIgnoreStart
+                if ('jcr' == $prefix && 'jcr' != $xml->localName) {
+                    throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
+                } elseif ('nt' == $prefix && 'nt' != $xml->localName) {
+                    throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
+                }
+                // @codeCoverageIgnoreEnd
                 $namespaceMap[$xml->localName] = $prefix;
             } elseif (NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI
                 && 'name' == $xml->localName
@@ -424,15 +435,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 $nodename = $xml->value;
             }
         }
-
-        // @codeCoverageIgnoreStart
-        if (! array_search('jcr', $namespaceMap)) {
-            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
+        if (! isset($nodename)) {
+            throw new \PHPCR\InvalidSerializedDataException('there was no sv:name attribute in an element');
         }
-        if (! array_search('nt', $namespaceMap)) {
-            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
-        }
-        // @codeCoverageIgnoreEnd
 
         // now get jcr:primaryType
         if (! $xml->read()) {
