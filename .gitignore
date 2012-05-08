@@ -1,10 +1,6 @@
-src/autoload.php
-cli-config.php
-
 test-reports
 .buildpath
 .project
-.buildpath
 .settings/
 .idea/
 cscope.out
@@ -13,7 +9,7 @@ doc/html
 
 tests/phpunit.xml
 
-
+composer.lock
 vendor/
 tests/jackalope-testing-composer.lock
 composer.phar
