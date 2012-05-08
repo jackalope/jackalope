@@ -424,7 +424,8 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 // @codeCoverageIgnoreStart
                 if ('jcr' == $prefix && 'jcr' != $xml->localName) {
                     throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
-                } elseif ('nt' == $prefix && 'nt' != $xml->localName) {
+                }
+                if ('nt' == $prefix && 'nt' != $xml->localName) {
                     throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
                 }
                 // @codeCoverageIgnoreEnd
