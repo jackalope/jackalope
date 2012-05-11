@@ -80,7 +80,6 @@ $/xi";
 
         if ($destination) {
             if (']' == substr($path, -1, 1)) {
-                // TODO: Understand assumptions of CopyMethodsTest::testCopyInvalidDstPath more
                 throw new RepositoryException('Invalid destination path');
             }
         }
