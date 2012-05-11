@@ -28,10 +28,24 @@ use Jackalope\Transport\TransactionInterface;
 /**
  * {@inheritDoc}
  *
+ * Jackalope adds the SessionOption concept to handle session specific tweaking
+ * and optimization. We distinguish between options that are purely
+ * optimization but do not affect the behaviour and those that are change the
+ * behaviour.
+ *
  * @api
  */
 class Session implements SessionInterface
 {
+    /**
+     * constant for setSessionOption to manage the fetch depth.
+     *
+     * This option is used to set the depth with which nodes should be fetched
+     * from the backend to optimize performance when you know you will need
+     * the child nodes.
+     */
+    const OPTION_FETCH_DEPTH = 'jackalope.fetch_depth';
+
     /**
      * A registry for all created sessions to be able to reference them by id in
      * the stream wrapper for lazy loading binary properties.
@@ -696,8 +710,8 @@ class Session implements SessionInterface
 
     /**
      * Sets a session specific option.
-     * Currently only 'jackalope.fetch_depth' is supported. This option sets the depth with which
-     *  nodes should be gotten from the backend.
+     *
+     * Currently only OPTION_FETCH_DEPTH is supported.
      *
      * @param string $key the key to be set
      * @param mixed $value the value to be set
@@ -711,7 +725,7 @@ class Session implements SessionInterface
     public function setSessionOption($key, $value)
     {
         switch ($key) {
-            case 'jackalope.fetch_depth':
+            case self::OPTION_FETCH_DEPTH:
                 $this->getTransport()->setFetchDepth($value);
                 break;
             default:
@@ -731,7 +745,7 @@ class Session implements SessionInterface
     public function getSessionOption($key)
     {
         switch ($key) {
-            case 'jackalope.fetch_depth':
+            case self::OPTION_FETCH_DEPTH:
                 return $this->getTransport()->getFetchDepth();
         }
 
