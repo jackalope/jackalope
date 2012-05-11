@@ -58,12 +58,13 @@ $/xi";
      * Paths have to be normalized before being checked, i.e. /node/./ is / and /my/node/.. is /my
      *
      * @param string $path The path to validate
+     * @param bool $destination is the $path a destination path (by copy or move)?
      *
      * @return bool always true, if the name is not valid a RepositoryException is thrown
      *
      * @throws RepositoryException if the path contains invalid characters
      */
-    public function assertValidPath($path)
+    public function assertValidPath($path, $destination = false)
     {
         if ('/' != substr($path, 0, 1)) {
             //sanity check
@@ -75,6 +76,12 @@ $/xi";
             || strpos($path, '/../') !== false
         ) {
             throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
+        }
+
+        if ($destination) {
+            if (']' == substr($path, -1, 1)) {
+                throw new RepositoryException('Invalid destination path');
+            }
         }
 
         return true;
