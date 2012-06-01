@@ -223,7 +223,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canAddChildNode($childNodeName, $nodeTypeName = null)
+    public function canAddChildNode($childNodeName, $nodeTypeName = null, $throw = false)
     {
         $childDefs = $this->getChildNodeDefinitions();
         if ($nodeTypeName) {
@@ -259,13 +259,21 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canRemoveNode($nodeName)
+    public function canRemoveNode($nodeName, $throw = false)
     {
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
             if ($nodeName == $child->getName() &&
                 ( $child->isMandatory() || $child->isProtected() )
             ) {
+                if ($throw) {
+                    if ($child->isMandatory()) {
+                        $errorMsg = "Can't remove the mandatory childnode " . $child->getName();
+                    } else {
+                        $errorMsg = "Can't remove the protected childnode " . $child->getName();
+                    }
+                    throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                }
                 return false;
             }
         }
@@ -277,13 +285,21 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canRemoveProperty($propertyName)
+    public function canRemoveProperty($propertyName, $throw = false)
     {
         $propDefs = $this->getPropertyDefinitions();
         foreach ($propDefs as $prop) {
             if ($propertyName == $prop->getName() &&
                 ( $prop->isMandatory() || $prop->isProtected() )
             ) {
+                if ($throw) {
+                    if ($prop->isMandatory()) {
+                        $errorMsg = "Can't remove the mandatory property " . $prop->getName();
+                    } else {
+                        $errorMsg = "Can't remove the protected property " . $prop->getName();
+                    }
+                    throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                }
                 return false;
             }
         }
