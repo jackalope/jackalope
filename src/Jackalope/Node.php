@@ -1171,8 +1171,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function remove()
     {
         $this->checkState();
-        $parent = $this->objectManager->getCachedNode($this->parentPath);
-        
+        $parent = $this->getParent();
+
         $parentNodeType = $parent->getPrimaryNodeType();
         //will throw a ConstraintViolationException if this node can't be removed
         $parentNodeType->canRemoveNode($this->getName(), true);
