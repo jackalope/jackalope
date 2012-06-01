@@ -550,6 +550,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     {
         $this->checkState();
 
+        $parentNodeType = $this->getParent()->getPrimaryNodeType();
+        //will throw a ConstraintViolationException if this property can't be removed
+        $parentNodeType->canRemoveProperty($this->getName(), true);
+
         $this->getParent()->unsetProperty($this->name);
 
         parent::remove();
