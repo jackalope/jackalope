@@ -269,7 +269,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 if ($throw) {
                     if ($child->isMandatory()) {
                         $errorMsg = "Can't remove the mandatory childnode " . $child->getName();
-                    } else if ($child->isProtected()) {
+                    } else {
                         $errorMsg = "Can't remove the protected childnode " . $child->getName();
                     }
                     throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
@@ -295,7 +295,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 if ($throw) {
                     if ($prop->isMandatory()) {
                         $errorMsg = "Can't remove the mandatory property " . $prop->getName();
-                    } else if ($prop->isProtected()) {
+                    } else {
                         $errorMsg = "Can't remove the protected property " . $prop->getName();
                     }
                     throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
