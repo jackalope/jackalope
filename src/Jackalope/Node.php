@@ -1172,6 +1172,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
         $parent = $this->objectManager->getCachedNode($this->parentPath);
+        
+        $parentNodeType = $parent->getPrimaryNodeType();
+        //will throw a ConstraintViolationException if this node can't be removed
+        $parentNodeType->canRemoveNode($this->getName(), true);
+
         if ($parent) {
             $parent->unsetChildNode($this->name, true);
         }
