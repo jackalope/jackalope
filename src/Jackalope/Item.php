@@ -384,33 +384,25 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-public function remove()
-{
-    $this->checkState(); // To avoid the possibility to delete an already deleted node
+    public function remove()
+    {
+        $this->checkState(); // To avoid the possibility to delete an already deleted node
 
-    // sanity checks
-    if ($this->getDepth() == 0) {
-        throw new RepositoryException('Cannot remove root node');
+        // sanity checks
+        if ($this->getDepth() == 0) {
+            throw new RepositoryException('Cannot remove root node');
+        }
+
+        if ($this instanceof PropertyInterface) {
+            $this->objectManager->removeItem($this->parentPath, $this);
+        } else {
+            $this->objectManager->removeItem($this->path);
+        }
+
+        // TODO same-name siblings reindexing
+
+        $this->setDeleted();
     }
-
-    //------------
-    //TODO: why calling only getParent makes a failure in CombinedManipulationsTest::testRemoveAndMove ? Needed to call canRemoveProperty afterward
-    $parentNode = $this->getParent();
-    $parentNodeType = $parentNode->getPrimaryNodeType();
-    //------------
-
-    if ($this instanceof PropertyInterface) {
-        $parentNodeType->canRemoveProperty($this->getName(), true);
-        $this->objectManager->removeItem($this->parentPath, $this);
-    } else {
-        $parentNodeType->canRemoveNode($this->getName(), true);
-        $this->objectManager->removeItem($this->path);
-    }
-
-    // TODO same-name siblings reindexing
-
-    $this->setDeleted();
-}
 
     /**
      * Tell this item that it has been modified.
