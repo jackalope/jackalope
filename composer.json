@@ -16,12 +16,17 @@
         "phpcr/phpcr-utils": "dev-master",
         "phpcr/phpcr": "dev-master",
         "ext-libxml": "*",
-        "jackalope/jackalope-transport": "dev-master"
+        "jackalope/jackalope-transport": "1.0.*"
     },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0-beta3"
     },
     "autoload": {
         "psr-0": { "Jackalope\\": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
