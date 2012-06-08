@@ -359,15 +359,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return $parentNode->addNode(basename($relPath), $primaryNodeTypeName);
         }
 
-        if (!is_null($primaryNodeTypeName)) {
-            // sanitize
-            $nt = $ntm->getNodeType($primaryNodeTypeName);
-            if ($nt->isMixin()) {
-                throw new ConstraintViolationException('Not allowed to add a node with a mixin type: '.$primaryNodeTypeName);
-            } elseif ($nt->isAbstract()) {
-                throw new ConstraintViolationException('Not allowed to add a node with an abstract type: '.$primaryNodeTypeName);
-            }
-        } else {
+        if (is_null($primaryNodeTypeName)) {
             if ($this->primaryType === 'rep:root') {
                 $primaryNodeTypeName = 'nt:unstructured';
             } else {
@@ -379,11 +371,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                         break;
                     }
                 }
-                if (is_null($primaryNodeTypeName)) {
-                    throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
-                }
             }
         }
+
+        $nt = $this->getPrimaryNodeType();
+        //will throw a ConstraintViolationException if this node can't be removed
+        $nt->canAddChildNode($relPath, $primaryNodeTypeName, true);
 
         // create child node
         //sanity check: no index allowed. TODO: we should verify this is a valid node name
@@ -397,7 +390,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
         $this->objectManager->addNode($path, $node);
-        $this->addChildNode($relPath, false); // no need to check , we just checked when entering this method
+        $this->addChildNode($relPath, false); // no need to check the state, we just checked when entering this method
         if (is_array($this->originalNodesOrder)) {
             // new nodes are added at the end
             $this->originalNodesOrder[] = $relPath;

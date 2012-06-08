@@ -230,9 +230,26 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             try {
                 $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
                 if ($nodeType->isMixin() || $nodeType->isAbstract()) {
+                    if ($throw) {
+                        if ($nodeType->isMixin()) {
+                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is mixin.";
+                        } else {
+                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is abstract.";
+                        }
+                        throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                    }
                     return false;
                 }
+            } catch (\PHPCR\NodeType\NoSuchNodeTypeException $nsnte) {
+                if ($throw) {
+                    throw $nsnte;
+                }
+                return false;
             } catch (Exception $e) {
+                if ($throw) {
+                   $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an Exception: " . $e->getMessage();
+                   throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                }
                 return false;
             }
         }
@@ -250,6 +267,10 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     }
                 }
             }
+        }
+        if ($throw) {
+            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an unknow error";
+            throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
         }
         return false;
     }
