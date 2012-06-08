@@ -375,7 +375,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $nt = $this->getPrimaryNodeType();
-        //will throw a ConstraintViolationException if this node can't be removed
+        //will throw a ConstraintViolationException if this node can't be added
         $nt->canAddChildNode($relPath, $primaryNodeTypeName, true);
 
         // create child node
@@ -539,7 +539,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        //validity check property allowed (or optional, for remove) will be done by backend on commit, which is allowed by spec
+        //$value is null for property removal
+        if (!is_null($value)) {
+            $nt = $this->getPrimaryNodeType();
+            //will throw a ConstraintViolationException if this property can't be set
+            $nt->canSetProperty($name, $value, true);
+        }
 
         //try to get a namespace for the set property
         if (strpos($name, ':') !== false) {

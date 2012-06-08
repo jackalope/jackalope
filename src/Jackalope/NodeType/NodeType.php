@@ -170,12 +170,22 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canSetProperty($propertyName, $value)
+    public function canSetProperty($propertyName, $value, $throw = false)
     {
+
+        if (is_array($value)) {
+            foreach($value as $v) {
+                return $this->canSetProperty($propertyName, $v, $throw);
+            }
+        }
+
         $propDefs = $this->getPropertyDefinitions();
         try {
             $type = PropertyType::determineType($value);
         } catch (ValueFormatException $e) {
+            if ($throw) {
+                throw $e;
+            }
             return false;
         }
 
@@ -197,6 +207,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 } catch (ValueFormatException $e) {
                     // fall through and return false
                 }
+                if ($throw) {
+                    throw new \PHPCR\NodeType\ConstraintViolationException ("The property " . $propertyName . " with value " . $value . " can't be converted to an existing type.");
+                }
                 return false; // if there is an explicit match, it has to fit
             }
         }
@@ -212,8 +225,15 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 PropertyType::convertType($value, $prop->getRequiredType(), $type);
                 return true;
             } catch (ValueFormatException $e) {
+                if ($throw) {
+                    throw $e;
+                }
                 return false; // if there is an explicit match, it has to fit
             }
+        }
+        if ($throw) {
+            //TODO: why are there 7 errors in the tests if this line is uncommented? Always with the same UUID: 14e18ef3-be20-4985-bee9-7bb4763b31de. Is it valid?
+            throw new \PHPCR\NodeType\ConstraintViolationException ("TODO: document this last error message");
         }
         return false;
     }
