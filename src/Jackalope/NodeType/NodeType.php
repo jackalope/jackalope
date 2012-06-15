@@ -170,21 +170,33 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canSetProperty($propertyName, $value)
+    public function canSetProperty($propertyName, $value, $throw = false)
     {
         $propDefs = $this->getPropertyDefinitions();
         try {
-            $type = PropertyType::determineType($value);
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
         } catch (ValueFormatException $e) {
+            if ($throw) {
+                throw $e;
+            }
             return false;
         }
 
         // check explicit matches first and keep wildcard definitions for later
+
         $wildcards = array();
         foreach ($propDefs as $prop) {
             if ('*' == $prop->getName()) {
                 $wildcards[] = $prop;
             } elseif ($propertyName == $prop->getName()) {
+                if (is_array($value) != $prop->isMultiple()) {
+                    if ($prop->isMultiple()) {
+                        throw new \PHPCR\NodeType\ConstraintViolationException ("The property definition is multivalued, but the value $value is not.");
+                    }
+                    if (is_array($value)) {
+                        throw new \PHPCR\NodeType\ConstraintViolationException ("The value $value is multivalued, but the property definition is not.");
+                    }
+                }
                 if (PropertyType::UNDEFINED == $prop->getRequiredType()
                     || $type == $prop->getRequiredType()
                 ) {
@@ -197,11 +209,17 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 } catch (ValueFormatException $e) {
                     // fall through and return false
                 }
+                if ($throw) {
+                    throw new \PHPCR\NodeType\ConstraintViolationException ("The property " . $propertyName . " with value " . $value . " can't be converted to an existing type.");
+                }
                 return false; // if there is an explicit match, it has to fit
             }
         }
         // now check if any of the wildcards matches
         foreach ($wildcards as $prop) {
+            if (is_array($value) != $prop->isMultiple()) {
+                continue;
+            }
             if (PropertyType::UNDEFINED == $prop->getRequiredType()
                 || $type == $prop->getRequiredType()
             ) {
@@ -212,8 +230,14 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 PropertyType::convertType($value, $prop->getRequiredType(), $type);
                 return true;
             } catch (ValueFormatException $e) {
+                if ($throw) {
+                    throw $e;
+                }
                 return false; // if there is an explicit match, it has to fit
             }
+        }
+        if ($throw) {
+            throw new \PHPCR\NodeType\ConstraintViolationException ("Node type definition does not allow to set the property with name $propertyName and value $value");
         }
         return false;
     }
@@ -230,9 +254,26 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             try {
                 $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
                 if ($nodeType->isMixin() || $nodeType->isAbstract()) {
+                    if ($throw) {
+                        if ($nodeType->isMixin()) {
+                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is mixin.";
+                        } else {
+                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is abstract.";
+                        }
+                        throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                    }
                     return false;
                 }
+            } catch (\PHPCR\NodeType\NoSuchNodeTypeException $nsnte) {
+                if ($throw) {
+                    throw $nsnte;
+                }
+                return false;
             } catch (Exception $e) {
+                if ($throw) {
+                   $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an Exception: " . $e->getMessage();
+                   throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg, null, $e);
+                }
                 return false;
             }
         }
@@ -250,6 +291,10 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     }
                 }
             }
+        }
+        if ($throw) {
+            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because there is no definition for a child with that name.";
+            throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
         }
         return false;
     }
