@@ -374,10 +374,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
         }
 
-        $nt = $this->getPrimaryNodeType();
-        //will throw a ConstraintViolationException if this node can't be added
-        $nt->canAddChildNode($relPath, $primaryNodeTypeName, true);
-
         // create child node
         //sanity check: no index allowed. TODO: we should verify this is a valid node name
         if (false !== strpos($relPath, ']')) {
@@ -386,11 +382,20 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (in_array($relPath, $this->nodes)) {
             throw new ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
         }
+
+
+        if (is_null($primaryNodeTypeName)) {
+            //TODO: try to determine the primary type automatically
+            throw new ConstraintViolationException("Could not automatically determine primary type, not implemented");
+        }
+
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
         $path = $this->getChildPath($relPath);
         $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
+
+        $this->addChildNode($node, false); // no need to check the state, we just checked when entering this method
         $this->objectManager->addNode($path, $node);
-        $this->addChildNode($relPath, false); // no need to check the state, we just checked when entering this method
+
         if (is_array($this->originalNodesOrder)) {
             // new nodes are added at the end
             $this->originalNodesOrder[] = $relPath;
@@ -539,12 +544,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
+        /* TODO: finish...
         //$value is null for property removal
         if (!is_null($value)) {
             $nt = $this->getPrimaryNodeType();
             //will throw a ConstraintViolationException if this property can't be set
             $nt->canSetProperty($name, $value, true);
         }
+        */
 
         //try to get a namespace for the set property
         if (strpos($name, ':') !== false) {
@@ -1218,14 +1225,23 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @param string $name The name of the child node
      * @param boolean $check whether to check state
+     * @param string $name the name to use when adding the childnode. If null, the $node name will be taken.
      *
      * @private
      */
-    public function addChildNode($name, $check)
+    public function addChildNode(NodeInterface $node, $check, $name = null)
     {
         if ($check) {
             $this->checkState();
         }
+
+        if (is_null($name)) {
+            $name = $node->getName();
+        }
+
+        $nt = $this->getPrimaryNodeType();
+        //will throw a ConstraintViolationException if this node can't be added
+        $nt->canAddChildNode($name, $node->getPrimaryNodeType()->getName(), true);
 
         // TODO: same name siblings
 

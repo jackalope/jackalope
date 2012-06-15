@@ -935,11 +935,12 @@ class ObjectManager
 
                 if ($item instanceof Node) {
                     $this->objectsByPath['Node'][$path] = $item; // back in glory
-                }
-                $parentPath = strtr(dirname($path), '\\', '/');
-                if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
-                    // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->addChildNode($item->getName(), false);
+
+                    $parentPath = strtr(dirname($path), '\\', '/');
+                    if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
+                        // tell the parent about its restored child
+                        $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
+                    }
                 }
             }
             $this->itemsRemove = array();
@@ -959,7 +960,7 @@ class ObjectManager
                 $parentPath = strtr(dirname($from), '\\', '/');
                 if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->addChildNode(basename($from), false);
+                    $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
                 }
                 // move item to old location
                 $this->objectsByPath['Node'][$from] = $this->objectsByPath['Node'][$to];
@@ -1165,7 +1166,7 @@ class ObjectManager
         }
         if (isset($this->objectsByPath['Node'][$parentNewPath])) {
             $node = $this->objectsByPath['Node'][$parentNewPath];
-            $node->addChildNode(basename($newPath), true);
+            $node->addChildNode($this->getNodeByPath($curPath), true, basename($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
@@ -1181,6 +1182,7 @@ class ObjectManager
                     $this->itemsAdd[$newItemPath] = 1;
                     unset($this->itemsAdd[$path]);
                     if ($path === $curPath) {
+                        //TODO: should be the opposite: if one single move is required, then return true
                         $moveRequired = false;
                     }
                 }
