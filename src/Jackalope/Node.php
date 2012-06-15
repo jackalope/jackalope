@@ -540,18 +540,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function setProperty($name, $value, $type = PropertyType::UNDEFINED)
+    public function setProperty($name, $value, $type = PropertyType::UNDEFINED, $validate = true)
     {
         $this->checkState();
 
-        /* TODO: finish...
         //$value is null for property removal
         if (!is_null($value)) {
             $nt = $this->getPrimaryNodeType();
             //will throw a ConstraintViolationException if this property can't be set
-            $nt->canSetProperty($name, $value, true);
+            $nt->canSetProperty($name, $value, $validate);
         }
-        */
 
         //try to get a namespace for the set property
         if (strpos($name, ':') !== false) {
