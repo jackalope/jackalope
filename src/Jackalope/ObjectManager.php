@@ -958,7 +958,7 @@ class ObjectManager
                 }
                 // TODO: from in a two step move might fail. we should merge consecutive moves
                 $parentPath = strtr(dirname($from), '\\', '/');
-                if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
+                if (array_key_exists($parentPath, $this->objectsByPath['Node']) && $item instanceof Node) {
                     // tell the parent about its restored child
                     $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
                 }

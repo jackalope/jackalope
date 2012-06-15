@@ -172,16 +172,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      */
     public function canSetProperty($propertyName, $value, $throw = false)
     {
-
-        if (is_array($value)) {
-            foreach($value as $v) {
-                return $this->canSetProperty($propertyName, $v, $throw);
-            }
-        }
-
         $propDefs = $this->getPropertyDefinitions();
         try {
-            $type = PropertyType::determineType($value);
+            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
         } catch (ValueFormatException $e) {
             if ($throw) {
                 throw $e;
@@ -190,11 +183,20 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         }
 
         // check explicit matches first and keep wildcard definitions for later
+
         $wildcards = array();
         foreach ($propDefs as $prop) {
             if ('*' == $prop->getName()) {
                 $wildcards[] = $prop;
             } elseif ($propertyName == $prop->getName()) {
+                if (is_array($value) != $prop->isMultiple()) {
+                    if ($prop->isMultiple()) {
+                        throw new \PHPCR\NodeType\ConstraintViolationException ("The property definition is multivalued, but the value $value is not.");
+                    }
+                    if (is_array($value)) {
+                        throw new \PHPCR\NodeType\ConstraintViolationException ("The value $value is multivalued, but the property definition is not.");
+                    }
+                }
                 if (PropertyType::UNDEFINED == $prop->getRequiredType()
                     || $type == $prop->getRequiredType()
                 ) {
@@ -215,6 +217,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         }
         // now check if any of the wildcards matches
         foreach ($wildcards as $prop) {
+            if (is_array($value) != $prop->isMultiple()) {
+                continue;
+            }
             if (PropertyType::UNDEFINED == $prop->getRequiredType()
                 || $type == $prop->getRequiredType()
             ) {
@@ -232,8 +237,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            //TODO: why are there 7 errors in the tests if this line is uncommented? Always with the same UUID: 14e18ef3-be20-4985-bee9-7bb4763b31de. Is it valid?
-            throw new \PHPCR\NodeType\ConstraintViolationException ("TODO: document this last error message");
+            throw new \PHPCR\NodeType\ConstraintViolationException ("Node type definition does not allow to set the property with name $propertyName and value $value");
         }
         return false;
     }
@@ -268,7 +272,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             } catch (Exception $e) {
                 if ($throw) {
                    $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an Exception: " . $e->getMessage();
-                   throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                   throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg, null, $e);
                 }
                 return false;
             }
@@ -289,7 +293,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an unknow error";
+            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because there is no definition for a child with that name.";
             throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
         }
         return false;

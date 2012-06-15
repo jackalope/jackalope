@@ -372,6 +372,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     }
                 }
             }
+            if (is_null($primaryNodeTypeName)) {
+                throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
+            }
         }
 
         // create child node
@@ -381,12 +384,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
         if (in_array($relPath, $this->nodes)) {
             throw new ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
-        }
-
-
-        if (is_null($primaryNodeTypeName)) {
-            //TODO: try to determine the primary type automatically
-            throw new ConstraintViolationException("Could not automatically determine primary type, not implemented");
         }
 
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
@@ -537,6 +534,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param boolean $validate does the NodeType control throw an exception if the property can't be set? To use in case of UUID import
      *
      * @api
      */
@@ -1223,7 +1222,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @param string $name The name of the child node
      * @param boolean $check whether to check state
-     * @param string $name the name to use when adding the childnode. If null, the $node name will be taken.
+     * @param string $name is used in cases where $node->getName would not return the correct name (during move operation)
      *
      * @private
      */
