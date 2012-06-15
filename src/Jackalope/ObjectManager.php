@@ -275,7 +275,15 @@ class ObjectManager
             }
         }
 
-        return new ArrayIterator($nodes);
+        // preserve order of requested paths
+        $ordered = array();
+        foreach ($paths as $path) {
+            if (array_key_exists($path, $nodes)) {
+                $ordered[$path] = $nodes[$path];
+            }
+        }
+
+        return new ArrayIterator($ordered);
     }
 
     /**
