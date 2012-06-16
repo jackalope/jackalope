@@ -263,27 +263,29 @@ class ObjectManager
                 // Return it from memory if we already have it
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
             } else {
+                $nodes[$absPath] = '';
                 $fetchPaths[$absPath] = $this->getFetchPath($absPath, $class);
             }
         }
 
         if (!empty($fetchPaths)) {
-            $data = $this->transport->getNodes($fetchPaths, $class);
+            $data = $this->transport->getNodes($fetchPaths, $class);        
+            $dataItems = array();
+
             foreach ($data as $fetchPath => $item) {
-                $absPath = array_search($fetchPath, $fetchPaths);
-                $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
+                $dataItems[$fetchPath] = $item;
             }
-        }
 
-        // preserve order of requested paths
-        $ordered = array();
-        foreach ($paths as $path) {
-            if (array_key_exists($path, $nodes)) {
-                $ordered[$path] = $nodes[$path];
+            foreach ($fetchPaths as $absPath => $fetchPath) {
+                if (array_key_exists($fetchPath, $dataItems)) {
+                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $dataItems[$fetchPath]);
+                } else {
+                    unset($nodes[$fetchPath]);
+                }
             }
-        }
+        }        
 
-        return new ArrayIterator($ordered);
+        return new ArrayIterator($nodes);
     }
 
     /**
