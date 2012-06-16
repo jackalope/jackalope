@@ -269,7 +269,7 @@ class ObjectManager
         }
 
         if (!empty($fetchPaths)) {
-            $data = $this->transport->getNodes($fetchPaths, $class);        
+            $data = $this->transport->getNodes($fetchPaths);        
             $dataItems = array();
 
             foreach ($data as $fetchPath => $item) {
