@@ -269,7 +269,7 @@ class ObjectManager
         }
 
         if (!empty($fetchPaths)) {
-            $data = $this->transport->getNodes($fetchPaths);        
+            $data = $this->transport->getNodes($fetchPaths);
             $dataItems = array();
 
             foreach ($data as $fetchPath => $item) {
@@ -280,10 +280,10 @@ class ObjectManager
                 if (array_key_exists($fetchPath, $dataItems)) {
                     $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $dataItems[$fetchPath]);
                 } else {
-                    unset($nodes[$fetchPath]);
+                    unset($nodes[$absPath]);
                 }
             }
-        }        
+        }
 
         return new ArrayIterator($nodes);
     }
