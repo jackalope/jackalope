@@ -503,6 +503,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
+		$nodes = array_values($nodes);
+
 		// search old position
 		$old = array_search($srcChildRelPath, $nodes);
 		if (false === $old) {
@@ -516,7 +518,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 		}
 
 		// sort nodes array (should this method be called "sort"?)
-		$nodes = array_values($nodes);
 		uksort($nodes, function ($a, $b) use ($old, $before) {
 			if ($a == $old) {
 				$a = $before - 0.5;
@@ -533,7 +534,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 			return ($a < $b) ? -1 : 1;
 		});
 
-		return $nodes;
+		return array_values($nodes);
     }
 
     /**
