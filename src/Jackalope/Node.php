@@ -500,36 +500,40 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param string $nodes the array of child nodes
      *
      * @return array The updated $nodes array with new order
-     *
-     * @throws \PHPCR\ItemNotFoundException if $srcChildRelPath or $destChildRelPath are not found
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
-        // renumber the nodes so there are no gaps
-        $nodes = array_values($nodes);
-        $oldpos = array_search($srcChildRelPath, $nodes);
-        if (false === $oldpos) {
-            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
-        }
+		// search old position
+		$old = array_search($srcChildRelPath, $nodes);
+		if (false === $old) {
+			return $nodes;
+		}
 
-        if ($destChildRelPath == null) {
-            //null means move to end
-            unset($nodes[$oldpos]);
-            $nodes[] = $srcChildRelPath;
-        } else {
-            //insert somewhere specified by dest path
-            $newpos = array_search($destChildRelPath, $nodes);
-            if ($newpos === false) {
-                throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
-            }
-            if ($oldpos < $newpos) {
-                //we first unset, so
-                $newpos--;
-            }
-            unset($nodes[$oldpos]);
-            array_splice($nodes, $newpos, 0, $srcChildRelPath);
-        }
-        return $nodes;
+		// search position to move before
+		$before	= array_search($destChildRelPath, $nodes);
+		if (false === $before) {
+			$before = count($nodes);
+		}
+
+		// sort nodes array (should this method be called "sort"?)
+		$nodes = array_values($nodes);
+		uksort($nodes, function ($a, $b) use ($old, $before) {
+			if ($a == $old) {
+				$a = $before - 0.5;
+			}
+
+			if ($b == $old) {
+				$b = $before - 0.5;
+			}
+
+			if ($a == $b) {
+				return 0;
+			}
+
+			return ($a < $b) ? -1 : 1;
+		});
+
+		return $nodes;
     }
 
     /**
