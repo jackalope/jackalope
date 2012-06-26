@@ -500,6 +500,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param array $nodes the array of child nodes
      *
      * @return array The updated $nodes array with new order
+     *
+     * @throws \PHPCR\ItemNotFoundException if $srcChildRelPath or $destChildRelPath are not found
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
