@@ -13,7 +13,6 @@ use PHPCR\InvalidSerializedDataException;
 use PHPCR\ItemExistsException;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
-use PHPCR\InvalidSerializedDataException;
 use PHPCR\NamespaceException;
 
 /**
