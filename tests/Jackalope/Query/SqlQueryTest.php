@@ -3,6 +3,7 @@
 namespace Jackalope\Query;
 
 use Jackalope\TestCase;
+use Jackalope\Factory;
 
 class SqlQueryTest extends TestCase
 {
@@ -10,7 +11,7 @@ class SqlQueryTest extends TestCase
     protected function getQuery($factory = null, $statement = null, $objectManager = null, $path = null)
     {
         if (! $factory) {
-            $factory = new \Jackalope\Factory;
+            $factory = new Factory;
         }
         if (! $statement) {
             $statement = $this->statement;

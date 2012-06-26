@@ -2,12 +2,14 @@
 
 namespace Jackalope;
 
+use PHPCR\SimpleCredentials;
+
 class RepositoryTest extends TestCase
 {
     public function testConstructor()
     {
-        $factory = new \Jackalope\Factory;
-        $credentials = new \PHPCR\SimpleCredentials('test', 'cred');
+        $factory = new Factory;
+        $credentials = new SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
@@ -23,7 +25,7 @@ class RepositoryTest extends TestCase
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
 
-        $repo = new \Jackalope\Repository($factory, $transport);
+        $repo = new Repository($factory, $transport);
         $session = $repo->login($credentials, $workspaceName);
         $this->assertInstanceOf('Jackalope\Session', $session);
 

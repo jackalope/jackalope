@@ -8,7 +8,7 @@ class NodeTest extends TestCase
 
     protected function createNode()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $session = $this->getSessionMock();
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
         $objectManager->expects($this->any())

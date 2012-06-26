@@ -7,9 +7,8 @@ use PHPCR\Observation\ObservationManagerInterface,
     PHPCR\SessionInterface;
 
 use Jackalope\Transport\ObservationInterface,
-    Jackalope\FactoryInterface;
-
-
+    Jackalope\FactoryInterface,
+    Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -53,7 +52,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
         array $nodeTypeName, $noLocal
     )
     {
-        throw new \Jackalope\NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -62,7 +61,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     public function removeEventListener(EventListenerInterface $listener)
     {
-        throw new \Jackalope\NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**
@@ -71,7 +70,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     public function getRegisteredEventListeners()
     {
-        throw new \Jackalope\NotImplementedException();
+        throw new NotImplementedException();
     }
 
     /**

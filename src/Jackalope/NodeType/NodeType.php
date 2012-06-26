@@ -8,6 +8,8 @@ use Exception;
 use PHPCR\PropertyType;
 use PHPCR\ValueFormatException;
 use PHPCR\NodeType\NodeTypeInterface;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NoSuchNodeTypeException;
 
 use Jackalope\NotImplementedException;
 
@@ -191,10 +193,10 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             } elseif ($propertyName == $prop->getName()) {
                 if (is_array($value) != $prop->isMultiple()) {
                     if ($prop->isMultiple()) {
-                        throw new \PHPCR\NodeType\ConstraintViolationException ("The property definition is multivalued, but the value $value is not.");
+                        throw new ConstraintViolationException("The property definition is multivalued, but the value '$value' is not.");
                     }
                     if (is_array($value)) {
-                        throw new \PHPCR\NodeType\ConstraintViolationException ("The value $value is multivalued, but the property definition is not.");
+                        throw c("The value $value is multivalued, but the property definition is not.");
                     }
                 }
                 if (PropertyType::UNDEFINED == $prop->getRequiredType()
@@ -210,7 +212,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     // fall through and return false
                 }
                 if ($throw) {
-                    throw new \PHPCR\NodeType\ConstraintViolationException ("The property " . $propertyName . " with value " . $value . " can't be converted to an existing type.");
+                    throw new ConstraintViolationException("The property '$propertyName' with value '$value' can't be converted to an existing type.");
                 }
                 return false; // if there is an explicit match, it has to fit
             }
@@ -237,7 +239,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            throw new \PHPCR\NodeType\ConstraintViolationException ("Node type definition does not allow to set the property with name $propertyName and value $value");
+            throw new ConstraintViolationException("Node type definition does not allow to set the property with name '$propertyName' and value '$value'");
         }
         return false;
     }
@@ -256,23 +258,23 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 if ($nodeType->isMixin() || $nodeType->isAbstract()) {
                     if ($throw) {
                         if ($nodeType->isMixin()) {
-                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is mixin.";
+                            $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because the node type is mixin.";
                         } else {
-                            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because the node type is abstract.";
+                            $errorMsg = "Can't add the child node '$childNodeName for node type '$nodeTypeName' because the node type is abstract.";
                         }
-                        throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                        throw new ConstraintViolationException($errorMsg);
                     }
                     return false;
                 }
-            } catch (\PHPCR\NodeType\NoSuchNodeTypeException $nsnte) {
+            } catch (NoSuchNodeTypeException $nsnte) {
                 if ($throw) {
                     throw $nsnte;
                 }
                 return false;
             } catch (Exception $e) {
                 if ($throw) {
-                   $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because of an Exception: " . $e->getMessage();
-                   throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg, null, $e);
+                   $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: " . $e->getMessage();
+                   throw new ConstraintViolationException($errorMsg, null, $e);
                 }
                 return false;
             }
@@ -293,8 +295,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            $errorMsg = "Can't add the child node " . $childNodeName . " for node type " . $nodeTypeName . " because there is no definition for a child with that name.";
-            throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+            $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because there is no definition for a child with that name.";
+            throw new ConstraintViolationException($errorMsg);
         }
         return false;
     }
@@ -313,11 +315,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             ) {
                 if ($throw) {
                     if ($child->isMandatory()) {
-                        $errorMsg = "Can't remove the mandatory childnode " . $child->getName();
+                        $errorMsg = "Can't remove the mandatory childnode: " . $child->getName();
                     } else {
-                        $errorMsg = "Can't remove the protected childnode " . $child->getName();
+                        $errorMsg = "Can't remove the protected childnode: " . $child->getName();
                     }
-                    throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                    throw new ConstraintViolationException($errorMsg);
                 }
                 return false;
             }
@@ -339,11 +341,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             ) {
                 if ($throw) {
                     if ($prop->isMandatory()) {
-                        $errorMsg = "Can't remove the mandatory property " . $prop->getName();
+                        $errorMsg = "Can't remove the mandatory property: " . $prop->getName();
                     } else {
-                        $errorMsg = "Can't remove the protected property " . $prop->getName();
+                        $errorMsg = "Can't remove the protected property: " . $prop->getName();
                     }
-                    throw new \PHPCR\NodeType\ConstraintViolationException ($errorMsg);
+                    throw new ConstraintViolationException($errorMsg);
                 }
                 return false;
             }

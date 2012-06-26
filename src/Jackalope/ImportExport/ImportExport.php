@@ -9,6 +9,12 @@ use PHPCR\PropertyType;
 use PHPCR\ImportUUIDBehaviorInterface;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\Util\NodeHelper;
+use PHPCR\InvalidSerializedDataException;
+use PHPCR\ItemExistsException;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\RepositoryException;
+use PHPCR\InvalidSerializedDataException;
+use PHPCR\NamespaceException;
 
 /**
  * Helper class with static methods to import and export data.
@@ -89,7 +95,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         $xml->open($uri);
         if (libxml_get_errors()) {
             libxml_use_internal_errors($use_errors);
-            throw new \PHPCR\InvalidSerializedDataException("Invalid xml file $uri");
+            throw new InvalidSerializedDataException("Invalid xml file $uri");
         }
 
         $xml->read();
@@ -189,7 +195,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         $forceReferenceable = true;
                         break;
                     case self::IMPORT_UUID_COLLISION_THROW:
-                        throw new \PHPCR\ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
+                        throw new ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
                     case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
                     case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
                         if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior &&
@@ -199,7 +205,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                             break;
                         }
                         if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
-                            throw new \PHPCR\NodeType\ConstraintViolationException('Trying to remove/replace parent of the path we are adding to. '.$existing->getIdentifier(). ' at '.$existing->getPath());
+                            throw new ConstraintViolationException('Trying to remove/replace parent of the path we are adding to. '.$existing->getIdentifier(). ' at '.$existing->getPath());
                         }
                         if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
                             // replace the found node. spec is not precise: do we keep the name or use the one of existing?
@@ -209,7 +215,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         break;
                     default:
                         // @codeCoverageIgnoreStart
-                        throw new \PHPCR\RepositoryException("Unexpected type $uuidBehavior");
+                        throw new RepositoryException("Unexpected type $uuidBehavior");
                         // @codeCoverageIgnoreEnd
                 }
             } catch (\PHPCR\ItemNotFoundException $e) {
@@ -420,16 +426,16 @@ class ImportExport implements ImportUUIDBehaviorInterface
             if ('xmlns' == $xml->prefix) {
                 try {
                     $prefix = $ns->getPrefix($xml->value);
-                } catch(\PHPCR\NamespaceException $e) {
+                } catch(NamespaceException $e) {
                     $prefix = $xml->localName;
                     $ns->registerNamespace($prefix, $xml->value);
                 }
                 // @codeCoverageIgnoreStart
                 if ('jcr' == $prefix && 'jcr' != $xml->localName) {
-                    throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
+                    throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
                 }
                 if ('nt' == $prefix && 'nt' != $xml->localName) {
-                    throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
+                    throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
                 }
                 // @codeCoverageIgnoreEnd
                 $namespaceMap[$xml->localName] = $prefix;
@@ -440,18 +446,18 @@ class ImportExport implements ImportUUIDBehaviorInterface
             }
         }
         if (! isset($nodename)) {
-            throw new \PHPCR\InvalidSerializedDataException('there was no sv:name attribute in an element');
+            throw new InvalidSerializedDataException('there was no sv:name attribute in an element');
         }
 
         // now get jcr:primaryType
         if (! $xml->read()) {
-            throw new \PHPCR\InvalidSerializedDataException('missing information to create node');
+            throw new InvalidSerializedDataException('missing information to create node');
         }
         if ('property' != $xml->localName || NamespaceRegistryInterface::NAMESPACE_SV != $xml->namespaceURI) {
-            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"'.$xml->nodeType);
+            throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"'.$xml->nodeType);
         }
         if (! $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV) || 'jcr:primaryType' != $xml->value) {
-            throw new \PHPCR\InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"');
+            throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"');
         }
         $xml->read(); // value child of property jcr:primaryType
         $xml->read(); // text content
@@ -506,7 +512,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         if (XMLReader::END_ELEMENT != $xml->nodeType) {
-            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
+            throw new InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
         }
         $xml->read(); // </node>
         // logging echo "Done adding to ".$parentNode->getPath()."\n";
@@ -533,7 +539,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             if ('xmlns' == $xml->prefix) {
                 try {
                     $prefix = $ns->getPrefix($xml->value);
-                } catch(\PHPCR\NamespaceException $e) {
+                } catch(NamespaceException $e) {
                     $prefix = $xml->localName;
                     $ns->registerNamespace($prefix, $xml->value);
                 }
@@ -547,14 +553,14 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if (false === $prefix_jcr) {
             $namespaceMap[NamespaceRegistryInterface::PREFIX_JCR] = NamespaceRegistryInterface::PREFIX_JCR;
         } else if ($prefix_jcr !== NamespaceRegistryInterface::PREFIX_JCR) {
-            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
+            throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
         }
 
         $prefix_nt = array_search(NamespaceRegistryInterface::PREFIX_NT, $namespaceMap);
         if (false == $prefix_nt) {
             $namespaceMap[NamespaceRegistryInterface::PREFIX_NT] = NamespaceRegistryInterface::PREFIX_NT;
         } else if ($prefix_nt !== NamespaceRegistryInterface::PREFIX_NT) {
-            throw new \PHPCR\RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
+            throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
         }
 
         $nodename = self::unescapeXmlName($nodename, $namespaceMap);
@@ -587,7 +593,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         if (XMLReader::END_ELEMENT != $xml->nodeType && $xml->depth != $depth - 1) {
-            throw new \PHPCR\InvalidSerializedDataException('Unexpected element in stream: '.$xml->name.'="'.$xml->value.'"');
+            throw new InvalidSerializedDataException('Unexpected element in stream: '.$xml->name.'="'.$xml->value.'"');
         }
 
         if (XMLReader::END_ELEMENT == $xml->nodeType) {

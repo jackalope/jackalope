@@ -3,8 +3,9 @@
 namespace Jackalope\Observation;
 
 use Jackalope\TestCase;
-use PHPCR\Observation\EventInterface;
+use Jackalope\Factory;
 
+use PHPCR\Observation\EventInterface;
 
 /**
  * Unit tests for the EventJournal
@@ -27,7 +28,7 @@ class EventJournalTest extends TestCase
             ->expects($this->any())
             ->method('getNodesByIdentifier')
             ->will($this->returnValue(array()));
-        $this->factory = new \Jackalope\Factory();
+        $this->factory = new Factory();
         $this->journal = $this->getUnfilteredJournal(new \DOMDocument(), '');
 
         // XML for a single event

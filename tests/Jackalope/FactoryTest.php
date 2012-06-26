@@ -8,7 +8,7 @@ class FactoryTest extends TestCase
 
     public function setUp()
     {
-        $this->factory = new \Jackalope\Factory;
+        $this->factory = new Factory;
     }
 
     public function testJackalope()

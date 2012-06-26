@@ -6,9 +6,9 @@ class ObjectManagerTest extends TestCase
 {
     public function testGetNodeByPath()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $path = '/jcr:root';
-        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
+        $om = new ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
         $node = $om->getNodeByPath($path);
         $this->assertInstanceOf('Jackalope\Node', $node);
         $children = $node->getNodes();
@@ -19,8 +19,8 @@ class ObjectManagerTest extends TestCase
 
     public function testGetNodeTypes()
     {
-        $factory = new \Jackalope\Factory;
-        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new Factory;
+        $om = new ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $nodetypes = $om->getNodeTypes();
         $this->assertInstanceOf('DOMDocument', $nodetypes);
         $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
@@ -32,7 +32,7 @@ class ObjectManagerTest extends TestCase
         $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
         $path = '/jcr:root/uuid/to/path';
 
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($path, $om->normalizePath($uuid), 'Path normalization did not translate UUID into absolute path');
         // also verify it was cached
@@ -50,8 +50,8 @@ class ObjectManagerTest extends TestCase
      */
     public function testAbsolutePath($inputRoot, $inputRelPath, $output)
     {
-        $factory = new \Jackalope\Factory;
-        $om = new \Jackalope\ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
+        $factory = new Factory;
+        $om = new ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
         $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
     }
 
@@ -80,7 +80,7 @@ class ObjectManagerTest extends TestCase
 
     public function testVerifyAbsolutePath()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
 
         $om->verifyAbsolutePath('/jcr:root');

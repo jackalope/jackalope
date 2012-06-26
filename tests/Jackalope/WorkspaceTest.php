@@ -6,7 +6,7 @@ class WorkspaceTest extends TestCase
 {
     public function testConstructor()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
@@ -20,7 +20,7 @@ class WorkspaceTest extends TestCase
 
     public function testGetNodeTypeManager()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()

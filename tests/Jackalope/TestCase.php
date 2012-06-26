@@ -2,6 +2,11 @@
 
 namespace Jackalope;
 
+use PHPCR\SimpleCredentials;
+
+use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\NodeType\NodeTypeXmlConverter;
+
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected $config;
@@ -16,12 +21,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 $this->config[substr($cfgKey, 6)] = $value;
             }
         }
-        $this->credentials = new \PHPCR\SimpleCredentials($this->config['user'], $this->config['pass']);
+        $this->credentials = new SimpleCredentials($this->config['user'], $this->config['pass']);
     }
 
     protected function getTransportStub()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
             ->getMock(array('getNode', 'getNodeTypes', 'getNodePathForIdentifier'), array($factory, 'http://example.com'));
@@ -51,7 +56,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         $methodsToMock = array_merge(array('getWorkspace', 'getRepository'), $additionalMethodsToMock);
 
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $mock = $this->getMock('\Jackalope\Session', $methodsToMock, array($factory), '', false);
         $mock->expects($this->any())
              ->method('getWorkspace')
@@ -64,7 +69,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function getWorkspaceMock()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $mock = $this->getMock('\Jackalope\Workspace', array('getTransactionManager'), array($factory), '', false);
         $mock->expects($this->any())
              ->method('getTransactionManager')
@@ -74,7 +79,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function getInactiveTransactionMock()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $mock = $this->getMock('Jackalope\Transaction\UserTransaction', array('inTransaction'), array($factory), '', false);
         $mock->expects($this->any())
              ->method('inTransaction')
@@ -84,14 +89,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function getRepositoryMock()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $mock = $this->getMock('\Jackalope\Repository', array(), array($factory, null, array('transactions'=>false)), '', false);
         return $mock;
     }
 
     protected function getObjectManagerMock()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         return $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
     }
 
@@ -103,21 +108,21 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getNodeMock($methodsToMock = array())
     {
-        $node = $this->getMock('\Jackalope\Node', $methodsToMock, array(new \Jackalope\Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock()));
+        $node = $this->getMock('\Jackalope\Node', $methodsToMock, array(new Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock()));
         return $node;
     }
 
     protected function getNodeTypeManager()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $dom = new \DOMDocument();
         $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
-        $converter = new \Jackalope\NodeType\NodeTypeXmlConverter($factory);
+        $converter = new NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
         $om->expects($this->any())
             ->method('getNodeTypes')
             ->will($this->returnValue($converter->getNodeTypesFromXml($dom)));
-        return new \Jackalope\NodeType\NodeTypeManager($factory, $om);
+        return new NodeTypeManager($factory, $om);
     }
 
     /**

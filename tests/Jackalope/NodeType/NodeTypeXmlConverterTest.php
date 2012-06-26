@@ -3,6 +3,7 @@
 namespace Jackalope\NodeType;
 
 use Jackalope\TestCase;
+use Jackalope\Factory;
 
 class NodeTypeXmlConverterDefinitionTest extends TestCase
 {
@@ -10,7 +11,7 @@ class NodeTypeXmlConverterDefinitionTest extends TestCase
 
     public function setUp()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $this->converter = new NodeTypeXmlConverter($factory);
     }
 

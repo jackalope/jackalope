@@ -4,10 +4,15 @@ namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockManagerInterface,
     PHPCR\SessionInterface,
-    Jackalope\ObjectManager,
+    PHPCR\PathNotFoundException,
+    PHPCR\InvalidItemStateException,
+    PHPCR\Lock\LockException;
+
+use Jackalope\ObjectManager,
     Jackalope\FactoryInterface,
     Jackalope\NotImplementedException,
-    Jackalope\Transport\LockingInterface;
+    Jackalope\Transport\LockingInterface,
+    Jackalope\Item;
 
 /**
  * {@inheritDoc}
@@ -118,7 +123,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     public function holdsLock($absPath)
     {
         if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("The node '$absPath' does not exist");
+            throw new PathNotFoundException("The node '$absPath' does not exist");
         }
 
         $node = $this->session->getNode($absPath);
@@ -144,14 +149,14 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         // problems in determining which of those error it would be, it's easier to detect
         // non-existing nodes earlier.
         if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("Unable to lock unexisting node '$absPath'");
+            throw new PathNotFoundException("Unable to lock unexisting node '$absPath'");
         }
 
         $node = $this->session->getNode($absPath);
 
         $state = $node->getState();
-        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
-            throw new \PHPCR\InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
+        if ($state === Item::STATE_NEW || $state === Item::STATE_MODIFIED) {
+            throw new InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
         }
 
         $lock = $this->transport->lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint, $ownerInfo);
@@ -172,7 +177,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     public function isLocked($absPath)
     {
         if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("There is no node at '$absPath'");
+            throw new PathNotFoundException("There is no node at '$absPath'");
         }
 
         return $this->transport->isLocked($absPath);
@@ -196,18 +201,18 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     public function unlock($absPath)
     {
         if (!$this->session->nodeExists($absPath)) {
-            throw new \PHPCR\PathNotFoundException("Unable to unlock unexisting node '$absPath'");
+            throw new PathNotFoundException("Unable to unlock unexisting node '$absPath'");
         }
 
         if (!array_key_exists($absPath, $this->locks)) {
-            throw new \PHPCR\Lock\LockException("Unable to find an active lock for the node '$absPath'");
+            throw new LockException("Unable to find an active lock for the node '$absPath'");
         }
 
         $node = $this->session->getNode($absPath);
 
         $state = $node->getState();
-        if ($state === \Jackalope\Item::STATE_NEW || $state === \Jackalope\Item::STATE_MODIFIED) {
-            throw new \PHPCR\InvalidItemStateException("Cannot unlock the non-clean node '$absPath': current state = $state");
+        if ($state === Item::STATE_NEW || $state === Item::STATE_MODIFIED) {
+            throw new InvalidItemStateException("Cannot unlock the non-clean node '$absPath': current state = $state");
         }
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());

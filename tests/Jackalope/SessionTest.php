@@ -2,15 +2,17 @@
 
 namespace Jackalope;
 
+use PHPCR\SimpleCredentials;
+
 class SessionTest extends TestCase
 {
     public function testConstructor()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
         $workspaceName = 'asdfads';
         $userID = 'abcd';
-        $cred = new \PHPCR\SimpleCredentials($userID, 'xxxx');
+        $cred = new SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
@@ -29,12 +31,12 @@ class SessionTest extends TestCase
 
     public function testLogoutAndRegistry()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
         $transport = $this->getMock('Jackalope\Transport\TransportInterface');
         $transport->expects($this->once())
             ->method('logout');
-        $session = new Session($factory, $repository, 'x',  new \PHPCR\SimpleCredentials('foo', 'bar'), $transport);
+        $session = new Session($factory, $repository, 'x',  new SimpleCredentials('foo', 'bar'), $transport);
         $this->assertTrue($session->isLive());
         $key = $session->getRegistryKey();
         $this->assertSame($session, Session::getSessionFromRegistry($key));
@@ -45,7 +47,7 @@ class SessionTest extends TestCase
 
     public function testSessionRegistry()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
@@ -53,7 +55,7 @@ class SessionTest extends TestCase
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
-        $s = new Session($factory, $repository, 'workspaceName', new \PHPCR\SimpleCredentials('foo', 'bar'), $transport);
+        $s = new Session($factory, $repository, 'workspaceName', new SimpleCredentials('foo', 'bar'), $transport);
 
         $this->assertSame(Session::getSessionFromRegistry($s->getRegistryKey()), $s);
         $s->logout();

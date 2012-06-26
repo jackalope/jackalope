@@ -41,7 +41,7 @@ class NamespaceRegistryTest extends TestCase
             $expects = $this->any();
         }
 
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $transport = $this->getTransportMockFixture();
         $transport
             ->expects($expects)
@@ -196,7 +196,6 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testCheckPrefix()
     {
-        $factory = new \Jackalope\Factory;
         $prefix = 'beastie';
         $ns = $this->getNamespaceRegistryFixture(array(),false);
 
@@ -210,7 +209,6 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testCheckPrefixExpexctingNamespaceException($prefix)
     {
-        $factory = new \Jackalope\Factory;
         $ns = $this->getNamespaceRegistryFixture(array(),false);
         $ns->checkPrefix($prefix);
     }

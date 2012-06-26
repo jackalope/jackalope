@@ -133,7 +133,7 @@ class ItemTest extends TestCase
 
     public function testRemove()
     {
-        $factory = new \Jackalope\Factory;
+        $factory = new Factory;
         $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes', 'removeItem'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
         $om->expects($this->once())
             ->method('removeItem')

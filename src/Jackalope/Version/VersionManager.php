@@ -49,7 +49,7 @@ class VersionManager implements VersionManagerInterface {
      {
          if ($node = $this->objectManager->getCachedNode($absPath)) {
              if ($node->isModified()) {
-                 throw new \PHPCR\InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
+                 throw new InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
              }
          }
          $version = $this->objectManager->checkin($absPath);
@@ -145,7 +145,7 @@ class VersionManager implements VersionManagerInterface {
     public function restore($removeExisting, $version, $absPath = null)
     {
         if ($this->objectManager->hasPendingChanges()) {
-            throw new \PHPCR\InvalidItemStateException('You may not call restore when there pending unsaved changes');
+            throw new InvalidItemStateException('You may not call restore when there pending unsaved changes');
         }
 
         if (is_string($version)) {
