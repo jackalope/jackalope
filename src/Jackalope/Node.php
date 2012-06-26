@@ -497,44 +497,49 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @param string $srcChildRelPath name of the node to move
      * @param string $destChildRelPath name of the node srcChildRelPath has to be ordered before, null to move to the end
-     * @param string $nodes the array of child nodes
+     * @param array $nodes the array of child nodes
      *
      * @return array The updated $nodes array with new order
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
-        $nodes = array_values($nodes);
+		$nodes = array_values($nodes);
 
         // search old position
-        $old = array_search($srcChildRelPath, $nodes);
-        if (false === $old) {
-            return $nodes;
+        $srcPosition = array_search($srcChildRelPath, $nodes);
+        if (false === $srcPosition) {
+            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
         }
 
         // search position to move before
-        $before = array_search($destChildRelPath, $nodes);
-        if (false === $before) {
-            $before = count($nodes);
+        $destPosition = array_search($destChildRelPath, $nodes);
+        if (false === $destPosition) {
+            if (null === $destChildRelPath) {
+                // To place the node srcChildRelPath at the end of the list, a destChildRelPath of null is used.
+                $destPosition = count($nodes);
+            }
+
+            throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
         }
 
-        // sort nodes array (should this method be called "sort"?)
-        uksort($nodes, function ($a, $b) use ($old, $before) {
-            if ($a == $old) {
-                $a = $before - 0.5;
-            }
+		// sort nodes array (should this method be called "sort"?)
+		uksort($nodes, function ($leftPosition, $rightPosition) use ($srcPosition, $destPosition) {
+			if ($leftPosition == $srcPosition) {
+				$leftPosition = $destPosition - 0.5;
+			}
 
-            if ($b == $old) {
-                $b = $before - 0.5;
-            }
+			if ($rightPosition == $srcPosition) {
+				$rightPosition = $destPosition - 0.5;
+			}
 
-            if ($a == $b) {
-                return 0;
-            }
+			if ($leftPosition == $rightPosition) {
+				return 0;
+			}
 
-            return ($a < $b) ? -1 : 1;
-        });
+			return ($leftPosition < $rightPosition) ? -1 : 1;
+		});
 
-        return array_values($nodes);
+		return array_values($nodes);
     }
 
     /**
