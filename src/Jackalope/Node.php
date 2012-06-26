@@ -503,38 +503,38 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
-		$nodes = array_values($nodes);
+        $nodes = array_values($nodes);
 
-		// search old position
-		$old = array_search($srcChildRelPath, $nodes);
-		if (false === $old) {
-			return $nodes;
-		}
+        // search old position
+        $old = array_search($srcChildRelPath, $nodes);
+        if (false === $old) {
+            return $nodes;
+        }
 
-		// search position to move before
-		$before	= array_search($destChildRelPath, $nodes);
-		if (false === $before) {
-			$before = count($nodes);
-		}
+        // search position to move before
+        $before = array_search($destChildRelPath, $nodes);
+        if (false === $before) {
+            $before = count($nodes);
+        }
 
-		// sort nodes array (should this method be called "sort"?)
-		uksort($nodes, function ($a, $b) use ($old, $before) {
-			if ($a == $old) {
-				$a = $before - 0.5;
-			}
+        // sort nodes array (should this method be called "sort"?)
+        uksort($nodes, function ($a, $b) use ($old, $before) {
+            if ($a == $old) {
+                $a = $before - 0.5;
+            }
 
-			if ($b == $old) {
-				$b = $before - 0.5;
-			}
+            if ($b == $old) {
+                $b = $before - 0.5;
+            }
 
-			if ($a == $b) {
-				return 0;
-			}
+            if ($a == $b) {
+                return 0;
+            }
 
-			return ($a < $b) ? -1 : 1;
-		});
+            return ($a < $b) ? -1 : 1;
+        });
 
-		return array_values($nodes);
+        return array_values($nodes);
     }
 
     /**
