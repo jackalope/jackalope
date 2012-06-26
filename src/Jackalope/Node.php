@@ -503,7 +503,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
-		$nodes = array_values($nodes);
+        $nodes = array_values($nodes);
 
         // search old position
         $srcPosition = array_search($srcChildRelPath, $nodes);
@@ -522,24 +522,24 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
         }
 
-		// sort nodes array (should this method be called "sort"?)
-		uksort($nodes, function ($leftPosition, $rightPosition) use ($srcPosition, $destPosition) {
-			if ($leftPosition == $srcPosition) {
-				$leftPosition = $destPosition - 0.5;
-			}
+        // sort nodes array (should this method be called "sort"?)
+        uksort($nodes, function ($leftPosition, $rightPosition) use ($srcPosition, $destPosition) {
+            if ($leftPosition == $srcPosition) {
+                $leftPosition = $destPosition - 0.5;
+            }
 
-			if ($rightPosition == $srcPosition) {
-				$rightPosition = $destPosition - 0.5;
-			}
+            if ($rightPosition == $srcPosition) {
+                $rightPosition = $destPosition - 0.5;
+            }
 
-			if ($leftPosition == $rightPosition) {
-				return 0;
-			}
+            if ($leftPosition == $rightPosition) {
+                return 0;
+            }
 
-			return ($leftPosition < $rightPosition) ? -1 : 1;
-		});
+            return ($leftPosition < $rightPosition) ? -1 : 1;
+        });
 
-		return array_values($nodes);
+        return array_values($nodes);
     }
 
     /**
