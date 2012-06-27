@@ -543,11 +543,34 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        //$value is null for property removal
-        if (!is_null($value)) {
-            $nt = $this->getPrimaryNodeType();
-            //will throw a ConstraintViolationException if this property can't be set
-            $nt->canSetProperty($name, $value, $validate);
+        if ($validate) {
+            $types = $this->getMixinNodeTypes();
+            array_push($types, $this->getPrimaryNodeType());
+            if (null !== $value) {
+                $exception = null;
+                foreach ($types as $nt) {
+                    /** @var $nt \Jackalope\NodeType\NodeType */
+                    try {
+                        $nt->canSetProperty($name, $value, true);
+                        $exception = null;
+                        break; // exit loop, we found a valid definition
+                    } catch(RepositoryException $e) {
+                        if (null === $exception) {
+                            $exception = $e;
+                        }
+                    }
+                }
+                if (null !== $exception) {
+                    throw $exception;
+                }
+            } else {
+                // $value is null for property removal
+                // if any type forbids, throw exception
+                foreach ($types as $nt) {
+                    /** @var $nt \Jackalope\NodeType\NodeType */
+                    $nt->canRemoveProperty($name, true);
+                }
+            }
         }
 
         //try to get a namespace for the set property
