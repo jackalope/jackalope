@@ -239,7 +239,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            $val = is_object($value) ? get_class($value) : (string) $value;
+            $val = is_object($value) ? get_class($value) : (is_scalar($value) ? (string) $value : gettype($value));
             throw new ConstraintViolationException("Node type definition does not allow to set the property with name '$propertyName' and value '$val'");
         }
         return false;
