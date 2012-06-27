@@ -510,7 +510,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // search old position
         $srcPosition = array_search($srcChildRelPath, $nodes);
         if (false === $srcPosition) {
-            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+            throw new ItemNotFoundException("srcChildRelPath [$srcChildRelPath] is not a valid child of ".$this->path);
         }
 
         // search position to move before
@@ -519,9 +519,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             if (null === $destChildRelPath) {
                 // To place the node srcChildRelPath at the end of the list, a destChildRelPath of null is used.
                 $destPosition = count($nodes);
+            } else {
+                throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             }
-
-            throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
         }
 
         // sort nodes array (should this method be called "sort"?)
