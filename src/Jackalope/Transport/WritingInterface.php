@@ -25,7 +25,7 @@ interface WritingInterface extends TransportInterface
     /**
      * Whether this node name conforms to the specification
      *
-     * Note: There is a minimal implemenation in BaseTransport
+     * Note: There is a minimal implementation in BaseTransport
      *
      * @param string $name The name to check
      *
@@ -136,6 +136,11 @@ interface WritingInterface extends TransportInterface
      *
      * Transport stores the node at its path, with all properties and all
      * children.
+     *
+     * The transport is responsible to ensure that the node is valid and
+     * has to generate autocreated properties.
+     *
+     * @see BaseTransport::validateNode
      *
      * @param Node $node the node to store
      *

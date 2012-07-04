@@ -199,7 +199,7 @@ interface TransportInterface
      *
      * @param string $path absolute path to the property to get
      *
-     * @return stdClass a json struct with the property type and property
+     * @return \stdClass a json struct with the property type and property
      *      value(s)
      *
      * @see TransportInterface::getNode($path)
