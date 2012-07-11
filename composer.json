@@ -11,6 +11,7 @@
             "homepage": "https://github.com/jackalope/jackalope/contributors"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.2",
         "phpcr/phpcr-utils": ">=1.0-beta3",
