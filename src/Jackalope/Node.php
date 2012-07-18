@@ -497,7 +497,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @param string $srcChildRelPath name of the node to move
      * @param string $destChildRelPath name of the node srcChildRelPath has to be ordered before, null to move to the end
-     * @param string $nodes the array of child nodes
+     * @param array $nodes the array of child nodes
      *
      * @return array The updated $nodes array with new order
      *
@@ -505,31 +505,43 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
     {
-        // renumber the nodes so there are no gaps
         $nodes = array_values($nodes);
-        $oldpos = array_search($srcChildRelPath, $nodes);
-        if (false === $oldpos) {
-            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
+
+        // search old position
+        $srcPosition = array_search($srcChildRelPath, $nodes);
+        if (false === $srcPosition) {
+            throw new ItemNotFoundException("srcChildRelPath [$srcChildRelPath] is not a valid child of ".$this->path);
         }
 
-        if ($destChildRelPath == null) {
-            //null means move to end
-            unset($nodes[$oldpos]);
-            $nodes[] = $srcChildRelPath;
-        } else {
-            //insert somewhere specified by dest path
-            $newpos = array_search($destChildRelPath, $nodes);
-            if ($newpos === false) {
+        // search position to move before
+        $destPosition = array_search($destChildRelPath, $nodes);
+        if (false === $destPosition) {
+            if (null === $destChildRelPath) {
+                // To place the node srcChildRelPath at the end of the list, a destChildRelPath of null is used.
+                $destPosition = count($nodes);
+            } else {
                 throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
             }
-            if ($oldpos < $newpos) {
-                //we first unset, so
-                $newpos--;
-            }
-            unset($nodes[$oldpos]);
-            array_splice($nodes, $newpos, 0, $srcChildRelPath);
         }
-        return $nodes;
+
+        // sort nodes array (should this method be called "sort"?)
+        uksort($nodes, function ($leftPosition, $rightPosition) use ($srcPosition, $destPosition) {
+            if ($leftPosition == $srcPosition) {
+                $leftPosition = $destPosition - 0.5;
+            }
+
+            if ($rightPosition == $srcPosition) {
+                $rightPosition = $destPosition - 0.5;
+            }
+
+            if ($leftPosition == $rightPosition) {
+                return 0;
+            }
+
+            return ($leftPosition < $rightPosition) ? -1 : 1;
+        });
+
+        return array_values($nodes);
     }
 
     /**
