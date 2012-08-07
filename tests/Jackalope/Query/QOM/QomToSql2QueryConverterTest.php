@@ -56,7 +56,7 @@ class QomToSql2QueryConverterTest extends \PHPUnit_Framework_TestCase
     {
         $this->qb->andWhere($this->qf->comparison($this->qf->propertyValue('foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
         $statement = $this->doQuery($this->qf->propertyExistence("foo"));
-        $this->assertSame("SELECT * FROM [nt:base] WHERE foo = 'bar' AND foo IS NOT NULL", $statement);
+        $this->assertSame("SELECT * FROM [nt:base] WHERE (foo = 'bar' AND foo IS NOT NULL)", $statement);
     }
 
     public function testOrConstraint()
@@ -65,7 +65,7 @@ class QomToSql2QueryConverterTest extends \PHPUnit_Framework_TestCase
         $this->qb->orWhere($this->qf->comparison($this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')));
         $this->qb->from($this->qf->selector("nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
-        $this->assertSame("SELECT * FROM [nt:base] WHERE foo = 'bar' OR bar = 'foo'", $statement);
+        $this->assertSame("SELECT * FROM [nt:base] WHERE (foo = 'bar' OR bar = 'foo')", $statement);
     }
 
     public function testNotConstraint()
