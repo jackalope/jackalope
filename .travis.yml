@@ -5,8 +5,7 @@ php:
   - 5.4
 
 before_script: 
-  - wget -nc http://getcomposer.org/composer.phar
-  - COMPOSER=./tests/jackalope-testing-composer.json php composer.phar install
+  - COMPOSER=./tests/jackalope-testing-composer.json php composer install
 
 script: phpunit -c tests/phpunit.xml.dist
 
