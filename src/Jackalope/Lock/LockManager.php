@@ -70,8 +70,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
 
     public function getIterator()
     {
-        // TODO: return an iterator over getLockTokens() results
-        return new ArrayIterator($this);
+        return new \ArrayIterator($this->getLockTokens());
     }
 
     /**
@@ -241,7 +240,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * for the locks to get the session to get their root node
      *
-     * @return Session
+     * @return SessionInterface
      *
      * @private
      */
