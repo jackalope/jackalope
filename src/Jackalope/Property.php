@@ -87,8 +87,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *      from PropertyType) and <tt>value</tt> (data for creating the
      *      property value - array for multivalue property)
      * @param string $path the absolute path of this item
-     * @param Session the session instance
-     * @param ObjectManager the objectManager instance - the caller has to take
+     * @param Session $session the session instance
+     * @param ObjectManager $objectManager the objectManager instance - the caller has to take
      *      care of registering this item with the object manager
      * @param boolean $new optional: set to true to make this property aware
      *      its not yet existing on the server. defaults to false
@@ -285,6 +285,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             // we have the stream locally: no wrapping or new or updated property
             // copy the stream so the original stream stays usable for storing, fetching again...
             $val = is_array($this->value) ? $this->value : array($this->value);
+            $ret = array();
             foreach ($val as $s) {
                 $stream = fopen('php://memory', 'rwb+');
                 $pos = ftell($s);
@@ -506,7 +507,26 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if (empty($this->definition)) {
-            throw new NotImplementedException(); //FIXME: acquire definition
+            $types = $this->getParent()->getMixinNodeTypes();
+            array_push($types, $this->getParent()->getPrimaryNodeType());
+            /** @var $nt \Jackalope\NodeType\NodeType */
+            foreach ($types as $nt) {
+                /** @var $candidate PropertyDefinitionInterface */
+                foreach ($nt->getPropertyDefinitions() as $candidate) {
+                    if ($candidate->getName() == $this->name) {
+                        $this->definition = $candidate;
+                        break 2;
+                    } elseif ('*' == $candidate->getName()) {
+                        // i guess if we have multiple wildcard property definitions, they should be equivalent
+                        $this->definition = $candidate;
+                        // do not abort loop, in case we hit an exactly matching definition
+                    }
+                }
+            }
+        }
+        // sanity check. theoretically, the property should not be able to exist if there is no definition for it
+        if (empty($this->definition)) {
+            throw new \RuntimeException('Found no property definition, this should not be possible');
         }
         return $this->definition;
     }
