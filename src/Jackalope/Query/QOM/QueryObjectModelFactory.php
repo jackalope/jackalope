@@ -51,7 +51,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function createQuery(SourceInterface $source, ConstraintInterface $constraint = null, array $orderings, array $columns)
+    public function createQuery(SourceInterface $source, ConstraintInterface $constraint = null, array $orderings = array(), array $columns = array())
     {
         return $this->factory->get('Query\QOM\QueryObjectModel',
                                    array($this->objectManager, $source, $constraint, $orderings, $columns));
