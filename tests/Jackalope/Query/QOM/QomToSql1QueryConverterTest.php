@@ -94,8 +94,8 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
     */
     public function createQuery(SourceInterface $source,
                         ConstraintInterface $constraint = null,
-                        array $orderings,
-                        array $columns,
+                        array $orderings = array(),
+                        array $columns = array(),
                         $simpleQuery = false
         )
     {
