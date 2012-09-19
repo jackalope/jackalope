@@ -88,7 +88,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      */
     public function setProtected($protectedStatus)
     {
-        $this->isProtected;
+        $this->isProtected = $protectedStatus;
     }
 
     /**
