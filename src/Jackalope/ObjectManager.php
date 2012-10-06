@@ -1182,7 +1182,7 @@ class ObjectManager
         // propagate to current and children items of $curPath, updating internal path
         foreach ($this->objectsByPath['Node'] as $path => $item) {
             // is it current or child?
-            if (strpos($path, $curPath) === 0) {
+            if ((strpos($path, $curPath . '/') === 0)||($path == $curPath)) {
                 // curPath = /foo
                 // newPath = /mo
                 // path    = /foo/bar
