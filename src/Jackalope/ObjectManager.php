@@ -196,24 +196,31 @@ class ObjectManager
             return $this->objectsByPath[$class][$absPath];
         }
 
+        // do this even if we have item in cache, will throw error if path is deleted - sanity check
+        $fetchPath = $this->getFetchPath($absPath, $class);
         if (!$object) {
-            $fetchPath = $this->getFetchPath($absPath, $class); // will throw error if path is deleted
+            // this is the first request, get data from transport
             $object = $this->transport->getNode($fetchPath);
         }
 
+        // recursively create nodes for pre-fetched children if fetchDepth was > 1
         foreach ($object as $name => $properties) {
             if (is_object($properties)) {
                 $objVars = get_object_vars($properties);
                 $countObjVars = count($objVars);
-                //load childnodes if there's more than one objectvar
-                // or just one and this isn't jcr:uuid, then we assume it was
-                // fetched from the backend completely
+                // if there's more than one objectvar or just one and this isn't jcr:uuid,
+                // then we assume this child was pre-fetched from the backend completely
                 if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
-                    $this->getNodeByPath($absPath . '/' . $name, $class, $properties);
+                    try {
+                        $this->getNodeByPath($absPath . '/' . $name, $class, $properties);
+                    } catch (ItemNotFoundException $ignore) {
+                        // we get here if the item was deleted or moved locally. just ignore
+                    }
                 }
             }
         }
 
+        /** @var $node NodeInterface */
         $node = $this->factory->get(
             $class,
             array(
@@ -314,11 +321,13 @@ class ObjectManager
 
         // go through all moves and check if a parent was moved. add / to dst path to not match /nodename with /node
         $movedHere = false;
+
         foreach ($this->nodesMove as $src => $target) {
             // TODO: this fails for moving a node and then moving another to that place. see MoveMethodTest::testSessionMoveReplace
             if (strpos($absPath, "$src/") === 0) {
                 throw new ItemNotFoundException("Path not found (parent node $src moved in current session): $absPath");
             }
+
             if (strpos($absPath, "$target/") === 0) {
                 $movedHere = true;
             }
