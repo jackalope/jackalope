@@ -1242,7 +1242,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (null !== $this->originalNodesOrder) {
             $this->originalNodesOrder = array_flip($this->originalNodesOrder);
             unset($this->originalNodesOrder[$name]);
-            $this->originalNodesOrder = array_flip($this->originalNodesOrder);            
+            $this->originalNodesOrder = array_flip($this->originalNodesOrder);
         }
     }
 
@@ -1272,9 +1272,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // TODO: same name siblings
 
         $this->nodes[] = $name;
-        
+
         if (null !== $this->originalNodesOrder) {
-            $this->originalNodesOrder[] = $name;            
+            $this->originalNodesOrder[] = $name;
         }
     }
 

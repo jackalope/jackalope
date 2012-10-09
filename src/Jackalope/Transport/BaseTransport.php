@@ -97,7 +97,7 @@ $/xi";
      *
      * @param string $name The name to check
      *
-     * @return always true, if the name is not valid a RepositoryException is thrown
+     * @return boolean always true, if the name is not valid a RepositoryException is thrown
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      *
