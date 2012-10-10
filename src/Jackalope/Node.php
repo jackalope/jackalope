@@ -623,6 +623,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $names = self::filterNames($filter, $this->nodes);
         $result = array();
         if (!empty($names)) {
+            $paths = array();
             foreach ($names as $name) {
                 $paths[] = $this->objectManager->absolutePath($this->path, $name);
             }
