@@ -73,7 +73,7 @@ class NamespaceRegistryTest extends TestCase
 
     /**
      * @covers \Jackalope\NamespaceRegistry::registerNamespace
-     * @expectedException NotImplementedException
+     * @expectedException \Jackalope\NotImplementedException
      */
     public function testRegisterNamespace()
     {
@@ -82,7 +82,7 @@ class NamespaceRegistryTest extends TestCase
 
     /**
      * @covers \Jackalope\NamespaceRegistry::unregisterNamespace
-     * @expectedException NotImplementedException
+     * @expectedException \Jackalope\NotImplementedException
      */
     public function testUnregisterNamespace()
     {
