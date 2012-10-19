@@ -58,7 +58,11 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
     {
         $this->qb->andWhere($this->qf->comparison($this->qf->propertyValue('foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
         $statement = $this->doQuery($this->qf->propertyExistence("foo"));
-        $this->assertSame("SELECT s FROM nt:base WHERE (foo = 'bar' AND foo IS NOT NULL)", $statement);
+        $variations = array(
+            "SELECT s FROM nt:base WHERE foo = 'bar' AND foo IS NOT NULL",
+            "SELECT s FROM nt:base WHERE (foo = 'bar' AND foo IS NOT NULL)",
+        );
+        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
     }
 
     public function testOrConstraint()
@@ -67,7 +71,11 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
         $this->qb->orWhere($this->qf->comparison($this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')));
         $this->qb->from($this->qf->selector("nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
-        $this->assertSame("SELECT s FROM nt:base WHERE (foo = 'bar' OR bar = 'foo')", $statement);
+        $variations = array(
+            "SELECT s FROM nt:base WHERE foo = 'bar' OR bar = 'foo'",
+            "SELECT s FROM nt:base WHERE (foo = 'bar' OR bar = 'foo')",
+        );
+        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
     }
 
     public function testNotConstraint()
