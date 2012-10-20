@@ -11,8 +11,6 @@ use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NoSuchNodeTypeException;
 
-use Jackalope\NotImplementedException;
-
 /**
  * {@inheritDoc}
  *
