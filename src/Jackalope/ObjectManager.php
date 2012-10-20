@@ -520,7 +520,7 @@ class ObjectManager
      *
      * Note uuids/paths that cannot be found will be ignored
      *
-     * @param string $identifiers uuid's or absolute paths
+     * @param array $identifiers uuid's or absolute paths
      * @param string $class optional class name for the factory
      *
      * @return ArrayIterator of NodeInterface of the specified nodes keyed by their path
@@ -898,8 +898,8 @@ class ObjectManager
      * @return void
      *
      * @throws \PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\ReferentialIntegrityException
-     * @throws PHPCR\Version\VersionException
+     * @throws \PHPCR\ReferentialIntegrityException
+     * @throws \PHPCR\Version\VersionException
      */
     public function removeVersion($versionPath, $versionName)
     {
@@ -1111,7 +1111,7 @@ class ObjectManager
      *
      * @param string $absPath The absolute path to the node to be removed,
      *      including the node name.
-     * @param string $property optional, property instance to delete from the
+     * @param PropertyInterface $property optional, property instance to delete from the
      *      given node path. If set, absPath is the path to the node containing
      *      this property.
      *
@@ -1121,7 +1121,7 @@ class ObjectManager
      *
      * @see Item::remove()
      */
-    public function removeItem($absPath, $property = null)
+    public function removeItem($absPath, PropertyInterface $property = null)
     {
         if (! $this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');

@@ -81,7 +81,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
         // OPTIMIZE: special iterator that delays loading the versions
         if (!$this->versions) {
             $rootVersion = $this->getRootVersion();
-            $results[$rootVersion->getName()] = $rootVersion;
+            $results = array($rootVersion->getName() => $rootVersion);
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
         }
         return new ArrayIterator($this->versions);
