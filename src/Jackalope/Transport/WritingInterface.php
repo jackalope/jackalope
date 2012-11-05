@@ -21,7 +21,6 @@ use Jackalope\Node;
  */
 interface WritingInterface extends TransportInterface
 {
-
     /**
      * Whether this node name conforms to the specification
      *
@@ -103,6 +102,8 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $absPath absolute path to the parent node
      * @param array $reorders list of reordering pars
+     *
+     * @return void
      */
     function reorderNodes($absPath, $reorders);
 
@@ -111,12 +112,12 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the node
      *
-     * @return bool true on success
+     * @return void
      *
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function deleteNode($path);
 
@@ -125,9 +126,9 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the property
      *
-     * @return bool true on success
+     * @return void
      *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function deleteProperty($path);
 
@@ -144,9 +145,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param Node $node the node to store
      *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function storeNode(Node $node);
 
@@ -155,12 +154,11 @@ interface WritingInterface extends TransportInterface
      *
      * @param Property
      *
-     * @return bool true on success
+     * @return void
      *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function storeProperty(Property $property);
-
 
     /**
      * Register a new namespace.
@@ -174,6 +172,8 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.
+     *
+     * @return void
      */
     function registerNamespace($prefix, $uri);
 
@@ -184,8 +184,17 @@ interface WritingInterface extends TransportInterface
      * happened in the NamespaceRegistry.
      *
      * @param string $prefix The prefix to unregister.
+     *
+     * @return void
      */
     function unregisterNamespace($prefix);
+
+    /**
+     * Called before any data is written
+     *
+     * @return void
+     */
+    function prepareSave();
 
     /**
      * Called after everything internally is done in the save() method
@@ -193,7 +202,12 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
+    function finishSave();
 
-     function finishSave();
-
+    /**
+     * Called if a save operation caused an exception
+     *
+     * @return void
+     */
+    function rollbackSave();
 }

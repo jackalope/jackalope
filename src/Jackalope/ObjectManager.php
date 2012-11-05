@@ -733,82 +733,94 @@ class ObjectManager
 
         // TODO: adjust transport to accept lists and do a diff request instead of single requests
 
-        /* remove nodes/properties
-         *
-         * deleting a node deletes the whole tree
-         * we have to avoid deleting children/properties of nodes we already
-         * deleted. we sort the paths and then use that to check if parent path
-         * was already removed in a - comparably - cheap way
-         */
-        $todelete = array_keys($this->itemsRemove);
-        sort($todelete);
-        $last = ':'; // anything but '/'
-        foreach ($todelete as $path) {
-            if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
-                //parent path has already been removed
-                continue;
-            }
-            if ($this->itemsRemove[$path] instanceof NodeInterface) {
-                $this->transport->deleteNode($path);
-            } elseif ($this->itemsRemove[$path] instanceof PropertyInterface) {
-                $this->transport->deleteProperty($path);
-            } else {
-                throw new RepositoryException("Internal error while deleting $path: unknown class ".get_class($this->itemsRemove[$path]));
-            }
-            $last = $path;
-        }
+        try {
+            $this->transport->prepareSave();
 
-        // move nodes/properties
-        foreach ($this->nodesMove as $src => $dst) {
-            $this->transport->moveNode($src, $dst);
-            if (isset($this->objectsByPath['Node'][$dst])) {
-                // might not be set if moved again afterwards
-                // move is not treated as modified, need to confirm separately
-                $this->objectsByPath['Node'][$dst]->confirmSaved();
+            /* remove nodes/properties
+             *
+             * deleting a node deletes the whole tree
+             * we have to avoid deleting children/properties of nodes we already
+             * deleted. we sort the paths and then use that to check if parent path
+             * was already removed in a - comparably - cheap way
+             */
+            $todelete = array_keys($this->itemsRemove);
+            sort($todelete);
+            $last = ':'; // anything but '/'
+            foreach ($todelete as $path) {
+                if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
+                    //parent path has already been removed
+                    continue;
+                }
+                if ($this->itemsRemove[$path] instanceof NodeInterface) {
+                    $this->transport->deleteNode($path);
+                } elseif ($this->itemsRemove[$path] instanceof PropertyInterface) {
+                    $this->transport->deleteProperty($path);
+                } else {
+                    throw new RepositoryException("Internal error while deleting $path: unknown class ".get_class($this->itemsRemove[$path]));
+                }
+                $last = $path;
             }
-        }
 
-        // filter out sub-nodes and sub-properties since the top-most nodes that are
-        // added will create all sub-nodes and sub-properties at once
-        $nodesToCreate = $this->itemsAdd;
-        foreach ($nodesToCreate as $path => $dummy) {
-            foreach ($nodesToCreate as $path2 => $dummy) {
-                if (strpos($path2, $path.'/') === 0) {
-                    unset($nodesToCreate[$path2]);
+            // move nodes/properties
+            foreach ($this->nodesMove as $src => $dst) {
+                $this->transport->moveNode($src, $dst);
+                if (isset($this->objectsByPath['Node'][$dst])) {
+                    // might not be set if moved again afterwards
+                    // move is not treated as modified, need to confirm separately
+                    $this->objectsByPath['Node'][$dst]->confirmSaved();
                 }
             }
-        }
-        // create new items
-        foreach ($nodesToCreate as $path => $dummy) {
-            $node = $this->getNodeByPath($path);
-            if (! $node instanceof NodeInterface) {
-                throw new RepositoryException('Internal error: Unknown type '.get_class($node));
-            }
-            $this->transport->storeNode($node);
-        }
 
-        // loop through cached nodes and commit all dirty and set them to clean.
-        if (isset($this->objectsByPath['Node'])) {
-            foreach ($this->objectsByPath['Node'] as $path => $node) {
-                if ($node->isModified()) {
-                    if (! $node instanceof NodeInterface) {
-                        throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
+            // filter out sub-nodes and sub-properties since the top-most nodes that are
+            // added will create all sub-nodes and sub-properties at once
+            $nodesToCreate = $this->itemsAdd;
+            foreach ($nodesToCreate as $path => $dummy) {
+                foreach ($nodesToCreate as $path2 => $dummy2) {
+                    if (strpos($path2, $path.'/') === 0) {
+                        unset($nodesToCreate[$path2]);
                     }
-                    foreach ($node->getProperties() as $property) {
-                        if ($property->isModified() || $property->isNew()) {
-                            $this->transport->storeProperty($property);
+                }
+            }
+            // create new items
+            foreach ($nodesToCreate as $path => $dummy) {
+                $node = $this->getNodeByPath($path);
+                if (! $node instanceof NodeInterface) {
+                    throw new RepositoryException('Internal error: Unknown type '.get_class($node));
+                }
+                $this->transport->storeNode($node);
+            }
+
+            // loop through cached nodes and commit all dirty and set them to clean.
+            if (isset($this->objectsByPath['Node'])) {
+                foreach ($this->objectsByPath['Node'] as $path => $node) {
+                    if ($node->isModified()) {
+                        if (! $node instanceof NodeInterface) {
+                            throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
+                        }
+                        foreach ($node->getProperties() as $property) {
+                            if ($property->isModified() || $property->isNew()) {
+                                $this->transport->storeProperty($property);
+                            }
+                        }
+                        //order nodes
+                        $reorders = $node->getOrderCommands();
+                        if (count($reorders) > 0) {
+                            $this->transport->reorderNodes($node->getPath(),$reorders);
                         }
                     }
-                    //order nodes
-                    $reorders = $node->getOrderCommands();
-                    if (count($reorders) > 0) {
-                        $this->transport->reorderNodes($node->getPath(),$reorders);
-                    }
                 }
             }
-        }
 
-        $this->transport->finishSave();
+            $this->transport->finishSave();
+        } catch (\Exception $e) {
+            $this->transport->rollbackSave();
+
+            if ($e instanceof \Exception) {
+                throw new RepositoryException('Error while trying to persist to the RDBMS: '.$e->getMessage(), null, $e);
+            }
+
+            throw $e;
+        }
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
         $this->itemsRemove = array();
