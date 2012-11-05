@@ -111,12 +111,10 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the node
      *
-     * @return bool true on success
-     *
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function deleteNode($path);
 
@@ -125,9 +123,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the property
      *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function deleteProperty($path);
 
@@ -144,9 +140,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param Node $node the node to store
      *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function storeNode(Node $node);
 
@@ -155,12 +149,9 @@ interface WritingInterface extends TransportInterface
      *
      * @param Property
      *
-     * @return bool true on success
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function storeProperty(Property $property);
-
 
     /**
      * Register a new namespace.
@@ -188,12 +179,27 @@ interface WritingInterface extends TransportInterface
     function unregisterNamespace($prefix);
 
     /**
+     * Called before any data is written
+     *
+     * @return void
+     */
+
+    function prepareSave();
+
+    /**
      * Called after everything internally is done in the save() method
      *  so the transport has a chance to do final stuff (or commit everything at once)
      *
      * @return void
      */
 
-     function finishSave();
+    function finishSave();
 
+    /**
+     * Called if a save operation caused an exception
+     *
+     * @return void
+     */
+
+    function rollbackSave();
 }
