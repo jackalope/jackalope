@@ -21,7 +21,6 @@ use Jackalope\Node;
  */
 interface WritingInterface extends TransportInterface
 {
-
     /**
      * Whether this node name conforms to the specification
      *
@@ -103,6 +102,8 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $absPath absolute path to the parent node
      * @param array $reorders list of reordering pars
+     *
+     * @return void
      */
     function reorderNodes($absPath, $reorders);
 
@@ -110,6 +111,8 @@ interface WritingInterface extends TransportInterface
      * Deletes a node and the whole subtree under it
      *
      * @param string $path Absolute path to the node
+     *
+     * @return void
      *
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
@@ -122,6 +125,8 @@ interface WritingInterface extends TransportInterface
      * Deletes a property
      *
      * @param string $path Absolute path to the property
+     *
+     * @return void
      *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
@@ -149,6 +154,8 @@ interface WritingInterface extends TransportInterface
      *
      * @param Property
      *
+     * @return void
+     *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     function storeProperty(Property $property);
@@ -165,6 +172,8 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri The URI to be mapped.
+     *
+     * @return void
      */
     function registerNamespace($prefix, $uri);
 
@@ -175,6 +184,8 @@ interface WritingInterface extends TransportInterface
      * happened in the NamespaceRegistry.
      *
      * @param string $prefix The prefix to unregister.
+     *
+     * @return void
      */
     function unregisterNamespace($prefix);
 
@@ -183,7 +194,6 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
-
     function prepareSave();
 
     /**
@@ -192,7 +202,6 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
-
     function finishSave();
 
     /**
@@ -200,6 +209,5 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
-
     function rollbackSave();
 }
