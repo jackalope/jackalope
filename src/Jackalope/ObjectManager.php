@@ -815,8 +815,8 @@ class ObjectManager
         } catch (\Exception $e) {
             $this->transport->rollbackSave();
 
-            if ($e instanceof \Exception) {
-                throw new RepositoryException('Error while trying to persist to the RDBMS: '.$e->getMessage(), null, $e);
+            if ('Exception' === get_class($e)) {
+                throw new RepositoryException('Error inside the transport layer: '.$e->getMessage(), null, $e);
             }
 
             throw $e;
