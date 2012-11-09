@@ -396,8 +396,12 @@ class Session implements SessionInterface
                 $utx->commit();
             } catch (Exception $e) {
                 // if anything goes wrong, rollback this mess
-                $utx->rollback();
-                // but do not eat the exception
+                try {
+                    $utx->rollback();
+                } catch (Exception $rollbackException) {
+                    // ignore this exception
+                }
+                // but do not eat this exception
                 throw $e;
             }
         } else {
