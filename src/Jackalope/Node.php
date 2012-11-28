@@ -1141,14 +1141,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * This is also called internally to refresh when the node is accessed in
      * state DIRTY.
      *
-     * @param boolean $keepChanges whether to keep local changes
-     * @param boolean $internal implementation internal flag to not check for the InvalidItemStateException
-     *
      * @see Item::checkState
-     *
-     * @api
      */
-    public function refresh($keepChanges, $internal = false)
+    protected function refresh($keepChanges, $internal = false)
     {
         if (! $internal && $this->isDeleted()) {
             throw new InvalidItemStateException('This item has been removed and can not be refreshed');
@@ -1449,6 +1444,20 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
         }
         return $this->properties[$name];
+    }
+
+    /**
+     * Overwrite to set the properties dirty as well.
+     */
+    public function setDirty($keepChanges = false, $targetState = false)
+    {
+        parent::setDirty($keepChanges, $targetState);
+        foreach ($this->properties as $property) {
+            if ($keepChanges && self::STATE_NEW !== $property->getState()) {
+                // if we want to keep changes, we do not want to set new properties dirty.
+                $property->setDirty($keepChanges, $targetState);
+            }
+        }
     }
 
     /**
