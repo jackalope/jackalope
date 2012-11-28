@@ -245,4 +245,15 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
             throw new NamespaceException("Not a valid namespace prefix '$prefix'");
         }
     }
+
+    /**
+     * Get all defined namespaces
+     *
+     * @private
+     */
+    public function getNamespaces()
+    {
+        $this->lazyLoadNamespaces();
+        return array_merge($this->defaultNamespaces, $this->userNamespaces);
+    }
 }

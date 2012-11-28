@@ -19,6 +19,8 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
 
+use PHPCR\Util\NodeHelper;
+
 use Jackalope\Factory;
 
 /**
@@ -404,6 +406,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function addNodeAutoNamed($nameHint = null, $primaryNodeTypeName = null)
+    {
+        $name = NodeHelper::generateAutoNodeName(
+            $this->nodes,
+            $this->session->getWorkspace()->getNamespaceRegistry()->getNamespaces(),
+            'phpcr',
+            $nameHint
+        );
+        return $this->addNode($name, $primaryNodeTypeName);
+    }
+
+    /**
      * Jackalope implements this feature and updates the position of the
      * existing child at srcChildRelPath to be in the list immediately before
      * destChildRelPath.
@@ -429,6 +447,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
         $this->setModified();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function rename($newName)
+    {
+        $this->session->move($this->path, $this->parentPath . '/' . $newName);
     }
 
    /**
@@ -645,6 +673,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
+    public function getNodeNames()
+    {
+        $this->checkState();
+
+        return new ArrayIterator($this->nodes);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
     public function getProperty($relPath)
     {
         $this->checkState();
@@ -674,6 +715,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $val = PropertyType::convertType($val, $type);
         }
         return $val;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function getPropertyValueWithDefault($relPath, $defaultValue)
+    {
+        if ($this->hasProperty($relPath)) {
+            return $this->getPropertyValue($relPath);
+        }
+        return $defaultValue;
     }
 
     /**
@@ -991,6 +1045,39 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->setModified();
 
         throw new NotImplementedException('Write');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function setMixins($mixinNames)
+    {
+        $toRemove = array();
+        if ($this->hasProperty('jcr:mixins')) {
+            foreach ($this->getPropertyValue('jcr:mixins') as $mixin) {
+                if (false !== $key = array_search($mixin, $mixinNames)) {
+                    unset($mixinNames[$key]);
+                } else {
+                    $toRemove[] = $mixin;
+                }
+            }
+        }
+        if (! (count($toRemove) || count($mixinNames))) {
+            return; // nothing to do
+        }
+        // make sure the new types actually exist before we add anything
+        $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+        foreach ($mixinNames as $type) {
+            $ntm->getNodeType($type);
+        }
+        foreach ($mixinNames as $type) {
+            $this->addMixin($type);
+        }
+        foreach ($toRemove as $type) {
+            $this->removeMixin($type);
+        }
     }
 
     /**
