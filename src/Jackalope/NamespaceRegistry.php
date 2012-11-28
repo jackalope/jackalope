@@ -23,7 +23,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 {
     /**
      * Instance of an implementation of the TransportInterface
-     * @var TransportInterface
+     * @var WritingInterface
      */
     protected $transport;
 
@@ -124,18 +124,19 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      *
      * @api
      */
-    public function unregisterNamespace($prefix)
+    public function unregisterNamespaceByURI($uri)
     {
         if (! $this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
         $this->lazyLoadNamespaces();
-        $this->checkPrefix($prefix);
-        if (! array_key_exists($prefix, $this->userNamespaces)) {
-            // we already checked whether this is a prefix out of the defaultNamespaces in checkPrefix
-            throw new NamespaceException("Prefix $prefix is not currently registered");
+        $prefix = array_search($uri, $this->userNamespaces);
+        if ($prefix === false) {
+            throw new NamespaceException("Namespace '$uri' is not currently registered");
         }
+        // now check whether this is a prefix out of the defaultNamespaces in checkPrefix
+        $this->checkPrefix($prefix);
 
         $this->transport->unregisterNamespace($prefix);
         //remove the prefix from the local userNamespaces array
