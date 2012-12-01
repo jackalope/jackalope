@@ -16,6 +16,7 @@ class EventJournalTest extends TestCase
 
     protected $journal;
 
+    protected $session;
 
     public function setUp()
     {
@@ -104,14 +105,9 @@ EOF;
 
     public function testConstructor()
     {
-        $eventTypes = 1234;
-        $absPath = '/some/path';
-        $isDeep = true;
-        $uuid = array('1234', '4321');
-        $nodeTypeName = array('type1', 'type2');
+        $filter = new EventFilter($this->factory, $this->session);
         $workspaceRootUri = 'http://some.workspace.uri/';
-
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName, $workspaceRootUri);
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, $workspaceRootUri);
 
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
         $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
@@ -152,7 +148,8 @@ EOF;
 
     public function testConstructEventJournal()
     {
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $filter = new EventFilter($this->factory, $this->session);
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $data = new \DOMDocument();
         $data->loadXML($this->entryXml);
@@ -166,7 +163,8 @@ EOF;
 
     public function testExtractEvents()
     {
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $filter = new EventFilter($this->factory, $this->session);
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
 
@@ -225,7 +223,8 @@ EOF;
 
     public function testEventInfo()
     {
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $filter = new EventFilter($this->factory, $this->session);
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventWithInfoXml), 'system'));
         $eventWithInfo = $events[0];
@@ -248,7 +247,8 @@ EOF;
 
     public function testEmptyEventInfo()
     {
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), null, null, null, null, null, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $filter = new EventFilter($this->factory, $this->session);
+        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
 
         // get an event that has no eventinfo
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
@@ -264,11 +264,12 @@ EOF;
 
     public function testSkipTo()
     {
+        $filter = new EventFilter($this->factory, $this->session);
         $xml = $this->buildSkipToTestData();
         $doc = new \DOMDocument();
         $doc->loadXML($xml);
 
-        $journal = new EventJournal($this->factory, $this->session, $doc);
+        $journal = new EventJournal($this->factory, $this->session, $doc, $filter);
         $firstEvent = $journal->current();
 
         // ----- Skip to start of list
@@ -304,13 +305,16 @@ EOF;
 
     /**
      * Return an EventJournal instance without any filters set
+     *
      * @param \DOMDocument $data
      * @param string $workspaceRootUri
+     *
      * @return EventJournal
      */
     protected function getUnfilteredJournal(\DOMDocument $data, $workspaceRootUri)
     {
-        return new EventJournal($this->factory, $this->session, $data, null, null, null, null, null, $workspaceRootUri);
+        $filter = new EventFilter($this->factory, $this->session);
+        return new EventJournal($this->factory, $this->session, $data, $filter, $workspaceRootUri);
     }
 
     /**

@@ -2,16 +2,14 @@
 
 namespace Jackalope\Observation;
 
-use Jackalope\TestCase,
-    PHPCR\Observation\EventInterface,
-    Jackalope\Observation\Event,
-    Jackalope\Observation\Filter\EventTypeEventFilter;
-
+use PHPCR\Observation\EventInterface;
+use Jackalope\Observation\Event;
+use Jackalope\Observation\EventFilter;
 
 /**
- * Unit tests for the EventJournal
+ * Unit tests for the EventFilter
  */
-class EventTypeEventFilterTest extends TestCase
+class EventFilterEventTypeTest extends EventFilterTestCase
 {
     protected $allEventTypes = array(
         EventInterface::NODE_ADDED,
@@ -26,14 +24,16 @@ class EventTypeEventFilterTest extends TestCase
     public function testNoMatchFilter()
     {
         foreach ($this->allEventTypes as $type) {
-            $this->assertFilterMatch(new EventTypeEventFilter(0), array());
+            $this->eventFilter->setEventTypes(0);
+            $this->assertFilterMatch($this->eventFilter, array());
         }
     }
 
     public function testSingleTypeFilter()
     {
         foreach ($this->allEventTypes as $type) {
-            $this->assertFilterMatch(new EventTypeEventFilter($type), array($type));
+            $this->eventFilter->setEventTypes($type);
+            $this->assertFilterMatch($this->eventFilter, array($type));
         }
     }
 
@@ -56,24 +56,24 @@ class EventTypeEventFilterTest extends TestCase
             $matchedTypes = $matchedTypes | $type;
         }
 
-        $filter = new EventTypeEventFilter($matchedTypes);
+        $this->eventFilter->setEventTypes($matchedTypes);
 
-        $this->assertFilterMatch($filter, $eventTypes);
+        $this->assertFilterMatch($this->eventFilter, $eventTypes);
     }
 
     /**
      * Assert a filter only match the given event types
-     * @param Filter\EventTypeEventFilter $filter
+     *
+     * @param EventFilter $filter
      * @param array $matchedTypes An array of matched event types
-     * @return void
      */
-    protected function assertFilterMatch(EventTypeEventFilter $filter, $matchedTypes)
+    protected function assertFilterMatch(EventFilter $filter, $matchedTypes)
     {
         foreach ($this->allEventTypes as $type) {
             $event = new Event();
             $event->setType($type);
             $mustAccept = in_array($type, $matchedTypes);
-            $message = sprintf("The filter with accepted types '%s' did not match the event type '%s'", $this->getAttributeValue($filter, 'acceptedEventTypes'), $type);
+            $message = sprintf("The filter with accepted types '%s' did not match the event type '%s'", $this->eventFilter->getEventTypes(), $type);
             $this->assertEquals($mustAccept, $filter->match($event), $message);
         }
     }

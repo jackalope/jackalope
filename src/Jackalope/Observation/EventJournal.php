@@ -2,15 +2,17 @@
 
 namespace Jackalope\Observation;
 
-use PHPCR\Observation\EventJournalInterface,
-    PHPCR\Observation\EventInterface,
-    PHPCR\RepositoryException,
-    PHPCR\SessionInterface;
+use DOMDocument;
+use DOMElement;
+use DOMNode;
+use ArrayIterator;
 
-use Jackalope\FactoryInterface,
-    Jackalope\Observation\Filter\EventFilterChain,
-    Jackalope\Observation\Filter\EventFilterInterface;
+use PHPCR\Observation\EventJournalInterface;
+use PHPCR\Observation\EventInterface;
+use PHPCR\RepositoryException;
+use PHPCR\SessionInterface;
 
+use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -19,17 +21,22 @@ use Jackalope\FactoryInterface,
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class EventJournal extends \ArrayIterator implements EventJournalInterface
+class EventJournal extends ArrayIterator implements EventJournalInterface
 {
     /**
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
     /**
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     protected $session;
+
+    /**
+     * @var EventFilter
+     */
+    protected $filter;
 
     /**
      * @var string
@@ -49,38 +56,25 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
      * events, it's up to the EventJournal to do it. And some filter criteria require to access the parent
      * nodes which can only be done with the session.
      *
-     * @param \Jackalope\FactoryInterface $factory
-     * @param \PHPCR\SessionInterface $session
-     * @param \DOMDocument $data The DOM data received from the DAVEX call to the server (might be already filtered or not)
-     * @param int $eventTypes
-     * @param string $absPath
-     * @param boolean $isDeep
-     * @param array $uuid
-     * @param array $nodeTypeName
-     * @param string $workspaceRootUri The prefix to extract the path from the event href attribute
-     * @return \Jackalope\Observation\EventJournal
+     * @param FactoryInterface $factory
+     * @param SessionInterface $session
+     * @param DOMDocument     $data             The DOM data received from the DAVEX call to the server (might be already filtered or not)
+     * @param EventFilter      $filter           the event filter to apply
+     * @param string           $workspaceRootUri The prefix to extract the path from the event href attribute
+     *
+     * @return EventJournal
      *
      */
-    public function __construct(FactoryInterface $factory, SessionInterface $session, \DOMDocument $data, $eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null, $workspaceRootUri = '')
+    public function __construct(FactoryInterface $factory, SessionInterface $session, DOMDocument $data, EventFilter $filter, $workspaceRootUri = '')
     {
         $this->factory = $factory;
         $this->session = $session;
         $this->workspaceRootUri = $workspaceRootUri;
 
-        $this->eventTypesCriterion = $eventTypes;
-        $this->absPathCriterion = $absPath;
-        $this->isDeepCriterion = $isDeep;
-        $this->uuidCriterion = $uuid;
-        $this->nodeTypeNameCriterion = $nodeTypeName;
+        $this->filter = $filter;
 
         // Construct the journal with the transport response
         $events = $this->constructEventJournal($data);
-
-        // Filter the events if required
-        if (($eventTypes !== null) || ($absPath !== null) || ($isDeep !== null) || ($uuid !== null) || ($nodeTypeName !== null)) {
-            $filter = EventFilterChain::constructFilterChain($this->session, $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
-            $events = $this->filterEvents($filter, $events);
-        }
 
         parent::__construct($events);
     }
@@ -101,30 +95,14 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
     // ----- PROTECTED METHODS ------------------------------------------------
 
     /**
-     * Get an array of event, filter them according to the filters properties of the class
-     * and return the filtered array.
-     * @param array(EventInterface) $events The unfiltered array of events
-     * @return array(EventInterface) The filered array of events
+     * Construct the event journal from the DAVEX response returned by the
+     * server, immediately filtered by the current filter.
+     *
+     * @param DOMDocument $data
+     *
+     * @return Event[]
      */
-    protected function filterEvents(EventFilterInterface $filter, $events)
-    {
-        $filteredEvents = array();
-
-        foreach ($events as $event) {
-            if ($filter->match($event)) {
-                $filteredEvents[] = $event;
-            }
-        }
-
-        return $filteredEvents;
-    }
-
-    /**
-     * Construct the event journal from the DAVEX response returned by the server
-     * @param \DOMDocument $data
-     * @return array(Event)
-     */
-    protected function constructEventJournal(\DOMDocument $data)
+    protected function constructEventJournal(DOMDocument $data)
     {
         $events = array();
         $entries = $data->getElementsByTagName('entry');
@@ -141,11 +119,11 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
     /**
      * Parse the events in an <entry> section
-     * @param \DOMElement $entry
+     * @param DOMElement $entry
      * @param string $currentUserId The current user ID as extracted from the <entry> part
      * @return array(Event)
      */
-    protected function extractEvents(\DOMElement $entry, $currentUserId)
+    protected function extractEvents(DOMElement $entry, $currentUserId)
     {
         $events = array();
         $domEvents = $entry->getElementsByTagName('event');
@@ -198,7 +176,9 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
                 }
             }
 
-            $events[] = $event;
+            if ($this->filter->match($event)) {
+                $events[] = $event;
+            }
         }
 
         return $events;
@@ -206,11 +186,14 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
     /**
      * Extract a user id from the author tag in an entry section
-     * @throws \PHPCR\RepositoryException
-     * @param \DOMElement $entry
-     * @return void
+     *
+     * @param DOMElement $entry
+     *
+     * @return string user id of the event
+     *
+     * @throws RepositoryException
      */
-    protected function extractUserId(\DOMElement $entry)
+    protected function extractUserId(DOMElement $entry)
     {
         $authors = $entry->getElementsByTagName('author');
 
@@ -220,7 +203,7 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
         $userId = null;
         foreach ($authors->item(0)->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
+            if ($child instanceof DOMElement) {
                 return $child->nodeValue;
             }
         }
@@ -231,10 +214,10 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
     /**
      * Extract an event type from a DAVEX event journal response
      * @throws RepositoryException
-     * @param \DOMElement $event
+     * @param DOMElement $event
      * @return int The event type
      */
-    protected function extractEventType(\DOMElement $event)
+    protected function extractEventType(DOMElement $event)
     {
         $list = $event->getElementsByTagName('eventtype');
 
@@ -246,7 +229,7 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
         // text fragments (i.e. newlines) that will be returned as DOMText elements.
         $type = null;
         foreach($list->item(0)->childNodes as $el) {
-            if ($el instanceof \DOMElement) {
+            if ($el instanceof DOMElement) {
                 return $this->getEventTypeFromTagName($el->tagName);
             }
         }
@@ -257,13 +240,15 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
     /**
      * Extract a given DOMElement from the children of another DOMElement
      *
+     * @param DOMElement $event        The DOMElement containing the searched tag
+     * @param string     $tagName      The name of the searched tag
+     * @param string     $errorMessage The error message when the tag was not found or null if the tag is not required
+     *
+     * @return DOMNode
+     *
      * @throws RepositoryException
-     * @param \DOMElement $event The DOMElement containing the searched tag
-     * @param string $tagName The name of the searched tag
-     * @param string $errorMessage The error message when the tag was not found or null if the tag is not required
-     * @return \DOMNode
      */
-    protected function getDomElement(\DOMElement $event, $tagName, $errorMessage = null)
+    protected function getDomElement(DOMElement $event, $tagName, $errorMessage = null)
     {
         $list = $event->getElementsByTagName($tagName);
 
@@ -304,10 +289,10 @@ class EventJournal extends \ArrayIterator implements EventJournalInterface
 
     /**
      * Get the XML representation of a DOMElement to display in error messages
-     * @param \DOMElement $event
+     * @param DOMElement $event
      * @return string
      */
-    protected function getEventDom(\DOMElement $event)
+    protected function getEventDom(DOMElement $event)
     {
         return $event->ownerDocument->saveXML($event);
     }
