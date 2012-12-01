@@ -13,6 +13,7 @@ use PHPCR\PropertyInterface;
 use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\RepositoryException;
 use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
@@ -1041,10 +1042,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // check if node type is assigned
+        if (! $this->hasProperty('jcr:mixinTypes')) {
+            throw new NoSuchNodeTypeException("Node does not have type $mixinName");
+        }
 
-        $this->setModified();
+        $mixins = $this->getPropertyValue('jcr:mixinTypes');
+        if (false === $key = array_search($mixinName, $mixins)) {
+            throw new NoSuchNodeTypeException("Node does not have type $mixinName");
+        }
 
-        throw new NotImplementedException('Write');
+        unset($mixins[$key]);
+        $this->setProperty('jcr:mixinTypes', $mixins); // might be empty array which is fine
     }
 
     /**
@@ -1055,8 +1063,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function setMixins($mixinNames)
     {
         $toRemove = array();
-        if ($this->hasProperty('jcr:mixins')) {
-            foreach ($this->getPropertyValue('jcr:mixins') as $mixin) {
+        if ($this->hasProperty('jcr:mixinTypes')) {
+            foreach ($this->getPropertyValue('jcr:mixinTypes') as $mixin) {
+
                 if (false !== $key = array_search($mixin, $mixinNames)) {
                     unset($mixinNames[$key]);
                 } else {
@@ -1067,10 +1076,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (! (count($toRemove) || count($mixinNames))) {
             return; // nothing to do
         }
+
         // make sure the new types actually exist before we add anything
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
-        foreach ($mixinNames as $type) {
-            $ntm->getNodeType($type);
+        foreach ($mixinNames as $mixinName) {
+            $nodeType = $ntm->getNodeType($mixinName);
+            if (! $nodeType->isMixin()) {
+                throw new ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
+            }
         }
         foreach ($mixinNames as $type) {
             $this->addMixin($type);

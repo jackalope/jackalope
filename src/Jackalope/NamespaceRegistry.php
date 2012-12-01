@@ -39,10 +39,11 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     protected $defaultNamespaces = array(
         self::PREFIX_JCR   => self::NAMESPACE_JCR,
+        self::PREFIX_SV    => self::NAMESPACE_SV,
         self::PREFIX_NT    => self::NAMESPACE_NT,
         self::PREFIX_MIX   => self::NAMESPACE_MIX,
         self::PREFIX_XML   => self::NAMESPACE_XML,
-        self::PREFIX_EMPTY => self::NAMESPACE_EMPTY
+        self::PREFIX_EMPTY => self::NAMESPACE_EMPTY,
     );
 
     /**
