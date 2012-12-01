@@ -368,12 +368,7 @@ class ObjectManager
      */
     public function getPropertyByPath($absPath)
     {
-        $this->verifyAbsolutePath($absPath);
-        $absPath = $this->normalizePath($absPath);
-
-        $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
-        $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
-
+        list($name, $nodep) = $this->getNodePath($absPath);
         // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists. and do the moved/deleted checks that are done in node
         $n = $this->getNodeByPath($nodep);
         try {
@@ -381,6 +376,57 @@ class ObjectManager
         } catch (PathNotFoundException $e) {
             throw new ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Get all nodes of those properties in one batch, then collect the
+     * properties of them.
+     *
+     * @param $absPaths
+     *
+     * @return ArrayIterator that contains all found PropertyInterface
+     *      instances keyed by their path
+     */
+    public function getPropertiesByPath($absPaths)
+    {
+        // list of nodes to fetch
+        $nodemap = array();
+        // ordered list of what to return
+        $returnmap = array();
+
+        foreach ($absPaths as $path) {
+            list($name, $nodep) = $this->getNodePath($path);
+            if (! isset($nodemap[$nodep])) {
+                $nodemap[$nodep] = $nodep;
+            }
+            $returnmap[$path] = array('name' => $name, 'path' => $nodep);
+        }
+        $nodes = $this->getNodesByPath($nodemap);
+
+        $properties = array();
+        foreach($returnmap as $key => $data) {
+            if (isset($nodes[$data['path']]) && $nodes[$data['path']]->hasProperty($data['name'])) {
+                $properties[$key] = $nodes[$data['path']]->getProperty($data['name']);
+            }
+        }
+        return new ArrayIterator($properties);
+    }
+
+    /**
+     * Get the node path for a property, and the property name
+     *
+     * @param $absPath
+     *
+     * @return array with name, node path
+     */
+    protected function getNodePath($absPath)
+    {
+        $this->verifyAbsolutePath($absPath);
+        $absPath = $this->normalizePath($absPath);
+
+        $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
+        $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
+        return array($name, $nodep);
     }
 
     /**

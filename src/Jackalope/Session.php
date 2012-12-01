@@ -252,7 +252,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNode($absPath)
+    public function getNode($absPath, $depthHint = -1)
     {
         try {
             return $this->objectManager->getNodeByPath($absPath);
@@ -283,6 +283,11 @@ class Session implements SessionInterface
         } catch (ItemNotFoundException $e) {
             throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    public function getProperties($absPaths)
+    {
+        return $this->objectManager->getPropertiesByPath($absPaths);
     }
 
     /**
