@@ -1328,6 +1328,37 @@ class ObjectManager
     }
 
     /**
+     * Implement the workspace removeItem method.
+     *
+     * @param string $absPath the path of the item to be removed
+     */
+    public function removeItemImmediately($absPath)
+    {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
+        $this->verifyAbsolutePath($absPath);
+        $item = $this->session->getItem($absPath);
+
+        $this->transport->prepareSave();
+        if ($item instanceof NodeInterface) {
+            $this->transport->deleteNode($absPath);
+        } else {
+            $this->transport->deleteProperty($absPath);
+        }
+        $this->transport->finishSave();
+
+        // update local state and cached objects about disapeared nodes
+        $this->performRemove($absPath, $item, false);
+        if (! $item instanceof NodeInterface) {
+            return;
+        }
+        $this->cascadeDelete($absPath, false);
+        $item->setDeleted();
+    }
+
+    /**
      * Implement the workspace copy method. It is dispatched immediately.
      *
      * @param string $srcAbsPath the path of the node to be copied.
