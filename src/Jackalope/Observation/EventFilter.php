@@ -81,6 +81,7 @@ class EventFilter implements EventFilterInterface
     {
         return ! ($event->getType() & $this->eventTypes);
     }
+
     private function skipByPath(EventInterface $event)
     {
         $eventPath = $event->getPath();
@@ -91,7 +92,8 @@ class EventFilter implements EventFilterInterface
         }
 
         if (strlen($eventPath) < strlen($this->absPath)
-            || substr($eventPath, 0, strlen($this->absPath)) != $this->absPath) {
+            || substr($eventPath, 0, strlen($this->absPath)) != $this->absPath
+        ) {
             // the node path does not start with the given path
 
             return true;

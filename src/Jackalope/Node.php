@@ -1047,7 +1047,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $mixins = $this->getPropertyValue('jcr:mixinTypes');
-        if (false === $key = array_search($mixinName, $mixins)) {
+        $key = array_search($mixinName, $mixins);
+        if (false === $key) {
             throw new NoSuchNodeTypeException("Node does not have type $mixinName");
         }
 

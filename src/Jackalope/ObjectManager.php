@@ -404,7 +404,7 @@ class ObjectManager
         $nodes = $this->getNodesByPath($nodemap);
 
         $properties = array();
-        foreach($returnmap as $key => $data) {
+        foreach ($returnmap as $key => $data) {
             if (isset($nodes[$data['path']]) && $nodes[$data['path']]->hasProperty($data['name'])) {
                 $properties[$key] = $nodes[$data['path']]->getProperty($data['name']);
             }

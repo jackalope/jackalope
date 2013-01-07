@@ -121,7 +121,7 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
      * Parse the events in an <entry> section
      * @param DOMElement $entry
      * @param string $currentUserId The current user ID as extracted from the <entry> part
-     * @return array(Event)
+     * @return Event[]
      */
     protected function extractEvents(DOMElement $entry, $currentUserId)
     {
