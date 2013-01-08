@@ -351,7 +351,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
                     $prop = $this->objectManager->getPropertyByPath($this->getChildPath($parentPath));
                     if (! is_null($prop)) {
-                        throw new ConstraintViolationException('Not allowed to add a node below a property');
+                        throw new ConstraintViolationException("Node '{$this->path}': Not allowed to add a node below a property");
                     }
                 } catch (ItemNotFoundException $e) {
                     //ignore to throw the PathNotFoundException below
@@ -376,17 +376,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 }
             }
             if (is_null($primaryNodeTypeName)) {
-                throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}'. Please specify the type explicitly.");
+                throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}' for node '{$this->path}'. Please specify the type explicitly.");
             }
         }
 
         // create child node
         //sanity check: no index allowed. TODO: we should verify this is a valid node name
         if (false !== strpos($relPath, ']')) {
-            throw new RepositoryException("Index not allowed in name of newly created node: $relPath");
+            throw new RepositoryException("The node '{$this->path}' does not allow an index in name of newly created node: $relPath");
         }
         if (in_array($relPath, $this->nodes)) {
-            throw new ItemExistsException("This node already has a child named $relPath."); //TODO: same-name siblings if nodetype allows for them
+            throw new ItemExistsException("The node '{$this->path}' already has a child named '$relPath''."); //TODO: same-name siblings if nodetype allows for them
         }
 
         $data = array('jcr:primaryType' => $primaryNodeTypeName);
