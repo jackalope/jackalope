@@ -177,7 +177,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
         } catch (ValueFormatException $e) {
             if ($throw) {
-                throw $e;
+                throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
             }
             return false;
         }
@@ -231,7 +231,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 return true;
             } catch (ValueFormatException $e) {
                 if ($throw) {
-                    throw $e;
+                    throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
                 }
                 return false; // if there is an explicit match, it has to fit
             }
