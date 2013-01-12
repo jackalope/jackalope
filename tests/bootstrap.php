@@ -15,3 +15,4 @@ if (!$loader = @include __DIR__.'/../vendor/autoload.php') {
 
 ### Load classes needed for jackalope unit tests ###
 require 'Jackalope/TestCase.php';
+require 'Jackalope/Observation/EventFilterTestCase.php';
