@@ -609,10 +609,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * TODO: refactor this if we implement loading single properties
      *
      * @see Item::checkState
-     *
-     * @api
      */
-    public function refresh($keepChanges, $internal = false)
+    protected function refresh($keepChanges, $internal = false)
     {
         if ($this->isDeleted()) {
             if ($internal) {

@@ -140,6 +140,15 @@ class Workspace implements WorkspaceInterface
         $this->session->getObjectManager()->moveNodeImmediately($srcAbsPath, $destAbsPath);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function removeItem($absPath)
+    {
+        $this->session->getObjectManager()->removeItemImmediately($absPath);
+    }
 
     /**
      * {@inheritDoc}
@@ -263,6 +272,17 @@ class Workspace implements WorkspaceInterface
 
         return $this->observationManager;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function getRepositoryManager()
+    {
+        throw new UnsupportedRepositoryOperationException();
+    }
+
 
     /**
      * {@inheritDoc}

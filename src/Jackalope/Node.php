@@ -13,11 +13,14 @@ use PHPCR\PropertyInterface;
 use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\RepositoryException;
 use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
+
+use PHPCR\Util\NodeHelper;
 
 use Jackalope\Factory;
 
@@ -404,6 +407,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function addNodeAutoNamed($nameHint = null, $primaryNodeTypeName = null)
+    {
+        $name = NodeHelper::generateAutoNodeName(
+            $this->nodes,
+            $this->session->getWorkspace()->getNamespaceRegistry()->getNamespaces(),
+            'phpcr',
+            $nameHint
+        );
+        return $this->addNode($name, $primaryNodeTypeName);
+    }
+
+    /**
      * Jackalope implements this feature and updates the position of the
      * existing child at srcChildRelPath to be in the list immediately before
      * destChildRelPath.
@@ -429,6 +448,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
         $this->setModified();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function rename($newName)
+    {
+        $this->session->move($this->path, $this->parentPath . '/' . $newName);
     }
 
    /**
@@ -645,6 +674,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
+    public function getNodeNames()
+    {
+        $this->checkState();
+
+        return new ArrayIterator($this->nodes);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
     public function getProperty($relPath)
     {
         $this->checkState();
@@ -674,6 +716,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $val = PropertyType::convertType($val, $type);
         }
         return $val;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function getPropertyValueWithDefault($relPath, $defaultValue)
+    {
+        if ($this->hasProperty($relPath)) {
+            return $this->getPropertyValue($relPath);
+        }
+        return $defaultValue;
     }
 
     /**
@@ -987,10 +1042,56 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // check if node type is assigned
+        if (! $this->hasProperty('jcr:mixinTypes')) {
+            throw new NoSuchNodeTypeException("Node does not have type $mixinName");
+        }
 
-        $this->setModified();
+        $mixins = $this->getPropertyValue('jcr:mixinTypes');
+        $key = array_search($mixinName, $mixins);
+        if (false === $key) {
+            throw new NoSuchNodeTypeException("Node does not have type $mixinName");
+        }
 
-        throw new NotImplementedException('Write');
+        unset($mixins[$key]);
+        $this->setProperty('jcr:mixinTypes', $mixins); // might be empty array which is fine
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function setMixins($mixinNames)
+    {
+        $toRemove = array();
+        if ($this->hasProperty('jcr:mixinTypes')) {
+            foreach ($this->getPropertyValue('jcr:mixinTypes') as $mixin) {
+
+                if (false !== $key = array_search($mixin, $mixinNames)) {
+                    unset($mixinNames[$key]);
+                } else {
+                    $toRemove[] = $mixin;
+                }
+            }
+        }
+        if (! (count($toRemove) || count($mixinNames))) {
+            return; // nothing to do
+        }
+
+        // make sure the new types actually exist before we add anything
+        $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+        foreach ($mixinNames as $mixinName) {
+            $nodeType = $ntm->getNodeType($mixinName);
+            if (! $nodeType->isMixin()) {
+                throw new ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
+            }
+        }
+        foreach ($mixinNames as $type) {
+            $this->addMixin($type);
+        }
+        foreach ($toRemove as $type) {
+            $this->removeMixin($type);
+        }
     }
 
     /**
@@ -1141,14 +1242,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * This is also called internally to refresh when the node is accessed in
      * state DIRTY.
      *
-     * @param boolean $keepChanges whether to keep local changes
-     * @param boolean $internal implementation internal flag to not check for the InvalidItemStateException
-     *
      * @see Item::checkState
-     *
-     * @api
      */
-    public function refresh($keepChanges, $internal = false)
+    protected function refresh($keepChanges, $internal = false)
     {
         if (! $internal && $this->isDeleted()) {
             throw new InvalidItemStateException('This item has been removed and can not be refreshed');
@@ -1449,6 +1545,20 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
         }
         return $this->properties[$name];
+    }
+
+    /**
+     * Overwrite to set the properties dirty as well.
+     */
+    public function setDirty($keepChanges = false, $targetState = false)
+    {
+        parent::setDirty($keepChanges, $targetState);
+        foreach ($this->properties as $property) {
+            if ($keepChanges && self::STATE_NEW !== $property->getState()) {
+                // if we want to keep changes, we do not want to set new properties dirty.
+                $property->setDirty($keepChanges, $targetState);
+            }
+        }
     }
 
     /**

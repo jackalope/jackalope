@@ -10,6 +10,7 @@ class NamespaceRegistryTest extends TestCase
 
     protected $defaultNamespaces = array(
             "jcr" => "http://www.jcp.org/jcr/1.0",
+            'sv'  => "http://www.jcp.org/jcr/sv/1.0",
             "nt"  => "http://www.jcp.org/jcr/nt/1.0",
             "mix" => "http://www.jcp.org/jcr/mix/1.0",
             "xml" => "http://www.w3.org/XML/1998/namespace",
@@ -99,7 +100,7 @@ class NamespaceRegistryTest extends TestCase
         );
 
         $nsr = $this->getNamespaceRegistryFixture($namespaces);
-        $expected = array( "jcr", "nt" , "mix", "xml", "", "beastie");
+        $expected = array( "jcr", "sv", "nt" , "mix", "xml", "", "beastie");
 
         $this->assertEquals($expected, $nsr->getPrefixes());
     }
@@ -150,6 +151,7 @@ class NamespaceRegistryTest extends TestCase
         $nsr = $this->getNamespaceRegistryFixture($namespaces);
         $expected = array(
             "http://www.jcp.org/jcr/1.0",
+            "http://www.jcp.org/jcr/sv/1.0" ,
             "http://www.jcp.org/jcr/nt/1.0" ,
             "http://www.jcp.org/jcr/mix/1.0",
             "http://www.w3.org/XML/1998/namespace",

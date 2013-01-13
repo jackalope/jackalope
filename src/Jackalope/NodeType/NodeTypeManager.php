@@ -362,44 +362,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * Register namespaces and new node types or update node types based on a
-     * jackrabbit cnd string
+     * {@inheritDoc}
      *
-     * From the Jackrabbit documentation:
-     * The Compact Namespace and Node Type Definition (CND) notation provides
-     * a compact standardized syntax for defining node types and making
-     * namespace declarations.
-     *
-     * A simple example is
-     *   <'phpcr'='http://www.doctrine-project.org/projects/phpcr_odm'>
-     *   [phpcr:managed]
-     *     mixin
-     *     - phpcr:class (string)
-     *
-     * For full documentation of the format, see
-     * http://jackrabbit.apache.org/node-type-notation.html
-     *
-     * @param $cnd a string with cnd information.
-     * @param boolean $allowUpdate whether to fail if node already exists or to
-     *      update it.
-     *
-     * @return Iterator over the registered
-     *      \PHPCR\NodeType\NodeTypeIteratorInterface implementing
-     *      SeekableIterator and Countable. Keys are the node type names,
-     *      values the corresponding NodeTypeInterface instances.
-     *
-     * @throws \PHPCR\InvalidNodeTypeDefinitionException if the
-     *      NodeTypeDefinition is invalid.
-     * @throws NodeTypeExistsException if allowUpdate is false
-     *      and the NodeTypeDefinition specifies a node type name that is
-     *      already registered.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if this
-     *      implementation does not support node type registration.
-     * @throws \PHPCR\RepositoryException if another error occurs.
-     *
-     * @author david at liip.ch
-     *
-     * @private
+     * @api
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {

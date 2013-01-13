@@ -2,17 +2,18 @@
 
 namespace Jackalope\Lock;
 
-use PHPCR\Lock\LockManagerInterface,
-    PHPCR\SessionInterface,
-    PHPCR\PathNotFoundException,
-    PHPCR\InvalidItemStateException,
-    PHPCR\Lock\LockException;
+use PHPCR\Lock\LockManagerInterface;
+use PHPCR\Lock\LockInfoInterface;
+use PHPCR\SessionInterface;
+use PHPCR\PathNotFoundException;
+use PHPCR\InvalidItemStateException;
+use PHPCR\Lock\LockException;
 
-use Jackalope\ObjectManager,
-    Jackalope\FactoryInterface,
-    Jackalope\NotImplementedException,
-    Jackalope\Transport\LockingInterface,
-    Jackalope\Item;
+use Jackalope\ObjectManager;
+use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
+use Jackalope\Transport\LockingInterface;
+use Jackalope\Item;
 
 /**
  * {@inheritDoc}
@@ -165,7 +166,24 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
         $this->locks[$absPath] = $lock;
 
         return $lock;
+    }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Convenience method forwarding to lock()
+     *
+     * @api
+     */
+    public function lockWithInfo($absPath, \PHPCR\Lock\LockInfoInterface $lockInfo)
+    {
+        return $this->lock(
+            $absPath,
+            $lockInfo->getIsDeep(),
+            $lockInfo->getIsSessionScoped(),
+            $lockInfo->getTimeOutHint(),
+            $lockInfo->getOwnerInfo()
+        );
     }
 
     /**
@@ -216,6 +234,16 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
 
         $this->transport->unlock($absPath, $this->locks[$absPath]->getLockToken());
         $this->locks[$absPath]->setIsLive(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function createLockInfo()
+    {
+        return new LockInfo;
     }
 
     /**

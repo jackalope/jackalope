@@ -5,7 +5,7 @@ php:
   - 5.4
 
 before_script: 
-  - COMPOSER=./tests/jackalope-testing-composer.json composer install
+  - composer install
 
 script: phpunit -c tests/phpunit.xml.dist
 
