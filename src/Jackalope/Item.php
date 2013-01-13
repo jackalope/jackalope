@@ -438,7 +438,7 @@ abstract class Item implements ItemInterface
                 $this->postDirtyState = $targetState;
                 break;
             default:
-                throw new RepositoryException('Setting a node dirty in state ' . $this->getState() . ' is not expected');
+                throw new RepositoryException('Setting item ' . $this->path . ' dirty in state ' . $this->getState() . ' is not expected');
         }
 
         $this->keepChanges = $keepChanges;
@@ -488,6 +488,49 @@ abstract class Item implements ItemInterface
     {
         return $this->state;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function revert()
+    {
+        $this->refresh(false);
+    }
+
+    /**
+     * Updates the state of the current item.
+     *
+     * In JSR-283 this was part of the interface. While JSR-333 deprecated
+     * the refresh() method and replaces it with revert(), the functionality
+     * is still needed as Session::refresh() has been kept.
+     *
+     * If keepChanges is false, this method discards all pending changes
+     * currently recorded in this Session that apply to this Item or any
+     * of its descendants (that is, the subgraph rooted at this Item) and
+     * returns all items to reflect the current saved state. Outside a
+     * transaction this state is simply the current state of persistent
+     * storage. Within a transaction, this state will reflect persistent
+     * storage as modified by changes that have been saved but not yet
+     * committed.
+     *
+     * If keepChanges is true then pending change are not discarded but
+     * items that do not have changes pending have their state refreshed
+     * to reflect the current saved state, thus revealing changes made by
+     * other sessions.
+     *
+     * @param boolean $keepChanges a boolean
+     *
+     * @return void
+     *
+     * @throws InvalidItemStateException if this Item object represents
+     *      a workspace item that has been removed (either by this session or
+     *      another).
+     * @throws RepositoryException if another error occurs.
+     */
+    protected abstract function refresh($keepChanges);
+
 
     /**
      * Change the state of the item

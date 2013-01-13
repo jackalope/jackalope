@@ -76,7 +76,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    protected function getSupertypeNames()
+    public function getSupertypeNames()
     {
         if (null === $this->superTypeNames) {
             $this->superTypeNames = array();

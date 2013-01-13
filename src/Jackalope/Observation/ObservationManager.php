@@ -2,13 +2,14 @@
 
 namespace Jackalope\Observation;
 
-use PHPCR\Observation\ObservationManagerInterface,
-    PHPCR\Observation\EventListenerInterface,
-    PHPCR\SessionInterface;
+use PHPCR\Observation\ObservationManagerInterface;
+use PHPCR\Observation\EventListenerInterface;
+use PHPCR\Observation\EventFilterInterface;
+use PHPCR\SessionInterface;
 
-use Jackalope\Transport\ObservationInterface,
-    Jackalope\FactoryInterface,
-    Jackalope\NotImplementedException;
+use Jackalope\Transport\ObservationInterface;
+use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -23,20 +24,26 @@ use Jackalope\Transport\ObservationInterface,
 class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
 {
     /**
-     * @var \Jackalope\Transport\ObservationInterface
+     * @var FactoryInterface
+     */
+    protected $factory;
+
+    /**
+     * @var ObservationInterface
      */
     protected $transport;
 
     /**
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     protected $session;
 
 
     public function __construct(FactoryInterface $factory, SessionInterface $session, ObservationInterface $transport)
     {
-        $this->transport = $transport;
+        $this->factory = $factory;
         $this->session = $session;
+        $this->transport = $transport;
     }
 
     /**
@@ -45,11 +52,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      */
     public function addEventListener(
         EventListenerInterface $listener,
-        $eventTypes,
-        $absPath,
-        $isDeep,
-        array $uuid,
-        array $nodeTypeName, $noLocal
+        EventFilterInterface $filter
     )
     {
         throw new NotImplementedException();
@@ -86,11 +89,23 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      * {@inheritDoc}
      * @api
      */
-    public function getEventJournal($eventTypes = null, $absPath = null, $isDeep = null, array $uuid = null, array $nodeTypeName = null)
+    public function getEventJournal(EventFilterInterface $filter)
     {
-        return $this->transport->getEventJournal($this->session, $eventTypes, $absPath, $isDeep, $uuid, $nodeTypeName);
+        return $this->transport->getEventJournal($this->session, $filter);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
+    public function createEventFilter()
+    {
+        return $this->factory->get(
+            'Jackalope\\Observation\\EventFilter',
+            array($this->session)
+        );
+    }
     /**
      * @return \Traversable The list of event listeners
      * @see getRegisteredEventListeners
