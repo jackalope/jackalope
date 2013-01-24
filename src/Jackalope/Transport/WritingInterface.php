@@ -135,8 +135,8 @@ interface WritingInterface extends TransportInterface
     /**
      * Recursively store a node and its children to the given absolute path.
      *
-     * Transport stores the node at its path, with all properties and all
-     * children.
+     * Transport stores the node at its path, with all properties (but do not
+     * store children).
      *
      * The transport is responsible to ensure that the node is valid and
      * has to generate autocreated properties.

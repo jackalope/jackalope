@@ -112,24 +112,33 @@ class ObjectManager
     protected $nodesAdd = array();
 
     /**
-     * Contains a list of items to be removed from the workspace upon save
+     * Contains a list of items that are removed in the current session.
      *
-     * Keys are the full paths to be removed, value is meaningless
+     * Keys are the full paths to be removed, values are true or false. A false
+     * value means the the remove does not need to be executed as a parent of
+     * this path is removed as well.
+     *
+     * Note: Keep in mind that a delete is recursive, but we only have the
+     * explicitly deleted paths in this array. We check on deleted parents
+     * whenever retrieving a non-cached node.
      *
      * @var array
      */
     protected $itemsRemove = array();
 
     /**
-     * Contains a list of nodes to be moved in the workspace upon save
+     * Contains a list of nodes that where moved during this session.
      *
      * Keys are the source paths, values the destination paths.
      *
      * The objectsByPath array is updated immediately and any getItem and
      * similar requests are rewritten for the transport layer until save()
      *
-     * Note that this list can only contain nodes, as properties can not be
-     * moved.
+     * Only nodes can be moved but not properties.
+     *
+     * Note: Keep in mind that moving also affects all children of the moved
+     * node, but we only have the explicitly moved paths in this array. We
+     * check on moved parents whenver retrieving a non-cached node.
      *
      * @var array
      */
@@ -794,10 +803,8 @@ class ObjectManager
      * Push all recorded changes to the backend.
      *
      * The order is important to avoid conflicts
-     * 1. remove nodes
-     * 2. move nodes
-     * 3. add new nodes
-     * 4. commit any other changes
+     * 1. operationsLog
+     * 2. commit any other changes
      *
      * If transactions are enabled but we are not currently inside a
      * transaction, the session is responsible to start a transaction to make
@@ -813,25 +820,6 @@ class ObjectManager
 
         try {
             $this->transport->prepareSave();
-            /* Filter out sub-nodes since the top-most nodes that are added will
-             * create all sub-nodes and sub-properties at once.
-             * Special case: If the direct parent is NOT new, we still need to
-             * add this node explicitly
-             */
-            foreach ($this->operationsLog as $operation) {
-                if ('add' != $operation['op']) continue;
-                list ($path, $node) = $operation['data'];
-                if (isset($this->nodesAdd[$path]) && ! $this->nodesAdd[$path]) continue;
-
-                foreach ($this->nodesAdd as $path2 => $do) {
-                    if (! $do) continue;
-                    if (strpos($path, $path2.'/') === 0
-                        && $node->getParent()->isNew()
-                    ) {
-                        $this->nodesAdd[$path] = false;
-                    }
-                }
-            }
 
             /*
              * Filter out removals of sub-nodes and properties of to be deleted
@@ -854,6 +842,10 @@ class ObjectManager
                 $last = $path;
             }
 
+            /*
+             * Execute the recorded operations in the right order, skipping
+             * stale data.
+             */
             foreach ($this->operationsLog as $operation) {
                 switch($operation['op']) {
                     case 'remove':
@@ -918,9 +910,9 @@ class ObjectManager
         foreach ($this->operationsLog as $operation) {
             if ('add' == $operation['op']) {
                 list ($path, $node) = $operation['data'];
-                //if ($this->nodesAdd[$path]) {
+                if (! $node->isDeleted()) {
                     $node->confirmSaved();
-                //}
+                }
             }
         }
 
