@@ -26,6 +26,10 @@ use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\NodeTypeManagementInterface;
 use Jackalope\Transport\NodeTypeCndManagementInterface;
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\Transport\AddNodeOperation;
+use Jackalope\Transport\MoveNodeOperation;
+use Jackalope\Transport\RemoveNodeOperation;
+use Jackalope\Transport\RemovePropertyOperation;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -85,18 +89,12 @@ class ObjectManager
 
     /**
      * This is an ordered list of all operations to commit to the transport
-     * during save. The values consist of references to the nodesAdd,
-     * itemsRemove and nodesMove maps.
-     *
-     * Keys are sequential, values are array of {
-     *  op => add | remove | move,
-     *  ref => index in the respective array
-     * }
+     * during save. The values are the add, move and remove operation classes.
      *
      * Add, remove and move actions need to be saved in the correct order to avoid
      * i.e. adding something where a node has not yet been moved to.
      *
-     * @var array
+     * @var \Jackalope\Transport\Operation[]
      */
     protected $operationsLog = array();
 
@@ -104,43 +102,54 @@ class ObjectManager
      * Contains the list of paths that have been added to the workspace in the
      * current session.
      *
-     * Keys are the full paths to be added, values are true or false. A false
-     * value means the add was cancelled later.
+     * Keys are the full paths to be added
      *
-     * @var array
+     * @var AddNodeOperation[]
      */
     protected $nodesAdd = array();
 
     /**
-     * Contains a list of items that are removed in the current session.
+     * Contains the list of node remove operations for the current session.
      *
-     * Keys are the full paths to be removed, values are true or false. A false
-     * value means the the remove does not need to be executed as a parent of
-     * this path is removed as well.
+     * Keys are the full paths to be removed.
      *
      * Note: Keep in mind that a delete is recursive, but we only have the
      * explicitly deleted paths in this array. We check on deleted parents
      * whenever retrieving a non-cached node.
      *
-     * @var array
+     * @var RemoveNodeOperation[]
      */
-    protected $itemsRemove = array();
+    protected $nodesRemove = array();
+
+    /**
+     * Contains the list of property remove operations for the current session.
+     *
+     * Keys are the full paths to be removed.
+     *
+     * Note: Keep in mind that a delete is recursive, but we only have the
+     * explicitly deleted paths in this array. We check on deleted parents
+     * whenever retrieving a non-cached node.
+     *
+     * @var RemovePropertyOperation[]
+     */
+    protected $propertiesRemove = array();
 
     /**
      * Contains a list of nodes that where moved during this session.
      *
-     * Keys are the source paths, values the destination paths.
+     * Keys are the source paths, values the move operations containing the
+     * target path.
      *
      * The objectsByPath array is updated immediately and any getItem and
      * similar requests are rewritten for the transport layer until save()
      *
-     * Only nodes can be moved but not properties.
+     * Only nodes can be moved, not properties.
      *
      * Note: Keep in mind that moving also affects all children of the moved
      * node, but we only have the explicitly moved paths in this array. We
-     * check on moved parents whenver retrieving a non-cached node.
+     * check on moved parents whenever retrieving a non-cached node.
      *
-     * @var array
+     * @var MoveNodeOperation[]
      */
     protected $nodesMove = array();
 
@@ -178,11 +187,12 @@ class ObjectManager
     protected function resolveBackendPath($path)
     {
         // did the node or any of its parent move? add / to dst path to not match /nodename with /node
-        foreach (array_reverse($this->nodesMove) as $src => $dst) {
-            if (strpos($path, "$dst/") === 0 || $path == $dst) {
-                $path = substr_replace($path, $src, 0, strlen($dst));
+        foreach (array_reverse($this->nodesMove) as $operation) {
+            if (strpos($path, $operation->dstPath . '/') === 0 || $path == $operation->dstPath) {
+                $path = substr_replace($path, $operation->srcPath, 0, strlen($operation->dstPath));
             }
         }
+
         return $path;
     }
 
@@ -331,13 +341,14 @@ class ObjectManager
         $movedHere = false;
 
         // go through all moves and check if a parent was moved. add / to dst path to not match /nodename with /node
-        foreach ($this->nodesMove as $src => $target) {
+        foreach ($this->nodesMove as $operation) {
             // TODO: this fails for moving a node and then moving another to that place. see MoveMethodTest::testSessionMoveReplace
-            if (strpos($absPath, "$src/") === 0) {
-                return array($movedHere, $src);
+            if (strpos($absPath, $operation->srcPath . '/') === 0) {
+                return array($movedHere, $operation->srcPath);
             }
 
-            if (strpos($absPath, "$target/") === 0) {
+            if (strpos($absPath, $operation->dstPath . '/') === 0) {
+                $this->checkNodeRemoved(str_replace($operation->dstPath, $operation->srcPath, $absPath));
                 $movedHere = true;
             }
         }
@@ -364,7 +375,7 @@ class ObjectManager
         }
 
         // was the node moved away from this location?
-        if (isset($this->nodesMove[$absPath])) {
+        if ($this->isNodeMoved($absPath)) {
             throw new ItemNotFoundException("Path not found (moved in current session): $absPath");
         }
 
@@ -373,22 +384,13 @@ class ObjectManager
         if ($src) {
             throw new ItemNotFoundException("Path not found (parent node $src moved in current session): $absPath");
         }
-
         // this node or a parent was moved to this path
-        $movedHere = $movedHere || array_search($absPath, $this->nodesMove) !== false;
+        $movedHere = $movedHere || $this->getMoveSrcPath($absPath);
 
         if (! $movedHere) {
-            // there is no node moved to this location, if the item is in the itemsRemove, it is really deleted
-            if (isset($this->itemsRemove[$absPath])) {
-                throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
-            }
-
-            // check whether a parent node was removed
-            foreach ($this->itemsRemove as $path => $dummy) {
-                if (strpos($absPath, "$path/") === 0) {
-                    throw new ItemNotFoundException("Path not found (parent node $path deleted in current session): $absPath");
-                }
-            }
+            // there is no node moved to this location.
+            // if the node is in nodesRemove, it is really deleted
+            $this->checkNodeRemoved($absPath);
         }
 
         // The path was the destination of a previous move which isn't yet dispatched to the backend.
@@ -830,46 +832,29 @@ class ObjectManager
              * Sort the paths and then use that to check if parent path
              * was already removed in a - comparably - cheap way
              */
+            /*
+             * do we really need this? looks like over-optimization with potential to break stuff
             $todelete = array_keys($this->itemsRemove);
             sort($todelete);
             $last = ':'; // anything but '/'
             foreach ($todelete as $path) {
                 if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
                     // parent path has already been removed
-                    $this->itemsRemove[$path] = false;
+                    $this->itemsRemove[$path]->skip = true;;
                     continue;
                 }
                 $last = $path;
             }
+            */
 
-            /*
-             * Execute the recorded operations in the right order, skipping
-             * stale data.
-             */
-            foreach ($this->operationsLog as $operation) {
-                switch($operation['op']) {
-                    case 'remove':
-                        if ($this->itemsRemove[$operation['data']]) {
-                            $this->transportRemove($operation['data']);
-                        }
-                        break;
-
-                    case 'move':
-                        list ($src, $dst) = $operation['data'];
-                        $this->transportMove($src, $dst);
-                        break;
-
-                    case 'add':
-                        list($path, $node) = $operation['data'];
-                        if (! $node->isDeleted() && (! isset($this->nodesAdd[$node->getPath()]) || $this->nodesAdd[$node->getPath()])) {
-                            $this->transportAdd($path, $node);
-                        }
-                        break;
-
-                    default:
-                        throw new \Exception('Unexpected operation '.$operation['op']);
+            foreach ($this->nodesAdd as $path => $operation) {
+                if ($operation->node->isDeleted()) {
+                    $operation->skip = true;
                 }
             }
+
+
+            $this->executeOperations($this->operationsLog);
 
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath['Node'])) {
@@ -903,15 +888,25 @@ class ObjectManager
             throw $e;
         }
 
+        foreach ($this->operationsLog as $operation) {
+            if ($operation instanceof MoveNodeOperation) {
+                if (isset($this->objectsByPath['Node'][$operation->dstPath])) {
+                    // might not be set if moved again afterwards
+                    // move is not treated as modified, need to confirm separately
+                    $this->objectsByPath['Node'][$operation->dstPath]->confirmSaved();
+                }
+            }
+        }
+
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
-        $this->itemsRemove = array();
+        $this->nodesRemove = array();
+        $this->propertiesRemove = array();
         $this->nodesMove = array();
 
         foreach ($this->operationsLog as $operation) {
-            if ('add' == $operation['op']) {
-                list ($path, $node) = $operation['data'];
-                if (! $node->isDeleted()) {
-                    $node->confirmSaved();
+            if ($operation instanceof AddNodeOperation) {
+                if (! $operation->node->isDeleted()) {
+                    $operation->node->confirmSaved();
                 }
             }
         }
@@ -929,57 +924,81 @@ class ObjectManager
     }
 
     /**
-     * Tell the transport to move from $src to $dst
+     * Execute the recorded operations in the right order, skipping
+     * stale data.
      *
-     * @param string $src
-     * @param string $dst
+     * @param Operation[] $operations
      */
-    protected function transportMove($src, $dst)
+    protected function executeOperations(array $operations)
     {
-        $this->transport->moveNode($src, $dst);
-        if (isset($this->objectsByPath['Node'][$dst])) {
-            // might not be set if moved again afterwards
-            // move is not treated as modified, need to confirm separately
-            $this->objectsByPath['Node'][$dst]->confirmSaved();
+        $last = null;
+        $batch = array();
+
+        foreach ($operations as $operation) {
+            if ($operation instanceof RemoveNodeOperation) {
+                if ($operation->skip) {
+                    continue;
+                }
+                $type = 'remove-node';
+            } elseif ($operation instanceof RemovePropertyOperation) {
+                if ($operation->skip) {
+                    continue;
+                }
+                $type = 'remove-property';
+            } elseif ($operation instanceof MoveNodeOperation) {
+                $type = 'move';
+            } elseif ($operation instanceof AddNodeOperation) {
+                if ($operation->skip) {
+                    continue;
+                }
+                // (! $node->isDeleted() && (! isset($this->nodesAdd[$node->getPath()]) || $this->nodesAdd[$node->getPath()])) {
+                $type = 'add';
+            } else {
+                throw new \Exception('Unexpected operation ' . get_class($operation));
+            }
+
+            if (null === $last) {
+                $last = $type;
+            }
+
+            if ($type != $last) {
+                $this->executeBatch($last, $batch);
+                $last = $type;
+                $batch = array();
+            }
+
+            $batch[] = $operation;
+        }
+
+        // only execute last batch if not all was skipped
+        if (! count($batch)) {
+            return;
+        }
+
+        $this->executeBatch($last, $batch);
+
+    }
+
+    protected function executeBatch($type, $operations)
+    {
+        switch($type) {
+            case 'add':
+                $this->transport->storeNodes($operations);
+                break;
+            case 'move':
+                $this->transport->moveNodes($operations);
+                break;
+            case 'remove-node':
+                $this->transport->deleteNodes($operations);
+                break;
+            case 'remove-property':
+                $this->transport->deleteProperties($operations);
+                break;
+            default:
+                throw new \Exception('internal error: unknown operation "' . $type . '"');
         }
     }
 
-    /**
-     * Tell the transport to remove $path
-     *
-     * @param string $path The path of the node or property to remove
-     */
-    protected function transportRemove($path)
-    {
-        if ($this->itemsRemove[$path] instanceof NodeInterface) {
-            $this->transport->deleteNode($path);
-        } elseif ($this->itemsRemove[$path] instanceof PropertyInterface) {
-            $this->transport->deleteProperty($path);
-        } else {
-            throw new RepositoryException("Internal error while deleting $path: unknown class " . get_class($this->itemsRemove[$path]));
-        }
-    }
-
-    /**
-     * Tell the transport to create the node at $path
-     *
-     * @param string $path
-     */
-    protected function transportAdd($path, Node $node)
-    {
-        $targetPath = $node->getPath();
-        if ($targetPath == $path) {
-            $targetPath = false;
-        } else {
-            // store at first target path first
-            $node->setPath($path, false);
-        }
-        $this->transport->storeNode($node);
-        if ($targetPath) {
-            // restore move target
-            $node->setPath($targetPath, false);
-        }
-    }
 
     /**
      * Removes the cache of the predecessor version after the node has been
@@ -1093,51 +1112,53 @@ class ObjectManager
 
             $this->operationsLog = array();
 
-            foreach ($this->nodesAdd as $path => $do) {
-                if ($do) {
-                    $this->objectsByPath['Node'][$path]->setDeleted();
+            foreach ($this->nodesAdd as $path => $operation) {
+                if (! $operation->skip) {
+                    $operation->node->setDeleted();
                     unset($this->objectsByPath['Node'][$path]); // did you see anything? it never existed
                 }
             }
             $this->nodesAdd = array();
 
-            foreach ($this->itemsRemove as $path => $item) {
-                // the code below will set this to dirty again. but it must not
-                // be in state deleted or we will fail the sanity checks
-                $item->setClean();
-
-                if ($item instanceof Node) {
-                    $this->objectsByPath['Node'][$path] = $item; // back in glory
-
-                    $parentPath = strtr(dirname($path), '\\', '/');
-                    if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
-                        // tell the parent about its restored child
-                        $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
-                    }
-                }
+            // the code below will set this to dirty again. but it must not
+            // be in state deleted or we will fail the sanity checks
+            foreach ($this->propertiesRemove as $path => $operation) {
+                $operation->property->setClean();
             }
-            $this->itemsRemove = array();
+            $this->propertiesRemove = array();
+            foreach ($this->nodesRemove as $path => $operation) {
+                $operation->node->setClean();
 
-            foreach (array_reverse($this->nodesMove) as $from => $to) {
-                if (isset($this->objectsByPath['Node'][$to])) {
-                    // not set if we moved twice
-                    $item = $this->objectsByPath['Node'][$to];
-                    $item->setPath($from);
-                }
-                $parentPath = strtr(dirname($to), '\\', '/');
+                $this->objectsByPath['Node'][$path] = $operation->node; // back in glory
+
+                $parentPath = strtr(dirname($path), '\\', '/');
                 if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->unsetChildNode(basename($to), false);
+                    $this->objectsByPath['Node'][$parentPath]->addChildNode($operation->node, false);
+                }
+            }
+            $this->nodesRemove = array();
+
+            foreach (array_reverse($this->nodesMove) as $operation) {
+                if (isset($this->objectsByPath['Node'][$operation->dstPath])) {
+                    // not set if we moved twice
+                    $item = $this->objectsByPath['Node'][$operation->dstPath];
+                    $item->setPath($operation->srcPath);
+                }
+                $parentPath = strtr(dirname($operation->dstPath), '\\', '/');
+                if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
+                    // tell the parent about its restored child
+                    $this->objectsByPath['Node'][$parentPath]->unsetChildNode(basename($operation->dstPath), false);
                 }
                 // TODO: from in a two step move might fail. we should merge consecutive moves
-                $parentPath = strtr(dirname($from), '\\', '/');
+                $parentPath = strtr(dirname($operation->srcPath), '\\', '/');
                 if (array_key_exists($parentPath, $this->objectsByPath['Node']) && $item instanceof Node) {
                     // tell the parent about its restored child
                     $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
                 }
                 // move item to old location
-                $this->objectsByPath['Node'][$from] = $this->objectsByPath['Node'][$to];
-                unset($this->objectsByPath['Node'][$to]);
+                $this->objectsByPath['Node'][$operation->srcPath] = $this->objectsByPath['Node'][$operation->dstPath];
+                unset($this->objectsByPath['Node'][$operation->dstPath]);
             }
             $this->nodesMove = array();
         }
@@ -1177,7 +1198,7 @@ class ObjectManager
      * @param string $absPath The absolute path of the item that is being
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
-     * @param ItemInterface $item The item that is being removed
+     * @param PropertyInterface $property The item that is being removed
      * @param bool $sessionBased i.e. removing a version is dispatched
      *      immediately, don't track for eventual refresh
      *
@@ -1185,23 +1206,48 @@ class ObjectManager
      *
      * @see ObjectManager::removeItem()
      */
-    protected function performRemove($absPath, ItemInterface $item, $sessionOperation = true)
+    protected function performPropertyRemove($absPath, PropertyInterface $property, $sessionOperation = true)
     {
-        if ($item instanceof Node) {
-            unset($this->objectsByUuid[$item->getIdentifier()]);
+        if ($sessionOperation) {
+            // keep reference to object in case of refresh
+            $operation = new RemovePropertyOperation($absPath, $property);
+            $this->propertiesRemove[$absPath] = $operation;
+            $this->operationsLog[] = $operation;
         }
+    }
+
+    /**
+     * Remove the item at absPath from local cache and keep information for undo.
+     *
+     * @param string $absPath The absolute path of the item that is being
+     *      removed. Note that contrary to removeItem(), this path is the full
+     *      path for a property too.
+     * @param NodeInterface $node The item that is being removed
+     * @param bool $sessionBased i.e. removing a version is dispatched
+     *      immediately, don't track for eventual refresh
+     *
+     * @return void
+     *
+     * @see ObjectManager::removeItem()
+     */
+    protected function performNodeRemove($absPath, NodeInterface $node, $sessionOperation = true, $cascading = false)
+    {
+        unset($this->objectsByUuid[$node->getIdentifier()]);
         unset($this->objectsByPath['Node'][$absPath]);
 
         if (isset($this->nodesAdd[$absPath])) {
             // this is a new unsaved node. skip saving it. or should we still add but then remove right away?
-            $this->nodesAdd[$absPath] = false;
+            $this->nodesAdd[$absPath]->skip = true;
         } elseif ($sessionOperation) {
             // keep reference to object in case of refresh
-            // the topmost item delete will be sent to backend and cascade delete
-            $this->itemsRemove[$absPath] = $item;
-            $this->operationsLog[] = array('op' => 'remove', 'data' => $absPath);
+            $operation = new RemoveNodeOperation($absPath, $node);
+            $this->nodesRemove[$absPath] = $operation;
+            if (! $cascading) {
+                $this->operationsLog[] = $operation;
+            }
         }
     }
+
 
     /**
      * Notify all cached children that they are deleted as well and clean up
@@ -1213,14 +1259,14 @@ class ObjectManager
      */
     protected function cascadeDelete($absPath, $sessionOperation = true)
     {
-        foreach ($this->objectsByPath['Node'] as $path => $item) {
+        foreach ($this->objectsByPath['Node'] as $path => $node) {
             if (strpos($path, "$absPath/") === 0) {
                 // notify item and let it call removeItem again. save()
                 // makes sure no children of already deleted items are
                 // deleted again.
-                $this->performRemove($path, $item, $sessionOperation);
-                if (!$item->isDeleted()) {
-                    $item->setDeleted();
+                $this->performNodeRemove($path, $node, $sessionOperation, true);
+                if (!$node->isDeleted()) {
+                    $node->setDeleted();
                 }
             }
         }
@@ -1235,13 +1281,13 @@ class ObjectManager
     protected function cascadeDeleteVersion($absPath)
     {
         // delete all versions, similar to cascadeDelete
-        foreach ($this->objectsByPath['Version\\Version'] as $path => $item) {
+        foreach ($this->objectsByPath['Version\\Version'] as $path => $node) {
             if (strpos($path, "$absPath/") === 0) {
                 // versions are read only, we simple unset them
-                unset($this->objectsByUuid[$item->getIdentifier()]);
+                unset($this->objectsByUuid[$node->getIdentifier()]);
                 unset($this->objectsByPath['Version\\Version'][$absPath]);
-                if (!$item->isDeleted()) {
-                    $item->setDeleted();
+                if (!$node->isDeleted()) {
+                    $node->setDeleted();
                 }
             }
         }
@@ -1280,20 +1326,13 @@ class ObjectManager
         }
 
         if ($property) {
-            $item = $property;
             $absPath = $this->absolutePath($absPath, $property->getName());
+            $this->performPropertyRemove($absPath, $property);
         } else {
-            $item = $this->objectsByPath['Node'][$absPath];
+            $node = $this->objectsByPath['Node'][$absPath];
+            $this->performNodeRemove($absPath, $node);
+            $this->cascadeDelete($absPath);
         }
-        $this->performRemove($absPath, $item);
-
-        if ($property) {
-            // property has no children
-            return;
-        }
-        $this->cascadeDelete($absPath);
-
-
     }
 
     /**
@@ -1371,13 +1410,14 @@ class ObjectManager
 
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath, true);
         // record every single move in case we have intermediary operations
-        $this->operationsLog[] = array('op' => 'move', 'data' => array($srcAbsPath, $destAbsPath));
+        $operation = new MoveNodeOperation($srcAbsPath, $destAbsPath);
+        $this->operationsLog[] = $operation;
 
         // update local cache state information
-        if ($original = array_search($srcAbsPath, $this->nodesMove)) {
+        if ($original = $this->getMoveSrcPath($srcAbsPath)) {
             $srcAbsPath = $original;
         }
-        $this->nodesMove[$srcAbsPath] = $destAbsPath;
+        $this->nodesMove[$srcAbsPath] = $operation;
     }
 
     /**
@@ -1403,7 +1443,7 @@ class ObjectManager
         $this->verifyAbsolutePath($srcAbsPath);
         $this->verifyAbsolutePath($destAbsPath);
 
-        $this->transport->moveNode($srcAbsPath, $destAbsPath, true); // should throw the right exceptions
+        $this->transport->moveNodeImmediately($srcAbsPath, $destAbsPath, true); // should throw the right exceptions
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
     }
 
@@ -1411,6 +1451,8 @@ class ObjectManager
      * Implement the workspace removeItem method.
      *
      * @param string $absPath the path of the item to be removed
+     *
+     * @see Workspace::removeItem
      */
     public function removeItemImmediately($absPath)
     {
@@ -1421,20 +1463,19 @@ class ObjectManager
         $this->verifyAbsolutePath($absPath);
         $item = $this->session->getItem($absPath);
 
-        $this->transport->prepareSave();
         if ($item instanceof NodeInterface) {
-            $this->transport->deleteNode($absPath);
+            $this->transport->deleteNodeImmediately($absPath);
         } else {
-            $this->transport->deleteProperty($absPath);
+            $this->transport->deletePropertyImmediately($absPath);
         }
-        $this->transport->finishSave();
 
-        // update local state and cached objects about disapeared nodes
-        $this->performRemove($absPath, $item, false);
-        if (! $item instanceof NodeInterface) {
-            return;
+        // update local state and cached objects about disappeared nodes
+        if ($item instanceof NodeInterface) {
+            $this->performNodeRemove($absPath, $item, false);
+            $this->cascadeDelete($absPath, false);
+        } else {
+            $this->performPropertyRemove($absPath, $item, false);
         }
-        $this->cascadeDelete($absPath, false);
         $item->setDeleted();
     }
 
@@ -1468,15 +1509,15 @@ class ObjectManager
     }
 
     /**
-     * WRITE: add an item at the specified path. Schedules an add operation
-     * for the next save() and caches the item.
+     * WRITE: add a node at the specified path. Schedules an add operation
+     * for the next save() and caches the node.
      *
      * @param string $absPath the path to the node or property, including the item name
-     * @param ItemInterface $item The item instance that is added.
+     * @param NodeInterface $node The item instance that is added.
      *
      * @throws ItemExistsException if a node already exists at that path
      */
-    public function addNode($absPath, NodeInterface $item)
+    public function addNode($absPath, NodeInterface $node)
     {
         if (! $this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1486,11 +1527,12 @@ class ObjectManager
             throw new ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
 
-        $this->objectsByPath['Node'][$absPath] = $item;
+        $this->objectsByPath['Node'][$absPath] = $node;
         // a new item never has a uuid, no need to add to objectsByUuid
 
-        $this->nodesAdd[$absPath] = 1;
-        $this->operationsLog[] = array('op' => 'add', 'data' => array($absPath, $item));
+        $operation = new AddNodeOperation($absPath, $node);
+        $this->nodesAdd[$absPath] = $operation;
+        $this->operationsLog[] = $operation;
     }
 
     /**
@@ -1531,7 +1573,8 @@ class ObjectManager
         $this->objectsByPath = array('Node' => array());
         $this->objectsByUuid = array();
         $this->nodesAdd = array();
-        $this->itemsRemove = array();
+        $this->nodesRemove = array();
+        $this->propertiesRemove = array();
         $this->nodesMove = array();
     }
 
@@ -1627,8 +1670,13 @@ class ObjectManager
         }
 
         // Notify the deleted nodes
-        foreach ($this->itemsRemove as $item) {
-            $item->$method();
+        foreach ($this->nodesRemove as $node) {
+            $node->$method();
+        }
+
+        // Notify the deleted properties
+        foreach ($this->propertiesRemove as $property) {
+            $property->$method();
         }
     }
 
@@ -1646,19 +1694,56 @@ class ObjectManager
     }
 
     /**
-     * Check whether an item path has an unpersisted delete operation and
+     * Get the src path of a move operation knowing the target path.
+     *
+     * @param string $dstPath
+     *
+     * @return string|bool the source path if found, false otherwise
+     */
+    private function getMoveSrcPath($dstPath)
+    {
+        foreach ($this->nodesMove as $operation) {
+            if ($operation->dstPath == $dstPath) {
+                return $operation->srcPath;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $absPath
+     *
+     * @throws ItemNotFoundException if the item at this path or a parent of this path is deleted
+     */
+    private function checkNodeRemoved($absPath)
+    {
+        if (isset($this->nodesRemove[$absPath])) {
+            throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
+        }
+
+        // check whether a parent node was removed
+        foreach ($this->nodesRemove as $path => $dummy) {
+            if (strpos($absPath, "$path/") === 0) {
+                throw new ItemNotFoundException("Path not found (parent node $path deleted in current session): $absPath");
+            }
+        }
+    }
+
+    /**
+     * Check whether the node at path has an unpersisted delete operation and
      * there is no other node moved or added there
      *
      * @param string $absPath The absolute path of the node
      *
      * @return boolean true if the current changed state has no node at this place
      */
-    public function isItemDeleted($absPath)
+    public function isNodeDeleted($absPath)
     {
-        return array_key_exists($absPath, $this->itemsRemove)
+        return array_key_exists($absPath, $this->nodesRemove)
             && ! ((array_key_exists($absPath, $this->nodesAdd))
                 || $this->nodesAdd[$absPath]
-                || array_search($absPath, $this->nodesMove) !== false)
+                || $this->getMoveSrcPath($absPath))
             ;
     }
 
@@ -1678,8 +1763,8 @@ class ObjectManager
     {
         if (isset($this->objectsByPath[$class][$absPath])) {
             return $this->objectsByPath[$class][$absPath];
-        } elseif (array_key_exists($absPath, $this->itemsRemove)) {
-            return $this->itemsRemove[$absPath];
+        } elseif (array_key_exists($absPath, $this->nodesRemove)) {
+            return $this->nodesRemove[$absPath]->node;
         }
         return null;
     }
@@ -1718,7 +1803,7 @@ class ObjectManager
      * @param boolean $keepChanges Whether to keep local changes or forget
      *      them
      *
-     * @return true if the node is to be forgotten by its parent (deleted or
+     * @return bool true if the node is to be forgotten by its parent (deleted or
      *      moved away), false if child should be kept
      */
     public function purgeDisappearedNode($absPath, $keepChanges)
@@ -1727,7 +1812,7 @@ class ObjectManager
             $item = $this->objectsByPath['Node'][$absPath];
 
             if ($keepChanges &&
-                ( $item->isNew() || false !== array_search($absPath, $this->nodesMove))
+                ( $item->isNew() || $this->getMoveSrcPath($absPath))
             ) {
                 // we keep changes and this is a new node or it moved here
                 return false;

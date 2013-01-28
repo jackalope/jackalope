@@ -149,7 +149,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 ) {
                     // for all those cases, if the node was moved away or is deleted in current session, we do not add it
                     if (! $this->objectManager->isNodeMoved($this->path . '/' . $key) &&
-                        ! $this->objectManager->isItemDeleted($this->path . '/' . $key)
+                        ! $this->objectManager->isNodeDeleted($this->path . '/' . $key)
                     ) {
                         // otherwise we (re)load a node from backend but a child has been moved away already
                         $nodesInBackend[] = $key;
@@ -694,6 +694,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (false === strpos($relPath, '/')) {
             if (!isset($this->properties[$relPath])) {
                 throw new PathNotFoundException("Property $relPath in ".$this->path);
+            }
+            if ($this->properties[$relPath]->isDeleted()) {
+                throw new PathNotFoundException("Property '$relPath' of " . $this->path . ' is deleted');
             }
 
             return $this->properties[$relPath];

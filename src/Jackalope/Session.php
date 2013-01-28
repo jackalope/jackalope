@@ -706,15 +706,18 @@ class Session implements SessionInterface
      *
      * @param string $key key for the session
      *
-     * @return the session or null if none is registered with the given key
+     * @return Session|null the session or null if none is registered with the given key
      *
      * @private
      */
     public static function getSessionFromRegistry($key)
     {
         if (isset(self::$sessionRegistry[$key])) {
+
             return self::$sessionRegistry[$key];
         }
+
+        return null;
     }
 
     /**
