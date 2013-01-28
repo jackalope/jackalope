@@ -5,7 +5,8 @@ php:
   - 5.4
 
 before_script:
-  - composer self-update 
+  - composer self-update
+  - composer require jackalope/jackalope-doctrine-dbal dev-master --prefer-source 
   - composer install --prefer-source
 
 script: phpunit -c tests/phpunit.xml.dist
