@@ -2,6 +2,7 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use Jackalope\Transport\Operation;
 use InvalidArgumentException;
 
 use PHPCR\SessionInterface;
@@ -124,11 +125,7 @@ class ObjectManager
     /**
      * Contains the list of property remove operations for the current session.
      *
-     * Keys are the full paths to be removed.
-     *
-     * Note: Keep in mind that a delete is recursive, but we only have the
-     * explicitly deleted paths in this array. We check on deleted parents
-     * whenever retrieving a non-cached node.
+     * Keys are the full paths of properties to be removed.
      *
      * @var RemovePropertyOperation[]
      */
@@ -935,35 +932,17 @@ class ObjectManager
         $batch = array();
 
         foreach ($operations as $operation) {
-            if ($operation instanceof RemoveNodeOperation) {
-                if ($operation->skip) {
-                    continue;
-                }
-                $type = 'remove-node';
-            } elseif ($operation instanceof RemovePropertyOperation) {
-                if ($operation->skip) {
-                    continue;
-                }
-                $type = 'remove-property';
-            } elseif ($operation instanceof MoveNodeOperation) {
-                $type = 'move';
-            } elseif ($operation instanceof AddNodeOperation) {
-                if ($operation->skip) {
-                    continue;
-                }
-                // (! $node->isDeleted() && (! isset($this->nodesAdd[$node->getPath()]) || $this->nodesAdd[$node->getPath()])) {
-                $type = 'add';
-            } else {
-                throw new \Exception('Unexpected operation ' . get_class($operation));
+            if ($operation->skip) {
+                continue;
             }
 
             if (null === $last) {
-                $last = $type;
+                $last = $operation->type;
             }
 
-            if ($type != $last) {
+            if ($operation->type != $last) {
                 $this->executeBatch($last, $batch);
-                $last = $type;
+                $last = $operation->type;
                 $batch = array();
             }
 
@@ -982,16 +961,16 @@ class ObjectManager
     protected function executeBatch($type, $operations)
     {
         switch($type) {
-            case 'add':
+            case Operation::ADD_NODE:
                 $this->transport->storeNodes($operations);
                 break;
-            case 'move':
+            case Operation::MOVE_NODE:
                 $this->transport->moveNodes($operations);
                 break;
-            case 'remove-node':
+            case Operation::REMOVE_NODE:
                 $this->transport->deleteNodes($operations);
                 break;
-            case 'remove-property':
+            case Operation::REMOVE_PROPERTY:
                 $this->transport->deleteProperties($operations);
                 break;
             default:
@@ -1763,7 +1742,8 @@ class ObjectManager
     {
         if (isset($this->objectsByPath[$class][$absPath])) {
             return $this->objectsByPath[$class][$absPath];
-        } elseif (array_key_exists($absPath, $this->nodesRemove)) {
+        }
+        if (array_key_exists($absPath, $this->nodesRemove)) {
             return $this->nodesRemove[$absPath]->node;
         }
         return null;

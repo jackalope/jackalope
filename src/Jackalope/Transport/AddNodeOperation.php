@@ -19,17 +19,9 @@ class AddNodeOperation extends Operation
      */
     public $node;
 
-    /**
-     * Whether this add operations was later determined to be skipped
-     * (i.e. the node was removed again)
-     *
-     * @var bool
-     */
-    public $skip = false;
-
     public function __construct($srcPath, NodeInterface $node)
     {
-        parent::__construct($srcPath);
+        parent::__construct($srcPath, self::ADD_NODE);
         $this->node = $node;
     }
 }

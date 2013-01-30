@@ -16,7 +16,7 @@ class MoveNodeOperation extends Operation
 
     public function __construct($srcPath, $dstPath)
     {
-        parent::__construct($srcPath);
+        parent::__construct($srcPath, self::MOVE_NODE);
         $this->dstPath = $dstPath;
     }
 }

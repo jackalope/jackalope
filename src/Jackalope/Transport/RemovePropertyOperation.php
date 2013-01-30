@@ -25,7 +25,7 @@ class RemovePropertyOperation extends Operation
 
     public function __construct($srcPath, PropertyInterface $property)
     {
-        parent::__construct($srcPath);
+        parent::__construct($srcPath, self::REMOVE_PROPERTY);
         $this->property = $property;
     }
 }

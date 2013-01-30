@@ -15,17 +15,9 @@ class RemoveNodeOperation extends Operation
      */
     public $node;
 
-    /**
-     * Whether this remove operations was later determined to be skipped
-     * (i.e. a parent node is removed as well.)
-     *
-     * @var bool
-     */
-    public $skip = false;
-
     public function __construct($srcPath, NodeInterface $node)
     {
-        parent::__construct($srcPath);
+        parent::__construct($srcPath, self::REMOVE_NODE);
         $this->node = $node;
     }
 }
