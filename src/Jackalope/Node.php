@@ -9,8 +9,6 @@ use InvalidArgumentException;
 use LogicException;
 
 use PHPCR\PropertyType;
-use PHPCR\PropertyInterface;
-use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NoSuchNodeTypeException;
@@ -54,7 +52,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * OPTIMIZE: lazy instantiate property objects, just have local array of values
      *
-     * @var array
+     * @var Property[]
      */
     protected $properties = array();
 
@@ -703,6 +701,36 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         return $this->session->getProperty($this->getChildPath($relPath));
+    }
+
+    /**
+     * This method is only meant for the transport to be able to still build a
+     * store request for afterwards deleted nodes to support the operationslog.
+     *
+     * @return Property[] with just the jcr:primaryType property in it
+     *
+     * @see \Jackalope\Transport\WritingInterface::storeNodes
+     *
+     * @private
+     */
+    public function getPropertiesForStoreDeletedNode()
+    {
+        if (! $this->isDeleted()) {
+            throw new InvalidItemStateException('You are not supposed to call this on a not deleted node');
+        }
+        $myProperty = $this->properties['jcr:primaryType'];
+        $myProperty->setClean();
+        $path = $this->getChildPath('jcr:primaryType');
+        $property = $this->factory->get(
+            'Property',
+            array(array('type' => $myProperty->getType(), 'value' => $myProperty->getValue()),
+                $path,
+                $this->session,
+                $this->objectManager
+            )
+        );
+        $myProperty->setDeleted();
+        return array('jcr:primaryType' => $property);
     }
 
     /**

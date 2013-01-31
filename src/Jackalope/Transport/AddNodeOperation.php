@@ -1,7 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
-use PHPCR\NodeInterface;
+use Jackalope\Node;
 
 /**
  * Representing a node add operation
@@ -15,11 +15,11 @@ class AddNodeOperation extends Operation
     /**
      * The node to add
      *
-     * @var NodeInterface
+     * @var Node
      */
     public $node;
 
-    public function __construct($srcPath, NodeInterface $node)
+    public function __construct($srcPath, Node $node)
     {
         parent::__construct($srcPath, self::ADD_NODE);
         $this->node = $node;

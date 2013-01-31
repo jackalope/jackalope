@@ -164,13 +164,19 @@ interface WritingInterface extends TransportInterface
     function deletePropertyImmediately($path);
 
     /**
-     * Store all nodes in the AddOperations unless they are skipped
+     * Store all nodes in the AddNodeOperations
      *
      * Transport stores the node at its path, with all properties (but do not
      * store children).
      *
      * The transport is responsible to ensure that the node is valid and
      * has to generate autocreated properties.
+     *
+     * Note: Nodes in the log may be deleted if they are deleted. The delete
+     * request will be passed later, according to the log. You should still
+     * create it here as it might be used temporarily in move operations or
+     * such. Use Node::getPropertiesForStoreDeletedNode in that case to avoid
+     * a status check of the deleted node.
      *
      * @see BaseTransport::validateNode
      *

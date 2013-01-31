@@ -165,35 +165,6 @@ class ObjectManager
     }
 
     /**
-     * Resolves the path of an item for the current backend state (i.e. a moved
-     * node is still at the source path)
-     *
-     * Checks the list of moved nodes whether any parents (or the node itself)
-     * was moved and goes back continuing with the translated path as there can
-     * be several moves of the same node.
-     * Leaves the path unmodified if it was not moved.
-     *
-     * This method is called by ObjectManager::getFetchPath() which
-     * additionally prevents requesting a deleted node or one that has been
-     * moved away.
-     *
-     * @param string $path The current path we try to access a node from
-     *
-     * @return string The resolved path
-     */
-    protected function resolveBackendPath($path)
-    {
-        // did the node or any of its parent move? add / to dst path to not match /nodename with /node
-        foreach (array_reverse($this->nodesMove) as $operation) {
-            if (strpos($path, $operation->dstPath . '/') === 0 || $path == $operation->dstPath) {
-                $path = substr_replace($path, $operation->srcPath, 0, strlen($operation->dstPath));
-            }
-        }
-
-        return $path;
-    }
-
-    /**
      * Get the node identified by an absolute path.
      *
      * To prevent unnecessary work to be done a cache is filled to only fetch
@@ -327,40 +298,17 @@ class ObjectManager
     }
 
     /**
-     * Find the src path of a parent of $absPath that got moved to a new location
-     *
-     * @param string $absPath
-     *
-     * @return array with movedHere flag and src path if parent was moved
-     */
-    protected function findParentMoveInfo($absPath)
-    {
-        $movedHere = false;
-
-        // go through all moves and check if a parent was moved. add / to dst path to not match /nodename with /node
-        foreach ($this->nodesMove as $operation) {
-            // TODO: this fails for moving a node and then moving another to that place. see MoveMethodTest::testSessionMoveReplace
-            if (strpos($absPath, $operation->srcPath . '/') === 0) {
-                return array($movedHere, $operation->srcPath);
-            }
-
-            if (strpos($absPath, $operation->dstPath . '/') === 0) {
-                $this->checkNodeRemoved(str_replace($operation->dstPath, $operation->srcPath, $absPath));
-                $movedHere = true;
-            }
-        }
-        return array($movedHere, null);
-    }
-
-    /**
-     * Determine the path to be used when fetching from backend and do sanity
-     * checks (locally removed nodes or parent removed or moved away)
+     * Resolve the path through all pending operations and sanity check while
+     * doing this.
      *
      * @param string $absPath The absolute path of the node to fetch.
      * @param string $class The class of node to get. TODO: Is it sane to fetch
      *      data separately for Version and normal Node?
      *
      * @return string fetch path
+     *
+     * @throws ItemNotFoundException if while walking backwards through the
+     *      operations log we see this path was moved away or got deleted
      */
     protected function getFetchPath($absPath, $class)
     {
@@ -371,28 +319,37 @@ class ObjectManager
             $this->objectsByPath[$class] = array();
         }
 
-        // was the node moved away from this location?
-        if ($this->isNodeMoved($absPath)) {
-            throw new ItemNotFoundException("Path not found (moved in current session): $absPath");
+        $op = end($this->operationsLog);
+        while ($op) {
+            if ($op instanceof MoveNodeOperation) {
+                if ($absPath == $op->srcPath) {
+                    throw new ItemNotFoundException("Path not found (moved in current session): $absPath");
+                }
+                if (strpos($absPath, $op->srcPath . '/') === 0) {
+                    throw new ItemNotFoundException("Path not found (parent node {$op->srcPath} moved in current session): $absPath");
+                }
+                if (strpos($absPath, $op->dstPath . '/') === 0 || $absPath == $op->dstPath) {
+                    $absPath= substr_replace($absPath, $op->srcPath, 0, strlen($op->dstPath));
+                }
+            } elseif ($op instanceof RemoveNodeOperation || $op instanceof RemovePropertyOperation) {
+                if ($absPath == $op->srcPath) {
+                    throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
+                }
+                if (strpos($absPath, $op->srcPath . '/') === 0) {
+                    throw new ItemNotFoundException("Path not found (parent node {$op->srcPath} deleted in current session): $absPath");
+                }
+            } elseif ($op instanceof AddNodeOperation) {
+                if ($absPath == $op->srcPath) {
+                    // we added this node at this point so no more sanity checks needed.
+                    return $absPath;
+                }
+            }
+
+
+            $op = prev($this->operationsLog);
         }
 
-        list($movedHere, $src) = $this->findParentMoveInfo($absPath);
-
-        if ($src) {
-            throw new ItemNotFoundException("Path not found (parent node $src moved in current session): $absPath");
-        }
-        // this node or a parent was moved to this path
-        $movedHere = $movedHere || $this->getMoveSrcPath($absPath);
-
-        if (! $movedHere) {
-            // there is no node moved to this location.
-            // if the node is in nodesRemove, it is really deleted
-            $this->checkNodeRemoved($absPath);
-        }
-
-        // The path was the destination of a previous move which isn't yet dispatched to the backend.
-        // I guess an exception would be fine but we can also just fetch the node from the previous path
-        return $this->resolveBackendPath($absPath);
+        return $absPath;
     }
 
     /**
@@ -648,8 +605,7 @@ class ObjectManager
      */
     public function getBinaryStream($path)
     {
-        // TODO: should we not rather use getFetchPath ?
-        return $this->transport->getBinaryStream($this->resolveBackendPath($path));  // path guaranteed to be normalized and absolute
+        return $this->transport->getBinaryStream($this->getFetchPath($path, 'Node'));
     }
 
     /**
@@ -718,8 +674,7 @@ class ObjectManager
      */
     public function getReferences($path, $name = null)
     {
-        // TODO: should we not use getFetchPath() ?
-        $references = $this->transport->getReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
+        $references = $this->transport->getReferences($this->getFetchPath($path, 'Node'), $name);
         return $this->pathArrayToPropertiesIterator($references);
     }
 
@@ -734,8 +689,7 @@ class ObjectManager
      */
     public function getWeakReferences($path, $name = null)
     {
-        // TODO: should we not use getFetchPath() ?
-        $references = $this->transport->getWeakReferences($this->resolveBackendPath($path), $name); // path guaranteed to be normalized and absolute
+        $references = $this->transport->getWeakReferences($this->getFetchPath($path, 'Node'), $name);
         return $this->pathArrayToPropertiesIterator($references);
     }
 
@@ -819,37 +773,6 @@ class ObjectManager
 
         try {
             $this->transport->prepareSave();
-
-            /*
-             * Filter out removals of sub-nodes and properties of to be deleted
-             * nodes.
-             *
-             * Deleting a node deletes the whole tree, we have to avoid
-             * deleting children/properties of nodes we already deleted.
-             * Sort the paths and then use that to check if parent path
-             * was already removed in a - comparably - cheap way
-             */
-            /*
-             * do we really need this? looks like over-optimization with potential to break stuff
-            $todelete = array_keys($this->itemsRemove);
-            sort($todelete);
-            $last = ':'; // anything but '/'
-            foreach ($todelete as $path) {
-                if (! strncmp($last, $path, strlen($last)) && $path[strlen($last)] == '/') {
-                    // parent path has already been removed
-                    $this->itemsRemove[$path]->skip = true;;
-                    continue;
-                }
-                $last = $path;
-            }
-            */
-
-            foreach ($this->nodesAdd as $path => $operation) {
-                if ($operation->node->isDeleted()) {
-                    $operation->skip = true;
-                }
-            }
-
 
             $this->executeOperations($this->operationsLog);
 
@@ -1214,10 +1137,7 @@ class ObjectManager
         unset($this->objectsByUuid[$node->getIdentifier()]);
         unset($this->objectsByPath['Node'][$absPath]);
 
-        if (isset($this->nodesAdd[$absPath])) {
-            // this is a new unsaved node. skip saving it. or should we still add but then remove right away?
-            $this->nodesAdd[$absPath]->skip = true;
-        } elseif ($sessionOperation) {
+        if ($sessionOperation) {
             // keep reference to object in case of refresh
             $operation = new RemoveNodeOperation($absPath, $node);
             $this->nodesRemove[$absPath] = $operation;
@@ -1660,12 +1580,17 @@ class ObjectManager
     }
 
     /**
-     * Check whether a node path has an unpersisted move operation
+     * Check whether a node path has an unpersisted move operation.
+     *
+     * This is a simplistic check to be used by the Node to determine if it
+     * should not show one of the children the backend told it would exist.
      *
      * @param string $absPath The absolute path of the node
      *
      * @return boolean true if the node has an unsaved move operation, false
      *      otherwise
+     *
+     * @see Node::__construct
      */
     public function isNodeMoved($absPath)
     {
@@ -1691,31 +1616,17 @@ class ObjectManager
     }
 
     /**
-     * @param string $absPath
-     *
-     * @throws ItemNotFoundException if the item at this path or a parent of this path is deleted
-     */
-    private function checkNodeRemoved($absPath)
-    {
-        if (isset($this->nodesRemove[$absPath])) {
-            throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
-        }
-
-        // check whether a parent node was removed
-        foreach ($this->nodesRemove as $path => $dummy) {
-            if (strpos($absPath, "$path/") === 0) {
-                throw new ItemNotFoundException("Path not found (parent node $path deleted in current session): $absPath");
-            }
-        }
-    }
-
-    /**
      * Check whether the node at path has an unpersisted delete operation and
-     * there is no other node moved or added there
+     * there is no other node moved or added there.
+     *
+     * This is a simplistic check to be used by the Node to determine if it
+     * should not show one of the children the backend told it would exist.
      *
      * @param string $absPath The absolute path of the node
      *
      * @return boolean true if the current changed state has no node at this place
+     *
+     * @see Node::__construct
      */
     public function isNodeDeleted($absPath)
     {
