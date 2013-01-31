@@ -1101,8 +1101,8 @@ class ObjectManager
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
      * @param PropertyInterface $property The item that is being removed
-     * @param bool $sessionBased i.e. removing a version is dispatched
-     *      immediately, don't track for eventual refresh
+     * @param bool $sessionOperation whether the property removal should be
+     *      dispatched immediately or needs to be scheduled in the operations log
      *
      * @return void
      *
@@ -1111,11 +1111,20 @@ class ObjectManager
     protected function performPropertyRemove($absPath, PropertyInterface $property, $sessionOperation = true)
     {
         if ($sessionOperation) {
+            if ($property->isNew()) {
+
+                return;
+            }
             // keep reference to object in case of refresh
             $operation = new RemovePropertyOperation($absPath, $property);
             $this->propertiesRemove[$absPath] = $operation;
             $this->operationsLog[] = $operation;
+
+            return;
         }
+
+        // this is no session operation
+        $this->transport->deletePropertyImmediately($absPath);
     }
 
     /**
@@ -1125,8 +1134,8 @@ class ObjectManager
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
      * @param NodeInterface $node The item that is being removed
-     * @param bool $sessionBased i.e. removing a version is dispatched
-     *      immediately, don't track for eventual refresh
+     * @param bool $sessionOperation whether the node removal should be
+     *      dispatched immediately or needs to be scheduled in the operations log
      *
      * @return void
      *
@@ -1134,6 +1143,10 @@ class ObjectManager
      */
     protected function performNodeRemove($absPath, NodeInterface $node, $sessionOperation = true, $cascading = false)
     {
+        if (! $sessionOperation && ! $cascading) {
+            $this->transport->deleteNodeImmediately($absPath);
+        }
+
         unset($this->objectsByUuid[$node->getIdentifier()]);
         unset($this->objectsByPath['Node'][$absPath]);
 
@@ -1152,9 +1165,8 @@ class ObjectManager
      * Notify all cached children that they are deleted as well and clean up
      * internal state
      *
-     * @param $absPath parent node that was removed
-     * @param bool $sessionBased i.e. removing a version is dispatched
-     *      immediately, don't track for eventual refresh
+     * @param string $absPath parent node that was removed
+     * @param bool $sessionOperation to carry over the session operation information
      */
     protected function cascadeDelete($absPath, $sessionOperation = true)
     {
@@ -1361,12 +1373,6 @@ class ObjectManager
 
         $this->verifyAbsolutePath($absPath);
         $item = $this->session->getItem($absPath);
-
-        if ($item instanceof NodeInterface) {
-            $this->transport->deleteNodeImmediately($absPath);
-        } else {
-            $this->transport->deletePropertyImmediately($absPath);
-        }
 
         // update local state and cached objects about disappeared nodes
         if ($item instanceof NodeInterface) {
