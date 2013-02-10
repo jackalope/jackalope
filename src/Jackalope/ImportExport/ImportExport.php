@@ -486,10 +486,16 @@ class ImportExport implements ImportUUIDBehaviorInterface
 
             $xml->moveToNextElement(); // go to the value child
 
+            // TODO: this does not handle a self-closed tag correctly <sv:value/>
             while ('value' == $xml->localName) {
                 $xml->read();
-                $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
-                $xml->read(); // </value>
+                if (XMLReader::END_ELEMENT !== $xml->nodeType) {
+                    $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
+                    $xml->read(); // </value>
+                } else {
+                    $values[] = "";
+                    // this was an empty tag
+                }
                 $xml->read(); // <value> or </property>
             }
 
