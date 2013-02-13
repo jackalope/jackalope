@@ -80,7 +80,14 @@ interface WritingInterface extends TransportInterface
     function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
     /**
-     * Moves a node from src to dst
+     * Perform a batch of move operations in the order of the passed array
+     *
+     * @param \Jackalope\Transport\MoveNodeOperation[] $operations
+     */
+    function moveNodes(array $operations);
+
+    /**
+     * Moves a node from src to dst outside of a transaction
      *
      * @param string $srcAbsPath Absolute source path to the node
      * @param string $dstAbsPath Absolute destination path (must NOT include
@@ -92,7 +99,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::moveNode
      */
-    function moveNode($srcAbsPath, $dstAbsPath);
+    function moveNodeImmediately($srcAbsPath, $dstAbsPath);
 
     /**
      * Reorder the children at $path
@@ -108,46 +115,76 @@ interface WritingInterface extends TransportInterface
     function reorderNodes($absPath, $reorders);
 
     /**
-     * Deletes a node and the whole subtree under it
+     * Perform a batch remove operation.
+     *
+     * Take care that cyclic REFERENCE properties of to be deleted nodes do not
+     * lead to errors.
+     *
+     * @param \Jackalope\Transport\RemoveNodeOperation[] $operations
+     */
+    function deleteNodes(array $operations);
+
+    /**
+     * Perform a batch remove operation.
+     *
+     * @param \Jackalope\Transport\RemovePropertyOperation[] $operations
+     */
+    function deleteProperties(array $operations);
+
+    /**
+     * Deletes a node and the whole subtree under it outside of a transaction
      *
      * @param string $path Absolute path to the node
      *
      * @return void
+     *
+     * @see \Jackalope\Workspace::removeItem
      *
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function deleteNode($path);
+    function deleteNodeImmediately($path);
 
     /**
-     * Deletes a property
+     * Deletes a property outside of a transaction
      *
      * @param string $path Absolute path to the property
      *
      * @return void
      *
+     * @see \Jackalope\Workspace::removeItem
+     *
+     * @throws \PHPCR\PathNotFoundException if the item is already deleted on
+     *      the server. This should not happen if ObjectManager is correctly
+     *      checking.
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function deleteProperty($path);
+    function deletePropertyImmediately($path);
 
     /**
-     * Recursively store a node and its children to the given absolute path.
+     * Store all nodes in the AddNodeOperations
      *
-     * Transport stores the node at its path, with all properties and all
-     * children.
+     * Transport stores the node at its path, with all properties (but do not
+     * store children).
      *
      * The transport is responsible to ensure that the node is valid and
      * has to generate autocreated properties.
      *
+     * Note: Nodes in the log may be deleted if they are deleted. The delete
+     * request will be passed later, according to the log. You should still
+     * create it here as it might be used temporarily in move operations or
+     * such. Use Node::getPropertiesForStoreDeletedNode in that case to avoid
+     * a status check of the deleted node.
+     *
      * @see BaseTransport::validateNode
      *
-     * @param Node $node the node to store
+     * @param \Jackalope\Transport\AddNodeOperation[] $operations the operations containing the nodes to store
      *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function storeNode(Node $node);
+    function storeNodes(array $operations);
 
     /**
      * Stores a property to its absolute path
