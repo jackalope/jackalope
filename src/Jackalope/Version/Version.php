@@ -68,6 +68,7 @@ class Version extends Node implements VersionInterface {
         $successors = $this->getProperty("jcr:successors")->getString();
         $results = array();
         foreach ($successors as $uuid) {
+            // OPTIMIZE: use objectManager->getNodes instead of looping
             $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
         return $results;
@@ -108,6 +109,7 @@ class Version extends Node implements VersionInterface {
         $predecessors = $this->getProperty("jcr:predecessors")->getString();
         $results = array();
         foreach ($predecessors as $uuid) {
+            // OPTIMIZE: use objectManager->getNodes instead of looping
             $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
         return $results;

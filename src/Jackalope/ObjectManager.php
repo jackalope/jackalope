@@ -1575,13 +1575,13 @@ class ObjectManager
         }
 
         // Notify the deleted nodes
-        foreach ($this->nodesRemove as $node) {
-            $node->$method();
+        foreach ($this->nodesRemove as $op) {
+            $op->node->$method();
         }
 
         // Notify the deleted properties
-        foreach ($this->propertiesRemove as $property) {
-            $property->$method();
+        foreach ($this->propertiesRemove as $op) {
+            $op->property->$method();
         }
     }
 

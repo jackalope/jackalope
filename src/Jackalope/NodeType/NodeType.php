@@ -194,7 +194,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                         throw new ConstraintViolationException("The property definition is multivalued, but the value '$value' is not.");
                     }
                     if (is_array($value)) {
-                        throw c("The value $value is multivalued, but the property definition is not.");
+                        throw new ConstraintViolationException("The value $value is multivalued, but the property definition is not.");
                     }
                 }
                 if (PropertyType::UNDEFINED == $prop->getRequiredType()

@@ -414,7 +414,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $name = NodeHelper::generateAutoNodeName(
             $this->nodes,
             $this->session->getWorkspace()->getNamespaceRegistry()->getNamespaces(),
-            'phpcr',
+            'jcr',
             $nameHint
         );
         return $this->addNode($name, $primaryNodeTypeName);
