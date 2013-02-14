@@ -226,7 +226,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if ('jcr:root' == $nodename && isset($existing) && $existing->getDepth() == 0 && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
             // update the root node properties
             // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
-            NodeHelper::deleteAllNodes($parentNode->getSession());
+            NodeHelper::purgeWorkspace($parentNode->getSession());
             $node = $existing;
         } else {
             // logging echo "Adding node $nodename ($type)\n";
@@ -487,10 +487,19 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $xml->moveToNextElement(); // go to the value child
 
             while ('value' == $xml->localName) {
-                $xml->read();
-                $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
-                $xml->read(); // </value>
-                $xml->read(); // <value> or </property>
+                if ($xml->isEmptyElement) {
+                    $values[] = '';
+                } else {
+                    $xml->read();
+                    if (XMLReader::END_ELEMENT == $xml->nodeType) {
+                        // this is an empty tag
+                        $values[] = '';
+                    } else {
+                        $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
+                        $xml->read(); // consume the content
+                    }
+                }
+                $xml->read(); // consume closing tag
             }
 
             if (! $multiple && count($values) == 1) {
