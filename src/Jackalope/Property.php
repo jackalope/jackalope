@@ -415,7 +415,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                     }
                 } catch (ItemNotFoundException $e) {
                     // @codeCoverageIgnoreStart
-                    throw new RepositoryException('Internal Error: Could not find a referenced node. This should be impossible.');
+                    throw new RepositoryException('Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.');
                     // @codeCoverageIgnoreEnd
                 }
                 break;
