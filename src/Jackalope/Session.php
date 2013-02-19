@@ -222,6 +222,10 @@ class Session implements SessionInterface
      */
     public function getNodesByIdentifier($ids)
     {
+        if (! is_array($ids) && ! $ids instanceof \Traversable) {
+            $hint = is_object($ids) ? get_class($ids) : gettype($ids);
+            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+        }
         $nodesByPath = $this->objectManager->getNodes($ids);
         $nodesByUUID = array();
         foreach ($nodesByPath as $node) {
@@ -268,6 +272,11 @@ class Session implements SessionInterface
      */
     public function getNodes($absPaths)
     {
+        if (! is_array($absPaths) && ! $absPaths instanceof \Traversable) {
+            $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
+            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+        }
+
         return $this->objectManager->getNodesByPath($absPaths);
     }
 
@@ -287,6 +296,11 @@ class Session implements SessionInterface
 
     public function getProperties($absPaths)
     {
+        if (! is_array($absPaths) && ! $absPaths instanceof \Traversable) {
+            $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
+            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+        }
+
         return $this->objectManager->getPropertiesByPath($absPaths);
     }
 
