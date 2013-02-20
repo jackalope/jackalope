@@ -27,22 +27,6 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
 
-    public function testNormalizePathUUID()
-    {
-        $uuid = '842e61c0-09ab-42a9-87c0-308ccc90e6f4';
-        $path = '/jcr:root/uuid/to/path';
-
-        $factory = new Factory;
-        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertSame($path, $om->normalizePath($uuid), 'Path normalization did not translate UUID into absolute path');
-        // also verify it was cached
-        $objectsByUuid = $om->getObjectsByUuid();
-        $this->assertArrayHasKey($uuid, $objectsByUuid, 'Node UUID was not cached');
-        $this->assertSame($path, $objectsByUuid[$uuid], 'Cached Node UUID path is wrong');
-
-        $this->assertNotEquals($path, $om->normalizePath("/$uuid"), 'Path normalization accepted improperly formatted UUID path');
-    }
-
     /**
      * @dataProvider dataproviderAbsolutePath
      * @covers \Jackalope\ObjectManager::absolutePath

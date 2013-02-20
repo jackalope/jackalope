@@ -2,13 +2,13 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use PHPCR\Util\PathHelper;
 use Jackalope\Transport\Operation;
 use InvalidArgumentException;
 
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
-use PHPCR\ItemInterface;
 use PHPCR\RepositoryException;
 use PHPCR\AccessDeniedException;
 use PHPCR\ItemNotFoundException;
@@ -23,10 +23,8 @@ use PHPCR\Version\VersionInterface;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\PermissionInterface;
 use Jackalope\Transport\WritingInterface;
-use Jackalope\Transport\VersioningInterface;
 use Jackalope\Transport\NodeTypeManagementInterface;
 use Jackalope\Transport\NodeTypeCndManagementInterface;
-use Jackalope\Transport\TransactionInterface;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
@@ -191,7 +189,7 @@ class ObjectManager
     public function getNodeByPath($absPath, $class = 'Node', $object = null)
     {
         $this->verifyAbsolutePath($absPath);
-        $absPath = $this->normalizePath($absPath);
+        $absPath = PathHelper::normalizePath($absPath);
 
         if (!empty($this->objectsByPath[$class][$absPath])) {
             // Return it from memory if we already have it
@@ -255,7 +253,7 @@ class ObjectManager
      * @param string $class The class of node to get. TODO: Is it sane to
      *      fetch data separately for Version and normal Node?
      *
-     * @return ArrayIterator that contains all found NodeInterface
+     * @return Node[] that contains all found NodeInterface
      *      instances keyed by their path
      *
      * @throws RepositoryException If the path is not absolute or not
@@ -312,7 +310,7 @@ class ObjectManager
      */
     protected function getFetchPath($absPath, $class)
     {
-        $absPath = $this->normalizePath($absPath);
+        $absPath = PathHelper::normalizePath($absPath);
         $this->verifyAbsolutePath($absPath);
 
         if (!isset($this->objectsByPath[$class])) {
@@ -421,76 +419,11 @@ class ObjectManager
     protected function getNodePath($absPath)
     {
         $this->verifyAbsolutePath($absPath);
-        $absPath = $this->normalizePath($absPath);
+        $absPath = PathHelper::normalizePath($absPath);
 
-        $name = substr($absPath,strrpos($absPath,'/')+1); //the property name
-        $nodep = substr($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
+        $name = PathHelper::getNodeName($absPath); //the property name
+        $nodep = PathHelper::getParentPath($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
         return array($name, $nodep);
-    }
-
-    /**
-     * Normalizes a path according to JCR's spec (3.4.5).
-     *
-     * <ul>
-     *   <li>All self segments(.) are removed.</li>
-     *   <li>All redundant parent segments(..) are collapsed.</li>
-     *   <li>If the path is an identifier-based absolute path, it is replaced by a root-based
-     *       absolute path that picks out the same node in the workspace as the identifier it replaces.</li>
-     * </ul>
-     *
-     * Note: A well-formed input path implies a well-formed and normalized path returned.
-     *
-     * @param string $path The path to normalize.
-     * @return string The normalized path.
-     */
-    public function normalizePath($path)
-    {
-        if (strlen($path) == 0 || $path == '/') {
-            return '/';
-        }
-        if ($path == '//') {
-            return $path; // edge case that will be eaten away
-        }
-
-        if (UUIDHelper::isUUID($path)) {
-            $uuid = $path;
-            if (empty($this->objectsByUuid[$uuid])) {
-                $finalPath = $this->transport->getNodePathForIdentifier($uuid);
-                $this->objectsByUuid[$uuid] = $finalPath;
-            } else {
-                $finalPath = $this->objectsByUuid[$uuid];
-            }
-        } else {
-            // TODO: when we implement Session::setNamespacePrefix to remap a
-            // prefix, this should be translated here too.
-            // More methods would have to call this
-            $finalParts= array();
-            $parts = explode('/', $path);
-
-            foreach ($parts as $pathPart) {
-                switch ($pathPart) {
-                    case '.':
-                        break;
-                    case '..':
-                        if (count($finalParts) > 1) {
-                            // do not remove leading slash. "/.." is "/", not ""
-                            array_pop($finalParts);
-                        }
-                        break;
-                    default:
-                        $finalParts[] = $pathPart;
-                        break;
-                }
-            }
-            if (count($finalParts) > 1 && $pathPart == '') {
-                array_pop($finalParts); //avoid trailing /
-            }
-            $finalPath = count($finalParts) > 1 ?
-                implode('/', $finalParts) :
-                '/'; // first element is always the empty-name root element
-        }
-
-        return $finalPath;
     }
 
     /**
@@ -523,14 +456,14 @@ class ObjectManager
             $relPath = $root;
         }
 
-        return $this->normalizePath($relPath);
+        return PathHelper::normalizePath($relPath);
     }
 
     /**
      * Get the node identified by an uuid or (relative) path.
      *
      * If you have an absolute path use {@link getNodeByPath()} for better
-     * perfromance.
+     * performance.
      *
      * @param string $identifier uuid or (relative) path
      * @param string $root optional root if you are in a node context - not
@@ -690,6 +623,7 @@ class ObjectManager
     public function getWeakReferences($path, $name = null)
     {
         $references = $this->transport->getWeakReferences($this->getFetchPath($path, 'Node'), $name);
+
         return $this->pathArrayToPropertiesIterator($references);
     }
 
@@ -1033,7 +967,7 @@ class ObjectManager
 
                 $this->objectsByPath['Node'][$path] = $operation->node; // back in glory
 
-                $parentPath = strtr(dirname($path), '\\', '/');
+                $parentPath = PathHelper::getParentPath($path);
                 if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
                     // tell the parent about its restored child
                     $this->objectsByPath['Node'][$parentPath]->addChildNode($operation->node, false);
@@ -1047,13 +981,13 @@ class ObjectManager
                     $item = $this->objectsByPath['Node'][$operation->dstPath];
                     $item->setPath($operation->srcPath);
                 }
-                $parentPath = strtr(dirname($operation->dstPath), '\\', '/');
+                $parentPath = PathHelper::getParentPath($operation->dstPath);
                 if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->unsetChildNode(basename($operation->dstPath), false);
+                    $this->objectsByPath['Node'][$parentPath]->unsetChildNode(PathHelper::getNodeName($operation->dstPath), false);
                 }
                 // TODO: from in a two step move might fail. we should merge consecutive moves
-                $parentPath = strtr(dirname($operation->srcPath), '\\', '/');
+                $parentPath = PathHelper::getParentPath($operation->srcPath);
                 if (array_key_exists($parentPath, $this->objectsByPath['Node']) && $item instanceof Node) {
                     // tell the parent about its restored child
                     $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
@@ -1264,18 +1198,18 @@ class ObjectManager
     protected function rewriteItemPaths($curPath, $newPath, $session = false)
     {
         // update internal references in parent
-        $parentCurPath = dirname($curPath);
-        $parentNewPath = dirname($newPath);
+        $parentCurPath = PathHelper::getParentPath($curPath);
+        $parentNewPath = PathHelper::getParentPath($newPath);
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
             $node = $this->objectsByPath['Node'][$parentCurPath];
-            if (! $node->hasNode(basename($curPath))) {
+            if (! $node->hasNode(PathHelper::getNodeName($curPath))) {
                 throw new PathNotFoundException("Source path can not be found: $curPath");
             }
-            $node->unsetChildNode(basename($curPath), true);
+            $node->unsetChildNode(PathHelper::getNodeName($curPath), true);
         }
         if (isset($this->objectsByPath['Node'][$parentNewPath])) {
             $node = $this->objectsByPath['Node'][$parentNewPath];
-            $node->addChildNode($this->getNodeByPath($curPath), true, basename($newPath));
+            $node->addChildNode($this->getNodeByPath($curPath), true, PathHelper::getNodeName($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
