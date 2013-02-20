@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use Exception;
+use PHPCR\Util\PathHelper;
 use LogicException;
 use ArrayIterator;
 use IteratorAggregate;
@@ -457,7 +458,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             case PropertyType::STRING:
             case PropertyType::NAME:
                 foreach ($values as $value) {
-                    $results[] = $this->objectManager->getPropertyByPath($this->objectManager->absolutePath($this->parentPath, $value));
+                    $results[] = $this->objectManager->getPropertyByPath(PathHelper::absolutizePath($value, $this->parentPath));
                 }
                 break;
             default:

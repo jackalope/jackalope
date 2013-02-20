@@ -427,39 +427,6 @@ class ObjectManager
     }
 
     /**
-     * Makes sure $relPath is absolute, prepending $root if it is not absolute
-     * already, then normalizes the path.
-     *
-     * If $relPath is already absolute, it is just normalized.
-     *
-     * If root is missing or does not start with a slash, a slash will be
-     * prepended.
-     * If $relPath is completely empty, the result will be $root.
-     *
-     * @param string $root base path to prepend to $relPath if it is not
-     *      already absolute
-     * @param string $relPath a relative or absolute path
-     *
-     * @return string Absolute and normalized path
-     */
-    public function absolutePath($root, $relPath)
-    {
-        if (strlen($relPath) && $relPath[0] != '/') {
-            $root = trim($root, '/');
-            if (strlen($root)) {
-                $concat = "/$root/";
-            } else {
-                $concat = '/';
-            }
-            $relPath = $concat . ltrim($relPath, '/');
-        } elseif (strlen($relPath)==0) {
-            $relPath = $root;
-        }
-
-        return PathHelper::normalizePath($relPath);
-    }
-
-    /**
      * Get the node identified by an uuid or (relative) path.
      *
      * If you have an absolute path use {@link getNodeByPath()} for better
@@ -485,11 +452,15 @@ class ObjectManager
                 $path = $this->transport->getNodePathForIdentifier($identifier);
                 $node = $this->getNodeByPath($path, $class);
                 $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
+
                 return $node;
             }
+
             return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
         }
-        $path = $this->absolutePath($root, $identifier);
+
+        $path = PathHelper::absolutizePath($identifier, $root);
+
         return $this->getNodeByPath($path, $class);
     }
 
@@ -1171,7 +1142,7 @@ class ObjectManager
         }
 
         if ($property) {
-            $absPath = $this->absolutePath($absPath, $property->getName());
+            $absPath = PathHelper::absolutizePath($property->getName(), $absPath);
             $this->performPropertyRemove($absPath, $property);
         } else {
             $node = $this->objectsByPath['Node'][$absPath];

@@ -629,7 +629,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         try {
-            $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
+            $node = $this->objectManager->getNodeByPath(PathHelper::absolutizePath($relPath, $this->path));
         } catch (ItemNotFoundException $e) {
             throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -650,7 +650,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!empty($names)) {
             $paths = array();
             foreach ($names as $name) {
-                $paths[] = $this->objectManager->absolutePath($this->path, $name);
+                $paths[] = PathHelper::absolutizePath($name, $this->path);
             }
             $nodes = $this->objectManager->getNodesByPath($paths);
             foreach ($nodes as $node) {

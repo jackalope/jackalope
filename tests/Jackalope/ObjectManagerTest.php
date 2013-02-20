@@ -27,41 +27,6 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
 
-    /**
-     * @dataProvider dataproviderAbsolutePath
-     * @covers \Jackalope\ObjectManager::absolutePath
-     * @covers \Jackalope\ObjectManager::normalizePath
-     */
-    public function testAbsolutePath($inputRoot, $inputRelPath, $output)
-    {
-        $factory = new Factory;
-        $om = new ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $this->assertSame($output, $om->absolutePath($inputRoot, $inputRelPath));
-    }
-
-    public static function dataproviderAbsolutePath()
-    {
-        return array(
-            array('/',      'foo',  '/foo'),
-            array('/',      '/foo', '/foo'),
-            array('',       'foo',  '/foo'),
-            array('',       '/foo', '/foo'),
-            array('/foo',   'bar',  '/foo/bar'),
-            array('/foo',   '',     '/foo'),
-            array('/foo/',  'bar',  '/foo/bar'),
-            array('/foo/',  '/bar', '/bar'),
-            array('foo',    'bar',  '/foo/bar'),
-
-            // normalization is also part of ::absolutePath
-            array('/',          '../foo',       '/foo'),
-            array('/',          '../',           '/'),
-            array('/',          'foo/../bar',   '/bar'),
-            array('/',          'foo/./bar',    '/foo/bar'),
-            array('/foo/nope',  '../bar',       '/foo/bar'),
-            array('/foo/nope',  '/../bar',      '/bar'),
-        );
-    }
-
     public function testVerifyAbsolutePath()
     {
         $factory = new Factory;
