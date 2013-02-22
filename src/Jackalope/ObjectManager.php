@@ -67,7 +67,7 @@ class ObjectManager
     protected $transport;
 
     /**
-     * Mapping of absolutePath => node or item object.
+     * Mapping of typename => absolutePath => node or item object.
      *
      * There is no notion of order here. The order is defined by order in the
      * Node::nodes array.
@@ -188,7 +188,6 @@ class ObjectManager
      */
     public function getNodeByPath($absPath, $class = 'Node', $object = null)
     {
-        $this->verifyAbsolutePath($absPath);
         $absPath = PathHelper::normalizePath($absPath);
 
         if (!empty($this->objectsByPath[$class][$absPath])) {
@@ -311,7 +310,6 @@ class ObjectManager
     protected function getFetchPath($absPath, $class)
     {
         $absPath = PathHelper::normalizePath($absPath);
-        $this->verifyAbsolutePath($absPath);
 
         if (!isset($this->objectsByPath[$class])) {
             $this->objectsByPath[$class] = array();
@@ -418,7 +416,6 @@ class ObjectManager
      */
     protected function getNodePath($absPath)
     {
-        $this->verifyAbsolutePath($absPath);
         $absPath = PathHelper::normalizePath($absPath);
 
         $name = PathHelper::getNodeName($absPath); //the property name
@@ -520,7 +517,7 @@ class ObjectManager
      *
      * @param array $nodeTypes Empty for all or specify node types by name
      *
-     * @return DOMDoocument containing the nodetype information
+     * @return \DOMDocument containing the nodetype information
      */
     public function getNodeTypes($nodeTypes = array())
     {
@@ -532,7 +529,7 @@ class ObjectManager
      *
      * @param string $nodeType the name of nodetype to get from the transport
      *
-     * @return DOMDocument containing the nodetype information
+     * @return \DOMDocument containing the nodetype information
      *
      * @see getNodeTypes()
      */
@@ -619,12 +616,11 @@ class ObjectManager
     }
 
     /**
-     * Implementation specific way to register node types from cnd with the
-     * backend.
+     * Register node types with compact node definition format
      *
      * This is only a proxy to the transport
      *
-     * @param $cnd a string with cnd information
+     * @param string $cnd a string with cnd information
      * @param boolean $allowUpdate whether to fail if node already exists or to update it
      * @return bool true on success
      */
@@ -638,23 +634,6 @@ class ObjectManager
         }
 
         return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
-    }
-
-    /**
-     * Verifies the path to be absolute and well-formed.
-     *
-     * @param string $path the path to verify
-     *
-     * @return boolean always true, exception if this is not a valid path.
-     *
-     * @throws RepositoryException if the path is not absolute.
-     */
-    protected function verifyAbsolutePath($path)
-    {
-        if (! ($path && $path[0] == '/')) {
-            throw new RepositoryException('Path is not absolute: ' . $path);
-        }
-        return true;
     }
 
     /**
@@ -684,11 +663,13 @@ class ObjectManager
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath['Node'])) {
                 foreach ($this->objectsByPath['Node'] as $path => $node) {
+                    /** @var $node Node */
                     if ($node->isModified()) {
                         if (! $node instanceof NodeInterface) {
                             throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
                         }
                         foreach ($node->getProperties() as $property) {
+                            /** @var $property Property */
                             if ($property->isModified() || $property->isNew()) {
                                 $this->transport->storeProperty($property);
                             }
@@ -738,6 +719,7 @@ class ObjectManager
 
         if (isset($this->objectsByPath['Node'])) {
             foreach ($this->objectsByPath['Node'] as $item) {
+                /** @var $item Item */
                 if ($item->isModified() || $item->isMoved()) {
                     $item->confirmSaved();
                 }
@@ -869,9 +851,8 @@ class ObjectManager
     /**
      * Remove a version given the path to the version node and the version name.
      *
-     * @param $versionPath The path to the version node
-     * @param $versionName The name of the version to remove
-     * @return void
+     * @param string $versionPath The path to the version node
+     * @param string $versionName The name of the version to remove
      *
      * @throws \PHPCR\UnsupportedRepositoryOperationException
      * @throws \PHPCR\ReferentialIntegrityException
@@ -884,12 +865,14 @@ class ObjectManager
         // Adjust the in memory state
         $absPath = $versionPath . '/' . $versionName;
         if (isset($this->objectsByPath['Node'][$absPath])) {
+            /** @var $node Node */
             $node = $this->objectsByPath['Node'][$absPath];
             unset($this->objectsByUuid[$node->getIdentifier()]);
             $node->setDeleted();
         }
 
         if (isset($this->objectsByPath['Version\\Version'][$absPath])) {
+            /** @var $version \Jackalope\Version\Version */
             $version = $this->objectsByPath['Version\\Version'][$absPath];
             unset($this->objectsByUuid[$version->getIdentifier()]);
             $version->setDeleted();
@@ -907,8 +890,6 @@ class ObjectManager
      *
      * @param boolean $keepChanges whether to keep local changes or discard
      *      them.
-     *
-     * @return void
      *
      * @see Session::refresh()
      */
@@ -959,7 +940,7 @@ class ObjectManager
                 }
                 // TODO: from in a two step move might fail. we should merge consecutive moves
                 $parentPath = PathHelper::getParentPath($operation->srcPath);
-                if (array_key_exists($parentPath, $this->objectsByPath['Node']) && $item instanceof Node) {
+                if (array_key_exists($parentPath, $this->objectsByPath['Node']) && isset($item) && $item instanceof Node) {
                     // tell the parent about its restored child
                     $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
                 }
@@ -971,6 +952,7 @@ class ObjectManager
         }
 
         foreach ($this->objectsByPath['Node'] as $path => $item) {
+            /** @var $item Item */
             if (! $keepChanges || ! ($item->isDeleted() || $item->isNew())) {
                 // if we keep changes, do not restore a deleted item
                 $item->setDirty($keepChanges);
@@ -988,10 +970,12 @@ class ObjectManager
     public function hasPendingChanges()
     {
         if (count($this->operationsLog)) {
+
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
             if ($item->isModified()) {
+
                 return true;
             }
         }
@@ -1092,7 +1076,7 @@ class ObjectManager
      * Notify all cached version children that they are deleted as well and clean up
      * internal state
      *
-     * @param $absPath parent version node that was removed
+     * @param string $absPath parent version node that was removed
      */
     protected function cascadeDeleteVersion($absPath)
     {
@@ -1171,6 +1155,7 @@ class ObjectManager
         // update internal references in parent
         $parentCurPath = PathHelper::getParentPath($curPath);
         $parentNewPath = PathHelper::getParentPath($newPath);
+
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
             $node = $this->objectsByPath['Node'][$parentCurPath];
             if (! $node->hasNode(PathHelper::getNodeName($curPath))) {
@@ -1224,6 +1209,9 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
+        $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
+        $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
+
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath, true);
         // record every single move in case we have intermediary operations
         $operation = new MoveNodeOperation($srcAbsPath, $destAbsPath);
@@ -1256,8 +1244,8 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
-        $this->verifyAbsolutePath($srcAbsPath);
-        $this->verifyAbsolutePath($destAbsPath);
+        $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
+        $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
 
         $this->transport->moveNodeImmediately($srcAbsPath, $destAbsPath, true); // should throw the right exceptions
         $this->rewriteItemPaths($srcAbsPath, $destAbsPath); // update local cache
@@ -1266,7 +1254,7 @@ class ObjectManager
     /**
      * Implement the workspace removeItem method.
      *
-     * @param string $absPath the path of the item to be removed
+     * @param string $absPath the absolute path of the item to be removed
      *
      * @see Workspace::removeItem
      */
@@ -1276,7 +1264,7 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
-        $this->verifyAbsolutePath($absPath);
+        $absPath = PathHelper::normalizePath($absPath);
         $item = $this->session->getItem($absPath);
 
         // update local state and cached objects about disappeared nodes
@@ -1308,8 +1296,8 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
-        $this->verifyAbsolutePath($srcAbsPath);
-        $this->verifyAbsolutePath($destAbsPath);
+        $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
+        $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
 
         if ($this->session->nodeExists($destAbsPath)) {
             throw new ItemExistsException('Node already exists at destination (update-on-copy is currently not supported)');

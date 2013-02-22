@@ -27,33 +27,10 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
 
-    public function testVerifyAbsolutePath()
-    {
-        $factory = new Factory;
-        $om = new ObjectManagerMock($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-
-        $om->verifyAbsolutePath('/jcr:root');
-        $om->verifyAbsolutePath('/jcr:foo_/b-a/0^.txt');
-
-        $this->setExpectedException('\PHPCR\RepositoryException');
-        $om->verifyAbsolutePath('jcr:root');
-
-        $this->setExpectedException('\PHPCR\RepositoryException');
-        $om->verifyAbsolutePath('/jcr:root//foo');
-
-        $this->setExpectedException('\PHPCR\RepositoryException');
-        $om->verifyAbsolutePath('/jcr:root/foo?');
-    }
-
 }
 
 class ObjectManagerMock extends ObjectManager
 {
-    public function verifyAbsolutePath($path)
-    {
-        parent::verifyAbsolutePath($path);
-    }
-
     public function getObjectsByUuid()
     {
         return $this->objectsByUuid;
