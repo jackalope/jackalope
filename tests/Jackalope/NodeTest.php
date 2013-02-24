@@ -100,28 +100,6 @@ class NodeTest extends TestCase
         $this->assertSame('toast', $filtered[1]);
     }
 
-    /**
-     * @group benchmark
-     */
-    public function testBenchmarkOrderBeforeArray()
-    {
-        for ($i = 0; $i < 1000000; $i++) {
-            $nodes[] = 'test' . $i;
-        }
-
-        $args = array('test250', 'test750', $nodes);
-
-        $node = $this->getMock('\\Jackalope\\Node', array(), array(), '', false);
-        $method = new \ReflectionMethod($node, 'orderBeforeArray');
-        $method->setAccessible(true);
-
-        $start = microtime(true);
-
-        $method->invokeArgs($node, $args);
-
-        $this->assertLessThan(1.0, microtime(true) - $start);
-    }
-
 }
 
 class NodeMock extends Node
