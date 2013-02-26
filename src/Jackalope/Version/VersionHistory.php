@@ -241,5 +241,6 @@ class VersionHistory extends Node implements VersionHistoryInterface
     public function notifyHistoryChanged()
     {
         $this->versions = null;
+        $this->linearVersions = null;
     }
 }
