@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use InvalidArgumentException;
-use ReflectionClass;
-
 /**
  * Jackalope factory interface - injected into every class.
  *
@@ -42,5 +39,5 @@ interface FactoryInterface
      *
      * @return object
      */
-    function get($name, array $params = array());
+    public function get($name, array $params = array());
 }

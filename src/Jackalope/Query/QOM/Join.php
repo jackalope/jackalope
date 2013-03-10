@@ -36,9 +36,9 @@ class Join implements JoinInterface
     /**
      * Create a new join instance
      *
-     * @param SourceInterface $left
-     * @param SourceInterface $right
-     * @param string $joinType
+     * @param SourceInterface        $left
+     * @param SourceInterface        $right
+     * @param string                 $joinType
      * @param JoinConditionInterface $joinCondition
      */
     public function __construct(SourceInterface $left, SourceInterface $right, $joinType, JoinConditionInterface $joinCondition)

@@ -18,8 +18,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     /**
      * Create a new property definition template.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param NodeTypeManager $nodeTypeManager
+     * @param FactoryInterface $factory         the object factory
+     * @param NodeTypeManager  $nodeTypeManager
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)
     {

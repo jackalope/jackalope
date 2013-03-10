@@ -68,6 +68,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 $this->superTypes = array_merge($this->superTypes, $superType->getSupertypes());
             }
         }
+
         return $this->superTypes;
     }
 
@@ -84,6 +85,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 $this->superTypeNames[] = $superType->getName();
             }
         }
+
         return $this->superTypeNames;
     }
 
@@ -100,6 +102,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 $this->declaredSupertypes[] = $this->nodeTypeManager->getNodeType($declaredSuperTypeName);
             }
         }
+
         return $this->declaredSupertypes;
     }
 
@@ -146,6 +149,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 $this->propertyDefinitions = array_merge($this->propertyDefinitions, $nodeType->getDeclaredPropertyDefinitions());
             }
         }
+
         return $this->propertyDefinitions;
     }
 
@@ -162,6 +166,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 $this->childNodeDefinitions = array_merge($this->childNodeDefinitions, $nodeType->getDeclaredChildNodeDefinitions());
             }
         }
+
         return $this->childNodeDefinitions;
     }
 
@@ -179,6 +184,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             if ($throw) {
                 throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
             }
+
             return false;
         }
 
@@ -205,6 +211,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
                 try {
                     PropertyType::convertType($value, $prop->getRequiredType(), $type);
+
                     return true;
                 } catch (ValueFormatException $e) {
                     // fall through and return false
@@ -212,6 +219,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 if ($throw) {
                     throw new ConstraintViolationException("The property '$propertyName' with value '$value' can't be converted to an existing type.");
                 }
+
                 return false; // if there is an explicit match, it has to fit
             }
         }
@@ -228,11 +236,13 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
             try {
                 PropertyType::convertType($value, $prop->getRequiredType(), $type);
+
                 return true;
             } catch (ValueFormatException $e) {
                 if ($throw) {
                     throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
                 }
+
                 return false; // if there is an explicit match, it has to fit
             }
         }
@@ -240,6 +250,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             $val = is_object($value) ? get_class($value) : (is_scalar($value) ? (string) $value : gettype($value));
             throw new ConstraintViolationException("Node type definition does not allow to set the property with name '$propertyName' and value '$val'");
         }
+
         return false;
     }
 
@@ -263,18 +274,21 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                         }
                         throw new ConstraintViolationException($errorMsg);
                     }
+
                     return false;
                 }
             } catch (NoSuchNodeTypeException $nsnte) {
                 if ($throw) {
                     throw $nsnte;
                 }
+
                 return false;
             } catch (Exception $e) {
                 if ($throw) {
                    $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: " . $e->getMessage();
                    throw new ConstraintViolationException($errorMsg, null, $e);
                 }
+
                 return false;
             }
         }
@@ -297,6 +311,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because there is no definition for a child with that name.";
             throw new ConstraintViolationException($errorMsg);
         }
+
         return false;
     }
 
@@ -320,9 +335,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     }
                     throw new ConstraintViolationException($errorMsg);
                 }
+
                 return false;
             }
         }
+
         return true;
     }
 
@@ -346,9 +363,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     }
                     throw new ConstraintViolationException($errorMsg);
                 }
+
                 return false;
             }
         }
+
         return true;
     }
 }

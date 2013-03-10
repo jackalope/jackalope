@@ -66,10 +66,10 @@ class Workspace implements WorkspaceInterface
     /**
      * Instantiate a workspace referencing a workspace in the storage.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param Session $session
-     * @param ObjectManager $objectManager
-     * @param string $name the workspace name that is used
+     * @param FactoryInterface $factory       the object factory
+     * @param Session          $session
+     * @param ObjectManager    $objectManager
+     * @param string           $name          the workspace name that is used
      */
     public function __construct(FactoryInterface $factory, Session $session, ObjectManager $objectManager, $name)
     {
@@ -223,6 +223,7 @@ class Workspace implements WorkspaceInterface
         if (! $this->utx) {
             throw new UnsupportedRepositoryOperationException('Transactions are currently disabled');
         }
+
         return $this->utx;
     }
 
@@ -236,6 +237,7 @@ class Workspace implements WorkspaceInterface
         if ($this->namespaceRegistry == false) {
             $this->namespaceRegistry = $this->factory->get('NamespaceRegistry', array($this->session->getTransport()));
         }
+
         return $this->namespaceRegistry;
     }
 
@@ -282,7 +284,6 @@ class Workspace implements WorkspaceInterface
     {
         throw new UnsupportedRepositoryOperationException();
     }
-
 
     /**
      * {@inheritDoc}

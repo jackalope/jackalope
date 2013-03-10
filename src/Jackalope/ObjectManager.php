@@ -151,9 +151,9 @@ class ObjectManager
     /**
      * Create the ObjectManager instance with associated session and transport
      *
-     * @param FactoryInterface $factory the object factory
+     * @param FactoryInterface   $factory   the object factory
      * @param TransportInterface $transport
-     * @param SessionInterface $session
+     * @param SessionInterface   $session
      */
     public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
     {
@@ -172,7 +172,7 @@ class ObjectManager
      * Uses the factory to create a Node object.
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch
+     * @param string $class   The class of node to get. TODO: Is it sane to fetch
      *      data separately for Version and normal Node?
      * @param object $object A (prefetched) object (de-serialized json) from the backend
      *      only to be used if we get child nodes in one backend call
@@ -299,7 +299,7 @@ class ObjectManager
      * doing this.
      *
      * @param string $absPath The absolute path of the node to fetch.
-     * @param string $class The class of node to get. TODO: Is it sane to fetch
+     * @param string $class   The class of node to get. TODO: Is it sane to fetch
      *      data separately for Version and normal Node?
      *
      * @return string fetch path
@@ -341,7 +341,6 @@ class ObjectManager
                 }
             }
 
-
             $op = prev($this->operationsLog);
         }
 
@@ -356,7 +355,7 @@ class ObjectManager
      * Currently Jackalope just loads the containing node and then returns
      * the requested property of the node instance.
      *
-     * @param string $absPath The absolute path of the property to create.
+     * @param  string            $absPath The absolute path of the property to create.
      * @return PropertyInterface
      *
      * @throws ItemNotFoundException if item is not found at this path
@@ -404,6 +403,7 @@ class ObjectManager
                 $properties[$key] = $nodes[$data['path']]->getProperty($data['name']);
             }
         }
+
         return new ArrayIterator($properties);
     }
 
@@ -420,6 +420,7 @@ class ObjectManager
 
         $name = PathHelper::getNodeName($absPath); //the property name
         $nodep = PathHelper::getParentPath($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
+
         return array($name, $nodep);
     }
 
@@ -430,7 +431,7 @@ class ObjectManager
      * performance.
      *
      * @param string $identifier uuid or (relative) path
-     * @param string $root optional root if you are in a node context - not
+     * @param string $root       optional root if you are in a node context - not
      *      used if $identifier is an uuid
      * @param string $class optional class name for the factory
      *
@@ -438,7 +439,7 @@ class ObjectManager
      *      ItemNotFoundException is thrown
      *
      * @throws ItemNotFoundException If the path was not found
-     * @throws RepositoryException if another error occurs.
+     * @throws RepositoryException   if another error occurs.
      *
      * @see Session::getNode()
      */
@@ -466,8 +467,8 @@ class ObjectManager
      *
      * Note uuids/paths that cannot be found will be ignored
      *
-     * @param array $identifiers uuid's or absolute paths
-     * @param string $class optional class name for the factory
+     * @param array  $identifiers uuid's or absolute paths
+     * @param string $class       optional class name for the factory
      *
      * @return ArrayIterator of NodeInterface of the specified nodes keyed by their path
      *
@@ -494,6 +495,7 @@ class ObjectManager
                 $paths[$key] = $identifier;
             }
         }
+
         return $this->getNodesByPath($paths, $class);
     }
 
@@ -543,7 +545,7 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      *
-     * @param array $definitions an array of NodeTypeDefinitions
+     * @param array   $definitions an array of NodeTypeDefinitions
      * @param boolean $allowUpdate whether to fail if node already exists or to
      *      update it
      *
@@ -576,6 +578,7 @@ class ObjectManager
     public function getReferences($path, $name = null)
     {
         $references = $this->transport->getReferences($this->getFetchPath($path, 'Node'), $name);
+
         return $this->pathArrayToPropertiesIterator($references);
     }
 
@@ -599,7 +602,7 @@ class ObjectManager
      * Transform an array containing properties paths to an ArrayIterator over
      * Property objects
      *
-     * @param array $array an array of properties paths
+     * @param  array         $array an array of properties paths
      * @return ArrayIterator
      */
     protected function pathArrayToPropertiesIterator($array)
@@ -620,9 +623,9 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      *
-     * @param string $cnd a string with cnd information
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool true on success
+     * @param  string  $cnd         a string with cnd information
+     * @param  boolean $allowUpdate whether to fail if node already exists or to update it
+     * @return bool    true on success
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
@@ -768,7 +771,7 @@ class ObjectManager
 
     protected function executeBatch($type, $operations)
     {
-        switch($type) {
+        switch ($type) {
             case Operation::ADD_NODE:
                 $this->transport->storeNodes($operations);
                 break;
@@ -785,7 +788,6 @@ class ObjectManager
                 throw new \Exception('internal error: unknown operation "' . $type . '"');
         }
     }
-
 
     /**
      * Removes the cache of the predecessor version after the node has been
@@ -828,7 +830,7 @@ class ObjectManager
      * @param bool $removeExisting whether to remove the existing current
      *      version or create a new version after that version
      * @param string $versionPath
-     * @param string $nodePath absolute path to the node
+     * @param string $nodePath    absolute path to the node
      *
      * @return void
      */
@@ -968,12 +970,10 @@ class ObjectManager
     public function hasPendingChanges()
     {
         if (count($this->operationsLog)) {
-
             return true;
         }
         foreach ($this->objectsByPath['Node'] as $item) {
             if ($item->isModified()) {
-
                 return true;
             }
         }
@@ -987,8 +987,8 @@ class ObjectManager
      * @param string $absPath The absolute path of the item that is being
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
-     * @param PropertyInterface $property The item that is being removed
-     * @param bool $sessionOperation whether the property removal should be
+     * @param PropertyInterface $property         The item that is being removed
+     * @param bool              $sessionOperation whether the property removal should be
      *      dispatched immediately or needs to be scheduled in the operations log
      *
      * @return void
@@ -999,7 +999,6 @@ class ObjectManager
     {
         if ($sessionOperation) {
             if ($property->isNew()) {
-
                 return;
             }
             // keep reference to object in case of refresh
@@ -1020,8 +1019,8 @@ class ObjectManager
      * @param string $absPath The absolute path of the item that is being
      *      removed. Note that contrary to removeItem(), this path is the full
      *      path for a property too.
-     * @param NodeInterface $node The item that is being removed
-     * @param bool $sessionOperation whether the node removal should be
+     * @param NodeInterface $node             The item that is being removed
+     * @param bool          $sessionOperation whether the node removal should be
      *      dispatched immediately or needs to be scheduled in the operations log
      *
      * @return void
@@ -1052,8 +1051,8 @@ class ObjectManager
      * Notify all cached children that they are deleted as well and clean up
      * internal state
      *
-     * @param string $absPath parent node that was removed
-     * @param bool $sessionOperation to carry over the session operation information
+     * @param string $absPath          parent node that was removed
+     * @param bool   $sessionOperation to carry over the session operation information
      */
     protected function cascadeDelete($absPath, $sessionOperation = true)
     {
@@ -1144,8 +1143,8 @@ class ObjectManager
      * operations in case other operations are done in between. But the
      * itemsAdd array index is updated to point to the new path.
      *
-     * @param string $curPath Absolute path of the node to rewrite
-     * @param string $newPath The new absolute path
+     * @param string  $curPath Absolute path of the node to rewrite
+     * @param string  $newPath The new absolute path
      * @param boolean $session Whether this is a session or an immediate move
      */
     protected function rewriteItemPaths($curPath, $newPath, $session = false)
@@ -1192,7 +1191,7 @@ class ObjectManager
     /**
      * WRITE: move node from source path to destination path
      *
-     * @param string $srcAbsPath Absolute path to the source node.
+     * @param string $srcAbsPath  Absolute path to the source node.
      * @param string $destAbsPath Absolute path to the destination where the node shall be moved to.
      *
      * @return void
@@ -1226,7 +1225,7 @@ class ObjectManager
      * Implement the workspace move method. It is dispatched to transport
      * immediately.
      *
-     * @param string $srcAbsPath the path of the node to be moved.
+     * @param string $srcAbsPath  the path of the node to be moved.
      * @param string $destAbsPath the location to which the node at srcAbsPath
      *      is to be moved.
      *
@@ -1278,7 +1277,7 @@ class ObjectManager
     /**
      * Implement the workspace copy method. It is dispatched immediately.
      *
-     * @param string $srcAbsPath the path of the node to be copied.
+     * @param string $srcAbsPath  the path of the node to be copied.
      * @param string $destAbsPath the location to which the node at srcAbsPath
      *      is to be copied in this workspace.
      * @param string $srcWorkspace the name of the workspace from which the
@@ -1308,8 +1307,8 @@ class ObjectManager
      * WRITE: add a node at the specified path. Schedules an add operation
      * for the next save() and caches the node.
      *
-     * @param string $absPath the path to the node or property, including the item name
-     * @param NodeInterface $node The item instance that is added.
+     * @param string        $absPath the path to the node or property, including the item name
+     * @param NodeInterface $node    The item instance that is added.
      *
      * @throws ItemExistsException if a node already exists at that path
      */
@@ -1554,6 +1553,7 @@ class ObjectManager
         if (array_key_exists($absPath, $this->nodesRemove)) {
             return $this->nodesRemove[$absPath]->node;
         }
+
         return null;
     }
 
@@ -1577,6 +1577,7 @@ class ObjectManager
         if (array_key_exists($uuid, $this->objectsByUuid)) {
             return $this->getCachedNode($this->objectsByUuid[$uuid], $class);
         }
+
         return null;
     }
 
@@ -1587,7 +1588,7 @@ class ObjectManager
      * This is used by Node::refresh() to let the object manager notify
      * deleted nodes or detect cases when not to delete.
      *
-     * @param string $absPath The absolute path of the item
+     * @param string  $absPath     The absolute path of the item
      * @param boolean $keepChanges Whether to keep local changes or forget
      *      them
      *
@@ -1616,7 +1617,6 @@ class ObjectManager
         }
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
-
         return true;
     }
 }

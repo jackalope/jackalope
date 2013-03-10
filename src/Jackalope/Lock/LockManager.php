@@ -2,18 +2,21 @@
 
 namespace Jackalope\Lock;
 
-use PHPCR\Lock\LockManagerInterface;
-use PHPCR\Lock\LockInfoInterface;
+use ArrayIterator;
+use IteratorAggregate;
+
 use PHPCR\SessionInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\InvalidItemStateException;
+use PHPCR\Lock\LockManagerInterface;
+use PHPCR\Lock\LockInfoInterface;
 use PHPCR\Lock\LockException;
 
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
-use Jackalope\NotImplementedException;
-use Jackalope\Transport\LockingInterface;
 use Jackalope\Item;
+use Jackalope\Transport\LockingInterface;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -22,7 +25,7 @@ use Jackalope\Item;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class LockManager implements \IteratorAggregate, LockManagerInterface
+class LockManager implements IteratorAggregate, LockManagerInterface
 {
     /**
      * @var \Jackalope\ObjectManager
@@ -48,17 +51,17 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * Contains a list of nodes locks
      *
-     * @var array(absPath => Lock)
+     * @var Lock[] indexed by absPath
      */
     protected $locks = array();
 
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param \Jackalope\FactoryInterface $factory An object factory implementing "get" as described in \Jackalope\FactoryInterface
-     * @param \Jackalope\ObjectManager $objectManager
-     * @param \PHPCR\SessionInterface $session
-     * @param \Jackalope\Transport\LockingInterface $transport
+     * @param  \Jackalope\FactoryInterface           $factory       An object factory implementing "get" as described in \Jackalope\FactoryInterface
+     * @param  \Jackalope\ObjectManager              $objectManager
+     * @param  \PHPCR\SessionInterface               $session
+     * @param  \Jackalope\Transport\LockingInterface $transport
      * @return \Jackalope\Lock\LockManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, SessionInterface $session, LockingInterface $transport)
@@ -71,7 +74,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->getLockTokens());
+        return new ArrayIterator($this->getLockTokens());
     }
 
     /**
@@ -175,7 +178,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function lockWithInfo($absPath, \PHPCR\Lock\LockInfoInterface $lockInfo)
+    public function lockWithInfo($absPath, LockInfoInterface $lockInfo)
     {
         return $this->lock(
             $absPath,

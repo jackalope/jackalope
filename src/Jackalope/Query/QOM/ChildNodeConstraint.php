@@ -24,7 +24,7 @@ class ChildNodeConstraint implements ChildNodeInterface
     /**
      * Create a new child node constraint
      *
-     * @param string $parentPath parent path the node must be child of
+     * @param string $parentPath   parent path the node must be child of
      * @param string $selectorName optionally restrict to a selector
      */
     public function __construct($parentPath, $selectorName = null)
@@ -63,5 +63,5 @@ class ChildNodeConstraint implements ChildNodeInterface
     public function getConstraints()
     {
         return array($this);
-    }    
+    }
 }

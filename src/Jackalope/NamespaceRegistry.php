@@ -13,7 +13,6 @@ use PHPCR\NamespaceException;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
 
-
 /**
  * Namespace registry for Jackalope
  *
@@ -55,7 +54,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * Initializes the created object.
      *
-     * @param FactoryInterface $factory
+     * @param FactoryInterface   $factory
      * @param TransportInterface $transport
      *
      * @throws ItemNotFoundException If property not found
@@ -152,6 +151,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     public function getPrefixes()
     {
         $this->lazyLoadNamespaces();
+
         return array_merge(
             array_keys($this->defaultNamespaces),
             array_keys($this->userNamespaces)
@@ -166,6 +166,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     public function getURIs()
     {
         $this->lazyLoadNamespaces();
+
         return array_merge(
             array_values($this->defaultNamespaces),
             array_values($this->userNamespaces)
@@ -184,6 +185,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
             return $this->defaultNamespaces[$prefix];
         } elseif (isset($this->userNamespaces[$prefix])) {
             $this->lazyLoadNamespaces();
+
             return $this->userNamespaces[$prefix];
         }
         throw new NamespaceException("Mapping for '$prefix' is not defined");
@@ -204,6 +206,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
                 throw new NamespaceException("URI '$uri' is not defined in registry");
             }
         }
+
         return $prefix;
     }
 
@@ -215,6 +218,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     public function getIterator()
     {
         $this->lazyLoadNamespaces();
+
         return new ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
     }
 
@@ -255,6 +259,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     public function getNamespaces()
     {
         $this->lazyLoadNamespaces();
+
         return array_merge($this->defaultNamespaces, $this->userNamespaces);
     }
 }

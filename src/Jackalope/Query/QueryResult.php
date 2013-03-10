@@ -3,7 +3,6 @@
 namespace Jackalope\Query;
 
 use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
 
 use PHPCR\Query\QueryResultInterface;
@@ -38,9 +37,9 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * The raw data format is documented in
      * \Jackalope\Transport\QueryInterface::query()
      *
-     * @param FactoryInterface $factory the object factory
-     * @param array $rawData the data as returned by the transport
-     * @param ObjectManager $objectManager
+     * @param FactoryInterface $factory       the object factory
+     * @param array            $rawData       the data as returned by the transport
+     * @param ObjectManager    $objectManager
      */
     public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectmanager)
     {

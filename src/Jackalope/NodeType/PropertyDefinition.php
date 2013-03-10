@@ -2,12 +2,7 @@
 
 namespace Jackalope\NodeType;
 
-use DOMElement;
-use DOMXPath;
-
 use PHPCR\NodeType\PropertyDefinitionInterface;
-
-use Jackalope\Helper;
 
 /**
  * {@inheritDoc}

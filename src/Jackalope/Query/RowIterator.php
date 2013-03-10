@@ -2,15 +2,18 @@
 
 namespace Jackalope\Query;
 
+use Countable;
+use SeekableIterator;
+use OutOfBoundsException;
+
 use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
 
 /**
  * Implementation specific iterator class to efficiently iterate over the raw
  * query result.
  */
-class RowIterator implements \SeekableIterator, \Countable
+class RowIterator implements SeekableIterator, Countable
 {
     protected $objectmanager;
 
@@ -23,9 +26,9 @@ class RowIterator implements \SeekableIterator, \Countable
     /**
      * Create the iterator.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager
-     * @param array $rows Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager
+     * @param array            $rows          Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
     {
@@ -39,7 +42,7 @@ class RowIterator implements \SeekableIterator, \Countable
         $this->position = $position;
 
         if (!$this->valid()) {
-            throw new \OutOfBoundsException("invalid seek position ($position)");
+            throw new OutOfBoundsException("invalid seek position ($position)");
         }
     }
 

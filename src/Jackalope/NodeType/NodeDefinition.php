@@ -1,12 +1,7 @@
 <?php
 namespace Jackalope\NodeType;
 
-use DOMElement;
-use DOMXPath;
-
 use PHPCR\NodeType\NodeDefinitionInterface;
-
-use Jackalope\Helper;
 
 /**
  * {@inheritDoc}
@@ -67,6 +62,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
                 $this->requiredPrimaryTypes[] = $this->nodeTypeManager->getNodeType($primaryTypeName);
             }
         }
+
         return $this->requiredPrimaryTypes;
     }
 
@@ -90,6 +86,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         if (null === $this->defaultPrimaryTypeName) {
             return null;
         }
+
         return $this->nodeTypeManager->getNodeType($this->defaultPrimaryTypeName);
     }
 

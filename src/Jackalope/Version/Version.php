@@ -12,8 +12,8 @@ use Jackalope\Node;
  *
  * @api
  */
-class Version extends Node implements VersionInterface {
-
+class Version extends Node implements VersionInterface
+{
     /**
      * {@inheritDoc}
      *
@@ -51,6 +51,7 @@ class Version extends Node implements VersionInterface {
             return null; // no successor
         }
         $uuid = reset($successors);
+
         return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
@@ -71,6 +72,7 @@ class Version extends Node implements VersionInterface {
             // OPTIMIZE: use objectManager->getNodes instead of looping
             $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
+
         return $results;
     }
 
@@ -91,6 +93,7 @@ class Version extends Node implements VersionInterface {
             return null; // no successor
         }
         $uuid = reset($predecessor);
+
         return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
@@ -112,6 +115,7 @@ class Version extends Node implements VersionInterface {
             // OPTIMIZE: use objectManager->getNodes instead of looping
             $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
         }
+
         return $results;
     }
 

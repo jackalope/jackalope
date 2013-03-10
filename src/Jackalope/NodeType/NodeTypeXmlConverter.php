@@ -5,7 +5,6 @@ namespace Jackalope\NodeType;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
-use ArrayObject;
 
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
@@ -95,6 +94,7 @@ class NodeTypeXmlConverter
         foreach ($defaultValues as $defaultValue) {
             $data['defaultValues'][] = $defaultValue->nodeValue;
         }
+
         return $data;
     }
 
@@ -175,6 +175,7 @@ class NodeTypeXmlConverter
         foreach ($nodeTypesElements as $nodeTypeElement) {
             $nodeTypes[] = $this->getNodeTypeDefinitionFromXml($nodeTypeElement);
         }
+
         return $nodeTypes;
     }
 }

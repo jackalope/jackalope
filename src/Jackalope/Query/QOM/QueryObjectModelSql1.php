@@ -3,6 +3,7 @@
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\QueryObjectModelInterface;
+use InvalidArgumentException;
 use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\OrderingInterface;
@@ -48,13 +49,13 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     /**
      * Constructor
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager (can be omitted if you do not want
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
-     * @param SourceInterface $source
+     * @param SourceInterface     $source
      * @param ConstraintInterface $constraint
-     * @param array $orderings
-     * @param array $columns
+     * @param array               $orderings
+     * @param array               $columns
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null,
                                 SourceInterface $source, ConstraintInterface $constraint = null,
@@ -62,12 +63,12 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {
-                throw new \InvalidArgumentException('Not a valid ordering: '.$o);
+                throw new InvalidArgumentException('Not a valid ordering: '.$o);
             }
         }
         foreach ($columns as $c) {
             if (! $c instanceof ColumnInterface) {
-                throw new \InvalidArgumentException('Not a valid column: '.$o);
+                throw new InvalidArgumentException('Not a valid column: '.$c);
             }
         }
         parent::__construct($factory, '', $objectManager);
@@ -136,6 +137,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     public function getStatement()
     {
         $converter = new QomToSql1QueryConverter(new Sql1Generator());
+
         return $converter->convert($this);
     }
 

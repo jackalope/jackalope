@@ -24,18 +24,17 @@ interface ObservationInterface extends TransportInterface
      * issuing the event. The only way to do so is to use the session.
      *
      * @param SessionInterface $session
-     * @param integer $eventTypes A combination of one or more event type constants encoded as a bitmask.
-     * @param string $absPath an absolute path.
-     * @param boolean $isDeep Switch to define the given path as a reference to a child node.
-     * @param array $uuid array of identifiers.
-     * @param array $nodeTypeName array of node type names.
+     * @param integer          $eventTypes   A combination of one or more event type constants encoded as a bitmask.
+     * @param string           $absPath      an absolute path.
+     * @param boolean          $isDeep       Switch to define the given path as a reference to a child node.
+     * @param array            $uuid         array of identifiers.
+     * @param array            $nodeTypeName array of node type names.
      *
      * @return EventJournalInterface an EventJournal (or null).
      *
      * @throws \PHPCR\RepositoryException if an error occurs
      */
-    function getEventJournal(SessionInterface $session, EventFilterInterface $filter);
-
+    public function getEventJournal(SessionInterface $session, EventFilterInterface $filter);
 
     /**
      * Set user data to be included with subsequent requests.
@@ -43,5 +42,5 @@ interface ObservationInterface extends TransportInterface
      *
      * @param mixed $userData null or string
      */
-    function setUserData($userData);
+    public function setUserData($userData);
 }

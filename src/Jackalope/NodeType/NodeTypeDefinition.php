@@ -71,8 +71,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * Optionally initializes the data from XML, an array or another
      * NodeTypeDefinition.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param NodeTypeManager $nodeTypeManager
+     * @param FactoryInterface $factory         the object factory
+     * @param NodeTypeManager  $nodeTypeManager
      * @param DOMElement|NodeTypeDefinitionInterface|null
      *      $nodetype Either by XML or by NodeTypeDefinition or null for an
      *      empty definition
@@ -209,6 +209,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         if (is_null($this->declaredSuperTypeNames)) {
             return array(self::NAME_NT_BASE);
         }
+
         return $this->declaredSuperTypeNames;
     }
 

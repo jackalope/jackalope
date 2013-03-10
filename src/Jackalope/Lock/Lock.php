@@ -96,6 +96,7 @@ class Lock implements LockInterface
             // TODO either here or in transport figure out the owning node
             // we might want to delay this until actually requested, as we need to walk up the tree to find the owning node
         }
+
         return $this->lockManager->getSession()->getNode($this->path);
     }
 
@@ -154,6 +155,7 @@ class Lock implements LockInterface
         if ($this->isLive) {
             $this->isLive = $this->lockManager->isLocked($this->path);
         }
+
         return $this->isLive;
     }
 

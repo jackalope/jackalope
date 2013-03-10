@@ -26,7 +26,7 @@ class Ordering implements OrderingInterface
      * Constructor
      *
      * @param DynamicOperandInterface $operand
-     * @param string $order
+     * @param string                  $order
      */
     public function __construct(DynamicOperandInterface $operand, $order = null)
     {

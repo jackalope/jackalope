@@ -2,6 +2,8 @@
 
 namespace Jackalope\Query;
 
+use Iterator;
+
 use PHPCR\Query\RowInterface;
 use PHPCR\RepositoryException;
 use PHPCR\ItemNotFoundException;
@@ -18,7 +20,7 @@ use Jackalope\ObjectManager;
  *
  * @api
  */
-class Row implements \Iterator, RowInterface
+class Row implements Iterator, RowInterface
 {
     /**
      * @var ObjectManager
@@ -73,9 +75,9 @@ class Row implements \Iterator, RowInterface
     /**
      * Create new Row instance.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager
-     * @param array $columns array of array with fields dcr:name and dcr:value
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager
+     * @param array            $columns       array of array with fields dcr:name and dcr:value
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $columns)
     {
@@ -234,7 +236,7 @@ class Row implements \Iterator, RowInterface
     /**
      * Implement Iterator
      *
-     * @return whether the current position is valid
+     * @return boolean whether the current position is valid
      */
     public function valid()
     {
