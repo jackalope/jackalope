@@ -13,7 +13,11 @@ class NodeTest extends TestCase
         $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
         $objectManager->expects($this->any())
             ->method('getNodesByPath')
-            ->will($this->returnValue(new \ArrayIterator(array("/jcr:root/tests_level1_access_base" => array(), "/jcr:root/jcr:system" => array()))));
+            ->will($this->returnValue(new \ArrayIterator(array(
+                "/jcr:root/tests_level1_access_base" => new Node($factory, json_decode($this->JSON), '/jcr:root/tests_level1_access_base', $session, $objectManager),
+                "/jcr:root/jcr:system" => new Node($factory, json_decode($this->JSON), '/jcr:root/jcr:system', $session, $objectManager),
+            ))))
+        ;
         $node = new Node($factory, json_decode($this->JSON), '/jcr:root', $session, $objectManager);
         return $node;
     }

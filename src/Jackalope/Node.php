@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use PHPCR\Util\PathHelper;
 use IteratorAggregate;
 use Exception;
 use InvalidArgumentException;
@@ -338,26 +339,23 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // are we not the immediate parent?
         if (strpos($relPath, '/') !== false) {
             // forward to real parent
-            $parentPath = dirname($relPath);
-            if ($parentPath === '\\') {
-                $parentPath = '/';
-            }
+
+            $relPath = PathHelper::absolutizePath($relPath, $this->getPath(), true);
+            $parentPath = PathHelper::getParentPath($relPath);
+            $newName = PathHelper::getNodeName($relPath);
+
             try {
-                $parentNode = $this->objectManager->getNode($parentPath, $this->path);
+                $parentNode = $this->objectManager->getNode($parentPath);
             } catch (ItemNotFoundException $e) {
-                try {
-                    //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
-                    $prop = $this->objectManager->getPropertyByPath($this->getChildPath($parentPath));
-                    if (! is_null($prop)) {
-                        throw new ConstraintViolationException("Node '{$this->path}': Not allowed to add a node below a property");
-                    }
-                } catch (ItemNotFoundException $e) {
-                    //ignore to throw the PathNotFoundException below
+                //we have to throw a different exception if there is a property with that name than if there is nothing at the path at all. lets see if the property exists
+                if ($this->session->propertyExists($parentPath)) {
+
+                    throw new ConstraintViolationException("Node '{$this->path}': Not allowed to add a node below property at $parentPath");
                 }
 
                 throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
             }
-            return $parentNode->addNode(basename($relPath), $primaryNodeTypeName);
+            return $parentNode->addNode($newName, $primaryNodeTypeName);
         }
 
         if (is_null($primaryNodeTypeName)) {
@@ -631,7 +629,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         try {
-            $node = $this->objectManager->getNodeByPath($this->objectManager->absolutePath($this->path, $relPath));
+            $node = $this->objectManager->getNodeByPath(PathHelper::absolutizePath($relPath, $this->path));
         } catch (ItemNotFoundException $e) {
             throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -652,11 +650,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!empty($names)) {
             $paths = array();
             foreach ($names as $name) {
-                $paths[] = $this->objectManager->absolutePath($this->path, $name);
+                $paths[] = PathHelper::absolutizePath($name, $this->path);
             }
             $nodes = $this->objectManager->getNodesByPath($paths);
-            foreach ($nodes as $path => $node) {
-                $result[basename($path)] = $node;
+            foreach ($nodes as $node) {
+                $result[$node->getName()] = $node;
             }
         }
         /* FIXME: Actually, the whole list should be lazy loaded and maybe only fetch a
@@ -1450,7 +1448,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         parent::setPath($path, $move);
         foreach ($this->properties as $property) {
-            $property->setPath($path.'/'.basename($property->getPath()), $move);
+            $property->setPath($path.'/'.$property->getName(), $move);
         }
     }
 

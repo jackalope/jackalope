@@ -1,7 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
-use PHPCR\NodeInterface;
+use Jackalope\Node;
 
 /**
  * Representing a node remove operation
@@ -9,13 +9,13 @@ use PHPCR\NodeInterface;
 class RemoveNodeOperation extends Operation
 {
     /**
-     * The item to remove
+     * The node to remove
      *
-     * @var NodeInterface
+     * @var Node
      */
     public $node;
 
-    public function __construct($srcPath, NodeInterface $node)
+    public function __construct($srcPath, Node $node)
     {
         parent::__construct($srcPath, self::REMOVE_NODE);
         $this->node = $node;

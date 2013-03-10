@@ -14,7 +14,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.2",
-        "phpcr/phpcr-utils": ">=1.0-beta4",
+        "phpcr/phpcr-utils": "~1.0-beta6",
         "phpcr/phpcr": "=2.1.0-beta8",
         "ext-libxml": "*",
         "jackalope/jackalope-transport": "1.0.*"
