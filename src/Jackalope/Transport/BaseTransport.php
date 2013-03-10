@@ -3,6 +3,7 @@
 namespace Jackalope\Transport;
 
 use PHPCR\RepositoryException;
+use PHPCR\Util\PathHelper;
 
 /**
  * Base class for transport implementation.
@@ -44,50 +45,6 @@ $/xi";
     protected $fetchDepth = 0;
 
     /**
-     * Helper method to check whether the path conforms to the specification
-     * and is supported by this implementation
-     *
-     * Note that the rest of jackalope might not properly check paths in
-     * getNode requests and similar so your transport should call this whenever
-     * it needs to look up something in the storage to give a good error
-     * message and not just not found.
-     *
-     * TODO: the spec is extremly open and recommends to restrict further.
-     * TODO: how should this interact with assertValidName? The name may not contain / : or [] but the path of course can
-     *
-     * Paths have to be normalized before being checked, i.e. /node/./ is / and /my/node/.. is /my
-     *
-     * @param string $path The path to validate
-     * @param bool $destination is the $path a destination path (by copy or move)?
-     *
-     * @return bool always true, if the name is not valid a RepositoryException is thrown
-     *
-     * @throws RepositoryException if the path contains invalid characters
-     */
-    public function assertValidPath($path, $destination = false)
-    {
-        if ('/' != substr($path, 0, 1)) {
-            //sanity check
-            throw new RepositoryException("Implementation error: '$path' is not an absolute path");
-        }
-        if ('/' != $path[0]
-            || strpos($path, '//') !== false
-            || strpos($path, '/./') !== false
-            || strpos($path, '/../') !== false
-        ) {
-            throw new RepositoryException('Path is not well-formed or contains invalid characters: ' . $path);
-        }
-
-        if ($destination) {
-            if (']' == substr($path, -1, 1)) {
-                throw new RepositoryException('Invalid destination path');
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Minimal check according to the jcr spec to see if this node name
      * conforms to the specification
      *
@@ -105,15 +62,7 @@ $/xi";
      */
     public function assertValidName($name)
     {
-        if ('.' == $name || '..' == $name) {
-            throw new RepositoryException('Node name may not be parent or self identifier: ' . $name);
-        }
-
-        if (preg_match('/\\/|:|\\[|\\]|\\||\\*/', $name)) {
-            throw new RepositoryException('Node name contains illegal characters: '.$name);
-        }
-
-        return true;
+        return PathHelper::assertValidLocalName($name);
     }
 
     /**

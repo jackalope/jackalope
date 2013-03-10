@@ -29,8 +29,8 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      */
     public function __construct($childSelectorName, $parentSelectorName)
     {
-        $this->childNodeSelectorName = $childSelectorName;
-        $this->parentSelectorName = $parentSelectorName;
+        $this->childNodeSelectorName = (string) $childSelectorName;
+        $this->parentSelectorName = (string) $parentSelectorName;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use PHPCR\Util\PathHelper;
 use Exception;
 
 use PHPCR\PropertyType;
@@ -241,7 +242,7 @@ class Session implements SessionInterface
      */
     public function getItem($absPath)
     {
-        if (strpos($absPath,'/') !== 0) {
+        if (! is_string($absPath) || strlen($absPath) === 0 || '/' !== $absPath[0]) {
             throw new PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
@@ -364,16 +365,16 @@ class Session implements SessionInterface
     public function move($srcAbsPath, $destAbsPath)
     {
         try {
-            $parent = $this->objectManager->getNodeByPath(dirname($destAbsPath));
+            $parent = $this->objectManager->getNodeByPath(PathHelper::getParentPath($destAbsPath));
         } catch (ItemNotFoundException $e) {
             throw new PathNotFoundException("Target path can not be found: $destAbsPath", $e->getCode(), $e);
         }
 
-        if ($parent->hasNode(basename($destAbsPath))) {
+        if ($parent->hasNode(PathHelper::getNodeName($destAbsPath))) {
             // TODO same-name siblings
             throw new ItemExistsException('Target node already exists at '.$destAbsPath);
         }
-        if ($parent->hasProperty(basename($destAbsPath))) {
+        if ($parent->hasProperty(PathHelper::getNodeName($destAbsPath))) {
             throw new ItemExistsException('Target property already exists at '.$destAbsPath);
         }
         $this->objectManager->moveNode($srcAbsPath, $destAbsPath);

@@ -3,6 +3,7 @@
 namespace Jackalope\Version;
 
 use PHPCR\NodeInterface;
+use PHPCR\Util\PathHelper;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\InvalidItemStateException;
@@ -52,9 +53,10 @@ class VersionManager implements VersionManagerInterface {
                  throw new InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
              }
          }
+
          $version = $this->objectManager->checkin($absPath);
          $version->setCachedPredecessorsDirty();
-         if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
+         if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), 'Version\\VersionHistory')) {
              $history->notifyHistoryChanged();
          }
          if ($node) {
@@ -178,7 +180,7 @@ class VersionManager implements VersionManagerInterface {
         $this->objectManager->restore($removeExisting, $versionPath, $nodePath);
 
         $version->setCachedPredecessorsDirty();
-        if ($history = $this->objectManager->getCachedNode(dirname($version->getPath()), 'Version\\VersionHistory')) {
+        if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), 'Version\\VersionHistory')) {
             $history->notifyHistoryChanged();
         }
     }

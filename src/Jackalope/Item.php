@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use LogicException;
+use PHPCR\Util\PathHelper;
 
 use PHPCR\PropertyInterface;
 use PHPCR\ItemInterface;
@@ -171,9 +172,9 @@ abstract class Item implements ItemInterface
             $this->oldPath = $this->path;
         }
         $this->path = $path;
-        $this->depth = $path === '/' ? 0 : substr_count($path, '/');
-        $this->name = basename($path);
-        $this->parentPath = (('/' == $path) ? null : strtr(dirname($path), '\\', '/'));
+        $this->depth = ('/' === $path) ? 0 : substr_count($path, '/');
+        $this->name = PathHelper::getNodeName($path);
+        $this->parentPath = (0 === $this->depth) ? null : PathHelper::getParentPath($path);
     }
 
     /**
@@ -213,7 +214,9 @@ abstract class Item implements ItemInterface
         if ($depth == $this->depth) {
             return $this;
         }
+        // we do not use the PathHelper as this is a special case
         $ancestorPath = '/'.implode('/', array_slice(explode('/', $this->path), 1, $depth));
+
         return $this->objectManager->getNodeByPath($ancestorPath);
     }
 

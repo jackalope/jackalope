@@ -35,8 +35,8 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      */
     public function __construct($selector1Name, $selector2Name, $selector2Path = null)
     {
-        $this->selector1Name = $selector1Name;
-        $this->selector2Name = $selector2Name;
+        $this->selector1Name = (string) $selector1Name;
+        $this->selector2Name = (string) $selector2Name;
         $this->selector2Path = $selector2Path;
     }
 
