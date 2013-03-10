@@ -1,7 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
-use PHPCR\PropertyInterface;
+use Jackalope\Property;
 
 /**
  * Representing a property remove operation
@@ -11,7 +11,7 @@ class RemovePropertyOperation extends Operation
     /**
      * The item to remove
      *
-     * @var PropertyInterface
+     * @var Property
      */
     public $property;
 
@@ -23,7 +23,7 @@ class RemovePropertyOperation extends Operation
      */
     public $skip = false;
 
-    public function __construct($srcPath, PropertyInterface $property)
+    public function __construct($srcPath, Property $property)
     {
         parent::__construct($srcPath, self::REMOVE_PROPERTY);
         $this->property = $property;
