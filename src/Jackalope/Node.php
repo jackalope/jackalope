@@ -670,11 +670,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getNodeNames()
+    public function getNodeNames($filter = null)
     {
         $this->checkState();
 
-        return new ArrayIterator($this->nodes);
+        return new ArrayIterator(self::filterNames($filter, $this->nodes));
     }
 
 
@@ -1480,7 +1480,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param string|array $filter according to getNodes|getProperties
      * @param array $names list of names to filter
      *
-     * @return the names in $names that match a filter
+     * @return array the names in $names that match the filter
      */
     protected static function filterNames($filter, $names)
     {
