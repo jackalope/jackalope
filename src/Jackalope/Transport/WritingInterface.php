@@ -102,17 +102,14 @@ interface WritingInterface extends TransportInterface
     function moveNodeImmediately($srcAbsPath, $dstAbsPath);
 
     /**
-     * Reorder the children at $path
+     * Reorder the children of $node as the node said it needs them reordered.
      *
-     * The $reorders is an array with pairs of child node names. The first name
-     * must be reordered to the position right before the second name.
+     * You can either get the reordering list with getOrderCommands or use
+     * getNodeNames to get the absolute order.
      *
-     * @param string $absPath absolute path to the parent node
-     * @param array $reorders list of reordering pars
-     *
-     * @return void
+     * @param Node $node the node to reorder its children
      */
-    function reorderNodes($absPath, $reorders);
+    function reorderChildren(Node $node);
 
     /**
      * Perform a batch remove operation.
