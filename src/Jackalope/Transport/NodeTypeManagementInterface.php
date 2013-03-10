@@ -29,5 +29,5 @@ interface NodeTypeManagementInterface extends TransportInterface
      *
      * @return bool true on success
      */
-    function registerNodeTypes($types, $allowUpdate);
+    public function registerNodeTypes($types, $allowUpdate);
 }

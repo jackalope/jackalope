@@ -32,8 +32,8 @@ class ComparisonConstraint implements ComparisonInterface
      * Create a new comparison constraint
      *
      * @param DynamicOperandInterface $operand1
-     * @param string $operator
-     * @param StaticOperandInterface $operand2
+     * @param string                  $operator
+     * @param StaticOperandInterface  $operand2
      */
     public function __construct(DynamicOperandInterface $operand1, $operator, StaticOperandInterface $operand2)
     {

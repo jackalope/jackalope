@@ -30,8 +30,8 @@ class QueryManager implements QueryManagerInterface
     /**
      * Create the query manager - akquire through the session.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {

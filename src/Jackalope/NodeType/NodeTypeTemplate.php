@@ -6,7 +6,6 @@ use ArrayObject;
 
 use PHPCR\NodeType\NodeTypeTemplateInterface;
 
-
 /**
  * {@inheritDoc}
  *
@@ -95,6 +94,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         if (is_null($this->declaredPropertyDefinitions)) {
             $this->declaredPropertyDefinitions = new ArrayObject();
         }
+
         return $this->declaredPropertyDefinitions;
     }
 
@@ -108,6 +108,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
         if (is_null($this->declaredNodeDefinitions)) {
             $this->declaredNodeDefinitions = new ArrayObject();
         }
+
         return $this->declaredNodeDefinitions;
     }
 

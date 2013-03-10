@@ -124,11 +124,11 @@ abstract class Item implements ItemInterface
     /**
      * Initialize basic information common to nodes and properties
      *
-     * @param FactoryInterface $factory the object factory
-     * @param string $path The normalized and absolute path to this item
-     * @param Session $session
-     * @param ObjectManager $objectManager
-     * @param boolean $new can be set to true to tell the object that it has
+     * @param FactoryInterface $factory       the object factory
+     * @param string           $path          The normalized and absolute path to this item
+     * @param Session          $session
+     * @param ObjectManager    $objectManager
+     * @param boolean          $new           can be set to true to tell the object that it has
      *      been created locally
      */
     protected function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
@@ -152,7 +152,7 @@ abstract class Item implements ItemInterface
     /**
      * Set or update the path, depth, name and parent reference
      *
-     * @param string $path the new path this item lives at
+     * @param string  $path the new path this item lives at
      * @param boolean $move whether this item is being moved in session context
      *      and should store the current path until the next save operation.
      *
@@ -185,6 +185,7 @@ abstract class Item implements ItemInterface
     public function getPath()
     {
         $this->checkState();
+
         return $this->path;
     }
 
@@ -196,6 +197,7 @@ abstract class Item implements ItemInterface
     public function getName()
     {
         $this->checkState();
+
         return $this->name;
     }
 
@@ -231,6 +233,7 @@ abstract class Item implements ItemInterface
         if (is_null($this->parentPath)) {
             throw new ItemNotFoundException('The root node has no parent');
         }
+
         return $this->objectManager->getNodeByPath($this->parentPath);
     }
 
@@ -242,6 +245,7 @@ abstract class Item implements ItemInterface
     public function getDepth()
     {
         $this->checkState();
+
         return $this->depth;
     }
 
@@ -253,6 +257,7 @@ abstract class Item implements ItemInterface
     public function getSession()
     {
         $this->checkState();
+
         return $this->session;
     }
 
@@ -264,6 +269,7 @@ abstract class Item implements ItemInterface
     public function isNode()
     {
         $this->checkState();
+
         return $this->isNode;
     }
 
@@ -350,6 +356,7 @@ abstract class Item implements ItemInterface
         $this->checkState();
 
         if ($this === $otherItem) { // trivial case
+
             return true;
         }
         if ($this->session->getRepository() === $otherItem->getSession()->getRepository()
@@ -367,6 +374,7 @@ abstract class Item implements ItemInterface
                 return true;
             }
         }
+
         return false;
     }
 
@@ -532,8 +540,7 @@ abstract class Item implements ItemInterface
      *      another).
      * @throws RepositoryException if another error occurs.
      */
-    protected abstract function refresh($keepChanges);
-
+    abstract protected function refresh($keepChanges);
 
     /**
      * Change the state of the item
@@ -688,7 +695,7 @@ abstract class Item implements ItemInterface
             // Case 3)
             $this->state = self::STATE_NEW;
 
-        } elseif (self::STATE_MODIFIED  === $this->state || self::STATE_MODIFIED === $this->savedState ) {
+        } elseif (self::STATE_MODIFIED  === $this->state || self::STATE_MODIFIED === $this->savedState) {
 
             // Case 4) and 5)
             $this->state = self::STATE_MODIFIED;

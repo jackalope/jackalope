@@ -53,16 +53,17 @@ class BinaryStreamWrapper
     /**
      * Get the information and store it for later usage.
      *
-     * @param string $path the backend path for this stream
-     * @param int $mode ignored
-     * @param int $options ignored
-     * @param mixed $opened_path ignored
+     * @param string $path        the backend path for this stream
+     * @param int    $mode        ignored
+     * @param int    $options     ignored
+     * @param mixed  $opened_path ignored
      *
      * @return bool true on success
      */
     public function stream_open($path, $mode, $options, &$opened_path)
     {
         $this->path = $path;
+
         return true;
     }
 
@@ -76,6 +77,7 @@ class BinaryStreamWrapper
     public function stream_read($count)
     {
         $this->init_stream();
+
         return fread($this->stream, $count);
     }
 
@@ -87,6 +89,7 @@ class BinaryStreamWrapper
     public function stream_write($data)
     {
         $this->init_stream();
+
         return fwrite($this->stream, $data);
     }
 
@@ -96,6 +99,7 @@ class BinaryStreamWrapper
     public function stream_tell()
     {
         $this->init_stream();
+
         return ftell($this->stream);
     }
 
@@ -107,6 +111,7 @@ class BinaryStreamWrapper
     public function stream_eof()
     {
         $this->init_stream();
+
         return feof($this->stream);
     }
 
@@ -116,6 +121,7 @@ class BinaryStreamWrapper
     public function stream_stat()
     {
         $this->init_stream();
+
         return fstat($this->stream);
     }
 
@@ -129,6 +135,7 @@ class BinaryStreamWrapper
     public function stream_seek($offset, $whence)
     {
         $this->init_stream();
+
         return fseek($this->stream, $offset, $whence);
     }
 

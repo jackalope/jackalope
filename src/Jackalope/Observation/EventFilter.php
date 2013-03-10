@@ -3,8 +3,10 @@
 namespace Jackalope\Observation;
 
 use PHPCR\SessionInterface;
+use PHPCR\PropertyInterface;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\Observation\EventInterface;
+use PHPCR\PathNotFoundException;
 
 use Jackalope\FactoryInterface;
 
@@ -87,7 +89,6 @@ class EventFilter implements EventFilterInterface
         $eventPath = $event->getPath();
         if (! $this->isDeep && $eventPath !== $this->absPath) {
             // isDeep is false and the path is not the searched path
-
             return true;
         }
 
@@ -95,7 +96,6 @@ class EventFilter implements EventFilterInterface
             || substr($eventPath, 0, strlen($this->absPath)) != $this->absPath
         ) {
             // the node path does not start with the given path
-
             return true;
         }
 
@@ -120,10 +120,10 @@ class EventFilter implements EventFilterInterface
         }
         try {
             $node = $this->session->getItem($path);
-        } catch (\PHPCR\PathNotFoundException $e) {
+        } catch (PathNotFoundException $e) {
             return true;
         }
-        if ($node instanceof \PHPCR\PropertyInterface) {
+        if ($node instanceof PropertyInterface) {
             $node = $node->getParent();
         }
         foreach ($this->nodeTypes as $typename) {
@@ -143,6 +143,7 @@ class EventFilter implements EventFilterInterface
     public function setEventTypes($eventTypes)
     {
         $this->eventTypes = $eventTypes;
+
         return $this;
     }
 
@@ -164,6 +165,7 @@ class EventFilter implements EventFilterInterface
     public function setAbsPath($absPath)
     {
         $this->absPath = $absPath;
+
         return $this;
     }
 
@@ -185,6 +187,7 @@ class EventFilter implements EventFilterInterface
     public function setIsDeep($isDeep)
     {
         $this->isDeep = $isDeep;
+
         return $this;
     }
 
@@ -206,9 +209,9 @@ class EventFilter implements EventFilterInterface
     public function setIdentifiers(array $identifiers)
     {
         $this->identifiers = $identifiers;
+
         return $this;
     }
-
 
     /**
      * {@inheritDoc}
@@ -228,6 +231,7 @@ class EventFilter implements EventFilterInterface
     public function setNodeTypes(array $nodeTypes)
     {
         $this->nodeTypes = $nodeTypes;
+
         return $this;
     }
 
@@ -250,6 +254,7 @@ class EventFilter implements EventFilterInterface
     {
         throw new \Jackalope\NotImplementedException('TODO: how can we figure out if an event was local?');
         $this->noLocal = $noLocal;
+
         return $this;
     }
 

@@ -22,7 +22,7 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\UnsupportedRepositoryOperationException
      * @throws PHPCR\RepositoryException
      */
-    function checkinItem($path);
+    public function checkinItem($path);
 
     /**
      * Check-out item at path.
@@ -36,7 +36,7 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\UnsupportedRepositoryOperationException
      * @throws PHPCR\RepositoryException
      */
-    function checkoutItem($path);
+    public function checkoutItem($path);
 
     /**
      * Restore the item at versionPath to the location path
@@ -45,7 +45,7 @@ interface VersioningInterface extends TransportInterface
      *
      * @see VersionManager::restoreItem
      */
-    function restoreItem($removeExisting, $versionPath, $path);
+    public function restoreItem($removeExisting, $versionPath, $path);
 
     /**
      * Remove a version given the path to the version node and the name of the version.
@@ -56,6 +56,6 @@ interface VersioningInterface extends TransportInterface
      * @throws PHPCR\ReferentialIntegrityException
      * @throws PHPCR\Version\VersionException
      */
-    function removeVersion($versionPath, $versionName);
+    public function removeVersion($versionPath, $versionName);
 
 }

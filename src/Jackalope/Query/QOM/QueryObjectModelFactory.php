@@ -35,8 +35,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * Create the query object model factory - get this from the QueryManager
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager only used to create the query (can
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager only used to create the query (can
      *      be omitted if you do not want to execute the query but just use it
      *      with a parser)
      */

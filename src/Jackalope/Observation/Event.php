@@ -50,7 +50,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $type
+     * @param  string $type
      * @return void
      */
     public function setType($type)
@@ -68,7 +68,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $path
+     * @param  string $path
      * @return void
      */
     public function setPath($path)
@@ -86,7 +86,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $userId
+     * @param  string $userId
      * @return void
      */
     public function setUserId($userId)
@@ -104,7 +104,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $identifier
+     * @param  string $identifier
      * @return void
      */
     public function setIdentifier($identifier)
@@ -122,8 +122,8 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $key
-     * @param string $value
+     * @param  string $key
+     * @param  string $value
      * @return void
      */
     public function addInfo($key, $value)
@@ -141,7 +141,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param string $data url-encoded string
+     * @param  string $data url-encoded string
      * @return void
      */
     public function setUserData($data)
@@ -163,7 +163,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param int $date
+     * @param  int  $date
      * @return void
      */
     public function setDate($date)

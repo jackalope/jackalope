@@ -46,14 +46,14 @@ interface TransportInterface
      * @see http://www.day.com/specs/jcr/2.0/24_Repository_Compliance.html#24.2%20Repository%20Descriptors
      * @see \PHPCR\RepositoryInterface
      */
-    function getRepositoryDescriptors();
+    public function getRepositoryDescriptors();
 
     /**
      * Returns the workspace names that can be used when logging in.
      *
      * @return array List of workspaces that can be specified on login
      */
-    function getAccessibleWorkspaceNames();
+    public function getAccessibleWorkspaceNames();
 
     /**
      * Set this transport to a specific credential and a workspace.
@@ -75,7 +75,7 @@ interface TransportInterface
      *      is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    function login(CredentialsInterface $credentials, $workspaceName);
+    public function login(CredentialsInterface $credentials, $workspaceName);
 
     /***********************************************************************
      * all methods from here below require that login is called first. the *
@@ -94,7 +94,7 @@ interface TransportInterface
      *
      * @return void
      */
-    function logout();
+    public function logout();
 
     /****************************
      * Methods for read support *
@@ -110,7 +110,7 @@ interface TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    function getNamespaces();
+    public function getNamespaces();
 
     /**
      * Get the node from an absolute path
@@ -171,9 +171,9 @@ interface TransportInterface
      *      associative = true)
      *
      * @throws \PHPCR\ItemNotFoundException If the item at path was not found
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\RepositoryException   if not logged in
      */
-    function getNode($path);
+    public function getNode($path);
 
     /**
      * Get the nodes from an array of absolute paths.
@@ -189,7 +189,7 @@ interface TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    function getNodes($paths);
+    public function getNodes($paths);
 
     /**
      * Get the property stored at an absolute path.
@@ -204,7 +204,7 @@ interface TransportInterface
      *
      * @see TransportInterface::getNode($path)
      */
-    function getProperty($path);
+    public function getProperty($path);
 
     /**
      * Get the node path from a JCR uuid
@@ -217,7 +217,7 @@ interface TransportInterface
      *      uuid
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    function getNodePathForIdentifier($uuid);
+    public function getNodePathForIdentifier($uuid);
 
     /**
      * Retrieve a stream of a binary property value
@@ -226,7 +226,7 @@ interface TransportInterface
      *
      * @return resource with binary data
      */
-    function getBinaryStream($path);
+    public function getBinaryStream($path);
 
     /****************************************************************************
      * References reading                                                       *
@@ -243,7 +243,7 @@ interface TransportInterface
      *
      * @return array
      */
-    function getReferences($path, $name = null);
+    public function getReferences($path, $name = null);
 
     /**
      * Returns the path of all accessible WEAKREFERENCE properties in the
@@ -255,7 +255,7 @@ interface TransportInterface
      *
      * @return array
      */
-    function getWeakReferences($path, $name = null);
+    public function getWeakReferences($path, $name = null);
 
     /***********************************
      * Methods for NodeType discovery. *
@@ -269,7 +269,7 @@ interface TransportInterface
      *
      * @return void
      */
-    function setNodeTypeManager($nodeTypeManager);
+    public function setNodeTypeManager($nodeTypeManager);
 
     /**
      * Get node types, either filtered or all.
@@ -288,7 +288,7 @@ interface TransportInterface
      *
      * @see Jackalope\NodeTypeDefinition::fromArray
      */
-    function getNodeTypes($nodeTypes = array());
+    public function getNodeTypes($nodeTypes = array());
 
     /**
      * Sets the depth with which a transport should fetch childnodes
@@ -304,7 +304,7 @@ interface TransportInterface
      * @param int $depth The depth with which the nodes should be fetched.
      */
 
-    function setFetchDepth($depth);
+    public function setFetchDepth($depth);
 
     /**
      * Returns the current fetchDepth
@@ -313,6 +313,6 @@ interface TransportInterface
      *
      * @see TransportInterface::setFetchDepth($depth)
      */
-    function getFetchDepth();
+    public function getFetchDepth();
 
 }

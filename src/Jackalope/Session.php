@@ -6,10 +6,8 @@ use ArrayIterator;
 use PHPCR\Util\PathHelper;
 use Exception;
 
-use PHPCR\PropertyType;
 use PHPCR\RepositoryInterface;
 use PHPCR\SessionInterface;
-use PHPCR\NodeInterface;
 use PHPCR\SimpleCredentials;
 use PHPCR\CredentialsInterface;
 use PHPCR\PathNotFoundException;
@@ -106,10 +104,10 @@ class Session implements SessionInterface
      *
      * Builds the corresponding workspace instance
      *
-     * @param FactoryInterface $factory the object factory
-     * @param Repository $repository
-     * @param string $workspaceName the workspace name that is used
-     * @param SimpleCredentials $credentials the credentials that where
+     * @param FactoryInterface  $factory       the object factory
+     * @param Repository        $repository
+     * @param string            $workspaceName the workspace name that is used
+     * @param SimpleCredentials $credentials   the credentials that where
      *      used to log in, in order to implement Session::getUserID()
      *      if they are null, getUserID returns null
      * @param TransportInterface $transport the transport implementation
@@ -147,6 +145,7 @@ class Session implements SessionInterface
         if (null == $this->credentials) {
             return null;
         }
+
         return $this->credentials->getUserID(); //TODO: what if its not simple credentials? what about anonymous login?
     }
 
@@ -160,6 +159,7 @@ class Session implements SessionInterface
         if (null == $this->credentials) {
             return array();
         }
+
         return $this->credentials->getAttributeNames();
     }
 
@@ -173,6 +173,7 @@ class Session implements SessionInterface
         if (null == $this->credentials) {
             return null;
         }
+
         return $this->credentials->getAttribute($name);
     }
 
@@ -232,6 +233,7 @@ class Session implements SessionInterface
         foreach ($nodesByPath as $node) {
             $nodesByUUID[$node->getIdentifier()] = $node;
         }
+
         return new ArrayIterator($nodesByUUID);
     }
 
@@ -249,6 +251,7 @@ class Session implements SessionInterface
         if ($this->nodeExists($absPath)) {
             return $this->getNode($absPath);
         }
+
         return $this->getProperty($absPath);
     }
 
@@ -315,6 +318,7 @@ class Session implements SessionInterface
         if ($absPath == '/') {
             return true;
         }
+
         return $this->nodeExists($absPath) || $this->propertyExists($absPath);
     }
 
@@ -336,6 +340,7 @@ class Session implements SessionInterface
         } catch (ItemNotFoundException $e) {
             return false;
         }
+
         return true;
     }
 
@@ -353,6 +358,7 @@ class Session implements SessionInterface
         } catch (PathNotFoundException $e) {
             return false;
         }
+
         return true;
 
     }
@@ -728,7 +734,6 @@ class Session implements SessionInterface
     public static function getSessionFromRegistry($key)
     {
         if (isset(self::$sessionRegistry[$key])) {
-
             return self::$sessionRegistry[$key];
         }
 
@@ -740,11 +745,11 @@ class Session implements SessionInterface
      *
      * Currently only OPTION_FETCH_DEPTH is supported.
      *
-     * @param string $key the key to be set
-     * @param mixed $value the value to be set
+     * @param string $key   the key to be set
+     * @param mixed  $value the value to be set
      *
      * @throws InvalidArgumentException if the option is unknown
-     * @throws RepositoryException if this option is not supported and is a behaviour relevant option
+     * @throws RepositoryException      if this option is not supported and is a behaviour relevant option
      *
      * @see Jackalope\Transport\BaseTransport::setFetchDepth($value);
      */

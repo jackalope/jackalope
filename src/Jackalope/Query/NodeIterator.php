@@ -2,14 +2,17 @@
 
 namespace Jackalope\Query;
 
+use Countable;
+use SeekableIterator;
+use OutOfBoundsException;
+
 use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
 
 /**
  * A NodeIterator object. Returned by QueryResult->getNodes().
  */
-class NodeIterator implements \SeekableIterator, \Countable
+class NodeIterator implements SeekableIterator, Countable
 {
     /**
      * @var ObjectManager
@@ -26,9 +29,9 @@ class NodeIterator implements \SeekableIterator, \Countable
     protected $position = 0;
 
     /**
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectmanager
-     * @param array $rows
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectmanager
+     * @param array            $rows
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
     {
@@ -45,13 +48,14 @@ class NodeIterator implements \SeekableIterator, \Countable
                 if ($column['dcr:name'] == 'jcr:path') {
                     if ($column['dcr:value'] == $nodeName) {
                         $this->position = $position;
+
                         return;
                     }
                 }
             }
         }
 
-        throw new \OutOfBoundsException("invalid seek position ($nodeName)");
+        throw new OutOfBoundsException("invalid seek position ($nodeName)");
     }
 
     public function count()

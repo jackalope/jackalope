@@ -2,11 +2,8 @@
 
 namespace Jackalope\NodeType;
 
-use DOMElement;
-
 use PHPCR\NodeType\ItemDefinitionInterface;
 
-use Jackalope\Helper;
 use Jackalope\FactoryInterface;
 
 /**
@@ -61,11 +58,11 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * Create a new item definition.
      *
-     *  TODO: document this format. Property and Node add more to this.
+     * TODO: document this format. Property and Node add more to this.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param array $definition The property definition data as array
-     * @param NodeTypeManager $nodeTypeManager
+     * @param FactoryInterface $factory         the object factory
+     * @param array            $definition      The property definition data as array
+     * @param NodeTypeManager  $nodeTypeManager
      */
     public function __construct(FactoryInterface $factory, array $definition, NodeTypeManager $nodeTypeManager)
     {

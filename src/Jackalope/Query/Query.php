@@ -53,9 +53,9 @@ abstract class Query implements QueryInterface
     /**
      * Create a new query instance
      *
-     * @param FactoryInterface $factory the object factory
-     * @param string $statement The statement for this query
-     * @param ObjectManager $objectManager (can be omitted if you do not want
+     * @param FactoryInterface $factory       the object factory
+     * @param string           $statement     The statement for this query
+     * @param ObjectManager    $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
      * @param string $path If this query is loaded from workspace with
      *      QueryManager::getQuery(), path has to be provided here
@@ -98,6 +98,7 @@ abstract class Query implements QueryInterface
                 $this->objectManager,
             )
         );
+
         return $queryResult;
     }
 
@@ -171,6 +172,7 @@ abstract class Query implements QueryInterface
         if ($this->path == null) {
             throw new ItemNotFoundException('Not a stored query');
         }
+
         return $this->path;
     }
 

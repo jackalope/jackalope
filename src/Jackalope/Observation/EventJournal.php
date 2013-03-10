@@ -43,7 +43,6 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
      */
     protected $workspaceRootUri;
 
-
     /**
      * Construct a new EventJournal by extracting the $data that comes from the server.
      *
@@ -58,12 +57,11 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
      *
      * @param FactoryInterface $factory
      * @param SessionInterface $session
-     * @param DOMDocument     $data             The DOM data received from the DAVEX call to the server (might be already filtered or not)
+     * @param DOMDocument      $data             The DOM data received from the
+     *      DavEx call to the server (might be already filtered or not)
      * @param EventFilter      $filter           the event filter to apply
-     * @param string           $workspaceRootUri The prefix to extract the path from the event href attribute
-     *
-     * @return EventJournal
-     *
+     * @param string           $workspaceRootUri The prefix to extract the path
+     *      from the event href attribute
      */
     public function __construct(FactoryInterface $factory, SessionInterface $session, DOMDocument $data, EventFilter $filter, $workspaceRootUri = '')
     {
@@ -119,8 +117,11 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
 
     /**
      * Parse the events in an <entry> section
-     * @param DOMElement $entry
-     * @param string $currentUserId The current user ID as extracted from the <entry> part
+     *
+     * @param  DOMElement $entry
+     * @param  string     $currentUserId The current user ID as extracted from
+     *      the <entry> part
+     *
      * @return Event[]
      */
     protected function extractEvents(DOMElement $entry, $currentUserId)
@@ -139,7 +140,6 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
             // The timestamps in Java contain milliseconds, it's not the case in PHP
             // so we strip millis from the response
             $event->setDate(substr($date->nodeValue, 0, -3));
-
 
             $id = $this->getDomElement($domEvent, 'eventidentifier');
             if ($id) {
@@ -212,10 +212,13 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
     }
 
     /**
-     * Extract an event type from a DAVEX event journal response
-     * @throws RepositoryException
+     * Extract an event type from a DavEx event journal response
+     *
      * @param DOMElement $event
+     *
      * @return int The event type
+     *
+     * @throws RepositoryException
      */
     protected function extractEventType(DOMElement $event)
     {
@@ -228,7 +231,7 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
         // Here we cannot simply take the first child as the <eventtype> tag might contain
         // text fragments (i.e. newlines) that will be returned as DOMText elements.
         $type = null;
-        foreach($list->item(0)->childNodes as $el) {
+        foreach ($list->item(0)->childNodes as $el) {
             if ($el instanceof DOMElement) {
                 return $this->getEventTypeFromTagName($el->tagName);
             }
@@ -242,7 +245,8 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
      *
      * @param DOMElement $event        The DOMElement containing the searched tag
      * @param string     $tagName      The name of the searched tag
-     * @param string     $errorMessage The error message when the tag was not found or null if the tag is not required
+     * @param string     $errorMessage The error message when the tag was not
+     *      found or null if the tag is not required
      *
      * @return DOMNode
      *
@@ -260,10 +264,13 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
     }
 
     /**
-     * Get the JCR event type from a DAVEX tag representing the event type
-     * @throws RepositoryException
+     * Get the JCR event type from a DavEx tag representing the event type
+     *
      * @param string $tagName
+     *
      * @return int
+     *
+     * @throws RepositoryException
      */
     protected function getEventTypeFromTagName($tagName)
     {
@@ -289,7 +296,9 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
 
     /**
      * Get the XML representation of a DOMElement to display in error messages
+     *
      * @param DOMElement $event
+     *
      * @return string
      */
     protected function getEventDom(DOMElement $event)
