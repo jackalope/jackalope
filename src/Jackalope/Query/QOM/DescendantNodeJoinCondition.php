@@ -28,8 +28,8 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      */
     public function __construct($descendantSelectorName, $ancestorSelectorName)
     {
-        $this->ancestorSelectorNode = $ancestorSelectorName;
-        $this->descendantSelectorName = $descendantSelectorName;
+        $this->ancestorSelectorNode = (string) $ancestorSelectorName;
+        $this->descendantSelectorName = (string) $descendantSelectorName;
     }
 
     /**
