@@ -427,7 +427,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * Jackalope has no implementation-specific ordering restriction so no
      * \PHPCR\ConstraintViolationException is expected. VersionException and
-     * LockException are not tested immediatly but thrown on save.
+     * LockException are not tested immediately but thrown on save.
      *
      * @api
      */
@@ -442,7 +442,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $this->originalNodesOrder = $this->nodes;
         }
 
-        $this->nodes = $this->orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
+        $this->nodes = NodeHelper::orderBeforeArray($srcChildRelPath, $destChildRelPath, $this->nodes);
         $this->setModified();
     }
 
@@ -456,12 +456,21 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->session->move($this->path, $this->parentPath . '/' . $newName);
     }
 
+    /**
+     * Determine whether the children of this node need to be reordered
+     *
+     * @return bool
+     *
+     * @private
+     */
+    public function needsChildReordering()
+    {
+        return (bool) $this->originalNodesOrder;
+    }
+
    /**
     * Returns the orderBefore commands to be applied to the childnodes
     * to get from the original order to the new one
-    *
-    * Maybe this could be optimized, so that it needs less orderBefore
-    *  commands on the backend
     *
     * @return array of arrays with 2 fields: name of node to order before second name
     *
@@ -469,92 +478,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     */
     public function getOrderCommands()
     {
-        $reorders = array();
-        if (!$this->originalNodesOrder) {
-            return $reorders;
+        if (! $this->originalNodesOrder) {
+
+            return array();
         }
 
-        //check for deleted nodes
-        $newIndex = array_flip($this->nodes);
-
-        foreach ($this->originalNodesOrder as $k => $v) {
-            if (!isset($newIndex[$v])) {
-                unset($this->orignalNodesOrder[$k]);
-            }
-        }
-
-        // reindex the arrays to avoid holes in the indexes
-        $this->originalNodesOrder = array_values($this->originalNodesOrder);
-        $this->nodes = array_values($this->nodes);
-
-        $len = count($this->nodes) - 1;
-        $oldIndex = array_flip($this->originalNodesOrder);
-
-        //go backwards on the new node order and arrange them this way
-        for ($i = $len; $i >= 0; $i--) {
-            //get the name of the child node
-            $c = $this->nodes[$i];
-            //check if it's not the last node
-            if (isset($this->nodes[$i + 1])) {
-                // get the name of the next node
-                $next = $this->nodes[$i + 1];
-                //if in the old order $c and next are not neighbors already, do the reorder command
-                if ($oldIndex[$c] + 1 != $oldIndex[$next]) {
-                    $reorders[] = array($c,$next);
-                    $this->originalNodesOrder = $this->orderBeforeArray($c,$next,$this->originalNodesOrder);
-                    $oldIndex = array_flip($this->originalNodesOrder);
-                }
-            } else {
-                //check if it's not already at the end of the nodes
-                if ($oldIndex[$c] != $len) {
-                    $reorders[] = array($c,null);
-                    $this->originalNodesOrder = $this->orderBeforeArray($c,null,$this->originalNodesOrder);
-                    $oldIndex = array_flip($this->originalNodesOrder);
-                }
-            }
-        }
+        $reorders = NodeHelper::calculateOrderBefore($this->originalNodesOrder, $this->nodes);
         $this->originalNodesOrder = null;
+
         return $reorders;
-    }
-
-    /**
-     * Perform the move operation
-     *
-     * @param string $srcChildRelPath name of the node to move
-     * @param string $destChildRelPath name of the node srcChildRelPath has to be ordered before, null to move to the end
-     * @param string $nodes the array of child nodes
-     *
-     * @return array The updated $nodes array with new order
-     *
-     * @throws \PHPCR\ItemNotFoundException if $srcChildRelPath or $destChildRelPath are not found
-     */
-    protected function orderBeforeArray($srcChildRelPath, $destChildRelPath, $nodes)
-    {
-        // renumber the nodes so there are no gaps
-        $nodes = array_values($nodes);
-        $oldpos = array_search($srcChildRelPath, $nodes);
-        if (false === $oldpos) {
-            throw new ItemNotFoundException("$srcChildRelPath is not a valid child of ".$this->path);
-        }
-
-        if ($destChildRelPath == null) {
-            //null means move to end
-            unset($nodes[$oldpos]);
-            $nodes[] = $srcChildRelPath;
-        } else {
-            //insert somewhere specified by dest path
-            $newpos = array_search($destChildRelPath, $nodes);
-            if ($newpos === false) {
-                throw new ItemNotFoundException("$destChildRelPath is not a valid child of ".$this->path);
-            }
-            if ($oldpos < $newpos) {
-                //we first unset, so
-                $newpos--;
-            }
-            unset($nodes[$oldpos]);
-            array_splice($nodes, $newpos, 0, $srcChildRelPath);
-        }
-        return $nodes;
     }
 
     /**

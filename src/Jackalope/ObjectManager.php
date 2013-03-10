@@ -662,7 +662,7 @@ class ObjectManager
 
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath['Node'])) {
-                foreach ($this->objectsByPath['Node'] as $path => $node) {
+                foreach ($this->objectsByPath['Node'] as $node) {
                     /** @var $node Node */
                     if ($node->isModified()) {
                         if (! $node instanceof NodeInterface) {
@@ -674,10 +674,8 @@ class ObjectManager
                                 $this->transport->storeProperty($property);
                             }
                         }
-                        //order nodes
-                        $reorders = $node->getOrderCommands();
-                        if (count($reorders) > 0) {
-                            $this->transport->reorderNodes($node->getPath(),$reorders);
+                        if ($node->needsChildReordering()) {
+                            $this->transport->reorderChildren($node);
                         }
                     }
                 }
