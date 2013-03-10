@@ -2,19 +2,21 @@
 
 namespace Jackalope\Lock;
 
-use PHPCR\Lock\LockManagerInterface;
 use ArrayIterator;
-use PHPCR\Lock\LockInfoInterface;
+use IteratorAggregate;
+
 use PHPCR\SessionInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\InvalidItemStateException;
+use PHPCR\Lock\LockManagerInterface;
+use PHPCR\Lock\LockInfoInterface;
 use PHPCR\Lock\LockException;
 
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
-use Jackalope\NotImplementedException;
-use Jackalope\Transport\LockingInterface;
 use Jackalope\Item;
+use Jackalope\Transport\LockingInterface;
+use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -23,7 +25,7 @@ use Jackalope\Item;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class LockManager implements \IteratorAggregate, LockManagerInterface
+class LockManager implements IteratorAggregate, LockManagerInterface
 {
     /**
      * @var \Jackalope\ObjectManager
@@ -49,7 +51,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * Contains a list of nodes locks
      *
-     * @var array(absPath => Lock)
+     * @var Lock[] indexed by absPath
      */
     protected $locks = array();
 
