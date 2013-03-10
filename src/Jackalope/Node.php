@@ -1090,7 +1090,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function setMixins($mixinNames)
+    public function setMixins(array $mixinNames)
     {
         $toRemove = array();
         if ($this->hasProperty('jcr:mixinTypes')) {
