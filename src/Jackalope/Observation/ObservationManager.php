@@ -2,6 +2,8 @@
 
 namespace Jackalope\Observation;
 
+use IteratorAggregate;
+
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\Observation\EventListenerInterface;
 use PHPCR\Observation\EventFilterInterface;
@@ -21,7 +23,7 @@ use Jackalope\NotImplementedException;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
+class ObservationManager implements IteratorAggregate, ObservationManagerInterface
 {
     /**
      * @var FactoryInterface
@@ -37,7 +39,6 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      * @var SessionInterface
      */
     protected $session;
-
 
     public function __construct(FactoryInterface $factory, SessionInterface $session, ObservationInterface $transport)
     {

@@ -73,14 +73,14 @@ class Repository implements RepositoryInterface
      *      null, the \Jackalope\Factory is instantiated. Note that the
      *      repository is the only class accepting null as factory.
      * @param TransportInterface $transport transport implementation
-     * @param array $options defines optional features to enable/disable (see
+     * @param array              $options   defines optional features to enable/disable (see
      *      $options property)
      */
     public function __construct(FactoryInterface $factory = null, TransportInterface $transport, array $options = null)
     {
         $this->factory = is_null($factory) ? new Factory : $factory;
         $this->transport = $transport;
-        $this->options = array_merge($this->options, (array)$options);
+        $this->options = array_merge($this->options, (array) $options);
         $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionInterface;
         // register a stream wrapper to lazily load binary property values
         if (null === self::$binaryStreamWrapperRegistered) {
@@ -125,6 +125,7 @@ class Repository implements RepositoryInterface
         if (null === $this->descriptors) {
             $this->loadDescriptors();
         }
+
         return array_keys($this->descriptors);
     }
 
@@ -137,6 +138,7 @@ class Repository implements RepositoryInterface
     {
         $ref = new ReflectionClass('PHPCR\\RepositoryInterface');
         $consts = $ref->getConstants();
+
         return in_array($key, $consts);
     }
 
@@ -161,6 +163,7 @@ class Repository implements RepositoryInterface
         if (null === $this->descriptors) {
             $this->descriptors = $this->transport->getRepositoryDescriptors();
         }
+
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
         //TODO: is this the proper behaviour? Or what should happen on inexisting key?
     }

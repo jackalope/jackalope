@@ -11,7 +11,6 @@ use PHPCR\Version\VersionException;
 use Jackalope\Node;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -68,6 +67,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
                 $this->linearVersions[$version->getName()] = $version;
             } while ($version = $version->getLinearSuccessor());
         }
+
         return new ArrayIterator($this->linearVersions);
     }
 
@@ -84,6 +84,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             $results = array($rootVersion->getName() => $rootVersion);
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
         }
+
         return new ArrayIterator($this->versions);
     }
 
@@ -106,6 +107,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             // OPTIMIZE: use a stack instead of recursion
             $results = array_merge($results, $this->getEventualSuccessors($successor));
         }
+
         return $results;
     }
 
@@ -121,6 +123,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
         foreach ($this->getAllLinearVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
+
         return new ArrayIterator($frozenNodes);
     }
 
@@ -136,6 +139,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
         foreach ($this->getAllVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
+
         return new ArrayIterator($frozenNodes);
     }
 

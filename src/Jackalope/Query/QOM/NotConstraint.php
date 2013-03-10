@@ -48,6 +48,7 @@ class NotConstraint implements NotInterface
     {
         $constraints = $this->getConstraint()->getConstraints();
         $constraints[] = $this;
+
         return $constraints;
     }
 }

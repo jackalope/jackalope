@@ -17,8 +17,8 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     /**
      * Create a new node definition template instance.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param NodeTypeManager $nodeTypeManager
+     * @param FactoryInterface $factory         the object factory
+     * @param NodeTypeManager  $nodeTypeManager
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)
     {
@@ -116,4 +116,3 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
         $this->allowsSameNameSiblings = $allowSameNameSiblings;
     }
 }
-

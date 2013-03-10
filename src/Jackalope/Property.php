@@ -3,7 +3,6 @@
 namespace Jackalope;
 
 use Exception;
-use PHPCR\Util\PathHelper;
 use LogicException;
 use ArrayIterator;
 use IteratorAggregate;
@@ -17,6 +16,8 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\ItemNotFoundException;
 
 use PHPCR\NodeType\PropertyDefinitionInterface;
+
+use PHPCR\Util\PathHelper;
 
 /**
  * The Jackalope in-memory representation of a property.
@@ -84,13 +85,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * data itself.
      *
      * @param FactoryInterface $factory the object factory
-     * @param array $data array with fields <tt>type</tt> (integer or string
-     *      from PropertyType) and <tt>value</tt> (data for creating the
-     *      property value - array for multivalue property)
-     * @param string $path the absolute path of this item
-     * @param Session $session the session instance
-     * @param ObjectManager $objectManager the objectManager instance - the caller has to take
-     *      care of registering this item with the object manager
+     * @param array            $data    array with fields <tt>type</tt>
+     *      (integer or string from PropertyType) and <tt>value</tt> (data for
+     *      creating the property value - array for multivalue property)
+     * @param string        $path          the absolute path of this item
+     * @param Session       $session       the session instance
+     * @param ObjectManager $objectManager the objectManager instance - the
+     *      caller has to take care of registering this item with the object
+     *      manager
      * @param boolean $new optional: set to true to make this property aware
      *      its not yet existing on the server. defaults to false
      */
@@ -133,6 +135,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             }
             $this->length = $data['value'];
             $this->value = null;
+
             return;
         }
 
@@ -223,6 +226,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         } elseif ($this->type == PropertyType::BINARY) {
             return $this->getBinary();
         }
+
         return $this->value;
     }
 
@@ -244,6 +248,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             //from now on,
             $this->value = null;
         }
+
         return $value;
     }
 
@@ -262,6 +267,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::STRING) {
             return PropertyType::convertType($this->value, PropertyType::STRING, $this->type);
         }
+
         return $this->value;
     }
 
@@ -295,6 +301,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 fseek($s, $pos); //go back to previous position
                 $ret[] = $stream;
             }
+
             return is_array($this->value) ? $ret : $ret[0];
         }
 
@@ -311,12 +318,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             for ($i = 1; $i <= count($this->length); $i++) {
                 $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
             }
+
             return $results;
         }
 
         // single property case
         $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
         $this->streams[] = $result;
+
         return $result;
     }
 
@@ -332,6 +341,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::LONG) {
             return PropertyType::convertType($this->value, PropertyType::LONG, $this->type);
         }
+
         return $this->value;
     }
 
@@ -347,6 +357,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::DOUBLE) {
             return PropertyType::convertType($this->value, PropertyType::DOUBLE, $this->type);
         }
+
         return $this->value;
     }
 
@@ -362,6 +373,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::DECIMAL) {
             return PropertyType::convertType($this->value, PropertyType::DECIMAL, $this->type);
         }
+
         return $this->value;
     }
 
@@ -377,6 +389,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::DATE) {
             return PropertyType::convertType($this->value, PropertyType::DATE, $this->type);
         }
+
         return $this->value;
     }
 
@@ -392,6 +405,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type != PropertyType::BOOLEAN) {
             return PropertyType::convertType($this->value, PropertyType::BOOLEAN, $this->type);
         }
+
         return $this->value;
     }
 
@@ -518,17 +532,21 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                         $this->definition = $candidate;
                         break 2;
                     } elseif ('*' == $candidate->getName()) {
-                        // i guess if we have multiple wildcard property definitions, they should be equivalent
+                        // i guess if we have multiple wildcard property
+                        // definitions, they should be equivalent
                         $this->definition = $candidate;
-                        // do not abort loop, in case we hit an exactly matching definition
+                        // do not abort loop, in case we hit an exactly
+                        // matching definition
                     }
                 }
             }
         }
-        // sanity check. theoretically, the property should not be able to exist if there is no definition for it
+        // sanity check. theoretically, the property should not be able to
+        // exist if there is no definition for it
         if (empty($this->definition)) {
             throw new \RuntimeException('Found no property definition, this should not be possible');
         }
+
         return $this->definition;
     }
 
@@ -583,7 +601,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * Provide Traversable interface: redirect to getNodes with no filter
      *
-     * @return Iterator over all child nodes
+     * @return \Iterator over all child nodes
      */
     public function getIterator()
     {
@@ -593,6 +611,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (!is_array($value)) {
             $value = array($value);
         }
+
         return new ArrayIterator($value);
     }
 
@@ -635,7 +654,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * Internally used to set the value of the property without any notification
      * of changes nor state change.
      *
-     * @param mixed $value
+     * @param mixed  $value
      * @param string $type
      *
      * @return void
@@ -648,6 +667,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     {
         if (is_null($value)) {
             $this->remove();
+
             return;
         }
         if (! is_integer($type)) {

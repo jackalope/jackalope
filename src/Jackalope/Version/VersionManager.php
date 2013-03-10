@@ -2,6 +2,8 @@
 
 namespace Jackalope\Version;
 
+use InvalidArgumentException;
+
 use PHPCR\NodeInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\PathNotFoundException;
@@ -20,8 +22,8 @@ use Jackalope\FactoryInterface;
  *
  * @api
  */
-class VersionManager implements VersionManagerInterface {
-
+class VersionManager implements VersionManagerInterface
+{
     /**
      * @var ObjectManager
      */
@@ -32,8 +34,8 @@ class VersionManager implements VersionManagerInterface {
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
@@ -63,6 +65,7 @@ class VersionManager implements VersionManagerInterface {
              // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
              $node->setDirty();
          }
+
          return $version;
      }
 
@@ -89,6 +92,7 @@ class VersionManager implements VersionManagerInterface {
     {
         $version = $this->checkin($absPath); //just returns current version if already checked in
         $this->checkout($absPath);
+
         return $version;
     }
 
@@ -136,6 +140,7 @@ class VersionManager implements VersionManagerInterface {
         } catch (PathNotFoundException $e) {
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");
         }
+
         return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
     }
 
@@ -152,7 +157,7 @@ class VersionManager implements VersionManagerInterface {
 
         if (is_string($version)) {
             if (! is_string($absPath)) {
-                throw new \InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
+                throw new InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
             }
             $vh = $this->getVersionHistory($absPath);
             $version = $vh->getVersion($version);
@@ -169,12 +174,12 @@ class VersionManager implements VersionManagerInterface {
             throw new NotImplementedException('TODO: implement restoring a version to a specified path');
             // @codeCoverageIgnoreEnd
 
-        }  elseif ($version instanceof VersionInterface) {
+        } elseif ($version instanceof VersionInterface) {
             $versionPath = $version->getPath();
             $nodePath = $this->objectManager->getNode($version->getContainingHistory()->getVersionableIdentifier())->getPath();
 
         } else {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
 
         $this->objectManager->restore($removeExisting, $versionPath, $nodePath);

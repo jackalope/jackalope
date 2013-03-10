@@ -24,6 +24,7 @@ class LockInfo implements LockInfoInterface
     public function setIsDeep($isDeep)
     {
         $this->isDeep = $isDeep;
+
         return $this;
     }
 
@@ -45,6 +46,7 @@ class LockInfo implements LockInfoInterface
     public function setIsSessionScoped($isSessionScoped)
     {
         $this->isSessionScoped = $isSessionScoped;
+
         return $this;
     }
 
@@ -66,6 +68,7 @@ class LockInfo implements LockInfoInterface
     public function setTimeoutHint($timeoutHint)
     {
         $this->timeoutHint = $timeoutHint;
+
         return $this;
     }
 
@@ -87,6 +90,7 @@ class LockInfo implements LockInfoInterface
     public function setOwnerInfo($ownerInfo)
     {
         $this->ownerInfo = $ownerInfo;
+
         return $this;
     }
 

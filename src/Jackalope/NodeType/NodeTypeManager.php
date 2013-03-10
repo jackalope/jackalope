@@ -66,8 +66,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Create the node type manager for a session.
      *
      * There may be only one instance per session
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager
+     * @param FactoryInterface $factory       the object factory
+     * @param ObjectManager    $objectManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
@@ -153,6 +153,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         if (empty($this->nodeTree[$nodeTypeName])) {
             return array();
         }
+
         return $this->nodeTree[$nodeTypeName];
     }
 
@@ -178,6 +179,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
                 $ret = array_merge($ret, array($name => $subnode), $this->getSubtypes($name));
             }
         }
+
         return $ret;
     }
 
@@ -242,6 +244,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             // we get an exception. just ignore the exception, we don't have the type.
             return false;
         }
+
         return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
     }
 
@@ -253,6 +256,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     public function getAllNodeTypes()
     {
         $this->fetchNodeTypes();
+
         return new ArrayIterator(array_merge($this->primaryTypes, $this->mixinTypes));
     }
 
@@ -264,6 +268,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     public function getPrimaryNodeTypes()
     {
         $this->fetchNodeTypes();
+
         return new ArrayIterator($this->primaryTypes);
     }
 
@@ -275,6 +280,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     public function getMixinNodeTypes()
     {
         $this->fetchNodeTypes();
+
         return new ArrayIterator($this->mixinTypes);
     }
 
@@ -316,6 +322,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
         self::registerNodeTypes(array($ntd), $allowUpdate);
+
         return each($ntd);
     }
 
@@ -323,7 +330,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Internally create a node type object
      *
      * @param NodeTypeDefinitionInterface $ntd
-     * @param bool $allowUpdate whether updating the definition is to be allowed or not
+     * @param bool                        $allowUpdate whether updating the definition is to be allowed or not
      *
      * @return NodeType the new node type
      *
@@ -334,6 +341,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
             throw new NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
+
         return $this->factory->get('NodeType\\NodeType', array($this, $ntd));
     }
 
@@ -380,6 +388,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             $types[$name] = $this->getNodeType($name);
         }
         $this->fetchedAllFromBackend = $fetched;
+
         return $types;
     }
 

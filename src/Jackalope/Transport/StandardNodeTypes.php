@@ -23,7 +23,7 @@ class StandardNodeTypes
      *
      * @return array list of node type arrays to create node type objects from
      */
-    static public function getNodeTypeData()
+    public static function getNodeTypeData()
     {
         return array(
             0 =>

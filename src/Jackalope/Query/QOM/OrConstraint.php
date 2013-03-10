@@ -53,7 +53,7 @@ class OrConstraint implements OrInterface
     {
         return $this->constraint2;
     }
-    
+
     /**
      * Gets all constraints including itself
      *
@@ -65,6 +65,7 @@ class OrConstraint implements OrInterface
     {
         $constraints = array_merge($this->getConstraint1()->getConstraints(), $this->getConstraint2()->getConstraints());
         $constraints[] = $this;
+
         return $constraints;
     }
 }

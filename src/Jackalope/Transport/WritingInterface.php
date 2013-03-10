@@ -55,7 +55,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::copy
      */
-    function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
+    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
 
     /**
      * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
@@ -66,8 +66,8 @@ interface WritingInterface extends TransportInterface
      * directly in the storage.
      *
      * @param string $srcWorkspace The workspace where the source node can be found
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $destAbsPath Absolute destination path (must include the
+     * @param string $srcAbsPath   Absolute source path to the node
+     * @param string $destAbsPath  Absolute destination path (must include the
      *      new node name)
      * @param bool $removeExisting whether to remove existing nodes at $destAbsPath
      *
@@ -77,14 +77,14 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::cloneFrom
      */
-    function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
     /**
      * Perform a batch of move operations in the order of the passed array
      *
      * @param \Jackalope\Transport\MoveNodeOperation[] $operations
      */
-    function moveNodes(array $operations);
+    public function moveNodes(array $operations);
 
     /**
      * Moves a node from src to dst outside of a transaction
@@ -99,7 +99,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see \Jackalope\Workspace::moveNode
      */
-    function moveNodeImmediately($srcAbsPath, $dstAbsPath);
+    public function moveNodeImmediately($srcAbsPath, $dstAbsPath);
 
     /**
      * Reorder the children of $node as the node said it needs them reordered.
@@ -109,7 +109,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param Node $node the node to reorder its children
      */
-    function reorderChildren(Node $node);
+    public function reorderChildren(Node $node);
 
     /**
      * Perform a batch remove operation.
@@ -119,14 +119,14 @@ interface WritingInterface extends TransportInterface
      *
      * @param \Jackalope\Transport\RemoveNodeOperation[] $operations
      */
-    function deleteNodes(array $operations);
+    public function deleteNodes(array $operations);
 
     /**
      * Perform a batch remove operation.
      *
      * @param \Jackalope\Transport\RemovePropertyOperation[] $operations
      */
-    function deleteProperties(array $operations);
+    public function deleteProperties(array $operations);
 
     /**
      * Deletes a node and the whole subtree under it outside of a transaction
@@ -142,7 +142,7 @@ interface WritingInterface extends TransportInterface
      *      checking.
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function deleteNodeImmediately($path);
+    public function deleteNodeImmediately($path);
 
     /**
      * Deletes a property outside of a transaction
@@ -158,7 +158,7 @@ interface WritingInterface extends TransportInterface
      *      checking.
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function deletePropertyImmediately($path);
+    public function deletePropertyImmediately($path);
 
     /**
      * Store all nodes in the AddNodeOperations
@@ -181,7 +181,7 @@ interface WritingInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function storeNodes(array $operations);
+    public function storeNodes(array $operations);
 
     /**
      * Stores a property to its absolute path
@@ -192,7 +192,7 @@ interface WritingInterface extends TransportInterface
      *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
-    function storeProperty(Property $property);
+    public function storeProperty(Property $property);
 
     /**
      * Register a new namespace.
@@ -205,11 +205,11 @@ interface WritingInterface extends TransportInterface
      * this prefix if this prefix is already existing.
      *
      * @param string $prefix The prefix to be mapped.
-     * @param string $uri The URI to be mapped.
+     * @param string $uri    The URI to be mapped.
      *
      * @return void
      */
-    function registerNamespace($prefix, $uri);
+    public function registerNamespace($prefix, $uri);
 
     /**
      * Unregister an existing namespace.
@@ -221,14 +221,14 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
-    function unregisterNamespace($prefix);
+    public function unregisterNamespace($prefix);
 
     /**
      * Called before any data is written
      *
      * @return void
      */
-    function prepareSave();
+    public function prepareSave();
 
     /**
      * Called after everything internally is done in the save() method
@@ -236,12 +236,12 @@ interface WritingInterface extends TransportInterface
      *
      * @return void
      */
-    function finishSave();
+    public function finishSave();
 
     /**
      * Called if a save operation caused an exception
      *
      * @return void
      */
-    function rollbackSave();
+    public function rollbackSave();
 }

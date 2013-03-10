@@ -19,5 +19,5 @@ interface PermissionInterface extends TransportInterface
      *
      * @return array of string
      */
-    function getPermissions($path);
+    public function getPermissions($path);
 }

@@ -23,6 +23,7 @@ class Factory implements FactoryInterface
 
         $class = new ReflectionClass($name);
         array_unshift($params, $this);
+
         return $class->newInstanceArgs($params);
     }
 }

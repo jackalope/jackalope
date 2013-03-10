@@ -41,7 +41,7 @@ interface QueryInterface extends TransportInterface
      *
      * @see \Jackalope\Query\QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */
-    function query(Query $query);
+    public function query(Query $query);
 
     //TODO: getSupportedQueryLanguages
 

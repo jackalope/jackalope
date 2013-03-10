@@ -36,7 +36,7 @@ abstract class Operation
 
     /**
      * @param string $srcPath source path this operation applies to
-     * @param string $type one of the Operation constants
+     * @param string $type    one of the Operation constants
      */
     public function __construct($srcPath, $type)
     {

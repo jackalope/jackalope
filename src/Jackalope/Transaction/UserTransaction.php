@@ -53,9 +53,9 @@ class UserTransaction implements UserTransactionInterface
     /**
      * Registers the provided parameters as attribute to the instance.
      *
-     * @param FactoryInterface $factory the object factory
+     * @param FactoryInterface   $factory   the object factory
      * @param TransportInterface $transport
-     * @param SessionInterface $session
+     * @param SessionInterface   $session
      */
     public function __construct(FactoryInterface $factory, TransactionInterface $transport,
                                 SessionInterface $session, ObjectManager $om)

@@ -26,7 +26,7 @@ interface WorkspaceManagementInterface extends TransportInterface
      *
      * The new workspace can be accessed through a login specifying its name.
      *
-     * @param string $name A String, the name of the new workspace.
+     * @param string $name         A String, the name of the new workspace.
      * @param string $srcWorkspace The name of the workspace from which the new
      *      workspace is to be cloned.
      *
@@ -38,8 +38,8 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository
      *      does not support the creation of workspaces.
      * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws \PHPCR\RepositoryException      if another error occurs.
      */
-    function createWorkspace($name, $srcWorkspace = null);
+    public function createWorkspace($name, $srcWorkspace = null);
 
 }

@@ -24,6 +24,7 @@ class FilteredXMLReader extends XMLReader
                 return true;
             }
         }
+
         return false;
     }
 
@@ -34,6 +35,7 @@ class FilteredXMLReader extends XMLReader
                 return true;
             }
         }
+
         return false;
     }
 }
