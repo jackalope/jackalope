@@ -252,7 +252,7 @@ class ObjectManager
      * @param string $class The class of node to get. TODO: Is it sane to
      *      fetch data separately for Version and normal Node?
      *
-     * @return Node[] that contains all found NodeInterface
+     * @return Node[] Iterator that contains all found NodeInterface
      *      instances keyed by their path
      *
      * @throws RepositoryException If the path is not absolute or not
@@ -278,6 +278,8 @@ class ObjectManager
             $data = $this->transport->getNodes($fetchPaths);
             $dataItems = array();
 
+            // transform back to session paths from the fetch paths, in case of
+            // a pending move operation
             foreach ($data as $fetchPath => $item) {
                 $dataItems[$fetchPath] = $item;
             }
@@ -425,14 +427,13 @@ class ObjectManager
     }
 
     /**
-     * Get the node identified by an uuid or (relative) path.
+     * Get the node identified by a relative path.
      *
      * If you have an absolute path use {@link getNodeByPath()} for better
      * performance.
      *
-     * @param string $identifier uuid or (relative) path
-     * @param string $root       optional root if you are in a node context - not
-     *      used if $identifier is an uuid
+     * @param string $relPath  relative path
+     * @param string $root  context path
      * @param string $class optional class name for the factory
      *
      * @return NodeInterface The specified Node. if not available,
@@ -443,60 +444,82 @@ class ObjectManager
      *
      * @see Session::getNode()
      */
-    public function getNode($identifier, $root = '/', $class = 'Node')
+    public function getNode($relPath, $context, $class = 'Node')
     {
-        if (UUIDHelper::isUUID($identifier)) {
-            if (empty($this->objectsByUuid[$identifier])) {
-                $path = $this->transport->getNodePathForIdentifier($identifier);
-                $node = $this->getNodeByPath($path, $class);
-                $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
-
-                return $node;
-            }
-
-            return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
-        }
-
-        $path = PathHelper::absolutizePath($identifier, $root);
+        $path = PathHelper::absolutizePath($relPath, $context);
 
         return $this->getNodeByPath($path, $class);
     }
 
     /**
-     * Get the nodes identified by the given uuids or absolute paths.
+     * Get the node identified by an uuid.
      *
-     * Note uuids/paths that cannot be found will be ignored
+     * @param string $identifier uuid
+     * @param string $class      optional class name for factory
      *
-     * @param array  $identifiers uuid's or absolute paths
+     * @return NodeInterface The specified Node. if not available,
+     *      ItemNotFoundException is thrown
+     *
+     * @throws ItemNotFoundException If the path was not found
+     * @throws RepositoryException   if another error occurs.
+     *
+     * @see Session::getNodeByIdentifier()
+     */
+    public function getNodeByIdentifier($identifier, $class = 'Node')
+    {
+        if (empty($this->objectsByUuid[$identifier])) {
+            $data = $this->transport->getNodeByIdentifier($identifier);
+            $path = $data->{':jcr:path'};
+            unset($data->{':jcr:path'});
+            // TODO: $path is a backend path. we should inverse the getFetchPath operation here
+            $node = $this->getNodeByPath($path, $class, $data);
+            $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
+
+            return $node;
+        }
+
+        return $this->getNodeByPath($this->objectsByUuid[$identifier], $class);
+    }
+
+    /**
+     * Get the nodes identified by the given uuids
+     *
+     * Note uuids that are not found will be ignored
+     *
+     * @param array  $identifiers uuid
      * @param string $class       optional class name for the factory
      *
-     * @return ArrayIterator of NodeInterface of the specified nodes keyed by their path
+     * @return Node[] Iterator of the specified nodes keyed by their unique ids
      *
      * @throws RepositoryException if another error occurs.
      *
-     * @see Session::getNodes()
+     * @see Session::getNodesByIdentifier()
      */
-    public function getNodes($identifiers, $class = 'Node')
+    public function getNodesByIdentifier($identifiers, $class = 'Node')
     {
-        // TODO get paths for UUID's via a single query
-        $paths = array();
-        foreach ($identifiers as $key => $identifier) {
-            if (UUIDHelper::isUUID($identifier)) {
-                if (empty($this->objectsByUuid[$identifier])) {
-                    try {
-                        $paths[$key] = $this->transport->getNodePathForIdentifier($identifier);
-                    } catch (ItemNotFoundException $e) {
-                        // ignore
-                    }
-                } else {
-                    $paths[$key] = $this->objectsByUuid[$identifier];
-                }
+        $nodes = $fetchIdentifiers = array();
+
+        foreach ($identifiers as $uuid) {
+            if (!empty($this->objectsByUuid[$class][$uuid])) {
+                // Return it from memory if we already have it
+                $nodes[$uuid] = $this->objectsByPath[$class][$this->objectsByUuid[$class][$uuid]];
             } else {
-                $paths[$key] = $identifier;
+                $fetchPaths[$uuid] = $uuid;
             }
         }
 
-        return $this->getNodesByPath($paths, $class);
+        if (!empty($fetchPaths)) {
+            $data = $this->transport->getNodesByIdentifier($fetchPaths);
+
+            foreach ($data as $absPath => $item) {
+                // TODO: $absPath is the backend path. we should inverse the getFetchPath operation here
+                // build the node from the received data
+                $node = $this->getNodeByPath($absPath, $class, $item);
+                $nodes[$node->getIdentifier()] = $node;
+            }
+        }
+
+        return new ArrayIterator($nodes);
     }
 
     /**

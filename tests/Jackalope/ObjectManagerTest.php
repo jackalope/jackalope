@@ -14,7 +14,7 @@ class ObjectManagerTest extends TestCase
         $children = $node->getNodes();
         $this->assertInstanceOf('Iterator', $children);
         $this->assertSame(2, count($children));
-        $this->assertSame($node, $om->getNode($path));
+        $this->assertSame($node, $om->getNodeByPath($path));
     }
 
     public function testGetNodeTypes()
