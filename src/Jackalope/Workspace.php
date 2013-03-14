@@ -77,7 +77,6 @@ class Workspace implements WorkspaceInterface
         $this->session = $session;
         $this->nodeTypeManager = $this->factory->get('NodeType\\NodeTypeManager', array($objectManager));
         $this->name = $name;
-        $this->objectManager = $objectManager;
     }
 
     /**
@@ -117,7 +116,7 @@ class Workspace implements WorkspaceInterface
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
-        if (! $this->objectManager->getTransport() instanceof WritingInterface) {
+        if (! $this->session->getObjectManager()->getTransport() instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
