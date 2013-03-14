@@ -77,6 +77,7 @@ class Workspace implements WorkspaceInterface
         $this->session = $session;
         $this->nodeTypeManager = $this->factory->get('NodeType\\NodeTypeManager', array($objectManager));
         $this->name = $name;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -116,18 +117,13 @@ class Workspace implements WorkspaceInterface
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
     {
-        if (! $this->transport instanceof WritingInterface) {
+        if (! $this->objectManager->getTransport() instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
-        throw new NotImplementedException('Write');
-        /* @param boolean $removeExisting if false then this method throws an ItemExistsException on identifier conflict
-         *                                with an incoming node. If true then a identifier conflict is resolved by removing
-         *                                the existing node from its location in this workspace and cloning (copying in) the
-         *                                one from srcWorkspace.
-         *
-         * IMPLEMENT THIS CHECK HERE
-         */
+        $this->session
+            ->getObjectManager()
+            ->cloneFromImmediately($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
     }
 
     /**
