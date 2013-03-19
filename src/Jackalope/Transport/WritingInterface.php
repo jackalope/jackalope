@@ -80,6 +80,14 @@ interface WritingInterface extends TransportInterface
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
     /**
+     * Update a node and its children to match its corresponding node in the specified workspace
+     *
+     * @param Node $node the node to update
+     * @param string $srcWorkspace The workspace where the corresponding source node can be found
+     */
+    public function updateNode(Node $node, $srcWorkspace);
+
+    /**
      * Perform a batch of move operations in the order of the passed array
      *
      * @param \Jackalope\Transport\MoveNodeOperation[] $operations

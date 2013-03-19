@@ -1113,7 +1113,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return;
         }
 
-        throw new NotImplementedException('Write');
+        $this->getSession()->getTransport()->updateNode($this, $srcWorkspace);
     }
 
     /**
@@ -1125,6 +1125,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
+        // @todo - implementing this will require logging in to a new session with the specified workspace
         throw new NotImplementedException();
     }
 
