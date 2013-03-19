@@ -30,9 +30,9 @@ interface WritingInterface extends TransportInterface
      *
      * @return boolean always true, if the name is not valid a RepositoryException is thrown
      *
-     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
-     *
      * @throws \PHPCR\RepositoryException if the name contains invalid characters
+     *
+     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      */
     public function assertValidName($name);
 
@@ -43,9 +43,12 @@ interface WritingInterface extends TransportInterface
      * This method does not need to load the node but can execute the copy
      * directly in the storage.
      *
+     * If there already is a node at $destAbsPath, the transport may merge
+     * nodes as described in the WorkspaceInterface::copy documentation.
+     *
      * @param string $srcAbsPath Absolute source path to the node
-     * @param string $dstAbsPath Absolute destination path (must include the
-     *      new node name)
+     * @param string $destAbsPath Absolute destination path including the new
+     *      node name
      * @param string $srcWorkspace The workspace where the source node can be
      *      found or null for current workspace
      *
@@ -53,9 +56,9 @@ interface WritingInterface extends TransportInterface
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
-     * @see \Jackalope\Workspace::copy
+     * @see \PHPCR\WorkspaceInterface::copy
      */
-    public function copyNode($srcAbsPath, $dstAbsPath, $srcWorkspace = null);
+    public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null);
 
     /**
      * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
@@ -67,15 +70,16 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $srcWorkspace The workspace where the source node can be found
      * @param string $srcAbsPath   Absolute source path to the node
-     * @param string $destAbsPath  Absolute destination path (must include the
-     *      new node name)
-     * @param bool $removeExisting whether to remove existing nodes at $destAbsPath
+     * @param string $destAbsPath  Absolute destination path including the new
+     *      node name
+     * @param bool $removeExisting whether to remove a node with the same identifier
+     *      if there exists one
      *
      * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
-     * @see \Jackalope\Workspace::cloneFrom
+     * @see \PHPCR\WorkspaceInterface::cloneFrom
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
