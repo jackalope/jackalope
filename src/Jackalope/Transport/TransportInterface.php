@@ -210,14 +210,17 @@ interface TransportInterface
      * Get the node path from a JCR uuid
      *
      * @param string $uuid the id in JCR format
+     * @param string $workspace name of the workspace to search in
+     *      (defaults to current workspace)
      *
      * @return string Absolute path to the node (not the node itself!)
      *
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
-     * @throws \PHPCR\RepositoryException if not logged in
+     * @throws \PHPCR\NoSuchWorkspaceException if workspace does not exist
+     * @throws \LogicException if not logged in
      */
-    public function getNodePathForIdentifier($uuid);
+    public function getNodePathForIdentifier($uuid, $workspace = null);
 
     /**
      * Retrieve a stream of a binary property value
