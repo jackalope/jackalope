@@ -1595,8 +1595,9 @@ class ObjectManager
      * Note that this method will also return deleted node objects so you can
      * use them in refresh operations.
      *
-     * @param $absPath
+     * @param string $absPath
      * @param string $class
+     *
      * @return ArrayIterator
      */
     public function getCachedDescendants($absPath, $class = 'Node')
@@ -1604,13 +1605,7 @@ class ObjectManager
         $descendants = array();
 
         foreach ($this->objectsByPath[$class] as $path => $node) {
-            if (0 === strpos($path, $absPath)) {
-                $descendants[$path] = $node;
-            }
-        }
-
-        foreach ($this->nodesRemove as $path => $node) {
-            if (0 === strpos($path, $absPath)) {
+            if (0 === strpos($path, "$absPath/")) {
                 $descendants[$path] = $node;
             }
         }
