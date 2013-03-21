@@ -1589,6 +1589,36 @@ class ObjectManager
     }
 
     /**
+     * Return an ArrayIterator containing all the cached children of the given node.
+     * It makes no difference whether or not the node itself is cached.
+     *
+     * Note that this method will also return deleted node objects so you can
+     * use them in refresh operations.
+     *
+     * @param $absPath
+     * @param string $class
+     * @return ArrayIterator
+     */
+    public function getCachedDescendants($absPath, $class = 'Node')
+    {
+        $descendants = array();
+
+        foreach ($this->objectsByPath[$class] as $path => $node) {
+            if (0 === strpos($path, $absPath)) {
+                $descendants[$path] = $node;
+            }
+        }
+
+        foreach ($this->nodesRemove as $path => $node) {
+            if (0 === strpos($path, $absPath)) {
+                $descendants[$path] = $node;
+            }
+        }
+
+        return new ArrayIterator(array_values($descendants));
+    }
+
+    /**
      * Get a node if it is already in cache or null otherwise.
      *
      * As getCachedNode but looking up the node by uuid.

@@ -1114,6 +1114,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $this->getSession()->getTransport()->updateNode($this, $srcWorkspace);
+        $this->setDirty();
+        $this->setChildrenDirty();
     }
 
     /**
@@ -1548,6 +1550,16 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 // if we want to keep changes, we do not want to set new properties dirty.
                 $property->setDirty($keepChanges, $targetState);
             }
+        }
+    }
+
+    /**
+     * Set all cached children as dirty.
+     */
+    private function setChildrenDirty()
+    {
+        foreach ($this->objectManager->getCachedDescendants($this->getPath()) as $childNode) {
+            $childNode->setDirty();
         }
     }
 
