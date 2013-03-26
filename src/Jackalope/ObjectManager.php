@@ -1304,6 +1304,37 @@ class ObjectManager
     }
 
     /**
+     * Implement the workspace clone method. It is dispatched immediately.
+     *      http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.10%20Corresponding%20Nodes
+     *      http://www.day.com/specs/jcr/2.0/10_Writing.html#10.8%20Cloning%20and%20Updating%20Nodes
+     *
+     * @param string $srcWorkspace the name of the workspace from which the copy is to be made.
+     * @param string $srcAbsPath  the path of the node to be cloned.
+     * @param string $destAbsPath the location to which the node at srcAbsPath is to be cloned in this workspace.
+     * @param boolean $removeExisting
+     *
+     * @throws \PHPCR\UnsupportedRepositoryOperationException
+     * @throws \PHPCR\ItemExistsException
+     * @return void
+     *
+     * @see Workspace::cloneFrom()
+     */
+    public function cloneFromImmediately($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    {
+        if (! $this->transport instanceof WritingInterface) {
+            throw new UnsupportedRepositoryOperationException('Transport does not support writing');
+        }
+
+        $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
+        $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
+
+        if (! $removeExisting && $this->session->nodeExists($destAbsPath)) {
+            throw new ItemExistsException('Node already exists at destination and removeExisting is false');
+        }
+        $this->transport->cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+    }
+
+    /**
      * WRITE: add a node at the specified path. Schedules an add operation
      * for the next save() and caches the node.
      *
@@ -1555,6 +1586,31 @@ class ObjectManager
         }
 
         return null;
+    }
+
+    /**
+     * Return an ArrayIterator containing all the cached children of the given node.
+     * It makes no difference whether or not the node itself is cached.
+     *
+     * Note that this method will also return deleted node objects so you can
+     * use them in refresh operations.
+     *
+     * @param string $absPath
+     * @param string $class
+     *
+     * @return ArrayIterator
+     */
+    public function getCachedDescendants($absPath, $class = 'Node')
+    {
+        $descendants = array();
+
+        foreach ($this->objectsByPath[$class] as $path => $node) {
+            if (0 === strpos($path, "$absPath/")) {
+                $descendants[$path] = $node;
+            }
+        }
+
+        return new ArrayIterator(array_values($descendants));
     }
 
     /**
