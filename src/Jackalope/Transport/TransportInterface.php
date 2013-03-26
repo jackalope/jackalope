@@ -75,7 +75,7 @@ interface TransportInterface
      *      is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(CredentialsInterface $credentials, $workspaceName);
+    public function login(CredentialsInterface $credentials = null, $workspaceName);
 
     /***********************************************************************
      * all methods from here below require that login is called first. the *
