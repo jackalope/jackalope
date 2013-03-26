@@ -7,10 +7,10 @@ You can use Jackalope with different storage backends. For now, we support:
 * *relational databases* with the DoctrineDBAL backend. Works with any
     database supported by doctrine (mysql, postgres, ...) and has no dependency
     on java or jackrabbit. For the moment, it is less feature complete.
-    See [https://github.com/jackalope/jackalope-doctrine-dbal](jackalope-doctrine-dbal)
+    See [jackalope-doctrine-dbal](https://github.com/jackalope/jackalope-doctrine-dbal)
 * *Jackrabbit* server backend supports many features and requires you to simply
     install a .jar file for the data store component.
-    See [https://github.com/jackalope/jackalope-jackrabbit](jackalope-jackrabbit)
+    See [jackalope-jackrabbit](https://github.com/jackalope/jackalope-jackrabbit)
 
 
 Discuss on jackalope-dev@googlegroups.com
@@ -24,8 +24,8 @@ Please see the file LICENSE in this folder.
 
 Go to the repository of the storage backend you want and follow the instructions there.
 
-* [https://github.com/jackalope/jackalope-doctrine-dbal](jackalope-doctrine-dbal)
-* [https://github.com/jackalope/jackalope-jackrabbit](jackalope-jackrabbit)
+* [jackalope-doctrine-dbal](https://github.com/jackalope/jackalope-doctrine-dbal)
+* [jackalope-jackrabbit](https://github.com/jackalope/jackalope-jackrabbit)
 
 
 # Implementation notes
