@@ -162,7 +162,7 @@ class Row implements Iterator, RowInterface
      */
     public function getNode($selectorName = null)
     {
-        return $this->objectmanager->getNode($this->getPath($selectorName));
+        return $this->objectmanager->getNodeByPath($this->getPath($selectorName));
     }
 
     /**

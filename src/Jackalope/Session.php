@@ -214,7 +214,7 @@ class Session implements SessionInterface
      */
     public function getNodeByIdentifier($id)
     {
-        return $this->objectManager->getNode($id);
+        return $this->objectManager->getNodeByIdentifier($id);
     }
 
     /**
@@ -228,13 +228,8 @@ class Session implements SessionInterface
             $hint = is_object($ids) ? get_class($ids) : gettype($ids);
             throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
-        $nodesByPath = $this->objectManager->getNodes($ids);
-        $nodesByUUID = array();
-        foreach ($nodesByPath as $node) {
-            $nodesByUUID[$node->getIdentifier()] = $node;
-        }
 
-        return new ArrayIterator($nodesByUUID);
+        return $this->objectManager->getNodesByIdentifier($ids);
     }
 
     /**

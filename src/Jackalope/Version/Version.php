@@ -52,7 +52,7 @@ class Version extends Node implements VersionInterface
         }
         $uuid = reset($successors);
 
-        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
     }
 
     /**
@@ -70,7 +70,7 @@ class Version extends Node implements VersionInterface
         $results = array();
         foreach ($successors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
-            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
+            $results[] = $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
         }
 
         return $results;
@@ -94,7 +94,7 @@ class Version extends Node implements VersionInterface
         }
         $uuid = reset($predecessor);
 
-        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
     }
 
     /**
@@ -113,7 +113,7 @@ class Version extends Node implements VersionInterface
         $results = array();
         foreach ($predecessors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
-            $results[] = $this->objectManager->getNode($uuid, '/', 'Version\\Version');
+            $results[] = $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
         }
 
         return $results;

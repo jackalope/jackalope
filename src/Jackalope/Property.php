@@ -423,21 +423,19 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $results = array();
         switch ($this->type) {
             case PropertyType::REFERENCE:
-                try {
-                    foreach ($values as $value) {
-                        // OPTIMIZE: use objectManager->getNodes instead of looping
-                        $results[] = $this->objectManager->getNode($value);
-                    }
-                } catch (ItemNotFoundException $e) {
+                $results = $this->objectManager->getNodesByIdentifier($values);
+                $results = $results->getArrayCopy();
+                if (array_keys($results) != $values) {
                     // @codeCoverageIgnoreStart
                     throw new RepositoryException('Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.');
                     // @codeCoverageIgnoreEnd
                 }
                 break;
             case PropertyType::WEAKREFERENCE:
-                foreach ($values as $value) {
-                    // OPTIMIZE: use objectManager->getNodes instead of looping
-                    $results[] = $this->objectManager->getNode($value);
+                $results = $this->objectManager->getNodesByIdentifier($values);
+                $results = $results->getArrayCopy();
+                if (array_keys($results) != $values) {
+                    throw new ItemNotFoundException('One or more weak reference targets have not been found: ' . implode(',', array_diff(array_keys($results), $values)));
                 }
                 break;
             case PropertyType::PATH:
@@ -452,7 +450,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 throw new ValueFormatException('Property is not a REFERENCE, WEAKREFERENCE or PATH (or convertible to PATH)');
         }
 
-        return $this->isMultiple() ? $results : $results[0];
+        return $this->isMultiple() ? $results : reset($results);
     }
 
     /**

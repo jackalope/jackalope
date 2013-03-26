@@ -184,12 +184,29 @@ interface TransportInterface
      *
      * @param array $path Absolute paths to the nodes.
      *
-     * @return array associative array for the node (decoded from json with
-     *      associative = true)
+     * @return array keys are the absolute paths, values is the node data as
+     *      associative array (decoded from json with associative = true)
      *
      * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodes($paths);
+
+    /**
+     * Get the nodes from an array of uuid.
+     *
+     * This is an optimization over getNodeByIdentifier to get many nodes in
+     * one call. If the transport implementation does not optimize, it can just
+     * loop over the uuids and call getNodeByIdentifier repeatedly.
+     *
+     * @param array $identifiers list of uuid to retreive
+     *
+     * @return array keys are the absolute paths, values is the node data as
+     *      associative array (decoded from json with associative = true). they
+     *      will have the identifier value set.
+     *
+     * @throws \PHPCR\RepositoryException if not logged in
+     */
+    public function getNodesByIdentifier($identifiers);
 
     /**
      * Get the property stored at an absolute path.
@@ -207,17 +224,19 @@ interface TransportInterface
     public function getProperty($path);
 
     /**
-     * Get the node path from a JCR uuid
+     * Get the node from a uuid. Same data format as getNode, but additionally
+     * must have the :jcr:path property.
      *
      * @param string $uuid the id in JCR format
      *
-     * @return string Absolute path to the node (not the node itself!)
+     * @return array associative array for the node (decoded from json with
+     *      associative = true)
      *
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
      * @throws \PHPCR\RepositoryException if not logged in
      */
-    public function getNodePathForIdentifier($uuid);
+    public function getNodeByIdentifier($uuid);
 
     /**
      * Retrieve a stream of a binary property value

@@ -349,7 +349,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $newName = PathHelper::getNodeName($relPath);
 
             try {
-                $parentNode = $this->objectManager->getNode($parentPath);
+                $parentNode = $this->objectManager->getNodeByPath($parentPath);
             } catch (ItemNotFoundException $e) {
                 //we have to throw a different exception if there is a property
                 // with that name than if there is nothing at the path at all.
