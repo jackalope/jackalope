@@ -75,7 +75,7 @@ class NodeIterator implements SeekableIterator, Countable
             return null;
         }
 
-        return $this->objectmanager->getNode($path);
+        return $this->objectmanager->getNodeByPath($path);
     }
 
     public function key()

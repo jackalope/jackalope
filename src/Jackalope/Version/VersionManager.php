@@ -103,7 +103,7 @@ class VersionManager implements VersionManagerInterface
      */
     public function isCheckedOut($absPath)
     {
-        $node = $this->objectManager->getNode($absPath);
+        $node = $this->objectManager->getNodeByPath($absPath);
         if (! $node->isNodeType('mix:simpleVersionable')) {
             throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
@@ -118,12 +118,12 @@ class VersionManager implements VersionManagerInterface
      */
     public function getVersionHistory($absPath)
     {
-        $node = $this->objectManager->getNode($absPath);
+        $node = $this->objectManager->getNodeByPath($absPath);
         if (! $node->isNodeType('mix:simpleVersionable')) {
             throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
 
-        return $this->objectManager->getNode($node->getProperty('jcr:versionHistory')->getString(), '/', 'Version\\VersionHistory');
+        return $this->objectManager->getNodeByIdentifier($node->getProperty('jcr:versionHistory')->getString(), 'Version\\VersionHistory');
     }
 
     /**
@@ -141,7 +141,7 @@ class VersionManager implements VersionManagerInterface
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");
         }
 
-        return $this->objectManager->getNode($uuid, '/', 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
     }
 
     /**
@@ -176,7 +176,7 @@ class VersionManager implements VersionManagerInterface
 
         } elseif ($version instanceof VersionInterface) {
             $versionPath = $version->getPath();
-            $nodePath = $this->objectManager->getNode($version->getContainingHistory()->getVersionableIdentifier())->getPath();
+            $nodePath = $this->objectManager->getNodeByIdentifier($version->getContainingHistory()->getVersionableIdentifier())->getPath();
 
         } else {
             throw new InvalidArgumentException();
