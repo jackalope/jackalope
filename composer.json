@@ -14,10 +14,10 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.2",
+        "ext-libxml": "*",
         "phpcr/phpcr-utils": "~1.0.0-beta6",
         "phpcr/phpcr": "=2.1.0-beta9",
-        "ext-libxml": "*",
-        "jackalope/jackalope-transport": "1.0.*"
+        "jackalope/jackalope-transport": "1.0.0-alpha3"
     },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0-beta9"
