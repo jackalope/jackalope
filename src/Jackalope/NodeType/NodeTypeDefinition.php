@@ -125,7 +125,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->name = $data['name'];
         $this->isAbstract = $data['isAbstract'];
         $this->isMixin = $data['isMixin'];
-        $this->isQueryable = $data['isQueryable'];!
+        $this->isQueryable = $data['isQueryable'];
         $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
         $this->primaryItemName = $data['primaryItemName'] ?: null;
         $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : array();
