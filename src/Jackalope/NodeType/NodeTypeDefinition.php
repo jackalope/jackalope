@@ -47,7 +47,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * @var boolean
      */
-    protected $isQueryable = false;
+    protected $isQueryable = true;
     /**
      * @var boolean
      */
