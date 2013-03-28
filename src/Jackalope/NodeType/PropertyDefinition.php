@@ -32,7 +32,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      */
     protected $isMultiple;
     /**
-     * List of constants from \PHPCR\Query\QueryObjectModelConstants
+     * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface
      * @var array
      */
     protected $availableQueryOperators = array();

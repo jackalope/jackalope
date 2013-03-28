@@ -137,7 +137,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Helper method for node types: Returns the declared subtypes of a given
      * nodename.
      *
-     * @param string Nodename
+     * @param string $nodeTypeName
      *
      * @return array with the names of the subnode types pointing to the node type instances
      *
