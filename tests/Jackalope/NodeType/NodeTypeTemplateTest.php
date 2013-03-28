@@ -26,7 +26,7 @@ class NodeTypeTemplateTest extends TestCase
         $this->assertFalse($ntt->isAbstract());
         $this->assertFalse($ntt->isMixin());
         $this->assertFalse($ntt->hasOrderableChildNodes());
-        $this->assertFalse($ntt->isQueryable());
+        $this->assertTrue($ntt->isQueryable());
         $this->assertNull($ntt->getPrimaryItemName(), 'primaryItemName is not null');
         $this->assertNull($ntt->getDeclaredPropertyDefinitions(), 'declaredPropertyDefinitions is not null');
         $this->assertNull($ntt->getDeclaredChildNodeDefinitions(), 'declaredChildNodeDefinitions is not null');
