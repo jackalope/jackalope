@@ -2,8 +2,6 @@
 namespace Jackalope;
 
 use ArrayIterator;
-use PHPCR\Util\PathHelper;
-use Jackalope\Transport\Operation;
 use InvalidArgumentException;
 
 use PHPCR\SessionInterface;
@@ -16,10 +14,12 @@ use PHPCR\ItemExistsException;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
 
-use PHPCR\Util\UUIDHelper;
-
 use PHPCR\Version\VersionInterface;
 
+use PHPCR\Util\PathHelper;
+use PHPCR\Util\CND\Parser\CndParser;
+
+use Jackalope\Transport\Operation;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\PermissionInterface;
 use Jackalope\Transport\WritingInterface;
@@ -576,14 +576,15 @@ class ObjectManager
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
-        if (! $this->transport instanceof NodeTypeManagementInterface) {
-            if ($this->transport instanceof NodeTypeCndManagementInterface) {
-                throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
-            }
-            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+        if ($this->transport instanceof NodeTypeManagementInterface) {
+            return $this->transport->registerNodeTypes($types, $allowUpdate);
         }
 
-        return $this->transport->registerNodeTypes($types, $allowUpdate);
+        if ($this->transport instanceof NodeTypeCndManagementInterface) {
+            throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+        }
+
+        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
     }
 
     /**
@@ -652,14 +653,25 @@ class ObjectManager
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        if (! $this->transport instanceof NodeTypeCndManagementInterface) {
-            if ($this->transport instanceof NodeTypeManagementInterface) {
-                throw new UnsupportedRepositoryOperationException('TODO: parse cnd and call registerNodeTypes');
-            }
-            throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+        if ($this->transport instanceof NodeTypeCndManagementInterface) {
+            return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
         }
 
-        return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
+        if ($this->transport instanceof NodeTypeManagementInterface) {
+            $workspace = $this->session->getWorkspace();
+            $nsRegistry = $workspace->getNamespaceRegistry();
+
+            $parser = new CndParser($workspace->getNodeTypeManager());
+            $res = $parser->parseString($cnd);
+            $ns = $res['namespaces'];
+            $types = $res['nodeTypes'];
+            foreach ($ns as $prefix => $uri) {
+                $nsRegistry->registerNamespace($prefix, $uri);
+            }
+            return $workspace->getNodeTypeManager()->registerNodeTypes($types, $allowUpdate);
+        }
+
+        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
     }
 
     /**
