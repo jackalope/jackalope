@@ -483,7 +483,10 @@ class ImportExport implements ImportUUIDBehaviorInterface
             }
             $values = array();
 
-            $xml->moveToNextElement(); // go to the value child
+            // go to the value child. if empty property, brings us to closing
+            // property tag. if self-closing, brings us to the next property or
+            // node closing tag
+            $xml->read();
 
             while ('value' == $xml->localName) {
                 if ($xml->isEmptyElement) {
@@ -507,9 +510,16 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $name = self::cleanNamespace($name, $namespaceMap);
 
             $properties[$name] = array('values' => $values, 'type' => $type);
-            $xml->read();
-        }
 
+            /* only consume closing property, but not the next element if we
+             * had an empty multiple property with no value children at all
+             * and don't consume the closing node tag after a self-closing
+             * empty property
+             */
+            if (XMLReader::END_ELEMENT == $xml->nodeType && 'property' == $xml->localName) {
+                $xml->read();
+            }
+        }
         $node = self::addNode($parentNode, $nodename, $nodetype, $properties, $uuidBehavior);
 
         // if there are child nodes, they all come after the properties
@@ -519,7 +529,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         if (XMLReader::END_ELEMENT != $xml->nodeType) {
-            throw new InvalidSerializedDataException('Unexpected element in stream '.$xml->localName.'="'.$xml->value.'"');
+            throw new InvalidSerializedDataException('Unexpected element "'.$xml->localName.'" type "'.$xml->nodeType.'" with content "'.$xml->value.'" after ' . $node->getPath());
         }
         $xml->read(); // </node>
     }
