@@ -19,6 +19,10 @@
         "phpcr/phpcr": "=2.1.0-beta9",
         "jackalope/jackalope-transport": "1.0.0-alpha3"
     },
+    "require-dev": {
+        "jackalope/jackalope-doctrine-dbal": "1.0.*",
+        "jackalope/jackalope": "dev-master as 1.0.0-alpha4"
+    },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0-beta9"
     },
