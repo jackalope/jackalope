@@ -26,47 +26,6 @@ class StandardNodeTypes
     public static function getNodeTypeData()
     {
         return array(
-            0 =>
-            array(
-                'name' => 'phpcr:managed',
-                'isAbstract' => false,
-                'isMixin' => true,
-                'isQueryable' => true,
-                'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
-                        'declaringNodeType' => 'phpcr:managed',
-                        'name' => 'phpcr:class',
-                        'isAutoCreated' => false,
-                        'isMandatory' => false,
-                        'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
-                        'multiple' => false,
-                        'fullTextSearchable' => true,
-                        'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
             1 =>
             array(
                 'name' => 'mix:created',
