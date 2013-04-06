@@ -45,7 +45,7 @@ class Repository implements RepositoryInterface
 
     /**
      * List of supported options
-     * @var arrray
+     * @var array
      */
     protected $options = array(
         // this is OPTION_TRANSACTIONS_SUPPORTED
