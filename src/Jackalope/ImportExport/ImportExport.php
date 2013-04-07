@@ -225,7 +225,15 @@ class ImportExport implements ImportUUIDBehaviorInterface
             }
         }
 
-        if ('jcr:root' == $nodename && isset($existing) && $existing->getDepth() == 0 && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+        /* we add a jcr:root somewhere in the tree (either create new ids or
+         * the root was not referenceable. do not make jackrabbit think it
+         * would be the real root node.
+         */
+        if ('jcr:root' === $nodename && 'rep:root' === $type) {
+            $type = 'nt:unstructured';
+        }
+
+        if ('jcr:root' == $nodename && isset($existing) && $existing->getDepth() === 0 && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
             // update the root node properties
             // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
             NodeHelper::purgeWorkspace($parentNode->getSession());
@@ -286,7 +294,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if ($root) {
             self::exportNamespaceDeclarations($ns, $stream);
         }
-        fwrite($stream, ' sv:name="'.($node->getPath() == '/' ? 'jcr:root' : htmlspecialchars($node->getName())).'">');
+        fwrite($stream, ' sv:name="'.(0 === $node->getDepth() ? 'jcr:root' : htmlspecialchars($node->getName())).'">');
 
         // the order MUST be primary type, then mixins, if any, then jcr:uuid if its a referenceable node
         fwrite($stream, '<sv:property sv:name="jcr:primaryType" sv:type="Name"><sv:value>'.htmlspecialchars($node->getPropertyValue('jcr:primaryType')).'</sv:value></sv:property>');
