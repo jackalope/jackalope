@@ -179,11 +179,14 @@ class BinaryStreamWrapper
     {
         if (null === $this->stream) {
             if ($this->session && !$this->session->isLive()) {
-                throw new LogicException("Trying to read a stream from a closed transport.");
+                throw new LogicException('Trying to read a stream from a closed transport.');
             }
 
             $url = parse_url($this->path);
             $this->session = Session::getSessionFromRegistry($url['host']);
+            if (! $this->session) {
+                throw new LogicException('Trying to read a stream from a closed transport');
+            }
             $property_path = $url['path'];
             $token = isset($url['user']) ? $url['user'] : null;
             if (null === $token) {
