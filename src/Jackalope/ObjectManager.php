@@ -14,6 +14,7 @@ use PHPCR\ItemExistsException;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
 
+use PHPCR\Util\CND\Writer\CndWriter;
 use PHPCR\Version\VersionInterface;
 
 use PHPCR\Util\PathHelper;
@@ -581,7 +582,8 @@ class ObjectManager
         }
 
         if ($this->transport instanceof NodeTypeCndManagementInterface) {
-            throw new UnsupportedRepositoryOperationException('TODO: serialize the node types to cnd');
+            $writer = new CndWriter($this->session->getWorkspace()->getNamespaceRegistry());
+            return $this->transport->registerNodeTypesCnd($writer->writeString($types), $allowUpdate);
         }
 
         throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
