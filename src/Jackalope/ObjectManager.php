@@ -1345,6 +1345,15 @@ class ObjectManager
      *      http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.10%20Corresponding%20Nodes
      *      http://www.day.com/specs/jcr/2.0/10_Writing.html#10.8%20Cloning%20and%20Updating%20Nodes
      *
+     * Consider combination of referenceable property, corresponding node (any path), existing node (destination path)
+     *      1. removeExisting = true
+     *          a. check for any non-referencable node at the destination path
+     *          b. check for an existing, non-corresponding item at the destination path
+     *      2. removeExisting = false
+     *          a. check for an existing item of any type at the destination path
+     *          b. check for an existing item with the same uuid anywhere in the destination workspace
+     *              (note: we defer checking case 2b to the transport, e.g. Jackrabbit)
+     *
      * @param string $srcWorkspace the name of the workspace from which the copy is to be made.
      * @param string $srcAbsPath  the path of the node to be cloned.
      * @param string $destAbsPath the location to which the node at srcAbsPath is to be cloned in this workspace.
@@ -1364,10 +1373,31 @@ class ObjectManager
 
         $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
         $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
+        $destWorkspaceName = $this->session->getWorkspace()->getName();
 
-        if (! $removeExisting && $this->session->nodeExists($destAbsPath)) {
-            throw new ItemExistsException('Node already exists at destination and removeExisting is false');
+        if ($this->session->nodeExists($destAbsPath)) {
+            $existingDestNode = $this->getNodeByPath($destAbsPath);
+        } else {
+            $existingDestNode = null;
         }
+
+        if ($removeExisting) {
+            if ($existingDestNode instanceof Node) {
+                if (null === $existingDestNode->getIdentifier()) {
+                    throw new ItemExistsException('A node already exists at the destination path');
+                }
+
+                $correspondingPath = $existingDestNode->getCorrespondingNodePath($destWorkspaceName);
+                if ((null !== $correspondingPath) && ($correspondingPath != $srcAbsPath)) {
+                    throw new ItemExistsException('A node already exists at the destination path that does not correspond to the source node');
+                }
+            }
+        } else {
+            if ($existingDestNode instanceof Node) {
+                throw new ItemExistsException('A node already exists at the destination path');
+            }
+        }
+
         $this->transport->cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
     }
 
