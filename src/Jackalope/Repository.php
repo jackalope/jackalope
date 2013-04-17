@@ -99,7 +99,7 @@ class Repository implements RepositoryInterface
     public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
         if ($workspaceName == null) {
-            //TODO: can default workspace have other name?
+            //TODO: default workspace may have a different name, for example with crx it is crx.default
             $workspaceName = 'default';
         }
         if (! $this->transport->login($credentials, $workspaceName)) {
