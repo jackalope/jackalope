@@ -223,7 +223,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             || $this->type == PropertyType::WEAKREFERENCE
         ) {
             return $this->getNode();
-        } elseif ($this->type == PropertyType::BINARY) {
+        }
+
+        if ($this->type == PropertyType::BINARY) {
             return $this->getBinary();
         }
 

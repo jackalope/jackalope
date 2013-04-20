@@ -141,14 +141,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $node = false; // reset to avoid trouble
             if (is_object($value)) {
                 // this is a node. add it if
-                if (! $update || // init new node
-                    ! $keepChanges || // want to discard changes
-                    isset($oldNodes[$key]) || // it was already existing before reloading
-                    ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing aobut it
+                if (! $update // init new node
+                    || ! $keepChanges // want to discard changes
+                    || isset($oldNodes[$key]) // it was already existing before reloading
+                    || ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing aobut it
                 ) {
                     // for all those cases, if the node was moved away or is deleted in current session, we do not add it
-                    if (! $this->objectManager->isNodeMoved($this->path . '/' . $key) &&
-                        ! $this->objectManager->isNodeDeleted($this->path . '/' . $key)
+                    if (! $this->objectManager->isNodeMoved($this->path . '/' . $key)
+                        && ! $this->objectManager->isNodeDeleted($this->path . '/' . $key)
                     ) {
                         // otherwise we (re)load a node from backend but a child has been moved away already
                         $nodesInBackend[] = $key;
@@ -1515,12 +1515,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!isset($this->properties[$name])) {
             $path = $this->getChildPath($name);
             $property = $this->factory->get(
-                            'Property',
-                            array(array('type' => $type, 'value' => $value),
-                                  $path,
-                                  $this->session,
-                                  $this->objectManager,
-                                  ! $internal));
+                'Property',
+                array(
+                    array('type' => $type, 'value' => $value),
+                    $path,
+                    $this->session,
+                    $this->objectManager,
+                    ! $internal
+                )
+            );
             $this->properties[$name] = $property;
             if (! $internal) {
                 $this->setModified();
