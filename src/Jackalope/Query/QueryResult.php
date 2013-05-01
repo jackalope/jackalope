@@ -52,7 +52,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * Implement the IteratorAggregate interface and returns exactly the same
      * iterator as QueryResult::getRows()
      *
-     * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     * @return \Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
      *      Keys are the row position in this result set, Values are the
      *      RowInterface instances.
      *
