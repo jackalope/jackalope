@@ -98,11 +98,7 @@ class Repository implements RepositoryInterface
      */
     public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
-        if ($workspaceName == null) {
-            //TODO: default workspace may have a different name, for example with crx it is crx.default
-            $workspaceName = 'default';
-        }
-        if (! $this->transport->login($credentials, $workspaceName)) {
+        if (! $workspaceName = $this->transport->login($credentials, $workspaceName)) {
             throw new RepositoryException('transport failed to login without telling why');
         }
 

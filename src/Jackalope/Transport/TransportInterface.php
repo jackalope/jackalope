@@ -65,9 +65,12 @@ interface TransportInterface
      *
      * @param CredentialsInterface $credentials the credentials to connect with the
      *      backend
-     * @param string $workspaceName The workspace name to connect to.
+     * @param string $workspaceName The workspace name to connect to. Null
+     *      means to connect to the default workspace.
      *
-     * @return boolean true on success (exceptions on failure)
+     * @return string The workspace name that we connected to. This must be
+     *      $workspaceName unless that was null, where it is the name of the
+     *      default workspace.
      *
      * @throws \PHPCR\LoginException if authentication or authorization (for
      *      the specified workspace) fails
@@ -75,7 +78,7 @@ interface TransportInterface
      *      is not recognized
      * @throws \PHPCR\RepositoryException if another error occurs
      */
-    public function login(CredentialsInterface $credentials = null, $workspaceName);
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null);
 
     /***********************************************************************
      * all methods from here below require that login is called first. the *
