@@ -96,8 +96,6 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
             'Observation\\EventJournal',
             array($filter, $this->session, $this->transport)
         );
-
-        return $this->transport->getEventJournal($this->session, $filter);
     }
 
     /**
