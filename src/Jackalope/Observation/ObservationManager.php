@@ -92,6 +92,11 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
      */
     public function getEventJournal(EventFilterInterface $filter)
     {
+        return $this->factory->get(
+            'Observation\\EventJournal',
+            array($filter, $this->session, $this->transport)
+        );
+
         return $this->transport->getEventJournal($this->session, $filter);
     }
 
@@ -109,6 +114,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
     }
     /**
      * @return \Traversable The list of event listeners
+     *
      * @see getRegisteredEventListeners
      */
     public function getIterator()

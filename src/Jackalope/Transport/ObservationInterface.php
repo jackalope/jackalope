@@ -16,25 +16,27 @@ use PHPCR\Observation\EventFilterInterface;
 interface ObservationInterface extends TransportInterface
 {
     /**
-     * Request the observation journal from the server
+     * Request a fragment of the observation journal from the server.
      *
-     * When getting the journal we need to pass the session to the returned EventJournal
-     * in order for it to be able to do filtering on the events if the backend didn't.
-     * Indeed some events filters criteria involve checking the parent node of the node
-     * issuing the event. The only way to do so is to use the session.
+     * This method returns a hashmap with 'data' containing the DOM of events,
+     * 'nextMillis' the next timestamp if there are more events to be found,
+     * false otherwise and 'stripPath' a path prefix to remove from the event
+     * paths (can be empty string)
      *
-     * @param SessionInterface $session
-     * @param integer          $eventTypes   A combination of one or more event type constants encoded as a bitmask.
-     * @param string           $absPath      an absolute path.
-     * @param boolean          $isDeep       Switch to define the given path as a reference to a child node.
-     * @param array            $uuid         array of identifiers.
-     * @param array            $nodeTypeName array of node type names.
+     * The filter is passed in, but the transport is not required to respect
+     * it. The EventJournal has to make sure it really does filter.
      *
-     * @return EventJournalInterface an EventJournal (or null).
+     * @param int                  $date    milliseconds since the epoch - see
+     *                                      EventJournalInterface::skipTo
+     * @param EventFilterInterface $filter  event filter the transport may use
+     * @param SessionInterface     $session in case the transport needs this
+     *                                      for filtering
+     *
+     * @return array with keys data, nextMillis and stripPath
      *
      * @throws \PHPCR\RepositoryException if an error occurs
      */
-    public function getEventJournal(SessionInterface $session, EventFilterInterface $filter);
+    public function getEvents($date, EventFilterInterface $filter, SessionInterface $session);
 
     /**
      * Set user data to be included with subsequent requests.

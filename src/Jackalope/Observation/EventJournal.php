@@ -7,6 +7,7 @@ use DOMElement;
 use DOMNode;
 use ArrayIterator;
 
+use Jackalope\Transport\ObservationInterface;
 use PHPCR\Observation\EventJournalInterface;
 use PHPCR\Observation\EventInterface;
 use PHPCR\RepositoryException;
@@ -19,9 +20,10 @@ use Jackalope\FactoryInterface;
  *
  * @api
  *
- * @author D. Barsotti <daniel.barsotti@liip.ch>
+ * @author David Buchmann <mail@davidbu.ch>
+ * @author Daniel Barsotti <daniel.barsotti@liip.ch>
  */
-class EventJournal extends ArrayIterator implements EventJournalInterface
+class EventJournal implements EventJournalInterface
 {
     /**
      * @var FactoryInterface
@@ -39,42 +41,50 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
     protected $filter;
 
     /**
+     * Buffered events
+     *
+     * @var ArrayIterator
+     */
+    protected $events;
+
+    /**
+     * @var ObservationInterface
+     */
+    protected $transport;
+
+    /**
+     * SkipTo timestamp for next fetch. Either manually set or next page.
+     *
+     * @var int
+     */
+    protected $currentMillis;
+
+    /**
+     * The prefix to extract the path from the event href attribute
+     *
      * @var string
      */
     protected $workspaceRootUri;
 
     /**
-     * Construct a new EventJournal by extracting the $data that comes from the server.
+     * Prepare a new EventJournal.
      *
-     * The journal does also receive the filter criteria so that if the server didn't filter the events,
-     * there is still a chance to do so here. This class will consider that the journal was already
-     * filtered by the server if it gets null in all the criterion parameter, that is if $eventTypes,
-     * $absPath, $isDeep, $uuid and $nodeTypeName are all equal to null.
-     *
-     * We need the session in the event journal because if the backend didn't do any filtering on the
-     * events, it's up to the EventJournal to do it. And some filter criteria require to access the parent
-     * nodes which can only be done with the session.
+     * Actual data loading is deferred to when it is first requested.
      *
      * @param FactoryInterface $factory
+     * @param EventFilter      $filter        filter to give the transport and
+     *                                        apply locally.
      * @param SessionInterface $session
-     * @param DOMDocument      $data             The DOM data received from the
-     *      DavEx call to the server (might be already filtered or not)
-     * @param EventFilter      $filter           the event filter to apply
-     * @param string           $workspaceRootUri The prefix to extract the path
-     *      from the event href attribute
+     * @param ObservationInterface $transport a transport implementing the
+     *                                        observation methods.
      */
-    public function __construct(FactoryInterface $factory, SessionInterface $session, DOMDocument $data, EventFilter $filter, $workspaceRootUri = '')
+    public function __construct(FactoryInterface $factory, EventFilter $filter, SessionInterface $session, ObservationInterface $transport)
     {
         $this->factory = $factory;
-        $this->session = $session;
-        $this->workspaceRootUri = $workspaceRootUri;
-
         $this->filter = $filter;
-
-        // Construct the journal with the transport response
-        $events = $this->constructEventJournal($data);
-
-        parent::__construct($events);
+        $this->session = $session;
+        $this->transport = $transport;
+        $this->skipTo(0);
     }
 
     /**
@@ -83,14 +93,72 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
      */
     public function skipTo($date)
     {
-        $event = $this->current();
-        while ($event && $event->getDate() < $date) {
-            $this->next();
-            $event = $this->current();
-        }
+        $this->currentMillis = $date;
+        $this->events = false;
     }
 
-    // ----- PROTECTED METHODS ------------------------------------------------
+    public function current()
+    {
+        if (!$this->events) {
+            $this->fetchJournal();
+        }
+
+        return $this->events->current();
+    }
+
+    public function next()
+    {
+        if (!$this->events
+            || !$this->events->valid() && $this->currentMillis
+        ) {
+            $this->fetchJournal();
+        }
+
+        $this->events->next();
+    }
+
+    public function key()
+    {
+        if (!$this->events) {
+            $this->fetchJournal();
+        }
+
+        return $this->events->key();
+    }
+
+    public function valid()
+    {
+        if (!$this->events
+            || !$this->events->valid() && $this->currentMillis
+        ) {
+            $this->fetchJournal();
+        }
+
+        return $this->events->valid();
+    }
+
+    public function rewind()
+    {
+        if (!$this->events) {
+            $this->fetchJournal();
+        }
+
+        $this->events->rewind();
+    }
+
+    public function seek($position)
+    {
+        $this->skipTo($position);
+    }
+
+    protected function fetchJournal()
+    {
+        $raw = $this->transport->getEvents($this->currentMillis, $this->filter, $this->session);
+        $this->currentMillis = $raw['nextMillis'];
+        $this->workspaceRootUri = $raw['stripPath'];
+        // The DOM data received from the call to the server (might be already filtered or not)
+        $this->events = $this->constructEventJournal($raw['data']);
+    }
 
     /**
      * Construct the event journal from the DAVEX response returned by the
@@ -106,13 +174,12 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
         $entries = $data->getElementsByTagName('entry');
 
         foreach ($entries as $entry) {
-
             $userId = $this->extractUserId($entry);
             $moreEvents = $this->extractEvents($entry, $userId);
             $events = array_merge($events, $moreEvents);
         }
 
-        return $events;
+        return new ArrayIterator($events);
     }
 
     /**
@@ -154,7 +221,6 @@ class EventJournal extends ArrayIterator implements EventJournalInterface
                     $path = substr($path, 0, -1);
                 }
                 $event->setPath($path);
-
             }
 
             $nodeType = $this->getDomElement($domEvent, 'eventprimarynodetype');

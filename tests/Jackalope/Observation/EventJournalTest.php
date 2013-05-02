@@ -18,6 +18,8 @@ class EventJournalTest extends TestCase
 
     protected $session;
 
+    protected $transport;
+
     public function setUp()
     {
         $this->session = $this->getSessionMock(array('getNode', 'getNodesByIdentifier'));
@@ -106,11 +108,9 @@ EOF;
     public function testConstructor()
     {
         $filter = new EventFilter($this->factory, $this->session);
-        $workspaceRootUri = 'http://some.workspace.uri/';
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, $workspaceRootUri);
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
 
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
-        $this->myAssertAttributeEquals($workspaceRootUri, 'workspaceRootUri', $journal);
     }
 
     // ----- EXTRACT USER ID --------------------------------------------------
@@ -144,34 +144,42 @@ EOF;
         $this->getAndCallMethod($this->journal, 'extractUserId', array($this->getDomElement($xml)));
     }
 
-    // ----- CONSTRUCT EVENT JOURNAL ------------------------------------------
-
     public function testConstructEventJournal()
     {
         $filter = new EventFilter($this->factory, $this->session);
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $data = new \DOMDocument();
         $data->loadXML($this->entryXml);
 
-        $events = $this->getAndCallMethod($journal, 'constructEventJournal', array($data));
+        $this->transport = $this->getMock('\Jackalope\Transport\ObservationInterface');
+        $this->transport
+            ->expects($this->once())
+            ->method('getEvents')
+            ->with(0, $filter, $this->session)
+            ->will($this->returnValue(array(
+                'data' => $data,
+                'stripPath' => 'http://localhost:8080/server/tests/jcr%3aroot',
+                'nextMillis' => false,
+            )))
+        ;
 
-        $this->assertEquals(array($this->expectedEvent, $this->expectedEvent, $this->expectedEventWithInfo), $events);
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
+
+        $this->getAndCallMethod($journal, 'fetchJournal', array());
+        $this->myAssertAttributeEquals(new \ArrayIterator(array($this->expectedEvent, $this->expectedEvent, $this->expectedEventWithInfo)), 'events', $journal);
     }
-
-    // ----- EXTRACT EVENTS ---------------------------------------------------
 
     public function testExtractEvents()
     {
         $filter = new EventFilter($this->factory, $this->session);
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
+
+        $this->setAttributeValue($journal, 'workspaceRootUri', 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
 
         $this->assertEquals(array($this->expectedEvent), $events);
     }
-
-    // ----- EXTRACT EVENT TYPE -----------------------------------------------
 
     public function textExtractEventType()
     {
@@ -224,7 +232,8 @@ EOF;
     public function testEventInfo()
     {
         $filter = new EventFilter($this->factory, $this->session);
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
+        $this->setAttributeValue($journal, 'workspaceRootUri', 'http://localhost:8080/server/tests/jcr%3aroot');
 
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventWithInfoXml), 'system'));
         $eventWithInfo = $events[0];
@@ -248,7 +257,8 @@ EOF;
     public function testEmptyEventInfo()
     {
         $filter = new EventFilter($this->factory, $this->session);
-        $journal = new EventJournal($this->factory, $this->session, new \DOMDocument(), $filter, 'http://localhost:8080/server/tests/jcr%3aroot');
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
+        $this->setAttributeValue($journal, 'workspaceRootUri', 'http://localhost:8080/server/tests/jcr%3aroot');
 
         // get an event that has no eventinfo
         $events = $this->getAndCallMethod($journal, 'extractEvents', array($this->getDomElement($this->eventXml), 'system'));
@@ -259,8 +269,19 @@ EOF;
         $this->assertEquals(0, count($eventInfo));
     }
 
+    public function testNoEndlessLoop()
+    {
+        $xml = $this->buildSkipToTestData();
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
 
-    // ----- SKIP TO ----------------------------------------------------------
+        $journal = $this->getUnfilteredJournal($doc, 'http://localhost:8080/server/tests/jcr%3aroot', true);
+
+        foreach($journal as $event) {
+            // nothing
+        }
+        $this->assertFalse($journal->valid());
+    }
 
     public function testSkipTo()
     {
@@ -269,36 +290,43 @@ EOF;
         $doc = new \DOMDocument();
         $doc->loadXML($xml);
 
-        $journal = new EventJournal($this->factory, $this->session, $doc, $filter);
+        $filter = new EventFilter($this->factory, $this->session);
+
+        $this->transport = $this->getMock('\Jackalope\Transport\ObservationInterface');
+        $this->transport
+            ->expects($this->exactly(2))
+            ->method('getEvents')
+            ->will($this->returnValue(array(
+                'data' => $doc,
+                'stripPath' => 'http://localhost:8080/server/tests/jcr%3aroot',
+                'nextMillis' => false,
+            )))
+        ;
+
+        $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
+        foreach($journal as $event) {
+            // nothing
+        }
+        $this->assertFalse($journal->valid());
+
+        $journal->skipTo(42);
+        $this->assertTrue($journal->valid());
+    }
+
+    public function testIterator()
+    {
+        $xml = $this->buildSkipToTestData();
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+
+        $journal = $this->getUnfilteredJournal($doc, 'http://localhost:8080/server/tests/jcr%3aroot', true);
         $firstEvent = $journal->current();
 
-        // ----- Skip to start of list
-
-        $journal->skipTo(-1);
-        $this->assertSame($firstEvent, $journal->current());
-
-        $journal->skipTo(100);
-        $this->assertSame($firstEvent, $journal->current());
-
-        $journal->skipTo(110);
-        $this->assertNotSame($firstEvent, $journal->current());
-        $this->assertNotSame($firstEvent, $journal->current());
-
-        // ----- Now skipping to an earlier date should not have any effect
-
-        $journal->skipTo(100);
-        $this->assertNotSame($firstEvent, $journal->current());
-
-        // ----- Skip to end of list
-
-        $journal->skipTo(490);
-        $this->assertEquals(490, $journal->current()->getDate());
-
         $journal->next();
-        $this->assertEquals(500, $journal->current()->getDate());
-
         $journal->next();
-        $this->assertNull($journal->current());
+        $this->assertNotSame($firstEvent, $journal->current());
+        $journal->rewind();
+        $this->assertSame($firstEvent, $journal->current());
     }
 
     // ----- PROTECTED METHODS ------------------------------------------------
@@ -311,10 +339,21 @@ EOF;
      *
      * @return EventJournal
      */
-    protected function getUnfilteredJournal(\DOMDocument $data, $workspaceRootUri)
+    protected function getUnfilteredJournal(\DOMDocument $data, $workspaceRootUri, $once = false)
     {
         $filter = new EventFilter($this->factory, $this->session);
-        return new EventJournal($this->factory, $this->session, $data, $filter, $workspaceRootUri);
+
+        $this->transport = $this->getMock('\Jackalope\Transport\ObservationInterface');
+        $this->transport
+            ->expects(($once ? $this->once() : $this->any()))
+            ->method('getEvents')
+            ->will($this->returnValue(array(
+                'data' => $data,
+                'stripPath' => $workspaceRootUri,
+                'nextMillis' => false,
+            )))
+        ;
+        return new EventJournal($this->factory, $filter, $this->session, $this->transport);
     }
 
     /**
