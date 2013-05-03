@@ -175,6 +175,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedValue, $prop->getValue($instance));
     }
 
+    protected function setAttributeValue($instance, $attributeName, $value)
+    {
+        $class = new \ReflectionClass(get_class($instance));
+        $prop = $class->getProperty($attributeName);
+        $prop->setAccessible(true);
+
+        $prop->setValue($instance, $value);
+    }
+
     /**
      * Build a DOMElement from an xml string
      * @param string $xml The xml extract to build the DOMElement from
