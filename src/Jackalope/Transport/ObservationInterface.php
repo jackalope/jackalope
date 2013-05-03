@@ -2,8 +2,8 @@
 
 namespace Jackalope\Transport;
 
+use Iterator;
 use PHPCR\SessionInterface;
-use PHPCR\Observation\EventJournalInterface;
 use PHPCR\Observation\EventFilterInterface;
 
 /**
@@ -18,21 +18,18 @@ interface ObservationInterface extends TransportInterface
     /**
      * Request a fragment of the observation journal from the server.
      *
-     * This method returns a hashmap with 'data' containing the DOM of events,
-     * 'nextMillis' the next timestamp if there are more events to be found,
-     * false otherwise and 'stripPath' a path prefix to remove from the event
-     * paths (can be empty string)
-     *
-     * The filter is passed in, but the transport is not required to respect
-     * it. The EventJournal has to make sure it really does filter.
+     * This method returns a buffer of events matching the filter that might
+     * lazy-load events from storage. But it may never load events that happen
+     * later than the time the buffer was created, to avoid endless looping on
+     * busy repositories.
      *
      * @param int                  $date    milliseconds since the epoch - see
      *                                      EventJournalInterface::skipTo
-     * @param EventFilterInterface $filter  event filter the transport may use
+     * @param EventFilterInterface $filter  event filter the transport must apply
      * @param SessionInterface     $session in case the transport needs this
      *                                      for filtering
      *
-     * @return array with keys data, nextMillis and stripPath
+     * @return Iterator
      *
      * @throws \PHPCR\RepositoryException if an error occurs
      */
