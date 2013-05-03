@@ -2,8 +2,8 @@
 
 namespace Jackalope\Transport;
 
+use Iterator;
 use PHPCR\SessionInterface;
-use PHPCR\Observation\EventJournalInterface;
 use PHPCR\Observation\EventFilterInterface;
 
 /**
@@ -16,25 +16,24 @@ use PHPCR\Observation\EventFilterInterface;
 interface ObservationInterface extends TransportInterface
 {
     /**
-     * Request the observation journal from the server
+     * Request a fragment of the observation journal from the server.
      *
-     * When getting the journal we need to pass the session to the returned EventJournal
-     * in order for it to be able to do filtering on the events if the backend didn't.
-     * Indeed some events filters criteria involve checking the parent node of the node
-     * issuing the event. The only way to do so is to use the session.
+     * This method returns a buffer of events matching the filter that might
+     * lazy-load events from storage. But it may never load events that happen
+     * later than the time the buffer was created, to avoid endless looping on
+     * busy repositories.
      *
-     * @param SessionInterface $session
-     * @param integer          $eventTypes   A combination of one or more event type constants encoded as a bitmask.
-     * @param string           $absPath      an absolute path.
-     * @param boolean          $isDeep       Switch to define the given path as a reference to a child node.
-     * @param array            $uuid         array of identifiers.
-     * @param array            $nodeTypeName array of node type names.
+     * @param int                  $date    milliseconds since the epoch - see
+     *                                      EventJournalInterface::skipTo
+     * @param EventFilterInterface $filter  event filter the transport must apply
+     * @param SessionInterface     $session in case the transport needs this
+     *                                      for filtering
      *
-     * @return EventJournalInterface an EventJournal (or null).
+     * @return Iterator
      *
      * @throws \PHPCR\RepositoryException if an error occurs
      */
-    public function getEventJournal(SessionInterface $session, EventFilterInterface $filter);
+    public function getEvents($date, EventFilterInterface $filter, SessionInterface $session);
 
     /**
      * Set user data to be included with subsequent requests.
