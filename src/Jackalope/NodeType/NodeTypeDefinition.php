@@ -10,6 +10,7 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 
 use Jackalope\Helper;
 use Jackalope\FactoryInterface;
+use PHPCR\Util\ValueConverter;
 
 /**
  * {@inheritDoc}
@@ -30,6 +31,12 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * @var NodeTypeManager
      */
     protected $nodeTypeManager;
+
+    /**
+     * @var ValueConverter
+     */
+    protected $valueConverter;
+
     /**
      * The name of this node type definition.
      * @var string
@@ -83,6 +90,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
         $this->factory = $factory;
+        $this->valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
