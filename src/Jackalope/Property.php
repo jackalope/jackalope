@@ -143,10 +143,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             $this->isMultiple = true;
             $this->value = array();
             foreach ($data['value'] as $value) {
-                $this->value[] = PropertyType::convertType($value, $type);
+                $this->value[] = $this->valueConverter->convertType($value, $type);
             }
         } elseif (null !== $data['value']) {
-            $this->value = PropertyType::convertType($data['value'], $type);
+            $this->value = $this->valueConverter->convertType($data['value'], $type);
         } else {
             // @codeCoverageIgnoreStart
             throw new RepositoryException('INTERNAL ERROR -- data[value] may not be null');
@@ -166,7 +166,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         // need to determine type to avoid unnecessary modification
         // don't try to determine if the value changed anyway (i.e. null to delete)
         if (PropertyType::UNDEFINED === $type && $this->value === $value) {
-            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
         }
 
         // Need to check both value and type, as native php type string is used for a number of phpcr types
@@ -190,7 +190,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (!$this->isMultiple()) {
             throw new ValueFormatException('You can not add values to non-multiple properties');
         }
-        $this->value[] = PropertyType::convertType($value, $this->type);
+        $this->value[] = $this->valueConverter->convertType($value, $this->type);
         $this->setModified();
     }
 
@@ -264,10 +264,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type == PropertyType::BINARY && empty($this->value)) {
-            return PropertyType::convertType($this->getBinary(), PropertyType::STRING, $this->type);
+            return $this->valueConverter->convertType($this->getBinary(), PropertyType::STRING, $this->type);
         }
         if ($this->type != PropertyType::STRING) {
-            return PropertyType::convertType($this->value, PropertyType::STRING, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::STRING, $this->type);
         }
 
         return $this->value;
@@ -283,7 +283,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::BINARY) {
-            return PropertyType::convertType($this->value, PropertyType::BINARY, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::BINARY, $this->type);
         }
         if (! $this->wrapBinaryStreams && null == $this->value) {
             // no caching the stream. we need to fetch the stream and then copy
@@ -341,7 +341,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::LONG) {
-            return PropertyType::convertType($this->value, PropertyType::LONG, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::LONG, $this->type);
         }
 
         return $this->value;
@@ -357,7 +357,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::DOUBLE) {
-            return PropertyType::convertType($this->value, PropertyType::DOUBLE, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::DOUBLE, $this->type);
         }
 
         return $this->value;
@@ -373,7 +373,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::DECIMAL) {
-            return PropertyType::convertType($this->value, PropertyType::DECIMAL, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::DECIMAL, $this->type);
         }
 
         return $this->value;
@@ -389,7 +389,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::DATE) {
-            return PropertyType::convertType($this->value, PropertyType::DATE, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::DATE, $this->type);
         }
 
         return $this->value;
@@ -405,7 +405,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if ($this->type != PropertyType::BOOLEAN) {
-            return PropertyType::convertType($this->value, PropertyType::BOOLEAN, $this->type);
+            return $this->valueConverter->convertType($this->value, PropertyType::BOOLEAN, $this->type);
         }
 
         return $this->value;
@@ -501,7 +501,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         foreach ($vals as $value) {
             try {
-                $ret[] = strlen(PropertyType::convertType($value, PropertyType::STRING, $this->type));
+                $ret[] = strlen($this->valueConverter->convertType($value, PropertyType::STRING, $this->type));
             } catch (Exception $e) {
                 // @codeCoverageIgnoreStart
                 $ret[] = -1;
@@ -691,7 +691,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
          */
 
         if (PropertyType::UNDEFINED === $type) {
-            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
         }
 
         $targettype = $this->type;
@@ -707,7 +707,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             */
         }
 
-        $value = PropertyType::convertType($value, $targettype, $type);
+        $value = $this->valueConverter->convertType($value, $targettype, $type);
 
         if (PropertyType::BINARY === $targettype) {
             $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams

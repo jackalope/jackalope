@@ -67,7 +67,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         }
         foreach ($columns as $c) {
             if (! $c instanceof ColumnInterface) {
-                throw new \InvalidArgumentException('Not a valid column: '.$o);
+                throw new \InvalidArgumentException('Not a valid column: '.$c);
             }
         }
         parent::__construct($factory, '', $objectManager);
@@ -135,7 +135,8 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      */
     public function getStatement()
     {
-        $converter = new QomToSql2QueryConverter(new Sql2Generator());
+        $valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $converter = new QomToSql2QueryConverter(new Sql2Generator($valueConverter));
 
         return $converter->convert($this);
     }

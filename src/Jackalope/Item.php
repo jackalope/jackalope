@@ -12,6 +12,7 @@ use PHPCR\RepositoryInterface;
 use PHPCR\RepositoryException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
+use PHPCR\Util\ValueConverter;
 
 /**
  * Item base class with common functionality
@@ -100,6 +101,9 @@ abstract class Item implements ItemInterface
     /** @var ObjectManager  The object manager to get nodes and properties from */
     protected $objectManager;
 
+    /** @var ValueConverter */
+    protected $valueConverter;
+
     /** @var bool   false if item is read from backend, true if created locally in this session */
     protected $new;
 
@@ -134,6 +138,7 @@ abstract class Item implements ItemInterface
     protected function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         $this->factory = $factory;
+        $this->valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
