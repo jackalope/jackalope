@@ -4,6 +4,9 @@ namespace Jackalope;
 
 class FactoryTest extends TestCase
 {
+    /**
+     * @var Factory
+     */
     protected $factory;
 
     public function setUp()
@@ -24,7 +27,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testNotexisting()
     {
@@ -35,10 +38,7 @@ class FactoryTest extends TestCase
 namespace Other;
 class TestDummy
 {
-    public function __construct($factory)
+    public function __construct()
     {
-        if (! $factory instanceof \Jackalope\Factory) {
-            throw new \Exception('not a valid factory as first argument');
-        }
     }
 }

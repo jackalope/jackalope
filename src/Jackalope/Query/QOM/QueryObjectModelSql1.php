@@ -136,7 +136,8 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      */
     public function getStatement()
     {
-        $converter = new QomToSql1QueryConverter(new Sql1Generator());
+        $valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $converter = new QomToSql1QueryConverter(new Sql1Generator($valueConverter));
 
         return $converter->convert($this);
     }
