@@ -255,7 +255,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                                     ? $rawData->{':' . $key}
                                     : PropertyType::valueFromName($rawData->{':' . $key});
                         } else {
-                            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+                            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
                         }
                         $this->_setProperty($key, $value, $type, true);
                         break;
@@ -684,7 +684,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $val = $this->getProperty($name)->getValue();
         if (! is_null($type)) {
-            $val = PropertyType::convertType($val, $type);
+            $val = $this->valueConverter->convertType($val, $type);
         }
 
         return $val;

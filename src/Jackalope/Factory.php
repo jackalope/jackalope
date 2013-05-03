@@ -22,7 +22,9 @@ class Factory implements FactoryInterface
         }
 
         $class = new ReflectionClass($name);
-        array_unshift($params, $this);
+        if (0 === strpos($name, 'Jackalope\\')) {
+            array_unshift($params, $this);
+        }
 
         return $class->newInstanceArgs($params);
     }

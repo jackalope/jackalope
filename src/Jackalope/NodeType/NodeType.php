@@ -179,7 +179,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     {
         $propDefs = $this->getPropertyDefinitions();
         try {
-            $type = PropertyType::determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
         } catch (ValueFormatException $e) {
             if ($throw) {
                 throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
@@ -210,7 +210,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 }
                 // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
                 try {
-                    PropertyType::convertType($value, $prop->getRequiredType(), $type);
+                    $this->valueConverter->convertType($value, $prop->getRequiredType(), $type);
 
                     return true;
                 } catch (ValueFormatException $e) {
@@ -235,7 +235,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
             // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
             try {
-                PropertyType::convertType($value, $prop->getRequiredType(), $type);
+                $this->valueConverter->convertType($value, $prop->getRequiredType(), $type);
 
                 return true;
             } catch (ValueFormatException $e) {
