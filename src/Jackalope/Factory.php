@@ -21,11 +21,15 @@ class Factory implements FactoryInterface
             throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
         }
 
-        $class = new ReflectionClass($name);
         if (0 === strpos($name, 'Jackalope\\')) {
             array_unshift($params, $this);
         }
 
+        if (! count($params)) {
+            return new $name;
+        }
+
+        $class = new ReflectionClass($name);
         return $class->newInstanceArgs($params);
     }
 }
