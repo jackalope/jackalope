@@ -10,7 +10,11 @@ use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 
 /**
- * A NodeIterator object. Returned by QueryResult->getNodes().
+ * Lazy loading iterator for QueryResult->getNodes() that delays fetching the
+ * node to the last possible moment.
+ *
+ * OPTIMIZE: The iterator could prefetch a couple of nodes at a time to reduce
+ * the number of storage round-trips while still not loading all nodes at once.
  */
 class NodeIterator implements SeekableIterator, Countable
 {
@@ -35,7 +39,6 @@ class NodeIterator implements SeekableIterator, Countable
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
     {
-        // OPTIMIZE: we could pre-fetch several nodes here, assuming the user wants more than one node
         $this->factory = $factory;
         $this->objectmanager = $objectmanager;
         $this->rows = $rows;

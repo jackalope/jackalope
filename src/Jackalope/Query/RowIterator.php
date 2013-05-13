@@ -10,8 +10,7 @@ use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 
 /**
- * Implementation specific iterator class to efficiently iterate over the raw
- * query result.
+ * Iterator to efficiently iterate over the raw query result.
  */
 class RowIterator implements SeekableIterator, Countable
 {
@@ -58,6 +57,10 @@ class RowIterator implements SeekableIterator, Countable
 
     public function current()
     {
+        if (!$this->valid()) {
+            return null;
+        }
+
         return $this->factory->get('Query\Row', array($this->objectmanager, $this->rows[$this->position]));
     }
 
