@@ -48,7 +48,9 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @return void
      *
      *
-     * @throws \PHPCR\RepositoryException      If an error occurs.
+     * @throws \PHPCR\UnsupportedRepositoryOperationException   if the repository
+     *      does not support the deletion of workspaces.
+     * @throws \PHPCR\RepositoryException   if another error occurs.
      */
     public function deleteWorkspace($name);
 }
