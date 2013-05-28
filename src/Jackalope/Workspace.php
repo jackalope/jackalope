@@ -343,6 +343,6 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support workspace management');
         }
 
-        throw new UnsupportedRepositoryOperationException();
+        return $this->session->getTransport()->deleteWorkspace($name);
     }
 }
