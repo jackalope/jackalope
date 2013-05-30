@@ -42,4 +42,15 @@ interface WorkspaceManagementInterface extends TransportInterface
      */
     public function createWorkspace($name, $srcWorkspace = null);
 
+    /**
+     * Deletes the workspace with the specified name from the repository, deleting all content within it.
+     * @param $name     A string, the name of the workspace.
+     * @return void
+     *
+     *
+     * @throws \PHPCR\UnsupportedRepositoryOperationException   if the repository
+     *      does not support the deletion of workspaces.
+     * @throws \PHPCR\RepositoryException   if another error occurs.
+     */
+    public function deleteWorkspace($name);
 }
