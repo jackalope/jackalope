@@ -26,7 +26,7 @@ class EventFilterAbsPathTest extends EventFilterTestCase
 
     protected function assertFilterMatch(EventFilter $filter, $isSupposedToMatch, $path)
     {
-        $event = new Event();
+        $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath($path);
         $this->assertEquals($isSupposedToMatch, $filter->match($event));
     }

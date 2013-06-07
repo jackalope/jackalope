@@ -4,32 +4,38 @@ namespace Jackalope;
 
 class WorkspaceTest extends TestCase
 {
-    public function testConstructor()
+    private $name = 'a3lkjas';
+    private $factory;
+    private $session;
+    private $objManager;
+
+    public function setUp()
     {
-        $factory = new Factory;
-        $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
+        $this->factory = new Factory;
+
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
-            ->getMock(array());
-        $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);
-        $name = 'a3lkjas';
-        $w = new Workspace($factory, $session, $objManager, $name);
-        $this->assertSame($session, $w->getSession());
-        $this->assertSame($name, $w->getName());
+            ->getMock(array())
+        ;
+
+        $this->session = $this->getMock('Jackalope\Session', array(), array($this->factory), '', false);
+        $this->session
+            ->expects($this->any())
+            ->method('getTransport')
+            ->will($this->returnValue($transport))
+        ;
+        $this->objManager = $this->getMock('Jackalope\ObjectManager', array(), array($this->factory, $this->session, $transport, $this->name), '', false);
+    }
+    public function testConstructor()
+    {
+        $w = new Workspace($this->factory, $this->session, $this->objManager, $this->name);
+        $this->assertSame($this->session, $w->getSession());
+        $this->assertSame($this->name, $w->getName());
     }
 
     public function testGetNodeTypeManager()
     {
-        $factory = new Factory;
-        $session = $this->getMock('Jackalope\Session', array(), array($factory), '', false);
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
-            ->disableOriginalConstructor()
-            ->getMock(array());
-        $objManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory, $session, $transport, 'a3lkjas'), '', false);
-        $name = 'a3lkjas';
-
-
-        $w = new Workspace($factory, $session, $objManager, $name);
+        $w = new Workspace($this->factory, $this->session, $this->objManager, $this->name);
 
         $ntm = $w->getNodeTypeManager();
         $this->assertInstanceOf('Jackalope\NodeType\NodeTypeManager', $ntm);

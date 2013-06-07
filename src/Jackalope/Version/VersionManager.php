@@ -131,6 +131,16 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
+    public function removeVersionHistory($absPath)
+    {
+        throw new UnsupportedRepositoryOperationException('Removing the version history is not supported.');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
     public function getBaseVersion($absPath)
     {
         $node = $this->objectManager->getNodeByPath($absPath);

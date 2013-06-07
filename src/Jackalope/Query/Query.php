@@ -20,7 +20,7 @@ abstract class Query implements QueryInterface
 {
     /**
      * The factory to instantiate objects
-     * @var Factory
+     * @var FactoryInterface
      */
     protected $factory;
     /**
@@ -107,6 +107,16 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
+    public function cancel()
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     */
     public function getBindVariableNames()
     {
         throw new RepositoryException('Not Implemented...');
@@ -125,7 +135,7 @@ abstract class Query implements QueryInterface
     /**
      * Access the limit from the transport layer
      *
-     * @return the limit set with setLimit
+     * @return int the limit set with setLimit
      */
     public function getLimit()
     {
@@ -145,7 +155,7 @@ abstract class Query implements QueryInterface
     /**
      * Access the offset from the transport layer
      *
-     * @return the offset set with setOffset
+     * @return int the offset set with setOffset
      */
     public function getOffset()
     {

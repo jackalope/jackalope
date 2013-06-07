@@ -4,6 +4,7 @@ namespace Jackalope;
 use ArrayIterator;
 use InvalidArgumentException;
 
+use Jackalope\Transport\NodeTypeFilterInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -252,6 +253,7 @@ class ObjectManager
      *      fetch.
      * @param string $class The class of node to get. TODO: Is it sane to
      *      fetch data separately for Version and normal Node?
+     * @param array|null $typeFilter Node type list to skip some nodes
      *
      * @return Node[] Iterator that contains all found NodeInterface
      *      instances keyed by their path
@@ -261,13 +263,22 @@ class ObjectManager
      *
      * @see Session::getNodes()
      */
-    public function getNodesByPath($paths, $class = 'Node')
+    public function getNodesByPath($paths, $class = 'Node', $typeFilter = null)
     {
+        if (is_string($typeFilter)) {
+            $typeFilter = array($typeFilter);
+        }
         $nodes = $fetchPaths = array();
 
         foreach ($paths as $absPath) {
             if (!empty($this->objectsByPath[$class][$absPath])) {
-                // Return it from memory if we already have it
+                // Return it from memory if we already have it and type is correct
+                if ($typeFilter
+                    && !$this->matchNodeType($this->objectsByPath[$class][$absPath], $typeFilter)
+                ) {
+                    // skip this node if it did not match a type filter
+                    continue;
+                }
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
             } else {
                 $nodes[$absPath] = '';
@@ -275,15 +286,38 @@ class ObjectManager
             }
         }
 
+        $userlandTypeFilter = false;
         if (!empty($fetchPaths)) {
-            $data = $this->transport->getNodes($fetchPaths);
+            if ($typeFilter) {
+                if ($this->transport instanceof NodeTypeFilterInterface) {
+                    $data = $this->transport->getNodesFiltered($fetchPaths, $typeFilter);
+                } else {
+                    $data = $this->transport->getNodes($fetchPaths);
+                    $userlandTypeFilter = true;
+                }
+            } else {
+                $data = $this->transport->getNodes($fetchPaths);
+            }
             $dataItems = array();
 
             // transform back to session paths from the fetch paths, in case of
             // a pending move operation
             foreach ($data as $fetchPath => $item) {
+                if ($userlandTypeFilter
+                    && !$this->matchNodeType($item, $typeFilter)
+                ) {
+                    // do not add this node to the return list, it is of
+                    // the wrong type
+                    continue;
+                }
                 $dataItems[$fetchPath] = $item;
             }
+            /*
+             * OPTIMIZE: Actually, the whole list should be lazy loaded and maybe only fetch a
+             *      a few dozen child nodes at once. This approach here doesn't scale if you
+             *      have many many many child nodes
+             */
+
 
             foreach ($fetchPaths as $absPath => $fetchPath) {
                 if (array_key_exists($fetchPath, $dataItems)) {
@@ -295,6 +329,45 @@ class ObjectManager
         }
 
         return new ArrayIterator($nodes);
+    }
+
+    /**
+     * Check if a node is of any of the types listed in typeFilter.
+     *
+     * @param NodeInterface $node
+     * @param array         $typeFilter
+     *
+     * @return bool
+     */
+    private function matchNodeType(NodeInterface $node, array $typeFilter)
+    {
+        foreach ($typeFilter as $type) {
+            if ($node->isNodeType($type)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * This method will either let the transport filter if that is possible or
+     * forward to getNodes and return the names of the nodes found there.,
+     *
+     * @param NodeInterface $node
+     * @param string|array  $nameFilter
+     * @param string|array  $typeFilter
+     *
+     * @return ArrayIterator
+     */
+    public function filterChildNodeNamesByType(NodeInterface $node, $nameFilter, $typeFilter)
+    {
+        if ($this->transport instanceof NodeTypeFilterInterface) {
+            return $this->transport->filterChildNodeNamesByType($node->getPath(), $node->getNodeNames($nameFilter), $typeFilter);
+        }
+
+        // fallback: get the actual nodes and let that filter. this is expensive.
+        return new ArrayIterator(array_keys($node->getNodes($nameFilter, $typeFilter)->getArrayCopy()));
     }
 
     /**
