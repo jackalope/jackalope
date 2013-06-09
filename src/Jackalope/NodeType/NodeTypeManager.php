@@ -5,6 +5,8 @@ namespace Jackalope\NodeType;
 use IteratorAggregate;
 use ArrayIterator;
 
+use Jackalope\NamespaceRegistry;
+use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeManagerInterface;
@@ -34,6 +36,11 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * @var ObjectManager
      */
     protected $objectManager;
+
+    /**
+     * @var NamespaceRegistryInterface
+     */
+    protected $namespaceRegistry;
 
     /**
      * Cache of already fetched primary node type instances.
@@ -66,13 +73,18 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Create the node type manager for a session.
      *
      * There may be only one instance per session
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
+     * @param FactoryInterface  $factory
+     * @param ObjectManager     $objectManager
+     * @param NamespaceRegistry $namespaceRegistry
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
-    {
+    public function __construct(
+        FactoryInterface $factory,
+        ObjectManager $objectManager,
+        NamespaceRegistryInterface $namespaceRegistry
+    ) {
         $this->factory = $factory;
         $this->objectManager = $objectManager;
+        $this->namespaceRegistry = $namespaceRegistry;
     }
 
     /**
@@ -212,6 +224,18 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function getNodeType($nodeTypeName)
     {
+        if (null === $nodeTypeName) {
+            throw new NoSuchNodeTypeException('nodeTypeName is <null>');
+        }
+        if ('' === $nodeTypeName) {
+            throw new NoSuchNodeTypeException('nodeTypeName is empty string');
+        }
+
+        if ($nodeTypeName[0] === '{') {
+            list($uri, $name) = explode('}', substr($nodeTypeName, 1));
+            $prefix = $this->namespaceRegistry->getPrefix($uri);
+            $nodeTypeName = "$prefix:$name";
+        }
         $this->fetchNodeTypes($nodeTypeName);
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
@@ -219,12 +243,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         }
         if (isset($this->mixinTypes[$nodeTypeName])) {
             return $this->mixinTypes[$nodeTypeName];
-        }
-        if (null === $nodeTypeName) {
-            $nodeTypeName = 'nodeTypeName is <null>';
-        }
-        if ('' === $nodeTypeName) {
-            $nodeTypeName = 'nodeTypeName is empty string';
         }
 
         throw new NoSuchNodeTypeException($nodeTypeName);

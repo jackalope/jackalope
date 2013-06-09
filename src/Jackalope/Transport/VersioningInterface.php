@@ -2,6 +2,11 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\ReferentialIntegrityException;
+use PHPCR\RepositoryException;
+use PHPCR\UnsupportedRepositoryOperationException;
+use PHPCR\Version\VersionException;
+
 /**
  * Defines the method needed for versioning support.
  *
@@ -19,8 +24,8 @@ interface VersioningInterface extends TransportInterface
      *
      * @return string path to the new version
      *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
      */
     public function checkinItem($path);
 
@@ -33,8 +38,8 @@ interface VersioningInterface extends TransportInterface
      *
      * @return void
      *
-     * @throws PHPCR\UnsupportedRepositoryOperationException
-     * @throws PHPCR\RepositoryException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
      */
     public function checkoutItem($path);
 
@@ -50,11 +55,11 @@ interface VersioningInterface extends TransportInterface
     /**
      * Remove a version given the path to the version node and the name of the version.
      *
-     * @param $versionPath absolute path to the version node
-     * @param $versionName The name of the version
+     * @param string $versionPath absolute path to the version node
+     * @param string $versionName The name of the version
      *
-     * @throws PHPCR\ReferentialIntegrityException
-     * @throws PHPCR\Version\VersionException
+     * @throws ReferentialIntegrityException
+     * @throws VersionException
      */
     public function removeVersion($versionPath, $versionName);
 

@@ -8,7 +8,7 @@ use Jackalope\Observation\EventFilter;
 /**
  * Unit tests for the EventFilter node type
  */
-class NodeTypeEventFilterTest extends EventFilterTestCase
+class EventFilterNodeTypeTest extends EventFilterTestCase
 {
     public function testFilterFind()
     {
@@ -66,7 +66,7 @@ class NodeTypeEventFilterTest extends EventFilterTestCase
 
     protected function assertFilterMatch(EventFilter $filter, $expectedResult)
     {
-        $event = new Event();
+        $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath('/some/path');
         $this->assertEquals($expectedResult, $filter->match($event));
     }

@@ -121,8 +121,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $om = $this->getObjectManagerMock();
         $om->expects($this->any())
             ->method('getNodeTypes')
-            ->will($this->returnValue($converter->getNodeTypesFromXml($dom)));
-        return new NodeTypeManager($factory, $om);
+            ->will($this->returnValue($converter->getNodeTypesFromXml($dom)))
+        ;
+        $ns = $this->getMockBuilder('Jackalope\NamespaceRegistry')->disableOriginalConstructor()->getMock();
+        return new NodeTypeManager($factory, $om, $ns);
     }
 
     /**

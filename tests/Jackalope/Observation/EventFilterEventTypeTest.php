@@ -70,7 +70,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
     protected function assertFilterMatch(EventFilter $filter, $matchedTypes)
     {
         foreach ($this->allEventTypes as $type) {
-            $event = new Event();
+            $event = new Event($this->factory, $this->getNodeTypeManager());
             $event->setType($type);
             $mustAccept = in_array($type, $matchedTypes);
             $message = sprintf("The filter with accepted types '%s' did not match the event type '%s'", $this->eventFilter->getEventTypes(), $type);
