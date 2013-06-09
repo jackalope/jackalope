@@ -28,7 +28,7 @@ class QueryManager implements QueryManagerInterface
     protected $objectManager;
 
     /**
-     * Create the query manager - akquire through the session.
+     * Create the query manager - acquire through the session.
      *
      * @param FactoryInterface $factory       the object factory
      * @param ObjectManager    $objectManager
@@ -46,6 +46,9 @@ class QueryManager implements QueryManagerInterface
      */
     public function createQuery($statement, $language)
     {
+        if (!in_array($language, $this->getSupportedQueryLanguages())) {
+            throw new InvalidQueryException("Unsupported query language: $language");
+        }
         switch ($language) {
             case QueryInterface::JCR_SQL2:
                 return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
@@ -56,7 +59,7 @@ class QueryManager implements QueryManagerInterface
             case QueryInterface::JCR_JQOM:
                 throw new InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
             default:
-                throw new InvalidQueryException("No such query language: $language");
+                throw new InvalidQueryException("Transport supports this query language but jackalope not: $language");
         }
     }
 
@@ -87,6 +90,7 @@ class QueryManager implements QueryManagerInterface
      */
     public function getSupportedQueryLanguages()
     {
-        return array(QueryInterface::JCR_SQL2, QueryInterface::JCR_JQOM);
+        // Workspace checks if transport implements QueryInterface
+        return $this->objectManager->getTransport()->getSupportedQueryLanguages();
     }
 }

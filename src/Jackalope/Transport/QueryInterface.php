@@ -43,7 +43,17 @@ interface QueryInterface extends TransportInterface
      */
     public function query(Query $query);
 
-    //TODO: getSupportedQueryLanguages
+    /**
+     * The transport must at least support JCR_SQL2 and JCR_JQOM.
+     *
+     * Note that QueryObjectModel::getStatement() returns the query as JCR_SQL2
+     * so it costs you nothing to support JQOM.
+     *
+     * @return array  A list of query languages supported by this transport.
+     *
+     * @see QueryManagerInterface::getSupportedQueryLanguages
+     */
+    public function getSupportedQueryLanguages();
 
     //TODO: method for stored queries?
 }
