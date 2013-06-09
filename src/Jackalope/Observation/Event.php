@@ -49,6 +49,28 @@ class Event implements EventInterface
     protected $ntm;
 
     /**
+     * Events that support getting the primary or mixin node types.
+     * @var array
+     */
+    protected static $NODE_TYPE_EVENT = array(
+        self::NODE_ADDED,
+        self::NODE_REMOVED,
+        self::NODE_MOVED,
+        self::PROPERTY_ADDED,
+        self::PROPERTY_REMOVED,
+        self::PROPERTY_CHANGED,
+    );
+    /**
+     * Events that support getting the property type.
+     * @var array
+     */
+    protected static $PROPERTY_TYPE_EVENT = array(
+        self::PROPERTY_ADDED,
+        self::PROPERTY_REMOVED,
+        self::PROPERTY_CHANGED,
+    );
+
+    /**
      * @param FactoryInterface         $factory ignored but need by the factory
      * @param NodeTypeManagerInterface $ntm     to have primary and mixin types
      */
@@ -245,7 +267,16 @@ class Event implements EventInterface
      */
     public function getPropertyType()
     {
-        throw new NotImplementedException('TODO: implement if we have the information available');
+        if (! in_array($this->type, self::$PROPERTY_TYPE_EVENT)) {
+            throw new RepositoryException('Event of type ' . $this->type . ' does not have property type information');
+        }
+
+        /*
+         * For add and change events, we could try to fetch the property in
+         * question and ask it for its type. But if the property was removed
+         * since then, this does not work.
+         */
+        throw new NotImplementedException('TODO: implement once jackrabbit provides the information.');
     }
 
     /**
@@ -256,9 +287,7 @@ class Event implements EventInterface
      */
     private function checkNodeTypeEvent()
     {
-        if (! in_array($this->type, array(
-            self::NODE_ADDED, self::NODE_REMOVED, self::NODE_MOVED, self::PROPERTY_ADDED, self::PROPERTY_REMOVED
-        ))) {
+        if (! in_array($this->type, self::$NODE_TYPE_EVENT)) {
             throw new RepositoryException('Event of type ' . $this->type . ' does not have node type information');
         }
     }
