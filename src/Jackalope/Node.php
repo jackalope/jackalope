@@ -18,6 +18,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
 
+use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
 
@@ -583,26 +584,24 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getNodes($filter = null)
+    public function getNodes($nameFilter = null, $typeFilter = null)
     {
         $this->checkState();
 
-        $names = self::filterNames($filter, $this->nodes);
+        $names = self::filterNames($nameFilter, $this->nodes);
         $result = array();
         if (!empty($names)) {
             $paths = array();
             foreach ($names as $name) {
                 $paths[] = PathHelper::absolutizePath($name, $this->path);
             }
-            $nodes = $this->objectManager->getNodesByPath($paths);
+            $nodes = $this->objectManager->getNodesByPath($paths, 'Node', $typeFilter);
+
+            // OPTIMIZE if we lazy-load in ObjectManager we should not do this loop
             foreach ($nodes as $node) {
                 $result[$node->getName()] = $node;
             }
         }
-        /* FIXME: Actually, the whole list should be lazy loaded and maybe only fetch a
-                   a few dozen child nodes at once. This approach here doesn't scale if you
-                   have many many many child nodes
-        */
 
         return new ArrayIterator($result);
     }
@@ -612,11 +611,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getNodeNames($filter = null)
+    public function getNodeNames($nameFilter = null, $typeFilter = null)
     {
         $this->checkState();
 
-        return new ArrayIterator(self::filterNames($filter, $this->nodes));
+        if (null !== $typeFilter) {
+            return $this->objectManager->filterChildNodeNamesByType($this, $nameFilter, $typeFilter);
+        }
+
+        $names = self::filterNames($nameFilter, $this->nodes);
+
+        return new ArrayIterator($names);
     }
 
     /**
@@ -709,12 +714,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getProperties($filter = null)
+    public function getProperties($nameFilter = null)
     {
         $this->checkState();
 
         //OPTIMIZE: lazy iterator?
-        $names = self::filterNames($filter, array_keys($this->properties));
+        $names = self::filterNames($nameFilter, array_keys($this->properties));
         $result = array();
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the
@@ -730,12 +735,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getPropertiesValues($filter = null, $dereference = true)
+    public function getPropertiesValues($nameFilter = null, $dereference = true)
     {
         $this->checkState();
 
         // OPTIMIZE: do not create properties in constructor, go over array here
-        $names = self::filterNames($filter, array_keys($this->properties));
+        $names = self::filterNames($nameFilter, array_keys($this->properties));
         $result = array();
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the
@@ -1445,11 +1450,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected static function filterNames($filter, $names)
     {
-        if (is_string($filter)) {
-            $filter = explode('|', $filter);
-        }
-        $filtered = array();
         if ($filter !== null) {
+            $filtered = array();
+            $filter = (array) $filter;
             foreach ($filter as $k => $f) {
                $f = trim($f);
                $filter[$k] = strtr($f, array('*'=>'.*', //wildcard

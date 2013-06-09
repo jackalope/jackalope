@@ -75,7 +75,7 @@ class Workspace implements WorkspaceInterface
     {
         $this->factory = $factory;
         $this->session = $session;
-        $this->nodeTypeManager = $this->factory->get('NodeType\\NodeTypeManager', array($objectManager));
+        $this->nodeTypeManager = $this->factory->get('NodeType\\NodeTypeManager', array($objectManager, $this->getNamespaceRegistry()));
         $this->name = $name;
     }
 

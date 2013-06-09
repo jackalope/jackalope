@@ -40,7 +40,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
      */
     protected function getEvent($path, $id)
     {
-        $event = new Event();
+        $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath($path);
         $event->setIdentifier($id);
         return $event;

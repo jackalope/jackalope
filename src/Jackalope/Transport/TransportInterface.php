@@ -185,6 +185,9 @@ interface TransportInterface
      * the transport implementation does not optimize, it can just loop over the
      * paths and call getNode repeatedly.
      *
+     * If a transport can do it, it should also implement
+     * NodeTypeFilterInterface.
+     *
      * @param array $path Absolute paths to the nodes.
      *
      * @return array keys are the absolute paths, values is the node data as

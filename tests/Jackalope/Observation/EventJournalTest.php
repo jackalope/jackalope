@@ -87,9 +87,9 @@ class EventJournalTest extends TestCase
     {
         $filter = new EventFilter($this->factory, $this->session);
 
-        $event1 = new Event();
+        $event1 = new Event($this->factory, $this->getNodeTypeManager());
         $event1->setDate(2);
-        $event2 = new Event();
+        $event2 = new Event($this->factory, $this->getNodeTypeManager());
         $event2->setDate(3);
 
         $this->transport
