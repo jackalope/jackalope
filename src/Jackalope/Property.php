@@ -8,6 +8,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use InvalidArgumentException;
 
+use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
@@ -171,6 +172,11 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         // Need to check both value and type, as native php type string is used for a number of phpcr types
         if ($this->value !== $value || $this->type !== $type) {
+            if ($this->getDefinition()->isProtected()) {
+                $msg = sprintf("Property '%s' of node type '%s' is protected and cannot be modified", $this->name, $this->getDefinition()->getDeclaringNodeType()->getName());
+                throw new ConstraintViolationException($msg);
+            }
+
             $this->setModified();
         }
 
