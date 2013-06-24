@@ -213,7 +213,8 @@ class ObjectManager
                 // then we assume this child was pre-fetched from the backend completely
                 if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
                     try {
-                        $this->getNodeByPath($absPath . '/' . $name, $class, $properties);
+                        $parentPath = ('/' === $absPath) ? '/' : $absPath . '/';
+                        $this->getNodeByPath($parentPath . $name, $class, $properties);
                     } catch (ItemNotFoundException $ignore) {
                         // we get here if the item was deleted or moved locally. just ignore
                     }
