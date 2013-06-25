@@ -5,6 +5,9 @@ php:
   - 5.4
 
 before_script:
+  # FIXME: remove require on jackalope/jackalope-transport
+  # temporary fix until https://github.com/composer/composer/issues/2038 is implemented
+  - sed '/jackalope\/jackalope-transport/d' composer.json >> tmp; mv tmp composer.json
   - composer update --prefer-source
 
 script: phpunit -c tests/phpunit.xml.dist
