@@ -4,7 +4,8 @@ php:
   - 5.3
   - 5.4
 
-before_script: 
+before_script:
+  - composer self-update
   - composer update --prefer-source
 
 script: phpunit -c tests/phpunit.xml.dist
