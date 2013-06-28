@@ -159,7 +159,7 @@ class Row implements Iterator, RowInterface
         // for multi-values boolean/binary values we can't provide a
         // defined result so we return null
         if (is_array($value)) {
-            if (is_string($value[0])) {
+            if (is_scalar($value[0]) && !is_bool($value[0])) {
                 $value = join(' ', $value);
             } else {
                 $value = null;
