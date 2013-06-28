@@ -152,7 +152,21 @@ class Row implements Iterator, RowInterface
             throw new ItemNotFoundException("Column '$columnName' not found");
         }
 
-        return $values[$columnName];
+        $value = $values[$columnName];
+
+        // According to JSR-283 6.7.39 a query should only return
+        // single-valued properties. We join the values when it's a string
+        // for multi-values boolean/binary values we can't provide a
+        // defined result so we return null
+        if (is_array($value)) {
+            if (is_scalar($value[0]) && !is_bool($value[0])) {
+                $value = join(' ', $value);
+            } else {
+                $value = null;
+            }
+        }
+
+        return $value;
     }
 
     /**
