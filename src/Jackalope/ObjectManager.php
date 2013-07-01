@@ -264,22 +264,26 @@ class ObjectManager
      *
      * @see Session::getNodes()
      */
-    public function getNodesByPath($paths, $class = 'Node', $typeFilter = null)
+    public function getNodesByPath($absPaths, $class = 'Node', $typeFilter = null)
     {
         if (is_string($typeFilter)) {
             $typeFilter = array($typeFilter);
         }
+
         $nodes = $fetchPaths = array();
 
-        foreach ($paths as $absPath) {
+        foreach ($absPaths as $absPath) {
             if (!empty($this->objectsByPath[$class][$absPath])) {
+
                 // Return it from memory if we already have it and type is correct
-                if ($typeFilter
-                    && !$this->matchNodeType($this->objectsByPath[$class][$absPath], $typeFilter)
+                if (
+                    $typeFilter && 
+                    !$this->matchNodeType($this->objectsByPath[$class][$absPath], $typeFilter)
                 ) {
                     // skip this node if it did not match a type filter
                     continue;
                 }
+
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
             } else {
                 $nodes[$absPath] = '';
@@ -287,49 +291,9 @@ class ObjectManager
             }
         }
 
-        $userlandTypeFilter = false;
-        if (!empty($fetchPaths)) {
-            if ($typeFilter) {
-                if ($this->transport instanceof NodeTypeFilterInterface) {
-                    $data = $this->transport->getNodesFiltered($fetchPaths, $typeFilter);
-                } else {
-                    $data = $this->transport->getNodes($fetchPaths);
-                    $userlandTypeFilter = true;
-                }
-            } else {
-                $data = $this->transport->getNodes($fetchPaths);
-            }
-            $dataItems = array();
+        $nodesPathIterator = new NodesPathIterator($fetchPaths, $this, $this->factory);
 
-            // transform back to session paths from the fetch paths, in case of
-            // a pending move operation
-            foreach ($data as $fetchPath => $item) {
-                if ($userlandTypeFilter
-                    && !$this->matchNodeType($item, $typeFilter)
-                ) {
-                    // do not add this node to the return list, it is of
-                    // the wrong type
-                    continue;
-                }
-                $dataItems[$fetchPath] = $item;
-            }
-            /*
-             * OPTIMIZE: Actually, the whole list should be lazy loaded and maybe only fetch a
-             *      a few dozen child nodes at once. This approach here doesn't scale if you
-             *      have many many many child nodes
-             */
-
-
-            foreach ($fetchPaths as $absPath => $fetchPath) {
-                if (array_key_exists($fetchPath, $dataItems)) {
-                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $dataItems[$fetchPath]);
-                } else {
-                    unset($nodes[$absPath]);
-                }
-            }
-        }
-
-        return new ArrayIterator($nodes);
+        return $nodesPathIterator;
     }
 
     /**
