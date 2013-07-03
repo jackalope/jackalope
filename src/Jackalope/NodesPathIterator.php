@@ -1,46 +1,76 @@
 <?php
 
-use Jackalope\Transport\TransportInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+namespace Jackalope;
 
-class NodesPathIterator implements \SeekableIterator
+use Jackalope\Transport\TransportInterface;
+use PHPCR\NodeInterface;
+use Jackalope\Transport\NodeTypeFilterInterface;
+
+class NodesPathIterator implements \SeekableIterator // , \Countable, \ArrayAccess 
 {
-    protected $paths;
     protected $position;
     protected $nodes;
-    protected $indexes;
-    protected $typeFilter;
 
-    protected $batchSize = 50;
+    /**
+     * Fetch paths must be $absPath => $fetchPath
+     * as given by ObjectManager
+     */
+    protected $fetchPaths;
+
+    protected $fetchPathIndex;
+    protected $typeFilter;
+    protected $class;
+
+    protected $batchSize;
 
     public function __construct(
         ObjectManager $objectManager, 
         TransportInterface $transport,
-        $paths, 
-        $typeFilter = null
-    ) {
+        $fetchPaths, 
+        $class = 'Node',
+        $typeFilter = array(),
+        $batchSize = 50
+    ) 
+    {
         $this->objectManager = $objectManager;
         $this->transport = $transport;
 
-        foreach ($paths as $fetchPath => $absPath) {
-            $this->indexes[] = $absPath;
+        foreach ($fetchPaths as $absPath => $fetchPath) {
+            $this->fetchPathIndex[] = $fetchPath;
         }
+
+        $this->fetchPaths = $fetchPaths;
+        $this->batchSize = $batchSize;
+        $this->typeFilter = $typeFilter;
+        $this->class = $class;
+
+        $this->loadBatch();
+    }
+
+    public function getBatchSize()
+    {
+        return $this->batchSize;
+    }
+
+    public function getTypeFilter()
+    {
+        return $this->typeFilter;
+    }
+
+    public function seek($position)
+    {
+        $this->position = $position;
     }
 
     public function current()
     {
-        $current = $this->nodes[$this->indexes[$this->position]];
+        $current = $this->nodes[$this->fetchPathIndex[$this->position]];
         return $current;
     }
 
     public function next()
     {
-        $next = $this->nodes[$this->indexes[$this->position + 1]];
-        if (null === $next) {
-            $this->loadBatch();
-        } else {
-            $this->position++;
-        }
+        $this->position++;
     }
 
     public function rewind()
@@ -50,51 +80,96 @@ class NodesPathIterator implements \SeekableIterator
 
     public function valid()
     {
-        return isset($this->indexes[$this->position]);
+        if (!isset($this->fetchPathIndex[$this->position])) {
+            return false;
+        }
+
+        $path = $this->fetchPathIndex[$this->position];
+
+        // skip any paths which have been filtered in userland
+        // and move on
+        if ($path === null) {
+            $this->position++;
+            return $this->valid();
+        }
+
+        if (!isset($this->nodes[$path])) {
+            $this->loadBatch();
+        }
+
+        return true;
     }
 
     public function key()
     {
-        return $this->indexes[$this->position];
+        return $this->fetchPathIndex[$this->position];
     }
 
     protected function loadBatch()
     {
-        $paths = array_slice(
-            $this->index, 
+        $fetchPaths = array_slice(
+            $this->fetchPaths,
             $this->position, 
             $this->position + $this->batchSize
         );
 
         $userlandTypeFilter = false;
 
-        if ($this->typeFilter) {
-
+        if (null !== $this->typeFilter) {
             if ($this->transport instanceof NodeTypeFilterInterface) {
-                $data = $this->transport->getNodesFiltered($paths, $this->typeFilter);
+                $data = $this->transport->getNodesFiltered($fetchPaths, $this->typeFilter);
+
+                foreach ($this->fetchPathIndex as $i => $refFetchPath) {
+                    if (!array_key_exists($refFetchPath, $data)) {
+                        unset($this->fetchPathIndex[$i]);
+                    }
+                }
             } else {
-                $data = $this->transport->getNodes($paths);
+                $data = $this->transport->getNodes($fetchPaths);
                 $userlandTypeFilter = true;
             }
-
         } else {
-            $data = $this->transport->getNodes($paths);
+            $data = $this->transport->getNodes($fetchPaths);
         }
 
-        foreach ($data as $fetchPath => $datum) {
-            if ($userlandTypeFilter
-                && !$this->matchNodeType($datum, $typeFilter)
-            ) {
-                unset($data[$fetchPath]);
-            }
-        }
-
-        foreach ($paths as $absPath => $fetchPath) {
+        foreach ($fetchPaths as $absPath => $fetchPath) {
             if (array_key_exists($fetchPath, $data)) {
-                $this->nodes[$absPath] = $this->getNodeByPath($absPath, $class, $data[$fetchPath]);
-            } else {
-                unset($nodes[$absPath]);
+                $node = $this->objectManager->getNodeByPath(
+                    $absPath, $this->class, $data[$fetchPath]
+                );
+
+                if ($userlandTypeFilter) {
+                    if (!$this->matchNodeType($node, (array) $this->typeFilter)) {
+                        foreach ($this->fetchPathIndex as $i => $refFetchPath) {
+                            if ($fetchPath == $refFetchPath) {
+                                unset($this->fetchPathIndex[$i]);
+                            }
+                        }
+                        continue;
+                    }
+                }
+
+                $this->nodes[$absPath] = $node;
             }
         }
+    }
+
+    /**
+     * Check if a node is of any of the types listed in typeFilter.
+     *
+     * @param NodeInterface $node
+     * @param array         $typeFilter
+     *
+     * @return bool
+     */
+    private function matchNodeType(NodeInterface $node, array $typeFilter)
+    {
+        foreach ($typeFilter as $type) {
+            if ($node->isNodeType($type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

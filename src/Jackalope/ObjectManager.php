@@ -291,28 +291,11 @@ class ObjectManager
             }
         }
 
-        $nodesPathIterator = new NodesPathIterator($fetchPaths, $this, $this->factory);
+        $nodesPathIterator = new NodesPathIterator(
+            $this, $this->factory, $fetchPaths, $class, $typeFilter, null
+        );
 
         return $nodesPathIterator;
-    }
-
-    /**
-     * Check if a node is of any of the types listed in typeFilter.
-     *
-     * @param NodeInterface $node
-     * @param array         $typeFilter
-     *
-     * @return bool
-     */
-    private function matchNodeType(NodeInterface $node, array $typeFilter)
-    {
-        foreach ($typeFilter as $type) {
-            if ($node->isNodeType($type)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
