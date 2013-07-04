@@ -266,24 +266,29 @@ class ObjectManager
      */
     public function getNodesByPath($absPaths, $class = 'Node', $typeFilter = null)
     {
+        $nodesPathIterator = new NodesPathIterator(
+            $this, $absPaths, $class, $typeFilter, null
+        );
+
+        return $nodesPathIterator;
+    }
+
+    public function getNodesByPathAsArray($paths, $class = 'Node', $typeFilter = null)
+    {
         if (is_string($typeFilter)) {
             $typeFilter = array($typeFilter);
         }
-
         $nodes = $fetchPaths = array();
 
-        foreach ($absPaths as $absPath) {
+        foreach ($paths as $absPath) {
             if (!empty($this->objectsByPath[$class][$absPath])) {
-
                 // Return it from memory if we already have it and type is correct
-                if (
-                    $typeFilter && 
-                    !$this->matchNodeType($this->objectsByPath[$class][$absPath], $typeFilter)
+                if ($typeFilter
+                    && !$this->matchNodeType($this->objectsByPath[$class][$absPath], $typeFilter)
                 ) {
                     // skip this node if it did not match a type filter
                     continue;
                 }
-
                 $nodes[$absPath] = $this->objectsByPath[$class][$absPath];
             } else {
                 $nodes[$absPath] = '';
@@ -291,11 +296,103 @@ class ObjectManager
             }
         }
 
-        $nodesPathIterator = new NodesPathIterator(
-            $this, $this->factory, $fetchPaths, $class, $typeFilter, null
-        );
+        $userlandTypeFilter = false;
+        if (!empty($fetchPaths)) {
+            if ($typeFilter) {
+                if ($this->transport instanceof NodeTypeFilterInterface) {
+                    $data = $this->transport->getNodesFiltered($fetchPaths, $typeFilter);
+                } else {
+                    $data = $this->transport->getNodes($fetchPaths);
+                    $userlandTypeFilter = true;
+                }
+            } else {
+                $data = $this->transport->getNodes($fetchPaths);
+            }
+            $dataItems = array();
 
-        return $nodesPathIterator;
+            // transform back to session paths from the fetch paths, in case of
+            // a pending move operation
+            foreach ($data as $fetchPath => $item) {
+                if ($userlandTypeFilter
+                    && !$this->matchNodeType($item, $typeFilter)
+                ) {
+                    // do not add this node to the return list, it is of
+                    // the wrong type
+                    continue;
+                }
+                $dataItems[$fetchPath] = $item;
+            }
+
+            foreach ($fetchPaths as $absPath => $fetchPath) {
+                if (array_key_exists($fetchPath, $dataItems)) {
+                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $dataItems[$fetchPath]);
+                } else {
+                    unset($nodes[$absPath]);
+                }
+            }
+        }
+
+        return $nodes;
+// Nicer refactored code
+//
+//        $userlandTypeFilter = false;
+//
+//        if (null !== $this->typeFilter) {
+//            if ($this->transport instanceof NodeTypeFilterInterface) {
+//                $data = $this->transport->getNodesFiltered($fetchPaths, $this->typeFilter);
+//
+//                foreach ($this->fetchPathIndex as $i => $refFetchPath) {
+//                    if (!array_key_exists($refFetchPath, $data)) {
+//                        unset($this->fetchPathIndex[$i]);
+//                    }
+//                }
+//            } else {
+//                $data = $this->transport->getNodes($fetchPaths);
+//                $userlandTypeFilter = true;
+//            }
+//        } else {
+//            $data = $this->transport->getNodes($fetchPaths);
+//        }
+//
+//        foreach ($fetchPaths as $absPath => $fetchPath) {
+//            if (array_key_exists($fetchPath, $data)) {
+//                $node = $this->objectManager->getNodeByPath(
+//                    $absPath, $this->class, $data[$fetchPath]
+//                );
+//
+//                if ($userlandTypeFilter) {
+//                    if (!$this->matchNodeType($node, (array) $this->typeFilter)) {
+//                        foreach ($this->fetchPathIndex as $i => $refFetchPath) {
+//                            if ($fetchPath == $refFetchPath) {
+//                                unset($this->fetchPathIndex[$i]);
+//                            }
+//                        }
+//                        continue;
+//                    }
+//                }
+//
+//                $this->nodes[$absPath] = $node;
+//            }
+//        }
+    }
+
+    /**
+     * Check if a node is of any of the types listed in typeFilter.
+     *
+     * @param NodeInterface $node
+     * @param array         $typeFilter
+     *
+     * @return bool
+     */
+    private function matchNodeType(NodeInterface $node, array $typeFilter)
+    {
+        foreach ($typeFilter as $type) {
+            if ($node->isNodeType($type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
