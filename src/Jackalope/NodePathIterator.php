@@ -13,6 +13,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
     protected $paths;
     protected $typeFilter;
     protected $class;
+    protected $fullyLoaded = false;
 
     protected $batchSize;
 
@@ -99,6 +100,10 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
             $this->batchSize
         );
 
+        if (!isset($this->paths[$this->position + 1])) {
+            $this->fullyLoaded = true;
+        }
+
         $nodes = $this->objectManager->getNodesByPathAsArray(
             $paths, $this->class, $this->typeFilter
         );
@@ -108,22 +113,25 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
         }
     }
 
-    protected function loadSingle($path)
+    protected function loadAll()
     {
-        $paths = array($path);
-        $nodes = $this->objectManager->getNodesByPath($paths, $this->class, $this->typeFilter);
-        $node = current($nodes);
-        $this->nodes[$path] = $node ? $node : null;
+        if (!$this->fullyLoaded) {
+            foreach ($this as $node) {
+                // we could probably do this slightly more efficiently but
+                // this does not add much overhead.
+            }
+            $this->fullyLoaded = true;
+        }
     }
 
-    protected function ensurePathLoaded($path)
+    public function ensurePathLoaded($offset)
     {
-        if (in_array($path, $this->paths)) {
-            if (!array_key_exists($path, $this->nodes)) {
-                $this->loadSingle($path);
-            }
-        } else {
-            $this->nodes[$path] = null;
+        if (!isset($this->nodes[$offset])) {
+            $this->loadAll();
+        }
+
+        if (!isset($this->nodes[$offset])) {
+            $this->nodes[$offset] = null;
         }
     }
 
