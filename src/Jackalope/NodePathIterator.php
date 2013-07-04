@@ -2,14 +2,14 @@
 
 namespace Jackalope;
 
-use Jackalope\Transport\TransportInterface;
 use PHPCR\NodeInterface;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Node;
 
-class NodesPathIterator implements \SeekableIterator // , \Countable, \ArrayAccess 
+class NodePathIterator implements \SeekableIterator, \ArrayAccess
 {
-    protected $position;
-    protected $nodes;
+    protected $position = 0;
+    protected $nodes = array();
     protected $paths;
     protected $typeFilter;
     protected $class;
@@ -79,7 +79,7 @@ class NodesPathIterator implements \SeekableIterator // , \Countable, \ArrayAcce
             return $this->valid();
         }
 
-        if (!isset($this->nodes[$path])) {
+        if (!array_key_exists($path, $this->nodes)) {
             $this->loadBatch();
         }
 
@@ -96,13 +96,58 @@ class NodesPathIterator implements \SeekableIterator // , \Countable, \ArrayAcce
         $paths = array_slice(
             $this->paths,
             $this->position, 
-            $this->position + $this->batchSize
+            $this->batchSize
         );
 
-        $nodes = $this->objectManager->getNodesByPathAsArray($paths);
+        $nodes = $this->objectManager->getNodesByPathAsArray(
+            $paths, $this->class, $this->typeFilter
+        );
 
         foreach ($paths as $path) {
             $this->nodes[$path] = isset($nodes[$path]) ? $nodes[$path] : null;
         }
+    }
+
+    protected function loadSingle($path)
+    {
+        $paths = array($path);
+        $nodes = $this->objectManager->getNodesByPath($paths, $this->class, $this->typeFilter);
+        $node = current($nodes);
+        $this->nodes[$path] = $node ? $node : null;
+    }
+
+    protected function ensurePathLoaded($path)
+    {
+        if (in_array($path, $this->paths)) {
+            if (!array_key_exists($path, $this->nodes)) {
+                $this->loadSingle($path);
+            }
+        } else {
+            $this->nodes[$path] = null;
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        $this->ensurePathLoaded($offset);
+
+        return $this->nodes[$offset] === null ? false : true;
+    }
+
+    public function offsetGet($offset)
+    {
+        $this->ensurePathLoaded($offset);
+
+        return $this->nodes[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \InvalidArgumentException('Node path collection is read only.');
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \InvalidArgumentException('Node path collection is read only.');
     }
 }

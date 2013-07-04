@@ -266,8 +266,8 @@ class ObjectManager
      */
     public function getNodesByPath($absPaths, $class = 'Node', $typeFilter = null)
     {
-        $nodesPathIterator = new NodesPathIterator(
-            $this, $absPaths, $class, $typeFilter, null
+        $nodesPathIterator = new NodePathIterator(
+            $this, $absPaths, $class, $typeFilter
         );
 
         return $nodesPathIterator;
