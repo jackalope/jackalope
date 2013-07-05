@@ -42,10 +42,10 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
             ) use (
                 $me, $class, $filter, $batchSize
             ) {
-                $this->assertLessThanOrEqual($batchSize, count($cPaths));
+                $me->assertLessThanOrEqual($batchSize, count($cPaths));
                 $nodes = array();
-                $this->assertEquals($class, $cClass);
-                $this->assertEquals($filter, $cFilter);
+                $me->assertEquals($class, $cClass);
+                $me->assertEquals($filter, $cFilter);
                 foreach ($cPaths as $cPath) {
                     $nodes[$cPath] = $this->getMockBuilder('Jackalope\Node')
                         ->disableOriginalConstructor()
@@ -122,7 +122,7 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
             // number of times we expect to call the getNodesByArray method
             'nb_fetches' => null,
 
-            // node we want to extract
+            // node(s) paths we want to extract
             'target' => null,
 
             // if specified, iterate the RS this many times
