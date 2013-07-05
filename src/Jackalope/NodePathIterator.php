@@ -180,7 +180,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         }
 
         // if it wasn't found, it doesn't exist, set it to null
-        if (!array_key_exists($this->nodes[$offset])) {
+        if (!array_key_exists($offset, $this->nodes)) {
             $this->nodes[$offset] = null;
         }
     }

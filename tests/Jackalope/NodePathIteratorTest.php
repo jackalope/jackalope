@@ -2,11 +2,6 @@
 
 namespace Jackalope;
 
-use PHPCR\NodeInterface;
-use Jackalope\Node;
-use Jackalope\Transport\NodeTypeFilterInterface;
-use Jackalope\Transport\TransportInterface;
-use Jackalope\NodeIterator;
 use Jackalope\NodePathIterator;
 
 class NodeIteratorTest extends \PHPUnit_Framework_Testcase
@@ -47,7 +42,7 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
                 $me->assertEquals($class, $cClass);
                 $me->assertEquals($filter, $cFilter);
                 foreach ($cPaths as $cPath) {
-                    $nodes[$cPath] = $this->getMockBuilder('Jackalope\Node')
+                    $nodes[$cPath] = $me->getMockBuilder('Jackalope\Node')
                         ->disableOriginalConstructor()
                         ->getMock();
                 }
@@ -110,6 +105,11 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
                 2,
                 array('nb_fetches' => 3, 'target' => array('p1', 'p2', 'p3', 'p4', 'p5'))
             ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 4, 'target' => array('p8', 'p1'))
+            ),
         );
     }
 
@@ -151,7 +151,6 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
                 return $ret;
             }));
 
-        $start = microtime(true);
         $nodes = new NodePathIterator($this->objectManager, $paths, null, null, $batchSize);
 
         if ($iterateResult) {

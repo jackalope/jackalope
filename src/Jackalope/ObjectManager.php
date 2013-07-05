@@ -333,47 +333,6 @@ class ObjectManager
         }
 
         return $nodes;
-// Nicer refactored code
-//
-//        $userlandTypeFilter = false;
-//
-//        if (null !== $this->typeFilter) {
-//            if ($this->transport instanceof NodeTypeFilterInterface) {
-//                $data = $this->transport->getNodesFiltered($fetchPaths, $this->typeFilter);
-//
-//                foreach ($this->fetchPathIndex as $i => $refFetchPath) {
-//                    if (!array_key_exists($refFetchPath, $data)) {
-//                        unset($this->fetchPathIndex[$i]);
-//                    }
-//                }
-//            } else {
-//                $data = $this->transport->getNodes($fetchPaths);
-//                $userlandTypeFilter = true;
-//            }
-//        } else {
-//            $data = $this->transport->getNodes($fetchPaths);
-//        }
-//
-//        foreach ($fetchPaths as $absPath => $fetchPath) {
-//            if (array_key_exists($fetchPath, $data)) {
-//                $node = $this->objectManager->getNodeByPath(
-//                    $absPath, $this->class, $data[$fetchPath]
-//                );
-//
-//                if ($userlandTypeFilter) {
-//                    if (!$this->matchNodeType($node, (array) $this->typeFilter)) {
-//                        foreach ($this->fetchPathIndex as $i => $refFetchPath) {
-//                            if ($fetchPath == $refFetchPath) {
-//                                unset($this->fetchPathIndex[$i]);
-//                            }
-//                        }
-//                        continue;
-//                    }
-//                }
-//
-//                $this->nodes[$absPath] = $node;
-//            }
-//        }
     }
 
     /**
