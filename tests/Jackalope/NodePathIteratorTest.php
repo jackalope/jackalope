@@ -7,6 +7,7 @@ use Jackalope\Node;
 use Jackalope\Transport\NodeTypeFilterInterface;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\NodeIterator;
+use Jackalope\NodePathIterator;
 
 class NodeIteratorTest extends \PHPUnit_Framework_Testcase
 {
@@ -60,33 +61,110 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
         }
     }
 
-    public function testArrayAccess()
+    public function provideArrayAccess()
     {
-        $this->objectManager->expects($this->once())
-            ->method('getNodesByPathAsArray')
-            ->will($this->returnCallback(function ($paths) {
-                $nodes = array();
-                foreach ($paths as $i => $path) {
-                    $node = $this->getMockBuilder('Jackalope\Node')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-                    $node->expects($this->once())
-                        ->method('getIdentifier')
-                        ->will($this->returnValue($path));
-                    $nodes[$path] = $node;
-                }
+        return array(
+            // 1st target, batch size 2, 1 fetch
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 1, 'target' => 'p1'),
+            ),
 
-                return $nodes;
-            }));
+            // 3rd target, batch size 2, 2 fetches
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 2, 'target' => 'p3'),
+            ),
 
-        $nodes = new NodePathIterator($this->objectManager, array('/foo1'));
+            // 3rd target, batch size 1, 3 fetches
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                1,
+                array('nb_fetches' => 3, 'target' => 'p3'),
+            ),
 
-        foreach ($nodes as $path => $node) {
-            $this->assertInstanceOf('Jackalope\Node', $node);
-            $this->assertEquals($path, $node->getIdentifier());
+            // test 0 paths
+            array(
+                array(),
+                2,
+                array('nb_fetches' => 0),
+            ),
+
+            // test partial iteration
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3)
+            ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8)
+            ),
+
+            // multiple targets
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 3, 'target' => array('p1', 'p2', 'p3', 'p4', 'p5'))
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider provideArrayAccess
+     */
+    public function testArrayAccess($paths, $batchSize, $options)
+    {
+        $options = array_merge(array(
+            // number of times we expect to call the getNodesByArray method
+            'nb_fetches' => null,
+
+            // node we want to extract
+            'target' => null,
+
+            // if specified, iterate the RS this many times
+            'iterate_result' => null,
+        ), $options);
+
+        $nbFetches = $options['nb_fetches'];
+        $targets = (array) $options['target'];
+        $iterateResult = $options['iterate_result'];
+
+        $nodes = array();
+        foreach ($paths as $path) {
+            $node = $this->getMockBuilder('Jackalope\Node')
+                ->disableOriginalConstructor()
+                ->getMock();
+            $nodes[$path] = $node;
         }
 
-        $this->assertTrue(isset($nodes['/foo1']));
-        $this->assertFalse(isset($nodes['invalid']));
+        $this->objectManager->expects($this->exactly($nbFetches))
+            ->method('getNodesByPathAsArray')
+            ->will($this->returnCallback(function ($paths) use ($nodes) {
+                $ret = array();
+                foreach ($paths as $path) {
+                    $ret[] = $nodes[$path];
+                }
+                return $ret;
+            }));
+
+        $start = microtime(true);
+        $nodes = new NodePathIterator($this->objectManager, $paths, null, null, $batchSize);
+
+        if ($iterateResult) {
+            for ($i = 0; $i < $iterateResult; $i++) {
+                $nodes->valid();
+                $nodes->current($nodes);
+                $nodes->next($nodes);
+            }
+        }
+
+        $res = array();
+        foreach ($targets as $target) {
+            $res[$target] = $nodes[$target];
+        }
     }
 }

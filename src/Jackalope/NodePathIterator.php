@@ -6,14 +6,13 @@ use PHPCR\NodeInterface;
 use Jackalope\Transport\NodeTypeFilterInterface;
 use Jackalope\Node;
 
-class NodePathIterator implements \SeekableIterator, \ArrayAccess
+class NodePathIterator implements \Iterator, \ArrayAccess
 {
     protected $position = 0;
     protected $nodes = array();
     protected $paths;
     protected $typeFilter;
     protected $class;
-    protected $fullyLoaded = false;
 
     protected $batchSize;
 
@@ -42,11 +41,6 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
     public function getTypeFilter()
     {
         return $this->typeFilter;
-    }
-
-    public function seek($position)
-    {
-        $this->position = $position;
     }
 
     public function current()
@@ -92,17 +86,17 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
         return $this->paths[$this->position];
     }
 
-    protected function loadBatch()
+    protected function loadBatch($position = null)
     {
+        if (0 === count($this->paths)) {
+            return;
+        }
+
         $paths = array_slice(
             $this->paths,
-            $this->position, 
+            $position ? $position : $this->position, 
             $this->batchSize
         );
-
-        if (!isset($this->paths[$this->position + 1])) {
-            $this->fullyLoaded = true;
-        }
 
         $nodes = $this->objectManager->getNodesByPathAsArray(
             $paths, $this->class, $this->typeFilter
@@ -113,23 +107,29 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess
         }
     }
 
-    protected function loadAll()
+    protected function ensurePathLoaded($offset)
     {
-        if (!$this->fullyLoaded) {
-            foreach ($this as $node) {
-                // we could probably do this slightly more efficiently but
-                // this does not add much overhead.
+        if (count($this->paths) > 0) {
+            if (!array_key_exists($offset, $this->nodes)) {
+                foreach ($this->paths as $position => $path) {
+                    if (!array_key_exists($path, $this->nodes)) {
+                        break;
+                    }
+                }
+
+                while (isset($this->paths[$position])) {
+                    // keep loading batches until we get to the end of the paths
+                    // or we find the one we want.
+                    $this->loadBatch($position);
+                    $position += $this->batchSize;
+                    if (array_key_exists($offset, $this->nodes)) {
+                        break;
+                    }
+                }
             }
-            $this->fullyLoaded = true;
-        }
-    }
-
-    public function ensurePathLoaded($offset)
-    {
-        if (!isset($this->nodes[$offset])) {
-            $this->loadAll();
         }
 
+        // if it wasn't found, it doesn't exist.
         if (!isset($this->nodes[$offset])) {
             $this->nodes[$offset] = null;
         }
