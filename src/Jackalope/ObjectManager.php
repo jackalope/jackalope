@@ -264,7 +264,16 @@ class ObjectManager
      *
      * @see Session::getNodes()
      */
-    public function getNodesByPath($paths, $class = 'Node', $typeFilter = null)
+    public function getNodesByPath($absPaths, $class = 'Node', $typeFilter = null)
+    {
+        $nodesPathIterator = new NodePathIterator(
+            $this, $absPaths, $class, $typeFilter
+        );
+
+        return $nodesPathIterator;
+    }
+
+    public function getNodesByPathAsArray($paths, $class = 'Node', $typeFilter = null)
     {
         if (is_string($typeFilter)) {
             $typeFilter = array($typeFilter);
@@ -313,12 +322,6 @@ class ObjectManager
                 }
                 $dataItems[$fetchPath] = $item;
             }
-            /*
-             * OPTIMIZE: Actually, the whole list should be lazy loaded and maybe only fetch a
-             *      a few dozen child nodes at once. This approach here doesn't scale if you
-             *      have many many many child nodes
-             */
-
 
             foreach ($fetchPaths as $absPath => $fetchPath) {
                 if (array_key_exists($fetchPath, $dataItems)) {
@@ -329,7 +332,7 @@ class ObjectManager
             }
         }
 
-        return new ArrayIterator($nodes);
+        return $nodes;
     }
 
     /**
