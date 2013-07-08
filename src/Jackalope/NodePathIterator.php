@@ -22,8 +22,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         $class = 'Node',
         $typeFilter = array(),
         $batchSize = 50
-    ) 
-    {
+    ) {
         $this->objectManager = $objectManager;
         $this->paths = array_values($paths); // ensure paths are indexed numerically
         $this->batchSize = $batchSize;

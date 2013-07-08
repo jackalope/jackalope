@@ -110,6 +110,11 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
                 2,
                 array('nb_fetches' => 4, 'target' => array('p8', 'p1'))
             ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                100,
+                array('nb_fetches' => 1, 'target' => array('p8', 'p1'))
+            ),
         );
     }
 
