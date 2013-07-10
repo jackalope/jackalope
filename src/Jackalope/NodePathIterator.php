@@ -98,6 +98,11 @@ class NodePathIterator implements \Iterator, \ArrayAccess
             $this->loadBatch();
         }
 
+        if (empty($this->nodes[$path])) {
+            $this->position++;
+            return $this->valid();
+        }
+
         return true;
     }
 
