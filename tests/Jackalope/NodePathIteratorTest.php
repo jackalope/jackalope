@@ -4,7 +4,7 @@ namespace Jackalope;
 
 use Jackalope\NodePathIterator;
 
-class NodeIteratorTest extends \PHPUnit_Framework_Testcase
+class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
 {
     public function setUp()
     {
