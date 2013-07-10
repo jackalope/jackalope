@@ -57,7 +57,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
      */
     public function current()
     {
-        return $this->nodes[$this->paths[$this->position]];
+        return $this->nodes[$this->position];
     }
 
     /**
@@ -94,8 +94,11 @@ class NodePathIterator implements \Iterator, \ArrayAccess
             return $this->valid();
         }
 
-        if (!array_key_exists($path, $this->nodes)) {
+        if (!array_key_exists($this->position, $this->nodes)) {
             $this->loadBatch();
+            if (empty($this->nodes[$this->position])) {
+                return false;
+            }
         }
 
         return true;
@@ -132,8 +135,10 @@ class NodePathIterator implements \Iterator, \ArrayAccess
             $paths, $this->class, $this->typeFilter
         );
 
-        foreach ($paths as $path) {
-            $this->nodes[$path] = isset($nodes[$path]) ? $nodes[$path] : null;
+        foreach ($paths as $position => $path) {
+            if (isset($nodes[$path])) {
+                $this->nodes[$position] = $nodes[$path];
+            }
         }
     }
 
@@ -177,7 +182,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         }
 
         // if it wasn't found, it doesn't exist, set it to null
-        if (!array_key_exists($offset, $this->nodes)) {
+        if (!array_key_exists(array_search($offset, $this->paths), $this->nodes)) {
             $this->nodes[$offset] = null;
         }
     }
@@ -189,7 +194,8 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     {
         $this->ensurePathLoaded($offset);
 
-        return $this->nodes[$offset] === null ? false : true;
+        $position = array_search($offset, $this->paths);
+        return $position && empty($this->nodes[$position]) ? false : true;
     }
 
     /**
@@ -199,7 +205,12 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     {
         $this->ensurePathLoaded($offset);
 
-        return $this->nodes[$offset];
+        $position = array_search($offset, $this->paths);
+        if (false === $position) {
+            return null;
+        }
+
+        return $this->nodes[$position];
     }
 
     /**
