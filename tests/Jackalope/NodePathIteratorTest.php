@@ -59,33 +59,33 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
     public function provideArrayAccess()
     {
         return array(
-            //// 1st target, batch size 2, 1 fetch
-            //array(
-            //    array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //    2,
-            //    array('nb_fetches' => 1, 'target' => 'p1'),
-            //),
+            // 1st target, batch size 2, 1 fetch
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 1, 'target' => 'p1'),
+            ),
 
-            //// 3rd target, batch size 2, 2 fetches
-            //array(
-            //    array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //    2,
-            //    array('nb_fetches' => 2, 'target' => 'p3'),
-            //),
+            // 3rd target, batch size 2, 2 fetches
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 2, 'target' => 'p3'),
+            ),
 
-            //// 3rd target, batch size 1, 3 fetches
-            //array(
-            //    array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //    1,
-            //    array('nb_fetches' => 3, 'target' => 'p3'),
-            //),
+            // 3rd target, batch size 1, 3 fetches
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                1,
+                array('nb_fetches' => 3, 'target' => 'p3'),
+            ),
 
-            //// test 0 paths
-            //array(
-            //    array(),
-            //    2,
-            //    array('nb_fetches' => 0),
-            //),
+            // test 0 paths
+            array(
+                array(),
+                2,
+                array('nb_fetches' => 0),
+            ),
 
             // test partial iteration
             array(
@@ -93,28 +93,28 @@ class NodeIteratorTest extends \PHPUnit_Framework_Testcase
                 2,
                 array('nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3)
             ),
-            // array(
-            //     array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //     2,
-            //     array('nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8)
-            // ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8)
+            ),
 
-            // // multiple targets
-            // array(
-            //     array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //     2,
-            //     array('nb_fetches' => 3, 'target' => array('p1', 'p2', 'p3', 'p4', 'p5'))
-            // ),
-            // array(
-            //     array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //     2,
-            //     array('nb_fetches' => 4, 'target' => array('p8', 'p1'))
-            // ),
-            // array(
-            //     array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
-            //     100,
-            //     array('nb_fetches' => 1, 'target' => array('p8', 'p1'))
-            // ),
+            // multiple targets
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 3, 'target' => array('p1', 'p2', 'p3', 'p4', 'p5'))
+            ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                2,
+                array('nb_fetches' => 4, 'target' => array('p8', 'p1'))
+            ),
+            array(
+                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                100,
+                array('nb_fetches' => 1, 'target' => array('p8', 'p1'))
+            ),
         );
     }
 
