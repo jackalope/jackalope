@@ -24,7 +24,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         $batchSize = 50
     ) {
         $this->objectManager = $objectManager;
-        $this->paths = array_values($paths); // ensure paths are indexed numerically
+        $this->paths = array_values((array) $paths); // ensure paths are indexed numerically
         $this->batchSize = $batchSize;
         $this->typeFilter = $typeFilter;
         $this->class = $class;
@@ -52,14 +52,12 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         return $this->typeFilter;
     }
 
-
     /**
      * {@inheritDoc}
      */
     public function current()
     {
-        $current = $this->nodes[$this->paths[$this->position]];
-        return $current;
+        return $this->nodes[$this->paths[$this->position]];
     }
 
     /**
@@ -156,10 +154,10 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     protected function ensurePathLoaded($offset)
     {
         if (count($this->paths) > 0) {
-
             if (!array_key_exists($offset, $this->nodes)) {
                 // start loading batches from the position of the first
                 // "missing" node
+                $position = null;
                 foreach ($this->paths as $position => $path) {
                     if (!array_key_exists($path, $this->nodes)) {
                         break;
