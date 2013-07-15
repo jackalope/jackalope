@@ -124,6 +124,26 @@ class BinaryStreamWrapper
 
         return fstat($this->stream);
     }
+    
+    /**
+     * Retrieve information about a file
+     *
+     * @param string $path  The backend path for this stream, e.g.
+     *                      jackalope://abc0123/content/node/binary
+     * @param int    $flags ignored
+     *
+     * @return array Should return as many elements as stat() does. Unknown or
+     *               unavailable values should be set to a rational value
+     *               (usually 0).
+     *
+     * @see http://php.net/manual/en/streamwrapper.url-stat.php
+     */
+    public function url_stat($path, $flags)
+    {
+        $this->path = $path;
+
+        return $this->stream_stat();
+    }    
 
     /**
      * Make sure the stream is ready and position the file pointer to the
