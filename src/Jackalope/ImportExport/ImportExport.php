@@ -142,9 +142,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
      */
     public static function unescapeXmlName($name, $namespaceMap)
     {
-        // TODO: FIXME this is not respecting the escaping properly
-        $name = str_replace(self::$escaping, array_keys(self::$escaping), $name);
-        $name = preg_replace('/_x005f_/', '', $name);
+        foreach (self::$escaping as $raw => $escaped) {
+            // Used a negative look behind to only replace non-escaped escape characters
+            $name = preg_replace(sprintf('/(?<!_x005f)%s/', preg_quote($escaped)), $raw, $name);
+        }
+
+        // Now replace all escape characters with a regular underscore
+        $name = preg_replace('/_x005f_(x[0-9a-zA-F])/', '_\1', $name);
 
         return self::cleanNamespace($name, $namespaceMap);
     }
