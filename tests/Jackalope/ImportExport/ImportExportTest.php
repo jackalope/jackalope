@@ -39,7 +39,7 @@ class ImportExportTest extends TestCase
             array('My_x0020 Documents', 'My_x005f_x0020_x0020_Documents'),
             // Some combinations
             array('My "Documents"', 'My_x0020__x0022_Documents_x0022_'),
-            array('<My \'Documents\'>', '_x003c_My_x0020__x0027_Documents_x0027__x003e_'),
+            array("<My 'Documents'>", "_x003c_My_x0020__x0027_Documents_x0027__x003e_"),
         );
     }
 }
