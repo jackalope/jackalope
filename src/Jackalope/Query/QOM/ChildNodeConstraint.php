@@ -27,11 +27,14 @@ class ChildNodeConstraint implements ChildNodeInterface
     /**
      * Create a new child node constraint
      *
+     * @param string $selectorName
      * @param string $parentPath   parent path the node must be child of
-     * @param string $selectorName optionally restrict to a selector
      */
-    public function __construct($parentPath, $selectorName = null)
+    public function __construct($selectorName, $parentPath)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->parentPath = $parentPath;
         $this->selectorName = $selectorName;
     }

@@ -32,6 +32,9 @@ class SameNode implements SameNodeInterface
      */
     public function __construct($selectorName, $path)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->selectorName = $selectorName;
         $this->path = $path;
     }

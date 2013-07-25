@@ -68,9 +68,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function selector($nodeTypeName, $selectorName = null)
+    public function selector($selectorName, $nodeTypeName)
     {
-        return new Selector($nodeTypeName, $selectorName);
+        return new Selector($selectorName, $nodeTypeName);
     }
 
     /**
@@ -168,7 +168,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function propertyExistence($propertyName, $selectorName = null)
+    public function propertyExistence($selectorName, $propertyName)
     {
         return new PropertyExistence($selectorName, $propertyName);
     }
@@ -178,9 +178,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function fullTextSearch($propertyName, $fullTextSearchExpression, $selectorName = null)
+    public function fullTextSearch($selectorName, $propertyName, $fullTextSearchExpression)
     {
-        return new FullTextSearchConstraint($propertyName, $fullTextSearchExpression, $selectorName);
+        return new FullTextSearchConstraint($selectorName, $propertyName, $fullTextSearchExpression);
     }
 
     /**
@@ -188,7 +188,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function sameNode($path, $selectorName = null)
+    public function sameNode($selectorName, $path)
     {
         return new SameNode($selectorName, $path);
     }
@@ -198,9 +198,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function childNode($path, $selectorName = null)
+    public function childNode($selectorName , $path)
     {
-        return new ChildNodeConstraint($path, $selectorName);
+        return new ChildNodeConstraint($selectorName, $path);
     }
 
     /**
@@ -208,9 +208,9 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function descendantNode($path, $selectorName = null)
+    public function descendantNode($selectorName, $path)
     {
-        return new DescendantNodeConstraint($path, $selectorName);
+        return new DescendantNodeConstraint($selectorName, $path);
     }
 
     /**
@@ -218,7 +218,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function propertyValue($propertyName, $selectorName = null)
+    public function propertyValue($selectorName, $propertyName)
     {
         return new PropertyValue($selectorName, $propertyName);
     }
@@ -238,7 +238,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function nodeName($selectorName = null)
+    public function nodeName($selectorName)
     {
         return new NodeName($selectorName);
     }
@@ -248,7 +248,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function nodeLocalName($selectorName = null)
+    public function nodeLocalName($selectorName)
     {
         return new NodeLocalName($selectorName);
     }
@@ -258,7 +258,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function fullTextSearchScore($selectorName = null)
+    public function fullTextSearchScore($selectorName)
     {
         return new FullTextSearchScore($selectorName);
     }
@@ -328,8 +328,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function column($propertyName, $columnName = null, $selectorName = null)
+    public function column($selectorName, $propertyName = null, $columnName = null)
     {
-        return new Column($propertyName, $columnName, $selectorName);
+        return new Column($selectorName, $propertyName, $columnName);
     }
 }
