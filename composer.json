@@ -4,7 +4,10 @@
     "description": "Jackalope PHPCR library",
     "keywords": ["phpcr implementation"],
     "homepage": "http://jackalope.github.com",
-    "license": "Apache-2.0",
+    "license": [
+        "MIT",
+        "Apache-2.0"
+    ],
     "authors": [
         {
             "name": "Jackalope Community",

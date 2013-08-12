@@ -46,7 +46,11 @@ use Jackalope\Transport\RemovePropertyOperation;
  * respective manager is requested from the session or workspace. As those
  * managers are the only entry points we do not check here again.
  *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  *
  * @private
  */
