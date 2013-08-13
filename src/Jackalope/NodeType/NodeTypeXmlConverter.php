@@ -127,7 +127,7 @@ class NodeTypeXmlConverter
     }
 
     /**
-     * Convert NodeTypeDefintion XML into array.
+     * Convert NodeTypeDefinition XML into array.
      *
      * @param DOMElement $node
      *

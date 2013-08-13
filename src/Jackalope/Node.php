@@ -145,7 +145,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 if (! $update // init new node
                     || ! $keepChanges // want to discard changes
                     || isset($oldNodes[$key]) // it was already existing before reloading
-                    || ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing aobut it
+                    || ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing about it
                 ) {
                     // for all those cases, if the node was moved away or is deleted in current session, we do not add it
                     if (! $this->objectManager->isNodeMoved($this->path . '/' . $key)
@@ -201,7 +201,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                         }
                     } //else this is a type declaration
 
-                    //skip this entry (if its binary, its already processeed
+                    //skip this entry (if its binary, its already processed
                     continue;
                 }
 
@@ -296,7 +296,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
             foreach ($oldProperties as $name => $property) {
                 if (! ($keepChanges && ($property->isNew()))) {
-                    // may not call remove(), we dont want another delete with
+                    // may not call remove(), we don't want another delete with
                     // the backend to be attempted
                     $this->properties[$name]->setDeleted();
                     unset($this->properties[$name]);
@@ -990,8 +990,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
-     * Jackalope validates type conflicts only on save, not immediatly.
-     *It is possible to add mixin types after the first save.
+     * Jackalope validates type conflicts only on save, not immediately.
+     * It is possible to add mixin types after the first save.
      *
      * @api
      */
@@ -1260,7 +1260,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $deleted = true;
             }
 
-            // continue with emtpy data, parseData will notify all cached
+            // continue with empty data, parseData will notify all cached
             // children and all properties that we are removed
             $json = array();
         }
@@ -1340,7 +1340,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Adds child node to this node for internal reference
      *
-     * @param string  $name  The name of the child node
+     * @param string  $node  The name of the child node
      * @param boolean $check whether to check state
      * @param string  $name  is used in cases where $node->getName would not return the correct name (during move operation)
      *

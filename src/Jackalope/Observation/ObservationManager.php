@@ -17,7 +17,7 @@ use Jackalope\NotImplementedException;
  * {@inheritDoc}
  *
  * Jackalope does not implement event listeners because we would need to poll Jackrabbit on
- * a regular basis to check if an event occured but there is nothing like threads in PHP.
+ * a regular basis to check if an event occurred but there is nothing like threads in PHP.
  *
  * @api
  *

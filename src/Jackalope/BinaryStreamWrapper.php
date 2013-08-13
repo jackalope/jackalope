@@ -170,7 +170,7 @@ class BinaryStreamWrapper
     }
 
     /**
-     * Flush all data written to this stream if the stream was initiliazed.
+     * Flush all data written to this stream if the stream was initialized.
      */
     public function stream_flush()
     {
@@ -218,7 +218,7 @@ class BinaryStreamWrapper
                 }
                 $index = isset($url['port']) ? $url['port'] - 1 : 0;
                 if (!isset(self::$multiValueMap[$token][$index])) {
-                    throw new LogicException("Trying to read a stream from a non existant token '$token' or token index '$index'.");
+                    throw new LogicException("Trying to read a stream from a non existent token '$token' or token index '$index'.");
                 }
                 $this->stream = self::$multiValueMap[$token][$index];
             }
