@@ -8,7 +8,7 @@ use PHPCR\Util\PathHelper;
 /**
  * Base class for transport implementation.
  *
- * Collects useful methods that are independant of backend implementations
+ * Collects useful methods that are independent of backend implementations
  *
  * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
  *

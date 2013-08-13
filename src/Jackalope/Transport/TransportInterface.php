@@ -188,7 +188,7 @@ interface TransportInterface
      * If a transport can do it, it should also implement
      * NodeTypeFilterInterface.
      *
-     * @param array $path Absolute paths to the nodes.
+     * @param array $paths Absolute paths to the nodes.
      *
      * @return array keys are the absolute paths, values is the node data as
      *      associative array (decoded from json with associative = true)
@@ -204,7 +204,7 @@ interface TransportInterface
      * one call. If the transport implementation does not optimize, it can just
      * loop over the uuids and call getNodeByIdentifier repeatedly.
      *
-     * @param array $identifiers list of uuid to retreive
+     * @param array $identifiers list of uuid to retrieve
      *
      * @return array keys are the absolute paths, values is the node data as
      *      associative array (decoded from json with associative = true). they
@@ -234,8 +234,6 @@ interface TransportInterface
      * must have the :jcr:path property.
      *
      * @param string $uuid the id in JCR format
-     * @param string $workspace name of the workspace to search in
-     *      (defaults to current workspace)
      *
      * @return array associative array for the node (decoded from json with
      *      associative = true)

@@ -198,7 +198,7 @@ interface WritingInterface extends TransportInterface
     /**
      * Stores a property to its absolute path
      *
-     * @param Property
+     * @param Property $property
      *
      * @return void
      *

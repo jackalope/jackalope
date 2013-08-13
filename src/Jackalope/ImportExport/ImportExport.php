@@ -75,9 +75,10 @@ class ImportExport implements ImportUUIDBehaviorInterface
     /**
      * Import the xml document from the stream into the repository
      *
-     * @param NodeInterface $parentNode   as in importXML
-     * @param string        $uri          as in importXML
-     * @param integer       $uuidBehavior as in importXML
+     * @param NodeInterface              $parentNode   as in importXML
+     * @param NamespaceRegistryInterface $ns           as in importXML
+     * @param string                     $uri          as in importXML
+     * @param integer                    $uuidBehavior as in importXML
      *
      * @see PHPCR\SessionInterface::importXML
      */
@@ -279,7 +280,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * view format
      *
      * @param NodeInterface $node   the node to output
-     * @param resource      $stream The stream resource (i.e. aquired with fopen) to
+     * @param resource      $stream The stream resource (i.e. acquired with fopen) to
      *      which the XML serialization of the subgraph will be output. Must
      *      support the fwrite method.
      * @param boolean $skipBinary A boolean governing whether binary properties
@@ -408,7 +409,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * the built-in namespace registry.
      *
      * @param NamespaceRegistryInterface $ns     the registry with the namespaces to export
-     * @param resource                   $stream the ouptut stream to write the namespaces to
+     * @param resource                   $stream the output stream to write the namespaces to
      *
      * @return void
      */
@@ -428,7 +429,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param NamespaceRegistryInterface $ns
      * @param FilteredXMLReader          $xml
      * @param int                        $uuidBehavior
-     * @param array                      $documentNamespaces hashmap of prefix => uri for namespaces in the document
+     * @param array                      $namespaceMap hashmap of prefix => uri for namespaces in the document
      */
     private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, $namespaceMap = array())
     {

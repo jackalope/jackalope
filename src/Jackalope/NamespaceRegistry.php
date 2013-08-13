@@ -107,7 +107,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
             throw new NamespaceException("Can not change default namespace $prefix = $uri");
         }
         $this->lazyLoadNamespaces();
-        //first try putting the stuff in backend, and only afterwards update lokal info
+        //first try putting the stuff in backend, and only afterwards update local info
 
         // this has no impact on running sessions, go directly to storage
         $this->transport->registerNamespace($prefix, $uri);

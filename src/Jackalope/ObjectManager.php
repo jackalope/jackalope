@@ -250,7 +250,7 @@ class ObjectManager
      *
      * Uses the factory to create Node objects.
      *
-     * @param array $paths Array containing the absolute paths of the nodes to
+     * @param array $absPaths Array containing the absolute paths of the nodes to
      *      fetch.
      * @param string $class The class of node to get. TODO: Is it sane to
      *      fetch data separately for Version and normal Node?
@@ -511,7 +511,7 @@ class ObjectManager
      * performance.
      *
      * @param string $relPath  relative path
-     * @param string $root  context path
+     * @param string $context  context path
      * @param string $class optional class name for the factory
      *
      * @return NodeInterface The specified Node. if not available,
@@ -646,7 +646,7 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      *
-     * @param array   $definitions an array of NodeTypeDefinitions
+     * @param array   $types       an array of NodeTypeDefinitions
      * @param boolean $allowUpdate whether to fail if node already exists or to
      *      update it
      *
@@ -1777,7 +1777,7 @@ class ObjectManager
                 return false;
             }
 
-            // may not use $item->getIdentifier here - leads to endless loop if node purges itselves
+            // may not use $item->getIdentifier here - leads to endless loop if node purges itself
             $uuid = array_search($absPath, $this->objectsByUuid);
             if (false !== $uuid) {
                 unset($this->objectsByUuid[$uuid]);

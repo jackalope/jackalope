@@ -669,7 +669,7 @@ abstract class Item implements ItemInterface
      * <tr><td colspan="4">
      *      note: case 7 is handled in Item::setState() by changing $savedState to MODIFIED if $savedState is CLEAN and
      *      current state changes to MODIFIED Without this special case, we would miss the situation where a clean node is
-     *      modified after transaction start and successfully saved, endeding up with clean state again. it has to be
+     *      modified after transaction start and successfully saved, ending up with clean state again. it has to be
      *      modified as its different from the backend value.
      * </td></tr>
      * <tr><td>8</td><td>CLEAN      </td><td>DIRTY   </td><td>   DIRTY</td></tr>
