@@ -77,7 +77,7 @@ class ItemDefinition implements ItemDefinitionInterface
      * Overwritten for property and node to add more information, with a call
      * to this parent method for the common things.
      *
-     * @param array $data An array with the fields required by ItemDefition
+     * @param array $data An array with the fields required by ItemDefinition
      *
      * @return void
      */
