@@ -15,8 +15,6 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\Util\ValueConverter;
 
 /**
- * Item base class with common functionality
- *
  * {@inheritDoc}
  *
  * <b>Jackalope Implementation:</b> The item has a state machine to track in
@@ -33,6 +31,9 @@ use PHPCR\Util\ValueConverter;
  * <em>Figure: workflow state transitions</em>
  *
  * For the special case of Item state after a failed transaction, see Item::rollbackTransaction()
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 abstract class Item implements ItemInterface
 {

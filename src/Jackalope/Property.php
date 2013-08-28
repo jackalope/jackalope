@@ -21,10 +21,12 @@ use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\Util\PathHelper;
 
 /**
- * The Jackalope in-memory representation of a property.
+ * {@inheritDoc}
  *
- * This is an Item and follows the property interface - see the base class and
- * interface for more documentation.
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
+ * @api
  */
 class Property extends Item implements IteratorAggregate, PropertyInterface
 {

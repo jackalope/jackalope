@@ -11,9 +11,12 @@ use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
 
 /**
- * The jackalope implementation of the repository.
- *
  * {@inheritDoc}
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
+ * @api
  */
 class Repository implements RepositoryInterface
 {

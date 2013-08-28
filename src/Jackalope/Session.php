@@ -32,6 +32,9 @@ use Jackalope\Transport\TransactionInterface;
  * optimization but do not affect the behaviour and those that are change the
  * behaviour.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @api
  */
 class Session implements SessionInterface

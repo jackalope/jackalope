@@ -8,6 +8,9 @@ namespace Jackalope\Transport;
  * Utility class for transports that do not use jackrabbit to provide the
  * standard node type information.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */

@@ -14,7 +14,12 @@ use Jackalope\FactoryInterface;
  * Abstract Query implementation for the different Query-languages
  *
  * This can never be legally created if the transport does not implement
- * QueryInterface
+ * QueryInterface.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
+ * @api
  */
 abstract class Query implements QueryInterface
 {

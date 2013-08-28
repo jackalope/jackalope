@@ -10,6 +10,7 @@ use Jackalope\Query\Query;
  * @see <a href="http://www.day.com/specs/jcr/2.0/6_Query.html">JCR 2.0, chapter 6</a>
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 interface QueryInterface extends TransportInterface
 {

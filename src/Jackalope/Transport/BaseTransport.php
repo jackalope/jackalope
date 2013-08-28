@@ -10,7 +10,8 @@ use PHPCR\Util\PathHelper;
  *
  * Collects useful methods that are independent of backend implementations
  *
- * @license http://www.apache.org/licenses/LICENSE-2.0  Apache License Version 2.0, January 2004
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  *
  * @author David Buchmann <david@liip.ch>
  */

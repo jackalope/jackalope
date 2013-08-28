@@ -10,6 +10,9 @@ use XMLReader;
  * * skip whitespace, empty significant whitespace and comments.
  * * move to next element regardless of the hierarchy
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @author David Buchmann <david@liip.ch>
  */
 class FilteredXMLReader extends XMLReader

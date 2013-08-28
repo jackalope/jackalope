@@ -15,9 +15,10 @@ use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
 
 /**
- * Namespace registry for Jackalope
- *
  * {@inheritDoc}
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 {

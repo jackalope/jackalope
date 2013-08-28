@@ -25,9 +25,10 @@ use PHPCR\Util\NodeHelper;
 use Jackalope\Factory;
 
 /**
- * The Node interface represents a node in a workspace.
+ * {@inheritDoc}
  *
- * You can iterate over the nodes children because it is an IteratorAggregate
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  *
  * @api
  */
