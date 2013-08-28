@@ -3,10 +3,13 @@
 namespace Jackalope\Query;
 
 /**
- * Query implementation for the (deprecated) SQL(1) language
+ * Query implementation for the (deprecated) SQL(1) language.
  *
  * This can never be legally created if the transport does not implement
- * QueryInterface
+ * QueryInterface.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 class Sql1Query extends Query
 {

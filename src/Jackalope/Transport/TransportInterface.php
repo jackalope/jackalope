@@ -16,11 +16,9 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * See the README.md in this folder for general information about the transport
  * layer.
-
- * This interface is now synchronized with what we had for davex as per 2011-12-28
- * TODO: keep this in sync with Transport/Jackrabbit/Client.php
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 interface TransportInterface
 {

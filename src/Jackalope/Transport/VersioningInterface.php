@@ -8,9 +8,10 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Version\VersionException;
 
 /**
- * Defines the method needed for versioning support.
+ * Defines the methods needed for versioning support.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 interface VersioningInterface extends TransportInterface
 {

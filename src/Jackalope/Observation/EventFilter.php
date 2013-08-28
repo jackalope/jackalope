@@ -14,6 +14,9 @@ use Jackalope\FactoryInterface;
  * In addition to being a container, this filter implements the match method
  * to decide based on the set filters whether an event matches the filter.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @author Daniel Barsotti
  * @author David Buchmann
  */

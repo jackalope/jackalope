@@ -3,7 +3,10 @@
 namespace Jackalope\Transport;
 
 /**
- * Base for all operations
+ * Base class for all operations buffered in the object manager.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 abstract class Operation
 {

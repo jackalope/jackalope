@@ -23,7 +23,10 @@ use Jackalope\FactoryInterface;
  * In Jackalope, we try to do lazy fetching of node types to reduce overhead.
  * Jackalope supports registering node types, and when using the jackrabbit for
  * transport, there is an additional method registerNodeTypesCnd for the
- * jackrabbit specific textual node type specification
+ * jackrabbit specific textual node type specification.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 {

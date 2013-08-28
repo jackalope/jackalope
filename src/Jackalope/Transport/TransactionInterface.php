@@ -8,6 +8,7 @@ namespace Jackalope\Transport;
  * @see <a href="http://www.day.com/specs/jcr/2.0/21_Transactions.html">JCR 2.0, chapter 21</a>
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 interface TransactionInterface extends TransportInterface
 {

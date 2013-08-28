@@ -6,6 +6,10 @@ use PHPCR\NodeInterface;
 use Jackalope\Transport\NodeTypeFilterInterface;
 use Jackalope\Node;
 
+/**
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ */
 class NodePathIterator implements \Iterator, \ArrayAccess
 {
     protected $position = 0;
@@ -17,8 +21,8 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     protected $batchSize;
 
     public function __construct(
-        ObjectManager $objectManager, 
-        $paths, 
+        ObjectManager $objectManager,
+        $paths,
         $class = 'Node',
         $typeFilter = array(),
         $batchSize = 50
@@ -129,7 +133,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
 
         $paths = array_slice(
             $this->paths,
-            $position ? $position : $this->position, 
+            $position ? $position : $this->position,
             $this->batchSize
         );
 

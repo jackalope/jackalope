@@ -19,6 +19,9 @@ use Jackalope\NotImplementedException;
  * Jackalope does not implement event listeners because we would need to poll Jackrabbit on
  * a regular basis to check if an event occurred but there is nothing like threads in PHP.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @api
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
