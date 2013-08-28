@@ -342,7 +342,7 @@ class ObjectManager
      * @param NodeInterface $node
      * @param array         $typeFilter
      *
-     * @return bool
+     * @return boolean
      */
     private function matchNodeType(NodeInterface $node, array $typeFilter)
     {

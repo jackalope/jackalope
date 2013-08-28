@@ -468,7 +468,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Determine whether the children of this node need to be reordered
      *
-     * @return bool
+     * @return boolean
      *
      * @private
      */
