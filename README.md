@@ -16,8 +16,10 @@ You can use Jackalope with different storage backends. For now, we support:
 Discuss on jackalope-dev@googlegroups.com
 or visit #jackalope on irc.freenode.net
 
-License: This code is dual licensed under the MIT license and the Apache License Version 2.0.
-Please see the file LICENSE in this folder.
+## License
+
+This code is dual licensed under the MIT license and the Apache License Version
+2.0. Please see the file LICENSE in this folder.
 
 
 # Install instructions
