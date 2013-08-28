@@ -19,6 +19,9 @@ use PHPCR\NodeType\NoSuchNodeTypeException;
  * and property definition instances acquired from the NodeTypeDefinition.
  * All other information in this class is deduced from this when requested.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @api
  */
 class NodeType extends NodeTypeDefinition implements NodeTypeInterface

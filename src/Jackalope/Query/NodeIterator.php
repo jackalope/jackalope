@@ -15,6 +15,9 @@ use Jackalope\FactoryInterface;
  *
  * OPTIMIZE: The iterator could prefetch a couple of nodes at a time to reduce
  * the number of storage round-trips while still not loading all nodes at once.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  */
 class NodeIterator implements SeekableIterator, Countable
 {

@@ -20,6 +20,9 @@ use LogicException;
  * stream. This means after closing the Session, streams can no longer be
  * accessed.
  *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
+ *
  * @private
  */
 class BinaryStreamWrapper
@@ -124,7 +127,7 @@ class BinaryStreamWrapper
 
         return fstat($this->stream);
     }
-    
+
     /**
      * Retrieve information about a file
      *
@@ -143,7 +146,7 @@ class BinaryStreamWrapper
         $this->path = $path;
 
         return $this->stream_stat();
-    }    
+    }
 
     /**
      * Make sure the stream is ready and position the file pointer to the

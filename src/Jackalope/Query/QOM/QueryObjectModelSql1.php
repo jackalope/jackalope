@@ -20,7 +20,10 @@ use Jackalope\NotImplementedException;
 /**
  * {@inheritDoc}
  *
- * We extend SqlQuery to have features like limit and offset
+ * We extend SqlQuery to have features like limit and offset.
+ *
+ * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
+ * @license http://opensource.org/licenses/MIT MIT License
  *
  * @api
  */
