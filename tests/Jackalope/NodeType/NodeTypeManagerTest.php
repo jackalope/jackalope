@@ -70,5 +70,4 @@ class NodeTypeManagerTest extends TestCase
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 
-
 }

@@ -46,8 +46,8 @@ class EventFilterEventTypeTest extends EventFilterTestCase
 
     /**
      * Create a filter accepting all the given $eventTypes, then assert it matches only those event types
+     *
      * @param array $eventTypes The list of event types
-     * @return void
      */
     protected function assertMultiTypeFilter($eventTypes)
     {
@@ -65,7 +65,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
      * Assert a filter only match the given event types
      *
      * @param EventFilter $filter
-     * @param array $matchedTypes An array of matched event types
+     * @param array       $matchedTypes An array of matched event types
      */
     protected function assertFilterMatch(EventFilter $filter, $matchedTypes)
     {

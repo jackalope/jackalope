@@ -293,8 +293,6 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean $root Whether this is the root node of the resulting
      *      document, meaning the namespace declarations have to be included in
      *      it.
-     *
-     * @return void
      */
     private static function exportSystemViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root=false)
     {
@@ -368,8 +366,6 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean $root Whether this is the root node of the resulting
      *      document, meaning the namespace declarations have to be included in
      *      it.
-     *
-     * @return void
      */
     private static function exportDocumentViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root=false)
     {
@@ -413,8 +409,6 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *
      * @param NamespaceRegistryInterface $ns     the registry with the namespaces to export
      * @param resource                   $stream the output stream to write the namespaces to
-     *
-     * @return void
      */
     private static function exportNamespaceDeclarations(NamespaceRegistryInterface $ns, $stream)
     {

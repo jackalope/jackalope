@@ -35,7 +35,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 
     /**
      * Get an Event with the given path
-     * @param string $path
+     * @param  string $path
      * @return Event
      */
     protected function getEvent($path, $id)
@@ -43,6 +43,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath($path);
         $event->setIdentifier($id);
+
         return $event;
     }
 
@@ -70,7 +71,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 
     /**
      * Get a Jackalope\Node mock object that will return "/uuid" as path
-     * @param string $uuid
+     * @param  string $uuid
      * @return object
      */
     protected function getMyNodeMock($uuid)
@@ -81,6 +82,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
             ->method('getPath')
             ->will($this->returnValue('/' . $uuid))
         ;
+
         return $node;
     }
 }

@@ -73,8 +73,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      * We are lazy and only load the namespaces when they are needed for the
      * first time. This method has to be called by all methods that need to
      * do something with user defined namespaces.
-     *
-     * @return void
      */
     protected function lazyLoadNamespaces()
     {
@@ -232,8 +230,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      * (in any combination of case)
      *
      * @param string $prefix the prefix name to check
-     *
-     * @return void
      *
      * @throws NamespaceException if re-assign built-in prefix or prefix starting with xml
      *

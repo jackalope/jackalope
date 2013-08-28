@@ -81,8 +81,6 @@ class ItemDefinition implements ItemDefinitionInterface
      * to this parent method for the common things.
      *
      * @param array $data An array with the fields required by ItemDefinition
-     *
-     * @return void
      */
     protected function fromArray(array $data)
     {

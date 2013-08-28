@@ -47,13 +47,11 @@ interface WritingInterface extends TransportInterface
      * If there already is a node at $destAbsPath, the transport may merge
      * nodes as described in the WorkspaceInterface::copy documentation.
      *
-     * @param string $srcAbsPath Absolute source path to the node
-     * @param string $destAbsPath Absolute destination path including the new
+     * @param string $srcAbsPath   Absolute source path to the node
+     * @param string $destAbsPath  Absolute destination path including the new
      *      node name
      * @param string $srcWorkspace The workspace where the source node can be
      *      found or null for current workspace
-     *
-     * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
@@ -76,8 +74,6 @@ interface WritingInterface extends TransportInterface
      * @param bool $removeExisting whether to remove a node with the same identifier
      *      if there exists one
      *
-     * @return void
-     *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
      * @see \PHPCR\WorkspaceInterface::cloneFrom
@@ -87,7 +83,7 @@ interface WritingInterface extends TransportInterface
     /**
      * Update a node and its children to match its corresponding node in the specified workspace
      *
-     * @param Node $node the node to update
+     * @param Node   $node         the node to update
      * @param string $srcWorkspace The workspace where the corresponding source node can be found
      */
     public function updateNode(Node $node, $srcWorkspace);
@@ -105,8 +101,6 @@ interface WritingInterface extends TransportInterface
      * @param string $srcAbsPath Absolute source path to the node
      * @param string $dstAbsPath Absolute destination path (must NOT include
      *      the new node name)
-     *
-     * @return void
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
@@ -146,8 +140,6 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the node
      *
-     * @return void
-     *
      * @see \Jackalope\Workspace::removeItem
      *
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
@@ -161,8 +153,6 @@ interface WritingInterface extends TransportInterface
      * Deletes a property outside of a transaction
      *
      * @param string $path Absolute path to the property
-     *
-     * @return void
      *
      * @see \Jackalope\Workspace::removeItem
      *
@@ -201,8 +191,6 @@ interface WritingInterface extends TransportInterface
      *
      * @param Property $property
      *
-     * @return void
-     *
      * @throws \PHPCR\RepositoryException if not logged in or another error occurs
      */
     public function storeProperty(Property $property);
@@ -219,8 +207,6 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $prefix The prefix to be mapped.
      * @param string $uri    The URI to be mapped.
-     *
-     * @return void
      */
     public function registerNamespace($prefix, $uri);
 
@@ -231,30 +217,23 @@ interface WritingInterface extends TransportInterface
      * happened in the NamespaceRegistry.
      *
      * @param string $prefix The prefix to unregister.
-     *
-     * @return void
      */
     public function unregisterNamespace($prefix);
 
     /**
-     * Called before any data is written
-     *
-     * @return void
+     * Called before any data is written.
      */
     public function prepareSave();
 
     /**
      * Called after everything internally is done in the save() method
-     *  so the transport has a chance to do final stuff (or commit everything at once)
-     *
-     * @return void
+     * so the transport has a chance to do final stuff (or commit everything
+     * at once).
      */
     public function finishSave();
 
     /**
-     * Called if a save operation caused an exception
-     *
-     * @return void
+     * Called if a save operation caused an exception.
      */
     public function rollbackSave();
 }

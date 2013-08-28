@@ -2,8 +2,6 @@
 
 namespace Jackalope;
 
-use PHPCR\NodeInterface;
-use Jackalope\Transport\NodeTypeFilterInterface;
 use Jackalope\Node;
 
 /**
@@ -95,6 +93,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
         // and move on
         if ($path === null) {
             $this->position++;
+
             return $this->valid();
         }
 
@@ -104,6 +103,7 @@ class NodePathIterator implements \Iterator, \ArrayAccess
 
         if (empty($this->nodes[$path])) {
             $this->position++;
+
             return $this->valid();
         }
 
@@ -123,7 +123,6 @@ class NodePathIterator implements \Iterator, \ArrayAccess
      * batch size.
      *
      * @param integer $position - Optional position to start from
-     * @return void
      */
     protected function loadBatch($position = null)
     {
@@ -147,8 +146,6 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * ensurePathLoaded
-     *
      * Ensure that the given path is loaded from the database.
      * We will iterate over the batches until we either get to
      * the end or we find the node we are looking for.
@@ -158,7 +155,6 @@ class NodePathIterator implements \Iterator, \ArrayAccess
      * - if the node is indeed not already loaded.
      *
      * @param integer $offset
-     * @return void
      */
     protected function ensurePathLoaded($offset)
     {

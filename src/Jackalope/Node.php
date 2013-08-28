@@ -18,7 +18,6 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
 
-use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
 
@@ -1308,8 +1307,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param bool   $check whether a state check should be done - set to false
      *      during internal update operations
      *
-     * @return void
-     *
      * @throws ItemNotFoundException If there is no child with $name
      *
      * @private
@@ -1374,8 +1371,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * Removes the reference in the internal node storage
      *
      * @param string $name the name of the property to unset.
-     *
-     * @return void
      *
      * @throws ItemNotFoundException If this node has no property with name $name
      *

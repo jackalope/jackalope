@@ -92,8 +92,6 @@ interface TransportInterface
      *
      * This method is called on $session->logout
      * Implementations can use it to close database connections and similar.
-     *
-     * @return void
      */
     public function logout();
 
@@ -239,7 +237,7 @@ interface TransportInterface
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
      * @throws \PHPCR\NoSuchWorkspaceException if workspace does not exist
-     * @throws \LogicException if not logged in
+     * @throws \LogicException                 if not logged in
      */
     public function getNodeByIdentifier($uuid);
 
@@ -303,8 +301,6 @@ interface TransportInterface
      * and such.
      *
      * @param NodeTypeManager $nodeTypeManager
-     *
-     * @return void
      */
     public function setNodeTypeManager($nodeTypeManager);
 

@@ -5,8 +5,6 @@ namespace Jackalope\Observation;
 use Jackalope\TestCase;
 use Jackalope\Factory;
 
-use PHPCR\Observation\EventInterface;
-
 /**
  * Unit tests for the EventJournal
  */

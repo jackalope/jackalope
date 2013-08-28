@@ -38,8 +38,6 @@ interface LockingInterface extends TransportInterface
      *
      * @param string $absPath   The absolute path of the node
      * @param string $lockToken The lock token of the lock to remove
-     *
-     * @return void
      */
     public function unlock($absPath, $lockToken);
 }

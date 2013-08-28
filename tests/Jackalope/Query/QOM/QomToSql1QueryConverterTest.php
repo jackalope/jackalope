@@ -6,8 +6,6 @@ use Jackalope\Query\QOM\QueryObjectModelFactory;
 use Jackalope\Factory;
 
 use PHPCR\Util\QOM\QueryBuilder;
-use PHPCR\Util\QOM\Sql1Generator;
-use PHPCR\Util\QOM\QomToSql1QueryConverter;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\SourceInterface;
@@ -27,6 +25,7 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
     {
         $this->qb->andWhere($constraint);
         $this->qb->from($this->qf->selector("nt:base"));
+
         return $this->qb->getQuery()->getStatement();
     }
 
@@ -107,9 +106,7 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
                         $simpleQuery = false
         )
     {
-
         return $this->factory->get('Query\QOM\QueryObjectModelSql1',
         array($this->objectManager, $source, $constraint, $orderings, $columns));
     }
 }
-

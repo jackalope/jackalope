@@ -164,6 +164,7 @@ XML;
           if ($nodes->length != 1) {
               $this->fail("Should have found exactly one element <nodeType> with name " . $name);
           }
+
           return $nodes->item(0);
     }
 }

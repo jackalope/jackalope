@@ -19,6 +19,7 @@ class NodeTest extends TestCase
             ))))
         ;
         $node = new Node($factory, json_decode($this->JSON), '/jcr:root', $session, $objectManager);
+
         return $node;
     }
 

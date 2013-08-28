@@ -3,8 +3,6 @@
 namespace Jackalope\Observation;
 
 use Jackalope\TestCase;
-use PHPCR\Observation\EventInterface;
-use Jackalope\Observation\Event;
 use Jackalope\Observation\EventFilter;
 
 /**

@@ -33,6 +33,7 @@ class Factory implements FactoryInterface
         }
 
         $class = new ReflectionClass($name);
+
         return $class->newInstanceArgs($params);
     }
 }

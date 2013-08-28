@@ -37,8 +37,6 @@ interface VersioningInterface extends TransportInterface
      *
      * @param string $path absolute path to the node
      *
-     * @return void
-     *
      * @throws UnsupportedRepositoryOperationException
      * @throws RepositoryException
      */

@@ -21,6 +21,7 @@ class ItemTest extends TestCase
         if (! $objectManager) {
             $objectManager = $this->getObjectManagerMock();
         }
+
         return new TestItem($factory, $path, $session, $objectManager, $new);
     }
 

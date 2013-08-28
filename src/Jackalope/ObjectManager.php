@@ -511,9 +511,9 @@ class ObjectManager
      * If you have an absolute path use {@link getNodeByPath()} for better
      * performance.
      *
-     * @param string $relPath  relative path
-     * @param string $context  context path
-     * @param string $class optional class name for the factory
+     * @param string $relPath relative path
+     * @param string $context context path
+     * @param string $class   optional class name for the factory
      *
      * @return NodeInterface The specified Node. if not available,
      *      ItemNotFoundException is thrown
@@ -661,6 +661,7 @@ class ObjectManager
 
         if ($this->transport instanceof NodeTypeCndManagementInterface) {
             $writer = new CndWriter($this->session->getWorkspace()->getNamespaceRegistry());
+
             return $this->transport->registerNodeTypesCnd($writer->writeString($types), $allowUpdate);
         }
 
@@ -748,6 +749,7 @@ class ObjectManager
             foreach ($ns as $prefix => $uri) {
                 $nsRegistry->registerNamespace($prefix, $uri);
             }
+
             return $workspace->getNodeTypeManager()->registerNodeTypes($types, $allowUpdate);
         }
 
@@ -764,8 +766,6 @@ class ObjectManager
      * If transactions are enabled but we are not currently inside a
      * transaction, the session is responsible to start a transaction to make
      * sure the backend state does not get messed up in case of error.
-     *
-     * @return void
      */
     public function save()
     {
@@ -927,8 +927,6 @@ class ObjectManager
      * TODO: document more clearly. This looks like copy-paste from checkin
      *
      * @see VersionManager::checkout
-     *
-     * @return void
      */
     public function checkout($absPath)
     {
@@ -946,8 +944,6 @@ class ObjectManager
      *      version or create a new version after that version
      * @param string $versionPath
      * @param string $nodePath    absolute path to the node
-     *
-     * @return void
      */
     public function restore($removeExisting, $versionPath, $nodePath)
     {
@@ -1106,8 +1102,6 @@ class ObjectManager
      * @param bool              $sessionOperation whether the property removal should be
      *      dispatched immediately or needs to be scheduled in the operations log
      *
-     * @return void
-     *
      * @see ObjectManager::removeItem()
      */
     protected function performPropertyRemove($absPath, PropertyInterface $property, $sessionOperation = true)
@@ -1137,8 +1131,6 @@ class ObjectManager
      * @param NodeInterface $node             The item that is being removed
      * @param bool          $sessionOperation whether the node removal should be
      *      dispatched immediately or needs to be scheduled in the operations log
-     *
-     * @return void
      *
      * @see ObjectManager::removeItem()
      */
@@ -1219,8 +1211,6 @@ class ObjectManager
      * @param PropertyInterface $property optional, property instance to delete from the
      *      given node path. If set, absPath is the path to the node containing
      *      this property.
-     *
-     * @return void
      *
      * @throws RepositoryException If node cannot be found at given path
      *
@@ -1309,8 +1299,6 @@ class ObjectManager
      * @param string $srcAbsPath  Absolute path to the source node.
      * @param string $destAbsPath Absolute path to the destination where the node shall be moved to.
      *
-     * @return void
-     *
      * @throws RepositoryException If node cannot be found at given path
      *
      * @see Session::move()
@@ -1343,8 +1331,6 @@ class ObjectManager
      * @param string $srcAbsPath  the path of the node to be moved.
      * @param string $destAbsPath the location to which the node at srcAbsPath
      *      is to be moved.
-     *
-     * @return void
      *
      * @throws RepositoryException If node cannot be found at given path
      *
@@ -1398,8 +1384,6 @@ class ObjectManager
      * @param string $srcWorkspace the name of the workspace from which the
      *      copy is to be made.
      *
-     * @return void
-     *
      * @see Workspace::copy()
      */
     public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
@@ -1423,14 +1407,13 @@ class ObjectManager
      *      http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.10%20Corresponding%20Nodes
      *      http://www.day.com/specs/jcr/2.0/10_Writing.html#10.8%20Cloning%20and%20Updating%20Nodes
      *
-     * @param string $srcWorkspace the name of the workspace from which the copy is to be made.
-     * @param string $srcAbsPath  the path of the node to be cloned.
-     * @param string $destAbsPath the location to which the node at srcAbsPath is to be cloned in this workspace.
+     * @param string  $srcWorkspace   the name of the workspace from which the copy is to be made.
+     * @param string  $srcAbsPath     the path of the node to be cloned.
+     * @param string  $destAbsPath    the location to which the node at srcAbsPath is to be cloned in this workspace.
      * @param boolean $removeExisting
      *
      * @throws \PHPCR\UnsupportedRepositoryOperationException
      * @throws \PHPCR\ItemExistsException
-     * @return void
      *
      * @see Workspace::cloneFrom()
      */
@@ -1533,8 +1516,6 @@ class ObjectManager
     /**
      * Begin new transaction associated with current session.
      *
-     * @return void
-     *
      * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
      */
@@ -1549,8 +1530,6 @@ class ObjectManager
      *
      * TODO: Make sure RollbackException and AccessDeniedException are thrown
      * by the transport if corresponding problems occur.
-     *
-     * @return void
      *
      * @throws \PHPCR\Transaction\RollbackException if the transaction failed
      *      and was rolled back rather than committed.
@@ -1574,8 +1553,6 @@ class ObjectManager
      * called during the transaction. The save() method will need to track some
      * undo information for this to be possible.
      *
-     * @return void
-     *
      * @throws AccessDeniedException if the session is not allowed to
      *      roll back the transaction.
      * @throws RepositoryException if the transaction implementation
@@ -1595,7 +1572,6 @@ class ObjectManager
      * @param string $method The method to call on each item for the
      *      notification (must be beginTransaction, commitTransaction or
      *      rollbackTransaction)
-     * @return void
      *
      * @throws InvalidArgumentException if the passed $method is not valid
      */

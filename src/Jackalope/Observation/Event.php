@@ -94,8 +94,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $type
-     * @return void
+     * @param string $type
      */
     public function setType($type)
     {
@@ -104,6 +103,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getPath()
@@ -112,8 +112,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $path
-     * @return void
+     * @param string $path
      */
     public function setPath($path)
     {
@@ -122,6 +121,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getUserID()
@@ -130,8 +130,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $userId
-     * @return void
+     * @param string $userId
      */
     public function setUserId($userId)
     {
@@ -140,6 +139,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getIdentifier()
@@ -148,8 +148,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $identifier
-     * @return void
+     * @param string $identifier
      */
     public function setIdentifier($identifier)
     {
@@ -158,6 +157,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getInfo()
@@ -166,9 +166,8 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $key
-     * @param  string $value
-     * @return void
+     * @param string $key
+     * @param string $value
      */
     public function addInfo($key, $value)
     {
@@ -177,6 +176,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getUserData()
@@ -185,8 +185,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  string $data url-encoded string
-     * @return void
+     * @param string $data url-encoded string
      */
     public function setUserData($data)
     {
@@ -199,6 +198,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getDate()
@@ -207,8 +207,7 @@ class Event implements EventInterface
     }
 
     /**
-     * @param  int  $date
-     * @return void
+     * @param int $date
      */
     public function setDate($date)
     {
@@ -231,6 +230,7 @@ class Event implements EventInterface
     public function getPrimaryNodeType()
     {
         $this->checkNodeTypeEvent();
+
         return $this->ntm->getNodeType($this->primaryNodeTypeName);
     }
 

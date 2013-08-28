@@ -64,6 +64,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $mock->expects($this->any())
              ->method('getRepository')
              ->will($this->returnValue($this->getRepositoryMock()));
+
         return $mock;
     }
 
@@ -74,6 +75,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $mock->expects($this->any())
              ->method('getTransactionManager')
              ->will($this->returnValue($this->getInactiveTransactionMock()));
+
         return $mock;
     }
 
@@ -84,6 +86,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $mock->expects($this->any())
              ->method('inTransaction')
              ->will($this->returnValue(false));
+
         return $mock;
     }
 
@@ -91,24 +94,27 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         $factory = new Factory;
         $mock = $this->getMock('\Jackalope\Repository', array(), array($factory, null, array('transactions'=>false)), '', false);
+
         return $mock;
     }
 
     protected function getObjectManagerMock()
     {
         $factory = new Factory;
+
         return $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
     }
 
     /**
      * Get a mock object for a node. No methods are mocked but additional methods to
      * mock can be specified with $methodsToMock.
-     * @param array $methodsToMock Array of method names to mock
+     * @param  array  $methodsToMock Array of method names to mock
      * @return object
      */
     protected function getNodeMock($methodsToMock = array())
     {
         $node = $this->getMock('\Jackalope\Node', $methodsToMock, array(new Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock()));
+
         return $node;
     }
 
@@ -124,28 +130,30 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($converter->getNodeTypesFromXml($dom)))
         ;
         $ns = $this->getMockBuilder('Jackalope\NamespaceRegistry')->disableOriginalConstructor()->getMock();
+
         return new NodeTypeManager($factory, $om, $ns);
     }
 
     /**
      * Call a protected or private method on an object instance
-     * @param object $instance The instance to call the method on
-     * @param string $method The protected or private method to call
-     * @param array $args The arguments to the called method
-     * @return mixed The result of the method call
+     * @param  object $instance The instance to call the method on
+     * @param  string $method   The protected or private method to call
+     * @param  array  $args     The arguments to the called method
+     * @return mixed  The result of the method call
      */
     protected function getAndCallMethod($instance, $method, $args = array())
     {
         $class = new \ReflectionClass(get_class($instance));
         $method = $class->getMethod($method);
         $method->setAccessible(true);
+
         return $method->invokeArgs($instance, $args);
     }
 
     /**
      * Get the value of a protected or private property of an object
-     * @param object $instance
-     * @param string $attributeName
+     * @param  object $instance
+     * @param  string $attributeName
      * @return mixed
      */
     protected function getAttributeValue($instance, $attributeName)
@@ -163,10 +171,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @see https://github.com/sebastianbergmann/phpunit/issues/523
      *
-     * @param mixed $expectedValue The expected value
+     * @param mixed  $expectedValue The expected value
      * @param string $attributeName The name of the attribute to test
-     * @param object $instance The instance on which to run the test
-     * @return void
+     * @param object $instance      The instance on which to run the test
      */
     protected function myAssertAttributeEquals($expectedValue, $attributeName, $instance)
     {
@@ -188,7 +195,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * Build a DOMElement from an xml string
-     * @param string $xml The xml extract to build the DOMElement from
+     * @param  string      $xml The xml extract to build the DOMElement from
      * @return \DOMElement
      */
     protected function getDomElement($xml)
@@ -196,6 +203,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $doc = new \DOMDocument();
         $doc->loadXML('<wrapper>' . $xml . '</wrapper>');
         $list = $doc->getElementsByTagName('wrapper');
+
         return $list->item(0);
     }
 }

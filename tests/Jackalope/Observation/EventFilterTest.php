@@ -2,8 +2,6 @@
 
 namespace Jackalope\Observation;
 
-use PHPCR\Observation\EventInterface;
-use Jackalope\Observation\Event;
 use Jackalope\Observation\EventFilter;
 
 /**
@@ -24,6 +22,5 @@ class EventFilterTest extends EventFilterTestCase
         $this->eventFilter->setNodeTypes(array('nodeType'));
         $this->assertEquals(array('nodeType'), $this->eventFilter->getNodeTypes());
     }
-
 
 }

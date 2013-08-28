@@ -26,6 +26,7 @@ class NamespaceRegistryTest extends TestCase
     {
         // this was TransportDummy before, but you can mock interfaces!
         $transport = $this->getMock('Jackalope\Transport\TransportInterface');
+
         return $transport;
     }
 
@@ -49,6 +50,7 @@ class NamespaceRegistryTest extends TestCase
             ->method('getNamespaces')
             ->will($this->returnValue($namespaces));
         $nsr = new NamespaceRegistry($factory, $transport);
+
         return $nsr;
     }
 
@@ -215,8 +217,6 @@ class NamespaceRegistryTest extends TestCase
         $ns->checkPrefix($prefix);
     }
 
-
-
     /*************************************************************************/
     /* Dataproivder
     /*************************************************************************/
@@ -245,8 +245,6 @@ class NamespaceRegistryTest extends TestCase
     }
 
 }
-
-
 
 class NamespaceRegistryProxy extends \Jackalope\NamespaceRegistry
 {

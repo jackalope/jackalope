@@ -50,7 +50,7 @@ interface QueryInterface extends TransportInterface
      * Note that QueryObjectModel::getStatement() returns the query as JCR_SQL2
      * so it costs you nothing to support JQOM.
      *
-     * @return array  A list of query languages supported by this transport.
+     * @return array A list of query languages supported by this transport.
      *
      * @see QueryManagerInterface::getSupportedQueryLanguages
      */

@@ -46,6 +46,7 @@ class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
                         ->disableOriginalConstructor()
                         ->getMock();
                 }
+
                 return $nodes;
             }));
 
@@ -153,6 +154,7 @@ class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
                 foreach ($paths as $path) {
                     $ret[$path] = $nodes[$path];
                 }
+
                 return $ret;
             }));
 

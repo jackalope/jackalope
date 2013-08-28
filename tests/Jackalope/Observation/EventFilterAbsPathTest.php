@@ -4,7 +4,6 @@ namespace Jackalope\Observation;
 
 use Jackalope\Observation\Event;
 
-
 /**
  * Unit tests for the EventJournal
  */

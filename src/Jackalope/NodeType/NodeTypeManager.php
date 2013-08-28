@@ -102,8 +102,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      *
      * @param string $name type name to fetch. defaults to null which will
      *      fetch all nodes.
-     *
-     * @return void
      */
     protected function fetchNodeTypes($name = null)
     {

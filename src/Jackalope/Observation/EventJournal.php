@@ -69,10 +69,10 @@ class EventJournal implements EventJournalInterface
      *
      * Actual data loading is deferred to when it is first requested.
      *
-     * @param FactoryInterface $factory
-     * @param EventFilter      $filter        filter to give the transport and
+     * @param FactoryInterface     $factory
+     * @param EventFilter          $filter    filter to give the transport and
      *                                        apply locally.
-     * @param SessionInterface $session
+     * @param SessionInterface     $session
      * @param ObservationInterface $transport a transport implementing the
      *                                        observation methods.
      */

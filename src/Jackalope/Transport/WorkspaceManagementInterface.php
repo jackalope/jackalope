@@ -31,8 +31,6 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @param string $srcWorkspace The name of the workspace from which the new
      *      workspace is to be cloned.
      *
-     * @return void
-     *
      * @throws \PHPCR\AccessDeniedException if the session through which this
      *      Workspace object was acquired does not have sufficient access to
      *      create the new workspace.
@@ -47,13 +45,11 @@ interface WorkspaceManagementInterface extends TransportInterface
      * Deletes the workspace with the specified name from the repository,
      * deleting all content within it.
      *
-     * @param $name     A string, the name of the workspace.
+     * @param string $name The name of the workspace.
      *
-     * @return void
-     *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException   if the repository
+     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository
      *      does not support the deletion of workspaces.
-     * @throws \PHPCR\RepositoryException   if another error occurs.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function deleteWorkspace($name);
 }

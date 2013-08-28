@@ -162,8 +162,6 @@ abstract class Item implements ItemInterface
      * @param boolean $move whether this item is being moved in session context
      *      and should store the current path until the next save operation.
      *
-     * @return void
-     *
      * @private
      */
     public function setPath($path, $move = false)
@@ -539,8 +537,6 @@ abstract class Item implements ItemInterface
      *
      * @param boolean $keepChanges a boolean
      *
-     * @return void
-     *
      * @throws InvalidItemStateException if this Item object represents
      *      a workspace item that has been removed (either by this session or
      *      another).
@@ -583,8 +579,8 @@ abstract class Item implements ItemInterface
      * This function will modify the state of the item as well as refresh it if necessary (i.e.
      * if it is DIRTY).
      *
-     * @return void
      * @throws InvalidItemStateException When an operation is attempted on a deleted item
+     *
      * @private
      */
     protected function checkState()
@@ -613,8 +609,8 @@ abstract class Item implements ItemInterface
      *
      * Saves the current item state in case a rollback occurs.
      *
-     * @return void
      * @private
+     *
      * @see Item::rollbackTransaction
      */
     public function beginTransaction()
@@ -627,8 +623,8 @@ abstract class Item implements ItemInterface
      * Clean up state after a transaction. This method is called on every
      * cached item by the ObjectManager.
      *
-     * @return void
      * @private
+     *
      * @see Item::rollbackTransaction
      */
     public function commitTransaction()
@@ -676,8 +672,6 @@ abstract class Item implements ItemInterface
      * <tr><td>8</td><td>CLEAN      </td><td>DIRTY   </td><td>   DIRTY</td></tr>
      * <tr><td>9</td><td>DIRTY      </td><td>*       </td><td>   DIRTY</td></tr>
      * </table>
-     *
-     * @return void
      *
      * @throws LogicException if an unexpected state transition is encountered
      *

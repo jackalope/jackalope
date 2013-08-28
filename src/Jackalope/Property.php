@@ -598,8 +598,6 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *
      * {@inheritDoc}
      *
-     * @return void
-     *
      * @uses Node::unsetProperty()
      *
      * @api
@@ -676,8 +674,6 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @param mixed  $value
      * @param string $type
      *
-     * @return void
-     *
      * @see Property::setValue()
      *
      * @private
@@ -742,8 +738,6 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *
      * @param int $length the new length of this binary
      *
-     * @return void
-     *
      * @private
      */
     public function _setLength($length)
@@ -753,9 +747,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     }
 
     /**
-     * Close all open binary stream wrapper instances on shutdown
-     *
-     * @return void
+     * Close all open binary stream wrapper instances on shutdown.
      */
     public function __destruct()
     {

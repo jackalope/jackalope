@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
 use PHPCR\Util\PathHelper;
 use Exception;
 

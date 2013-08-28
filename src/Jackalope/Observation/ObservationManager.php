@@ -52,6 +52,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function addEventListener(
@@ -64,6 +65,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function removeEventListener(EventListenerInterface $listener)
@@ -73,6 +75,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getRegisteredEventListeners()
@@ -82,6 +85,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function setUserData($userData)
@@ -91,6 +95,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getEventJournal(EventFilterInterface $filter)

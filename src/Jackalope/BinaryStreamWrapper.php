@@ -195,8 +195,6 @@ class BinaryStreamWrapper
      *
      * @throws LogicException when trying to use a stream from a closed session
      *      and on trying to access a nonexisting multivalue id.
-     *
-     * @return void
      */
     private function init_stream()
     {
