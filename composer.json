@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Jackalope PHPCR library",
     "keywords": ["phpcr implementation"],
-    "homepage": "http://jackalope.github.com",
+    "homepage": "http://jackalope.github.io",
     "license": [
         "MIT",
         "Apache-2.0"
