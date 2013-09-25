@@ -27,13 +27,16 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     /**
      * Constructor
      *
-     * @param string $path
      * @param string $selectorName
+     * @param string $path
      */
-    public function __construct($path, $selectorName = null)
+    public function __construct($selectorName, $path)
     {
-        $this->path = $path;
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->selectorName = $selectorName;
+        $this->path = $path;
     }
 
     /**

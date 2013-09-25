@@ -19,8 +19,8 @@
         "jackalope/jackalope-transport": "*",
         "php": ">=5.3.2",
         "ext-libxml": "*",
-        "phpcr/phpcr-utils": "~1.0.0-beta10",
-        "phpcr/phpcr": "=2.1.0-beta11"
+        "phpcr/phpcr-utils": "~1.0.0-RC1",
+        "phpcr/phpcr": "=2.1.0-RC1"
     },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0-beta11"
