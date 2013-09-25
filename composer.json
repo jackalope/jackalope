@@ -23,7 +23,7 @@
         "phpcr/phpcr": "=2.1.0-RC1"
     },
     "provide": {
-        "phpcr/phpcr-implementation": "2.1.0-beta11"
+        "phpcr/phpcr-implementation": "2.1.0-RC1"
     },
     "autoload": {
         "psr-0": { "Jackalope\\": "src/" }
