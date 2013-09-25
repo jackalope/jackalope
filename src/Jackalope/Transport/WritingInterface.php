@@ -187,13 +187,11 @@ interface WritingInterface extends TransportInterface
     public function storeNodes(array $operations);
 
     /**
-     * Stores a property to its absolute path
+     * Update the properties of a node
      *
-     * @param Property $property
-     *
-     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
+     * @param Node $node the node to update
      */
-    public function storeProperty(Property $property);
+    public function updateProperties(Node $node);
 
     /**
      * Register a new namespace.
