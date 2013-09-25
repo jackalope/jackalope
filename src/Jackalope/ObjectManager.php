@@ -786,7 +786,7 @@ class ObjectManager
                         if (! $node instanceof NodeInterface) {
                             throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
                         }
-                        $this->transport->updateProperties($node->getPath(), $node->getProperties());
+                        $this->transport->updateProperties($node);
                         if ($node->needsChildReordering()) {
                             $this->transport->reorderChildren($node);
                         }

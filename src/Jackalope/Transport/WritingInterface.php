@@ -187,11 +187,11 @@ interface WritingInterface extends TransportInterface
     public function storeNodes(array $operations);
 
     /**
+     * Update the properties of a node
      *
-     * @param string $path Absolute path to the node
-     * @param array $properties array of Property objects
+     * @param Node $node the node to update
      */
-    public function updateProperties($path, $properties);
+    public function updateProperties(Node $node);
 
     /**
      * Register a new namespace.
