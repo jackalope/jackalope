@@ -26,6 +26,9 @@ class NodeName implements NodeNameInterface
      */
     public function __construct($selectorName)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->selectorName = $selectorName;
     }
 

@@ -32,12 +32,15 @@ class FullTextSearchConstraint implements FullTextSearchInterface
     /**
      * Create a new full text search constraint
      *
+     * @param string $selectorName
      * @param string $propertyName
      * @param string $fullTextSearchExpression
-     * @param string $selectorName
      */
-    public function __construct($propertyName, $fullTextSearchExpression, $selectorName = null)
+    public function __construct($selectorName, $propertyName, $fullTextSearchExpression)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->propertyName = $propertyName;
         $this->searchExpression = $fullTextSearchExpression;
         $this->selectorName = $selectorName;

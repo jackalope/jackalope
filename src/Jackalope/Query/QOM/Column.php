@@ -32,15 +32,21 @@ class Column implements ColumnInterface
     /**
      * Constructor
      *
+     * @param string $selectorName
      * @param string $propertyName
      * @param string $columnName
-     * @param string $selectorName
      */
-    public function __construct($propertyName, $columnName = null, $selectorName = null)
+    public function __construct($selectorName, $propertyName, $columnName = null)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
+        if ((null === $propertyName) != (null === $columnName)) {
+            throw new \InvalidArgumentException('Either both propertyName and columnName must be both null, or both non-null.');
+        }
+        $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
         $this->columnName = $columnName;
-        $this->selectorName = $selectorName;
     }
 
     /**

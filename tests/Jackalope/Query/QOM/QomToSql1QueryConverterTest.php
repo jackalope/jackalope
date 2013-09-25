@@ -5,6 +5,7 @@ namespace Jackalope\Query\QOM;
 use Jackalope\Query\QOM\QueryObjectModelFactory;
 use Jackalope\Factory;
 
+use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 use PHPCR\Util\QOM\QueryBuilder;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 use PHPCR\Query\QOM\ConstraintInterface;
@@ -12,6 +13,7 @@ use PHPCR\Query\QOM\SourceInterface;
 
 class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var QueryObjectModelFactoryInterface */
     protected $qf;
     protected $qb;
 
@@ -24,39 +26,39 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
     public function doQuery($constraint)
     {
         $this->qb->andWhere($constraint);
-        $this->qb->from($this->qf->selector("nt:base"));
 
+        $this->qb->from($this->qf->selector('base', "nt:base"));
         return $this->qb->getQuery()->getStatement();
     }
 
     public function testFullText()
     {
-        $statement = $this->doQuery($this->qf->fullTextSearch("foo","bar"));
+        $statement = $this->doQuery($this->qf->fullTextSearch('base', "foo","bar"));
         $this->assertSame("SELECT s FROM nt:base WHERE CONTAINS(foo, 'bar')", $statement);
     }
 
     public function testDescendantNode()
     {
-        $statement = $this->doQuery($this->qf->descendantNode("/foo/bar"));
+        $statement = $this->doQuery($this->qf->descendantNode('base', "/foo/bar"));
         $this->assertSame("SELECT s FROM nt:base WHERE jcr:path LIKE '/foo[%]/bar[%]/%'", $statement);
     }
 
     public function testPpropertyExistence()
     {
-        $statement = $this->doQuery($this->qf->propertyExistence("foo"));
+        $statement = $this->doQuery($this->qf->propertyExistence('base', "foo"));
         $this->assertSame("SELECT s FROM nt:base WHERE foo IS NOT NULL", $statement);
     }
 
     public function testChildNode()
     {
-        $statement = $this->doQuery($this->qf->childNode("/foo/bar"));
+        $statement = $this->doQuery($this->qf->childNode('base', "/foo/bar"));
         $this->assertSame("SELECT s FROM nt:base WHERE jcr:path LIKE '/foo[%]/bar[%]/%' AND NOT jcr:path LIKE '/foo[%]/bar[%]/%/%'", $statement);
     }
 
     public function testAndConstraint()
     {
-        $this->qb->andWhere($this->qf->comparison($this->qf->propertyValue('foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
-        $statement = $this->doQuery($this->qf->propertyExistence("foo"));
+        $this->qb->andWhere($this->qf->comparison($this->qf->propertyValue('base', 'foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
+        $statement = $this->doQuery($this->qf->propertyExistence('base', "foo"));
         $variations = array(
             "SELECT s FROM nt:base WHERE foo = 'bar' AND foo IS NOT NULL",
             "SELECT s FROM nt:base WHERE (foo = 'bar' AND foo IS NOT NULL)",
@@ -66,9 +68,9 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function testOrConstraint()
     {
-        $this->qb->where($this->qf->comparison($this->qf->propertyValue('foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
-        $this->qb->orWhere($this->qf->comparison($this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')));
-        $this->qb->from($this->qf->selector("nt:base"));
+        $this->qb->where($this->qf->comparison($this->qf->propertyValue('base', 'foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
+        $this->qb->orWhere($this->qf->comparison($this->qf->propertyValue('base', 'bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')));
+        $this->qb->from($this->qf->selector('base', "nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
         $variations = array(
             "SELECT s FROM nt:base WHERE foo = 'bar' OR bar = 'foo'",
@@ -82,11 +84,11 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
         $this->qb->where(
             $this->qf->notConstraint(
                 $this->qf->comparison(
-                    $this->qf->propertyValue('bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')
+                    $this->qf->propertyValue('base', 'bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')
                 )
             )
         );
-        $this->qb->from($this->qf->selector("nt:base"));
+        $this->qb->from($this->qf->selector('base', "nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
         $this->assertSame("SELECT s FROM nt:base WHERE NOT bar = 'foo'", $statement);
     }

@@ -32,6 +32,9 @@ class PropertyExistence implements PropertyExistenceInterface
      */
     public function __construct($selectorName, $propertyName)
     {
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
     }

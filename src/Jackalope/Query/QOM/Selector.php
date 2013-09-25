@@ -30,10 +30,13 @@ class Selector implements SelectorInterface
      * @param string $nodeTypeName
      * @param string $selectorName
      */
-    public function __construct($nodeTypeName, $selectorName = null)
+    public function __construct($selectorName, $nodeTypeName)
     {
-        $this->nodeTypeName = $nodeTypeName;
+        if (null === $selectorName) {
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+        }
         $this->selectorName = $selectorName;
+        $this->nodeTypeName = $nodeTypeName;
     }
 
     /**
