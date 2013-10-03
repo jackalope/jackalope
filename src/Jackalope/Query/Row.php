@@ -117,7 +117,9 @@ class Row implements Iterator, RowInterface
         }
 
         if (isset($this->values[''])) {
-            $this->values[$this->defaultSelectorName] = $this->values[''];
+            foreach ($this->values[''] as $key => $value) {
+                $this->values[$this->defaultSelectorName][$key] = $value;
+            }
             unset($this->values['']);
         }
     }
