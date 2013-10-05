@@ -2,7 +2,7 @@
     "name": "jackalope/jackalope",
     "type": "library",
     "description": "Jackalope PHPCR library",
-    "keywords": ["phpcr implementation"],
+    "keywords": ["phpcr"],
     "homepage": "http://jackalope.github.io",
     "license": [
         "MIT",
@@ -20,7 +20,7 @@
         "php": ">=5.3.2",
         "ext-libxml": "*",
         "phpcr/phpcr-utils": "~1.0.0-RC1",
-        "phpcr/phpcr": "=2.1.0-RC1"
+        "phpcr/phpcr": "~2.1.0-RC1"
     },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0-RC1"
