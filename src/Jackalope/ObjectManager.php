@@ -579,9 +579,11 @@ class ObjectManager
         $nodes = $fetchIdentifiers = array();
 
         foreach ($identifiers as $uuid) {
-            if (!empty($this->objectsByUuid[$class][$uuid])) {
+            if (!empty($this->objectsByUuid[$uuid])
+                && !empty($this->objectsByPath[$class][$this->objectsByUuid[$uuid]])
+            ) {
                 // Return it from memory if we already have it
-                $nodes[$uuid] = $this->objectsByPath[$class][$this->objectsByUuid[$class][$uuid]];
+                $nodes[$uuid] = $this->objectsByPath[$class][$this->objectsByUuid[$uuid]];
             } else {
                 $fetchPaths[$uuid] = $uuid;
             }
