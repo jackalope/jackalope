@@ -259,9 +259,22 @@ class Session implements SessionInterface
      */
     public function getNode($absPath, $depthHint = -1)
     {
+        if (-1 !== $depthHint) {
+            $depth = $this->getSessionOption(self::OPTION_FETCH_DEPTH);
+            $this->setSessionOption(self::OPTION_FETCH_DEPTH, $depthHint);
+        }
+
         try {
-            return $this->objectManager->getNodeByPath($absPath);
+            $node = $this->objectManager->getNodeByPath($absPath);
+            if (isset($depth)) {
+                $this->setSessionOption(self::OPTION_FETCH_DEPTH, $depth);
+            }
+
+            return $node;
         } catch (ItemNotFoundException $e) {
+            if (isset($depth)) {
+                $this->setSessionOption(self::OPTION_FETCH_DEPTH, $depth);
+            }
             throw new PathNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
     }
