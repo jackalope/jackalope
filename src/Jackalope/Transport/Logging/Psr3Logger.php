@@ -39,7 +39,7 @@ class Psr3Logger implements LoggerInterface
     /**
      * {@inheritdoc}
      */
-    public function startCall($method, array $params = null)
+    public function startCall($method, array $params = null, array $env = null)
     {
         if ($this->enabled && $this->logger) {
             if (is_array($params)) {
@@ -69,7 +69,7 @@ class Psr3Logger implements LoggerInterface
                 }
             }
 
-            $this->logger->info($method, array('params' => $params));
+            $this->logger->info($method, array('params' => $params, 'env' => $env));
         }
     }
 
