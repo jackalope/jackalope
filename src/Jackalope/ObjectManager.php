@@ -696,7 +696,10 @@ class ObjectManager
      * @param string $path the path of the referenced node
      * @param string $name name of referring WEAKREFERENCE properties to be
      *      returned; if null then all referring WEAKREFERENCEs are returned
+     *
      * @return ArrayIterator
+     *
+     * @see Node::getWeakReferences()
      */
     public function getWeakReferences($path, $name = null)
     {
@@ -709,20 +712,15 @@ class ObjectManager
      * Transform an array containing properties paths to an ArrayIterator over
      * Property objects
      *
-     * @param  array         $array an array of properties paths
+     * @param  array $propertyPaths an array of properties paths
+     *
      * @return ArrayIterator
      */
-    protected function pathArrayToPropertiesIterator($array)
+
+    protected function pathArrayToPropertiesIterator($propertyPaths)
     {
-        $props = array();
-
-        //OPTIMIZE: get all the properties in one request?
-        foreach ($array as $path) {
-            $prop = $this->getPropertyByPath($path); //FIXME: this will break if we have non-persisted move
-            $props[] = $prop;
-        }
-
-        return new ArrayIterator($props);
+        //FIXME: this will break if we have non-persisted move
+        return new ArrayIterator($this->getPropertiesByPath($propertyPaths));
     }
 
     /**
