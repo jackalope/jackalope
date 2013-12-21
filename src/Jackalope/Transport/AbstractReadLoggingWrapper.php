@@ -87,7 +87,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
      */
     public function getNode($path)
     {
-        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $this->logger->startCall(__FUNCTION__, func_get_args(), array('fetchDepth' => $this->transport->getFetchDepth()));
         $result = $this->transport->getNode($path);
         $this->logger->stopCall();
         return $result;
@@ -98,7 +98,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
      */
     public function getNodes($paths)
     {
-        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $this->logger->startCall(__FUNCTION__, func_get_args(), array('fetchDepth' => $this->transport->getFetchDepth()));
         $result = $this->transport->getNodes($paths);
         $this->logger->stopCall();
         return $result;
@@ -109,7 +109,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
      */
     public function getNodesByIdentifier($identifiers)
     {
-        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $this->logger->startCall(__FUNCTION__, func_get_args(), array('fetchDepth' => $this->transport->getFetchDepth()));
         $result = $this->transport->getNodesByIdentifier($identifiers);
         $this->logger->stopCall();
         return $result;
@@ -120,7 +120,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
      */
     public function getProperty($path)
     {
-        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $this->logger->startCall(__FUNCTION__, func_get_args(), array('fetchDepth' => $this->transport->getFetchDepth()));
         $result = $this->transport->getProperty($path);
         $this->logger->stopCall();
         return $result;
@@ -131,7 +131,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
      */
     public function getNodeByIdentifier($uuid)
     {
-        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $this->logger->startCall(__FUNCTION__, func_get_args(), array('fetchDepth' => $this->transport->getFetchDepth()));
         $result = $this->transport->getNodeByIdentifier($uuid);
         $this->logger->stopCall();
         return $result;

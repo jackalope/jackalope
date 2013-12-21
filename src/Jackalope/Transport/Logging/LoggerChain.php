@@ -30,10 +30,10 @@ class LoggerChain implements LoggerInterface
     /**
      * {@inheritdoc}
      */
-    public function startCall($method, array $params = null)
+    public function startCall($method, array $params = null, array $env = null)
     {
         foreach ($this->loggers as $logger) {
-            $logger->startCall($method, $params);
+            $logger->startCall($method, $params, $env);
         }
     }
 
