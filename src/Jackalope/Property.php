@@ -727,15 +727,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (PropertyType::BINARY === $targettype) {
             if (is_array($value)) {
                 $this->length = array();
-                foreach($value as $k=>$v) {
-                    $stat = is_resource($v) ? fstat($v) : array( 'size' => 0 );
+                foreach($value as $v) {
+                    $stat = is_resource($v) ? fstat($v) : array( 'size' => -1 );
                     $this->length[] = $stat['size'];
                 }
             } elseif(is_resource($value)) {
                 $stat = fstat($value);
                 $this->length = $stat['size'];
             } else {
-                $this->length = 0;
+                $this->length = -1;
             }
         }
 
