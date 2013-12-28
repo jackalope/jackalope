@@ -725,8 +725,18 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $value = $this->valueConverter->convertType($value, $targettype, $type);
 
         if (PropertyType::BINARY === $targettype) {
-            $stat = fstat($value); //TODO: read file into local context? fstat not available on all streams
-            $this->length = $stat['size'];
+            if (is_array($value)) {
+                $this->length = array();
+                foreach($value as $k=>$v) {
+                    $stat = is_resource($v) ? fstat($v) : array( 'size' => 0 );
+                    $this->length[] = $stat['size'];
+                }
+            } elseif(is_resource($value)) {
+                $stat = fstat($value);
+                $this->length = $stat['size'];
+            } else {
+                $this->length = 0;
+            }
         }
 
         $this->type = $targettype;
