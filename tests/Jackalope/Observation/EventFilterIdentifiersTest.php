@@ -76,7 +76,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
      */
     protected function getMyNodeMock($uuid)
     {
-        $node = $this->getNodeMock(array('getPath'));
+        $node = $this->getNodeMock();
         $node
             ->expects($this->any())
             ->method('getPath')

@@ -9,15 +9,13 @@ class SessionTest extends TestCase
     public function testConstructor()
     {
         $factory = new Factory;
-        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
+        $repository = $this->getRepositoryMock();
         $workspaceName = 'asdfads';
         $userID = 'abcd';
         $cred = new SimpleCredentials($userID, 'xxxx');
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
-            ->disableOriginalConstructor()
-            ->getMock(array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport = $this->getTransportStub();
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));
@@ -32,8 +30,8 @@ class SessionTest extends TestCase
     public function testLogoutAndRegistry()
     {
         $factory = new Factory;
-        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMock('Jackalope\Transport\TransportInterface');
+        $repository = $this->getRepositoryMock();
+        $transport = $this->getTransportStub();
         $transport->expects($this->once())
             ->method('logout');
         $session = new Session($factory, $repository, 'x',  new SimpleCredentials('foo', 'bar'), $transport);
@@ -48,10 +46,8 @@ class SessionTest extends TestCase
     public function testSessionRegistry()
     {
         $factory = new Factory;
-        $repository = $this->getMock('Jackalope\Repository', array(), array($factory), '', false);
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
-            ->disableOriginalConstructor()
-            ->getMock(array('login', 'logout', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $repository = $this->getRepositoryMock();
+        $transport = $this->getTransportStub();
         $transport->expects($this->any())
             ->method('getNamespaces')
             ->will($this->returnValue(array()));

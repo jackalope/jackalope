@@ -7,7 +7,7 @@ class WorkspaceTest extends TestCase
     private $name = 'a3lkjas';
     private $factory;
     private $session;
-    private $objManager;
+    private $om;
 
     public function setUp()
     {
@@ -18,24 +18,24 @@ class WorkspaceTest extends TestCase
             ->getMock(array())
         ;
 
-        $this->session = $this->getMock('Jackalope\Session', array(), array($this->factory), '', false);
+        $this->session = $this->getSessionMock();
         $this->session
             ->expects($this->any())
             ->method('getTransport')
             ->will($this->returnValue($transport))
         ;
-        $this->objManager = $this->getMock('Jackalope\ObjectManager', array(), array($this->factory, $this->session, $transport, $this->name), '', false);
+        $this->om = $this->getObjectManagerMock();
     }
     public function testConstructor()
     {
-        $w = new Workspace($this->factory, $this->session, $this->objManager, $this->name);
+        $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
         $this->assertSame($this->session, $w->getSession());
         $this->assertSame($this->name, $w->getName());
     }
 
     public function testGetNodeTypeManager()
     {
-        $w = new Workspace($this->factory, $this->session, $this->objManager, $this->name);
+        $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
 
         $ntm = $w->getNodeTypeManager();
         $this->assertInstanceOf('Jackalope\NodeType\NodeTypeManager', $ntm);

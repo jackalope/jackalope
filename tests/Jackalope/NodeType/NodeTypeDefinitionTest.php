@@ -9,7 +9,7 @@ class NodeTypeDefinitionTest extends TestCase
     /**
      * @expectedException   \InvalidArgumentException
      */
-    public function testCtorInvalidNodeTypeDefinition()
+    public function testInvalidNodeTypeDefinition()
     {
         $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdclass);
     }
@@ -17,8 +17,7 @@ class NodeTypeDefinitionTest extends TestCase
     public function testCreateFromArray()
     {
         $factory = $this->getMock('Jackalope\Factory');
-        $nodeTypeManager = $this->getMock('Jackalope\NodeType\NodeTypeManager', array(), array(), '', false);
-        $typeDef = new NodeTypeDefinition($factory, $nodeTypeManager, array(
+        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), array(
             'name'                      => 'test',
             'isAbstract'                => true,
             'isMixin'                   => true,
@@ -42,8 +41,7 @@ class NodeTypeDefinitionTest extends TestCase
     public function testCreateFromArrayFalse()
     {
         $factory = $this->getMock('Jackalope\Factory');
-        $nodeTypeManager = $this->getMock('Jackalope\NodeType\NodeTypeManager', array(), array(), '', false);
-        $typeDef = new NodeTypeDefinition($factory, $nodeTypeManager, array(
+        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), array(
             'name'                      => 'test',
             'isAbstract'                => false,
             'isMixin'                   => false,
@@ -60,5 +58,4 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertFalse($typeDef->isQueryable());
         $this->assertFalse($typeDef->hasOrderableChildNodes());
     }
-
 }

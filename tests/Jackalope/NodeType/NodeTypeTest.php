@@ -15,7 +15,6 @@ class NodeTypeTest extends TestCase
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
-        $mixVersionableNodeType = $ntm->getNodeType('mix:versionable');
         $superTypes = $nt->getSupertypes();
         $superTypes2 = $nt->getSupertypes();
 
@@ -26,7 +25,6 @@ class NodeTypeTest extends TestCase
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
-        $mixVersionableNodeType = $ntm->getNodeType('mix:versionable');
         $superTypes = $nt->getSupertypes();
         $this->assertEquals(array("mix:versionable", "nt:base"), $nt->getDeclaredSupertypeNames());
         $this->assertEquals(4, count($superTypes), "Four supertypes expected.");

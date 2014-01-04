@@ -12,7 +12,7 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
 {
     public function testFilterFind()
     {
-        $node = $this->getNodeMock(array('isNodeType'));
+        $node = $this->getNodeMock();
         $node
             ->expects($this->any())
             ->method('isNodeType')
@@ -33,7 +33,7 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
 
     public function testFilterFindNotType()
     {
-        $node = $this->getNodeMock(array('isNodeType'));
+        $node = $this->getNodeMock();
         $node
             ->expects($this->any())
             ->method('isNodeType')

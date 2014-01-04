@@ -30,12 +30,12 @@ class ItemTest extends TestCase
      */
     protected function getObjectManagerMockWithPath($path)
     {
-        $factory = $this->getMockBuilder('Jackalope\FactoryInterface')->disableOriginalConstructor()->getMock();
-        $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes', 'getNodeByPath'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
+        $om = $this->getObjectManagerMock();
         $om->expects($this->once())
             ->method('getNodeByPath')
             ->with($this->equalTo($path))
-            ->will($this->returnValue('placeholder'));
+            ->will($this->returnValue('placeholder'))
+        ;
 
         return $om;
     }
@@ -134,11 +134,11 @@ class ItemTest extends TestCase
 
     public function testRemove()
     {
-        $factory = new Factory;
-        $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes', 'removeItem'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
+        $om = $this->getObjectManagerMock();
         $om->expects($this->once())
             ->method('removeItem')
-            ->with($this->equalTo('/path'));
+            ->with($this->equalTo('/path'))
+        ;
 
         $item = $this->getItem(null, '/path', null, $om);
         $item->remove();
