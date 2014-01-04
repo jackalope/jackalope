@@ -24,16 +24,21 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->credentials = new SimpleCredentials($this->config['user'], $this->config['pass']);
     }
 
+    /**
+     * Get a mock object for the read only transport.
+     *
+     * @return \Jackalope\Transport\TransportInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected function getTransportStub()
     {
-        $factory = new Factory;
         $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
             ->disableOriginalConstructor()
-            ->getMock(array('getNode', 'getNodeTypes', 'getNodePathForIdentifier'), array($factory, 'http://example.com'));
+            ->getMock();
 
         $transport->expects($this->any())
             ->method('getNode')
-            ->will($this->returnValue(json_decode($this->JSON)));
+            ->will($this->returnValue(json_decode($this->JSON)))
+        ;
 
         $dom = new \DOMDocument();
         $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
@@ -52,22 +57,31 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $transport;
     }
 
-    protected function getSessionMock($additionalMethodsToMock = array())
+    /**
+     * Get a mock object for a session.
+     *
+     * @return \Jackalope\Session|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getSessionMock()
     {
-        $methodsToMock = array_merge(array('getWorkspace', 'getRepository'), $additionalMethodsToMock);
-
-        $factory = new Factory;
-        $mock = $this->getMock('\Jackalope\Session', $methodsToMock, array($factory), '', false);
+        $mock = $this->getMockBuilder('Jackalope\Session')->disableOriginalConstructor()->getMock();
         $mock->expects($this->any())
              ->method('getWorkspace')
-             ->will($this->returnValue($this->getWorkspaceMock()));
+             ->will($this->returnValue($this->getWorkspaceMock()))
+        ;
         $mock->expects($this->any())
              ->method('getRepository')
-             ->will($this->returnValue($this->getRepositoryMock()));
+             ->will($this->returnValue($this->getRepositoryMock()))
+        ;
 
         return $mock;
     }
 
+    /**
+     * Get a mock object for a workspace.
+     *
+     * @return \Jackalope\Workspace|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected function getWorkspaceMock()
     {
         $factory = new Factory;
@@ -79,45 +93,71 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $mock;
     }
 
+    /**
+     * Get a mock object for an inactive transaction.
+     *
+     * @return \Jackalope\Transaction\UserTransaction|\PHPUnit_Framework_MockObject_MockObject
+     */
     protected function getInactiveTransactionMock()
     {
-        $factory = new Factory;
-        $mock = $this->getMock('Jackalope\Transaction\UserTransaction', array('inTransaction'), array($factory), '', false);
+        $mock = $this->getMockBuilder('Jackalope\Transaction\UserTransaction')->disableOriginalConstructor()->getMock();
         $mock->expects($this->any())
              ->method('inTransaction')
-             ->will($this->returnValue(false));
+             ->will($this->returnValue(false))
+        ;
 
         return $mock;
-    }
-
-    protected function getRepositoryMock()
-    {
-        $factory = new Factory;
-        $mock = $this->getMock('\Jackalope\Repository', array(), array($factory, null, array('transactions'=>false)), '', false);
-
-        return $mock;
-    }
-
-    protected function getObjectManagerMock()
-    {
-        $factory = new Factory;
-
-        return $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock()));
     }
 
     /**
-     * Get a mock object for a node. No methods are mocked but additional methods to
-     * mock can be specified with $methodsToMock.
-     * @param  array  $methodsToMock Array of method names to mock
-     * @return object
+     * Get a mock object for a repository.
+     *
+     * @return \Jackalope\Repository|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getNodeMock($methodsToMock = array())
+    protected function getRepositoryMock()
     {
-        $node = $this->getMock('\Jackalope\Node', $methodsToMock, array(new Factory(), array(), '', $this->getSessionMock(), $this->getObjectManagerMock()));
-
-        return $node;
+        return $this->getMockBuilder('Jackalope\Repository')->disableOriginalConstructor()->getMock();
     }
 
+    /**
+     * Get a mock object for the ObjectManager.
+     *
+     * @return \Jackalope\ObjectManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getObjectManagerMock()
+    {
+        return $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * Get a mock object for a node.
+     *
+     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getNodeMock()
+    {
+        return $this->getMockBuilder('Jackalope\Node')->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * Get a mock object for a node.
+     *
+     * @return \Jackalope\NodeType\NodeTypeManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getNodeTypeManagerMock()
+    {
+        return $this->getMockBuilder('Jackalope\NodeType\NodeTypeManager')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+    }
+
+    /**
+     * Get the (real) node type manager with a mock object manager that returns
+     * real node type data for getNodeTypes.
+     *
+     * @return NodeTypeManager
+     */
     protected function getNodeTypeManager()
     {
         $factory = new Factory;
@@ -131,14 +171,20 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         ;
         $ns = $this->getMockBuilder('Jackalope\NamespaceRegistry')->disableOriginalConstructor()->getMock();
 
-        return new NodeTypeManager($factory, $om, $ns);
+        $ntm = new NodeTypeManager($factory, $om, $ns);
+        // we need to initialize as getting a single node type calls a different method on the om.
+        $ntm->getAllNodeTypes();
+
+        return $ntm;
     }
 
     /**
      * Call a protected or private method on an object instance
+     *
      * @param  object $instance The instance to call the method on
      * @param  string $method   The protected or private method to call
      * @param  array  $args     The arguments to the called method
+     *
      * @return mixed  The result of the method call
      */
     protected function getAndCallMethod($instance, $method, $args = array())
@@ -152,8 +198,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * Get the value of a protected or private property of an object
+     *
      * @param  object $instance
      * @param  string $attributeName
+     *
      * @return mixed
      */
     protected function getAttributeValue($instance, $attributeName)
@@ -195,7 +243,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * Build a DOMElement from an xml string
+     *
      * @param  string      $xml The xml extract to build the DOMElement from
+     *
      * @return \DOMElement
      */
     protected function getDomElement($xml)

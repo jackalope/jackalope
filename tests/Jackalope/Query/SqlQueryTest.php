@@ -8,6 +8,7 @@ use Jackalope\Factory;
 class SqlQueryTest extends TestCase
 {
     protected $statement = 'statement';
+
     protected function getQuery($factory = null, $statement = null, $objectManager = null, $path = null)
     {
         if (! $factory) {
@@ -33,7 +34,11 @@ class SqlQueryTest extends TestCase
         $dummyData = 'x';
         $factory = $this->getMock('\Jackalope\Factory');
         $transport = $this->getMock('\Jackalope\Transport\QueryInterface');
-        $om = $this->getMock('\Jackalope\ObjectManager', array('getNodeTypes'), array($factory, $transport, $this->getSessionMock()));
+        $om = $this->getObjectManagerMock();
+        $om->expects($this->any())
+            ->method('getTransport')
+            ->will($this->returnValue($transport))
+        ;
 
         $query = $this->getQuery($factory, null, $om);
 
@@ -49,32 +54,38 @@ class SqlQueryTest extends TestCase
         $result = $query->execute();
         $this->assertEquals('result', $result);
     }
+
     public function testGetBindVariableNames()
     {
         $this->markTestSkipped('TODO: implement');
     }
+
     public function testLimit()
     {
         $query = $this->getQuery();
         $query->setLimit(37);
         $this->assertEquals(37, $query->getLimit());
     }
+
     public function testOffset()
     {
         $query = $this->getQuery();
         $query->setOffset(15);
         $this->assertEquals(15, $query->getOffset());
     }
+
     public function testGetStatementSql2()
     {
         $query = $this->getQuery();
         $this->assertEquals($this->statement, $query->getStatementSql2());
     }
+
     public function testGetStatement()
     {
         $query = $this->getQuery();
         $this->assertEquals($this->statement, $query->getStatement());
     }
+
     public function testGetLanguage()
     {
         $query = $this->getQuery();
@@ -95,6 +106,7 @@ class SqlQueryTest extends TestCase
         $query = $this->getQuery();
         $query->getStoredQueryPath();
     }
+
     public function testStoreAsNode()
     {
         $this->markTestSkipped('TODO: implement feature');

@@ -2,15 +2,16 @@
 
 namespace Jackalope;
 
-use Jackalope\NodePathIterator;
-
-class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
+class NodePathIteratorTest extends TestCase
 {
+    /**
+     * @var ObjectManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $objectManager;
+
     public function setUp()
     {
-        $this->objectManager = $this->getMockBuilder('Jackalope\ObjectManager')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->objectManager = $this->getObjectManagerMock();
     }
 
     public function provideIterator()
@@ -42,9 +43,7 @@ class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
                 $me->assertEquals($class, $cClass);
                 $me->assertEquals($filter, $cFilter);
                 foreach ($cPaths as $cPath) {
-                    $nodes[$cPath] = $me->getMockBuilder('Jackalope\Node')
-                        ->disableOriginalConstructor()
-                        ->getMock();
+                    $nodes[$cPath] = $me->getNodeMock();
                 }
 
                 return $nodes;
@@ -141,9 +140,7 @@ class NodePathIteratorTest extends \PHPUnit_Framework_Testcase
 
         $nodes = array();
         foreach ($paths as $path) {
-            $node = $this->getMockBuilder('Jackalope\Node')
-                ->disableOriginalConstructor()
-                ->getMock();
+            $node = $this->getNodeMock();
             $nodes[$path] = $node;
         }
 

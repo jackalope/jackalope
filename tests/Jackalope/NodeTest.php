@@ -10,7 +10,7 @@ class NodeTest extends TestCase
     {
         $factory = new Factory;
         $session = $this->getSessionMock();
-        $objectManager = $this->getMock('Jackalope\ObjectManager', array(), array($factory), '', false);
+        $objectManager = $this->getObjectManagerMock();
         $objectManager->expects($this->any())
             ->method('getNodesByPath')
             ->will($this->returnValue(new \ArrayIterator(array(

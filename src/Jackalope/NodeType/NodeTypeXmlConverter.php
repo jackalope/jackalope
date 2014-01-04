@@ -27,7 +27,7 @@ class NodeTypeXmlConverter
      * Empty constructor.
      *
      * Everything inside jackalope has to accept the factory in the
-     * constructor. We define the constructor but to nothing at all.
+     * constructor. We define the constructor but do nothing at all.
      *
      * @param FactoryInterface $factory the object factory
      */

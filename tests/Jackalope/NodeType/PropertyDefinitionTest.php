@@ -26,7 +26,7 @@ class PropertyDefinitionTest extends TestCase
     public function testCreateFromArray()
     {
         $factory = $this->getMock('Jackalope\Factory');
-        $nodeTypeManager = $this->getMock('Jackalope\NodeType\NodeTypeManager', array(), array(), '', false);
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
         $propType = new PropertyDefinition($factory, $this->defaultData, $nodeTypeManager);
 
         $this->assertEquals('foo', $propType->getName());
@@ -44,11 +44,13 @@ class PropertyDefinitionTest extends TestCase
     {
         $nodeType = $this->getMock('Jackalope\NodeType\NodeTypeDefinition', array(), array(), '', false);
         $factory = $this->getMock('Jackalope\Factory');
-        $nodeTypeManager = $this->getMock('Jackalope\NodeType\NodeTypeManager', array(), array(), '', false);
-        $nodeTypeManager->expects($this->once())
-                        ->method('getNodeType')
-                        ->with($this->equalTo('nt:unstructured'))
-                        ->will($this->returnValue($nodeType));
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
+        $nodeTypeManager
+            ->expects($this->once())
+            ->method('getNodeType')
+            ->with($this->equalTo('nt:unstructured'))
+            ->will($this->returnValue($nodeType))
+        ;
         $propType = new PropertyDefinition($factory, $this->defaultData, $nodeTypeManager);
 
         $this->assertSame($nodeType, $propType->getDeclaringNodeType());

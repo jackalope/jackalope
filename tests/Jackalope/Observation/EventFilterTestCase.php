@@ -26,7 +26,7 @@ abstract class EventFilterTestCase extends TestCase
     public function setUp()
     {
         $this->factory = $this->getMock('Jackalope\\FactoryInterface');
-        $this->session = $this->getMockBuilder('PHPCR\\SessionInterface')->disableOriginalConstructor()->getMock();
+        $this->session = $this->getSessionMock();
         $this->session
             ->expects($this->any())
             ->method('getNodes')
@@ -39,6 +39,5 @@ abstract class EventFilterTestCase extends TestCase
         );
 
         $this->eventFilter = new EventFilter($this->factory, $this->session);
-
     }
 }

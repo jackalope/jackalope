@@ -11,9 +11,7 @@ class RepositoryTest extends TestCase
         $factory = new Factory;
         $credentials = new SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
-            ->disableOriginalConstructor()
-            ->getMock(array('login', 'getRepositoryDescriptors', 'getNamespaces'), array($factory, 'http://example.com'));
+        $transport = $this->getTransportStub();
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))
