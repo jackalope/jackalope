@@ -348,4 +348,25 @@ interface TransportInterface
      */
     public function getFetchDepth();
 
+    /**
+     * Set whether to automatically update nodes having mix:lastModified.
+     *
+     * If this is true, the transport has to make sure that on any node change
+     * that does not already include a change to the lastModified property, the
+     * jcr:lastModified property on nodes with the mixin is set to the current
+     * DateTime, and jcr:lastModifiedBy to the user id according to the
+     * credentials.
+     *
+     * Note: On read only stores, this is never used.
+     *
+     * @param boolean $autoLastModified
+     */
+    public function setAutoLastModified($autoLastModified);
+
+    /**
+     * Get the auto last modified flag.
+     *
+     * @return boolean Whether to update the last modified information.
+     */
+    public function getAutoLastModified();
 }

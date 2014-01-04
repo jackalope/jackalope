@@ -42,8 +42,15 @@ $/xi";
     *
     * @see TransportInterface::setFetchDepth($depth)
     */
-
     protected $fetchDepth = 0;
+
+    /**
+     * Flag to determine if mix:lastModified nodes should be updated
+     * automatically.
+     *
+     * @var boolean
+     */
+    private $autoLastModified = true;
 
     /**
      * Minimal check according to the jcr spec to see if this node name
@@ -80,6 +87,22 @@ $/xi";
     public function getFetchDepth()
     {
         return $this->fetchDepth;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAutoLastModified($autoLastModified)
+    {
+        $this->autoLastModified = $autoLastModified;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAutoLastModified()
+    {
+        return $this->autoLastModified;
     }
 
     // TODO: #46 add method to generate capabilities from implemented interfaces

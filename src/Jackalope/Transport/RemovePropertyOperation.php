@@ -1,6 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
+use Jackalope\Node;
 use Jackalope\Property;
 
 /**
@@ -12,7 +13,7 @@ use Jackalope\Property;
 class RemovePropertyOperation extends Operation
 {
     /**
-     * The item to remove
+     * The property to remove.
      *
      * @var Property
      */
@@ -26,6 +27,10 @@ class RemovePropertyOperation extends Operation
      */
     public $skip = false;
 
+    /**
+     * @param string   $srcPath  Absolute path of the property to remove.
+     * @param Property $property Property object to be removed.
+     */
     public function __construct($srcPath, Property $property)
     {
         parent::__construct($srcPath, self::REMOVE_PROPERTY);
