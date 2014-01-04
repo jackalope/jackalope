@@ -1057,11 +1057,14 @@ class ObjectManager
             $this->nodesMove = array();
         }
 
-        foreach ($this->objectsByPath['Node'] as $path => $item) {
-            /** @var $item Item */
-            if (! $keepChanges || ! ($item->isDeleted() || $item->isNew())) {
+        $this->objectsByUuid = array();
+
+        /** @var $node Node */
+        foreach ($this->objectsByPath['Node'] as $node) {
+            if (! $keepChanges || ! ($node->isDeleted() || $node->isNew())) {
                 // if we keep changes, do not restore a deleted item
-                $item->setDirty($keepChanges);
+                $this->objectsByUuid[$node->getIdentifier()] = $node->getPath();
+                $node->setDirty($keepChanges);
             }
         }
     }
@@ -1239,21 +1242,17 @@ class ObjectManager
      * This applies both to the cache and to the items themselves so
      * they return the correct value on getPath calls.
      *
-     * If we add and then move a node immediately, we still need to do both
-     * operations in case other operations are done in between. But the
-     * itemsAdd array index is updated to point to the new path.
-     *
      * @param string  $curPath Absolute path of the node to rewrite
      * @param string  $newPath The new absolute path
-     * @param boolean $session Whether this is a session or an immediate move
      */
-    protected function rewriteItemPaths($curPath, $newPath, $session = false)
+    protected function rewriteItemPaths($curPath, $newPath)
     {
         // update internal references in parent
         $parentCurPath = PathHelper::getParentPath($curPath);
         $parentNewPath = PathHelper::getParentPath($newPath);
 
         if (isset($this->objectsByPath['Node'][$parentCurPath])) {
+            /** @var $node Node */
             $node = $this->objectsByPath['Node'][$parentCurPath];
             if (! $node->hasNode(PathHelper::getNodeName($curPath))) {
                 throw new PathNotFoundException("Source path can not be found: $curPath");
@@ -1261,12 +1260,14 @@ class ObjectManager
             $node->unsetChildNode(PathHelper::getNodeName($curPath), true);
         }
         if (isset($this->objectsByPath['Node'][$parentNewPath])) {
+            /** @var $node Node */
             $node = $this->objectsByPath['Node'][$parentNewPath];
             $node->addChildNode($this->getNodeByPath($curPath), true, PathHelper::getNodeName($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
-        foreach ($this->objectsByPath['Node'] as $path => $item) {
+        /** @var $node Node */
+        foreach ($this->objectsByPath['Node'] as $path => $node) {
             // is it current or child?
             if ((strpos($path, $curPath . '/') === 0)||($path == $curPath)) {
                 // curPath = /foo
@@ -1274,16 +1275,15 @@ class ObjectManager
                 // path    = /foo/bar
                 // newItemPath= /mo/bar
                 $newItemPath = substr_replace($path, $newPath, 0, strlen($curPath));
-                if (isset($this->itemsAdd[$path])) {
-                    $this->itemsAdd[$newItemPath] = 1;
-                    unset($this->itemsAdd[$path]);
-                }
                 if (isset($this->objectsByPath['Node'][$path])) {
-                    $item = $this->objectsByPath['Node'][$path];
-                    $this->objectsByPath['Node'][$newItemPath] = $item;
+                    $node = $this->objectsByPath['Node'][$path];
+                    $this->objectsByPath['Node'][$newItemPath] = $node;
                     unset($this->objectsByPath['Node'][$path]);
-                    $item->setPath($newItemPath, true);
+                    $node->setPath($newItemPath, true);
                 }
+
+                // update uuid cache
+                $this->objectsByUuid[$node->getIdentifier()] = $node->getPath();
             }
         }
     }
