@@ -4,35 +4,34 @@ namespace Jackalope;
 
 class ObjectManagerTest extends TestCase
 {
-    public function testGetNodeByPath()
+    /**
+     * @var ObjectManager
+     */
+    private $om;
+
+    public function setUp()
     {
         $factory = new Factory;
+        $this->om = new ObjectManager($factory, $this->getTransportStub(), $this->getSessionMock());
+    }
+
+    public function testGetNodeByPath()
+    {
+
         $path = '/jcr:root';
-        $om = new ObjectManager($factory, $this->getTransportStub($path), $this->getSessionMock());
-        $node = $om->getNodeByPath($path);
+        $node = $this->om->getNodeByPath($path);
         $this->assertInstanceOf('Jackalope\Node', $node);
         $children = $node->getNodes();
         $this->assertInstanceOf('Iterator', $children);
         $this->assertSame(2, count($children));
-        $this->assertSame($node, $om->getNodeByPath($path));
+        $this->assertSame($node, $this->om->getNodeByPath($path));
     }
 
     public function testGetNodeTypes()
     {
-        $factory = new Factory;
-        $om = new ObjectManager($factory, $this->getTransportStub('/jcr:root'), $this->getSessionMock());
-        $nodetypes = $om->getNodeTypes();
+        $nodetypes = $this->om->getNodeTypes();
         $this->assertInstanceOf('DOMDocument', $nodetypes);
-        $nodetypes = $om->getNodeTypes(array('nt:folder', 'nt:file'));
+        $nodetypes = $this->om->getNodeTypes(array('nt:folder', 'nt:file'));
         $this->assertInstanceOf('DOMDocument', $nodetypes);
-    }
-
-}
-
-class ObjectManagerMock extends ObjectManager
-{
-    public function getObjectsByUuid()
-    {
-        return $this->objectsByUuid;
     }
 }

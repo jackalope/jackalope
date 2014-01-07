@@ -55,6 +55,7 @@ class Repository implements RepositoryInterface
         'transactions' => true,
         // this is JACKALOPE_OPTION_STREAM_WRAPPER
         'stream_wrapper' => true,
+        Session::OPTION_AUTO_LASTMODIFIED => true,
     );
 
     /**
@@ -105,7 +106,9 @@ class Repository implements RepositoryInterface
             throw new RepositoryException('transport failed to login without telling why');
         }
 
+        /** @var $session Session */
         $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        $session->setSessionOption(Session::OPTION_AUTO_LASTMODIFIED, $this->options[Session::OPTION_AUTO_LASTMODIFIED]);
         if ($this->options['transactions']) {
             $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session, $session->getObjectManager()));
             $session->getWorkspace()->setTransactionManager($utx);

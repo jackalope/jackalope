@@ -48,6 +48,15 @@ class Session implements SessionInterface
     const OPTION_FETCH_DEPTH = 'jackalope.fetch_depth';
 
     /**
+     * constant for setSessionOption to manage whether nodes having
+     * mix:lastModified should automatically be updated.
+     *
+     * Disable if you want to manually control this information, e.g. in a
+     * PHPCR-ODM listener.
+     */
+    const OPTION_AUTO_LASTMODIFIED = 'jackalope.auto_lastmodified';
+
+    /**
      * A registry for all created sessions to be able to reference them by id in
      * the stream wrapper for lazy loading binary properties.
      *
@@ -753,13 +762,12 @@ class Session implements SessionInterface
     /**
      * Sets a session specific option.
      *
-     * Currently only OPTION_FETCH_DEPTH is supported.
-     *
      * @param string $key   the key to be set
      * @param mixed  $value the value to be set
      *
      * @throws InvalidArgumentException if the option is unknown
-     * @throws RepositoryException      if this option is not supported and is a behaviour relevant option
+     * @throws RepositoryException      if this option is not supported and is
+     *      a behaviour relevant option
      *
      * @see Jackalope\Transport\BaseTransport::setFetchDepth($value);
      */
@@ -769,6 +777,9 @@ class Session implements SessionInterface
         switch ($key) {
             case self::OPTION_FETCH_DEPTH:
                 $this->getTransport()->setFetchDepth($value);
+                break;
+            case self::OPTION_AUTO_LASTMODIFIED:
+                $this->getTransport()->setAutoLastModified($value);
                 break;
             default:
                 throw new InvalidArgumentException("Unknown option: $key");
@@ -789,6 +800,8 @@ class Session implements SessionInterface
         switch ($key) {
             case self::OPTION_FETCH_DEPTH:
                 return $this->getTransport()->getFetchDepth();
+            case self::OPTION_AUTO_LASTMODIFIED:
+                return $this->getTransport()->getAutoLastModified();
         }
 
         throw new InvalidArgumentException("Unknown option: $key");

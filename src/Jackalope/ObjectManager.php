@@ -849,7 +849,7 @@ class ObjectManager
      */
     protected function executeOperations(array $operations)
     {
-        $last = null;
+        $lastType = null;
         $batch = array();
 
         foreach ($operations as $operation) {
@@ -857,13 +857,13 @@ class ObjectManager
                 continue;
             }
 
-            if (null === $last) {
-                $last = $operation->type;
+            if (null === $lastType) {
+                $lastType = $operation->type;
             }
 
-            if ($operation->type != $last) {
-                $this->executeBatch($last, $batch);
-                $last = $operation->type;
+            if ($operation->type != $lastType) {
+                $this->executeBatch($lastType, $batch);
+                $lastType = $operation->type;
                 $batch = array();
             }
 
@@ -875,10 +875,18 @@ class ObjectManager
             return;
         }
 
-        $this->executeBatch($last, $batch);
+        $this->executeBatch($lastType, $batch);
 
     }
 
+    /**
+     * Execute a batch of operations of one type.
+     *
+     * @param int $type               type of the operations to be executed
+     * @param Operation[] $operations list of same type operations
+     *
+     * @throws \Exception
+     */
     protected function executeBatch($type, $operations)
     {
         switch ($type) {
