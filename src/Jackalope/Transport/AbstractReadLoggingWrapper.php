@@ -215,4 +215,21 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
     {
         return $this->transport->getFetchDepth();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAutoLastModified($autoLastModified)
+    {
+        return $this->transport->setAutoLastModified($autoLastModified);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAutoLastModified()
+    {
+        return $this->transport->getAutoLastModified();
+    }
+
 }
