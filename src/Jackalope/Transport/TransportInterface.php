@@ -129,6 +129,10 @@ interface TransportInterface
      * of unneeded data)
      * Use getBinaryStream to get the actual data of a binary property.
      *
+     * If prefetch is active, eventual children to be cached may be included as
+     * stdClass children. This can be several levels deep, depending on the
+     * prefetch setting.
+     *
      * There is a couple of "magic" properties:
      * <ul>
      *   <li>jcr:uuid - the unique id of the node</li>
@@ -183,6 +187,12 @@ interface TransportInterface
      *
      * If a transport can do it, it should also implement
      * NodeTypeFilterInterface.
+     *
+     * For prefetch, there are two mechanisms: As with getNode, the stdClass
+     * structure may be recursive. Additionally, the transport is allowed to
+     * return additional entries that where not requested in the returned
+     * array. Jackalope takes care of only returning nodes that where actually
+     * requested by the client and caching the rest.
      *
      * @param array $paths Absolute paths to the nodes.
      *

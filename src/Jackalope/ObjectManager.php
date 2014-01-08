@@ -309,27 +309,47 @@ class ObjectManager
             } else {
                 $data = $this->transport->getNodes($fetchPaths);
             }
-            $dataItems = array();
 
-            // transform back to session paths from the fetch paths, in case of
-            // a pending move operation
+            $inversePaths = array_flip($fetchPaths);
+
             foreach ($data as $fetchPath => $item) {
-                if ($userlandTypeFilter
-                    && !$this->matchNodeType($item, $typeFilter)
+                // only add this node to the list if it was actually requested.
+                if (isset($inversePaths[$fetchPath]) &&
+                    (!$userlandTypeFilter || $this->matchNodeType($item, $typeFilter))
                 ) {
-                    // do not add this node to the return list, it is of
-                    // the wrong type
-                    continue;
+                    // transform back to session paths from the fetch paths, in case of
+                    // a pending move operation
+                    $absPath = $inversePaths[$fetchPath];
+
+                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
+                    unset($inversePaths[$fetchPath]);
+                } else {
+                    // this is either a prefetched node that was not requested
+                    // or it falls through the type filter. cache it.
+
+                    // first undo eventual move operation
+                    $parent = $fetchPath;
+                    $relPath = '';
+                    while ($parent) {
+                        if (isset($inversePaths[$parent])) {
+                            break;
+                        }
+                        if ('/' == $parent) {
+                            $parent = false;
+                        } else {
+                            $parent = PathHelper::getParentPath($fetchPath);
+                            $relPath = '/' . PathHelper::getNodeName($fetchPath) . $relPath;
+                        }
+                    }
+                    if ($parent) {
+                        $this->getNodeByPath($parent . $relPath, $class, $item);
+                    }
                 }
-                $dataItems[$fetchPath] = $item;
             }
 
-            foreach ($fetchPaths as $absPath => $fetchPath) {
-                if (array_key_exists($fetchPath, $dataItems)) {
-                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $dataItems[$fetchPath]);
-                } else {
-                    unset($nodes[$absPath]);
-                }
+            // clean away the not found paths from the final result
+            foreach ($inversePaths as $absPath) {
+                unset($nodes[$absPath]);
             }
         }
 
