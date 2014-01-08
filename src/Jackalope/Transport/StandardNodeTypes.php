@@ -3,8 +3,6 @@
 namespace Jackalope\Transport;
 
 /**
- * TODO make this extensible
- *
  * Utility class for transports that do not use jackrabbit to provide the
  * standard node type information.
  *
@@ -29,7 +27,7 @@ class StandardNodeTypes
     public static function getNodeTypeData()
     {
         return array(
-            1 =>
+            'mix:created' =>
             array(
                 'name' => 'mix:created',
                 'isAbstract' => false,
@@ -93,7 +91,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            2 =>
+            'mix:etag' =>
             array(
                 'name' => 'mix:etag',
                 'isAbstract' => false,
@@ -134,7 +132,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            3 =>
+            'mix:language' =>
             array(
                 'name' => 'mix:language',
                 'isAbstract' => false,
@@ -175,7 +173,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            4 =>
+            'mix:lastModified' =>
             array(
                 'name' => 'mix:lastModified',
                 'isAbstract' => false,
@@ -239,7 +237,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            5 =>
+            'mix:lifecycle' =>
             array(
                 'name' => 'mix:lifecycle',
                 'isAbstract' => false,
@@ -303,7 +301,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            6 =>
+            'mix:lockable' =>
             array(
                 'name' => 'mix:lockable',
                 'isAbstract' => false,
@@ -367,7 +365,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            7 =>
+            'mix:mimeType' =>
             array(
                 'name' => 'mix:mimeType',
                 'isAbstract' => false,
@@ -431,7 +429,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            8 =>
+            'mix:referenceable' =>
             array(
                 'name' => 'mix:referenceable',
                 'isAbstract' => false,
@@ -472,7 +470,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            9 =>
+            'mix:shareable' =>
             array(
                 'name' => 'mix:shareable',
                 'isAbstract' => false,
@@ -491,7 +489,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            10 =>
+            'mix:simpleVersionable' =>
             array(
                 'name' => 'mix:simpleVersionable',
                 'isAbstract' => false,
@@ -536,7 +534,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            11 =>
+            'mix:title' =>
             array(
                 'name' => 'mix:title',
                 'isAbstract' => false,
@@ -600,7 +598,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            12 =>
+            'mix:versionable' =>
             array(
                 'name' => 'mix:versionable',
                 'isAbstract' => false,
@@ -782,7 +780,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            13 =>
+            'nt:activity' =>
             array(
                 'name' => 'nt:activity',
                 'isAbstract' => false,
@@ -825,7 +823,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            14 =>
+            'nt:address' =>
             array(
                 'name' => 'nt:address',
                 'isAbstract' => false,
@@ -1005,7 +1003,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            15 =>
+            'nt:base' =>
             array(
                 'name' => 'nt:base',
                 'isAbstract' => true,
@@ -1069,7 +1067,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            16 =>
+            'nt:childNodeDefinition' =>
             array(
                 'name' => 'nt:childNodeDefinition',
                 'isAbstract' => false,
@@ -1285,7 +1283,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            17 =>
+            'nt:configuration' =>
             array(
                 'name' => 'nt:configuration',
                 'isAbstract' => false,
@@ -1328,7 +1326,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            18 =>
+            'nt:file' =>
             array(
                 'name' => 'nt:file',
                 'isAbstract' => false,
@@ -1362,7 +1360,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            19 =>
+            'nt:folder' =>
             array(
                 'name' => 'nt:folder',
                 'isAbstract' => false,
@@ -1396,7 +1394,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            20 =>
+            'nt:frozenNode' =>
             array(
                 'name' => 'nt:frozenNode',
                 'isAbstract' => false,
@@ -1546,7 +1544,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            21 =>
+            'nt:hierarchyNode' =>
             array(
                 'name' => 'nt:hierarchyNode',
                 'isAbstract' => true,
@@ -1566,7 +1564,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            22 =>
+            'nt:linkedFile' =>
             array(
                 'name' => 'nt:linkedFile',
                 'isAbstract' => false,
@@ -1608,7 +1606,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            23 =>
+            'nt:nodeType' =>
             array(
                 'name' => 'nt:nodeType',
                 'isAbstract' => false,
@@ -1818,7 +1816,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            24 =>
+            'nt:propertyDefinition' =>
             array(
                 'name' => 'nt:propertyDefinition',
                 'isAbstract' => false,
@@ -2138,7 +2136,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            25 =>
+            'nt:query' =>
             array(
                 'name' => 'nt:query',
                 'isAbstract' => false,
@@ -2203,7 +2201,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            26 =>
+            'nt:resource'=>
             array(
                 'name' => 'nt:resource',
                 'isAbstract' => false,
@@ -2248,7 +2246,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            27 =>
+            'nt:unstructured' =>
             array(
                 'name' => 'nt:unstructured',
                 'isAbstract' => false,
@@ -2328,7 +2326,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            28 =>
+            'nt:version' =>
             array(
                 'name' => 'nt:version',
                 'isAbstract' => false,
@@ -2467,7 +2465,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            29 =>
+            'nt:versionHistory' =>
             array(
                 'name' => 'nt:versionHistory',
                 'isAbstract' => false,
@@ -2582,7 +2580,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            30 =>
+            'nt:versionLabels' =>
             array(
                 'name' => 'nt:versionLabels',
                 'isAbstract' => false,
@@ -2628,7 +2626,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            31 =>
+            'nt:versionedChild' =>
             array(
                 'name' => 'nt:versionedChild',
                 'isAbstract' => false,
@@ -2674,7 +2672,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            32 =>
+            'rep:ACE' =>
             array(
                 'name' => 'rep:ACE',
                 'isAbstract' => false,
@@ -2808,7 +2806,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            33 =>
+            'rep:ACL' =>
             array(
                 'name' => 'rep:ACL',
                 'isAbstract' => false,
@@ -2842,7 +2840,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            34 =>
+            'rep:AccessControl' =>
             array(
                 'name' => 'rep:AccessControl',
                 'isAbstract' => false,
@@ -2891,7 +2889,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            35 =>
+            'rep:AccessControllable' =>
             array(
                 'name' => 'rep:AccessControllable',
                 'isAbstract' => false,
@@ -2924,7 +2922,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            36 =>
+            'rep:Activities' =>
             array(
                 'name' => 'rep:Activities',
                 'isAbstract' => false,
@@ -2973,7 +2971,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            37 =>
+            'rep:Authorizable' =>
             array(
                 'name' => 'rep:Authorizable',
                 'isAbstract' => true,
@@ -3077,7 +3075,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            38 =>
+            'rep:AuthorizableFolder' =>
             array(
                 'name' => 'rep:AuthorizableFolder',
                 'isAbstract' => false,
@@ -3126,7 +3124,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            39 =>
+            'rep:Configurations' =>
             array(
                 'name' => 'rep:Configurations',
                 'isAbstract' => false,
@@ -3175,7 +3173,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            40 =>
+            'rep:DenyACE' =>
             array(
                 'name' => 'rep:DenyACE',
                 'isAbstract' => false,
@@ -3194,7 +3192,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            41 =>
+            'rep:GrantACE' =>
             array(
                 'name' => 'rep:GrantACE',
                 'isAbstract' => false,
@@ -3213,7 +3211,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            42 =>
+            'rep:Group' =>
             array(
                 'name' => 'rep:Group',
                 'isAbstract' => false,
@@ -3274,7 +3272,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            43 =>
+            'rep:Impersonatable' =>
             array(
                 'name' => 'rep:Impersonatable',
                 'isAbstract' => false,
@@ -3315,7 +3313,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            44 =>
+            'rep:Members' =>
             array(
                 'name' => 'rep:Members',
                 'isAbstract' => false,
@@ -3376,7 +3374,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            45 =>
+            'rep:Policy' =>
             array(
                 'name' => 'rep:Policy',
                 'isAbstract' => true,
@@ -3395,7 +3393,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            46 =>
+            'rep:PrincipalAccessControl' =>
             array(
                 'name' => 'rep:PrincipalAccessControl',
                 'isAbstract' => false,
@@ -3429,7 +3427,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            47 =>
+            'rep:RepoAccessControllable' =>
             array(
                 'name' => 'rep:RepoAccessControllable',
                 'isAbstract' => false,
@@ -3462,7 +3460,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            48 =>
+            'rep:RetentionManageable' =>
             array(
                 'name' => 'rep:RetentionManageable',
                 'isAbstract' => false,
@@ -3526,7 +3524,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            49 =>
+            'rep:User' =>
             array(
                 'name' => 'rep:User',
                 'isAbstract' => false,
@@ -3592,7 +3590,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            50 =>
+            'rep:VersionReference' =>
             array(
                 'name' => 'rep:VersionReference',
                 'isAbstract' => false,
@@ -3633,7 +3631,7 @@ class StandardNodeTypes
                 array(
                 ),
             ),
-            51 =>
+            'rep:nodeTypes' =>
             array(
                 'name' => 'rep:nodeTypes',
                 'isAbstract' => false,
@@ -3667,7 +3665,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            52 =>
+            'rep:root' =>
             array(
                 'name' => 'rep:root',
                 'isAbstract' => false,
@@ -3701,7 +3699,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            53 =>
+            'rep:system' =>
             array(
                 'name' => 'rep:system',
                 'isAbstract' => false,
@@ -3795,7 +3793,7 @@ class StandardNodeTypes
                     ),
                 ),
             ),
-            54 =>
+            'rep:versionStorage' =>
             array(
                 'name' => 'rep:versionStorage',
                 'isAbstract' => false,

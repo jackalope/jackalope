@@ -29,6 +29,13 @@ interface NodeTypeManagementInterface extends TransportInterface
      *      update it
      *
      * @return bool true on success
+     *
+     * @throws \PHPCR\NodeType\InvalidNodeTypeDefinitionException if the
+     *      NodeTypeDefinitionInterface is invalid.
+     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false
+     *      and the NodeTypeDefinition specifies a node type name that is
+     *      already registered.
+     * @throws \PHPCR\RepositoryException if another error occurs.
      */
     public function registerNodeTypes($types, $allowUpdate);
 }
