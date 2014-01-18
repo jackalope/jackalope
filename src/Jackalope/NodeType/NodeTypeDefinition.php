@@ -163,43 +163,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      */
     protected function fromXml(DOMElement $node)
     {
-        $this->name = $node->getAttribute('name');
-        $this->isAbstract = Helper::getBoolAttribute($node, 'isAbstract');
-        $this->isMixin = Helper::getBoolAttribute($node, 'isMixin');
-        $this->isQueryable = Helper::getBoolAttribute($node, 'isQueryable');
-        $this->hasOrderableChildNodes = Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
-
         $nodeTypeXmlConverter = new NodeTypeXmlConverter($this->factory);
-
-        $this->primaryItemName = $node->getAttribute('primaryItemName');
-        if (empty($this->primaryItemName)) {
-            $this->primaryItemName = null;
-        }
-
-        $this->declaredSuperTypeNames = array();
-        $xp = new DOMXPath($node->ownerDocument);
-        $supertypes = $xp->query('supertypes/supertype', $node);
-        foreach ($supertypes as $supertype) {
-            $this->declaredSuperTypeNames[] = $supertype->nodeValue;
-        }
-
-        $this->declaredPropertyDefinitions = new ArrayObject();
-        $properties = $xp->query('propertyDefinition', $node);
-        foreach ($properties as $property) {
-            $this->declaredPropertyDefinitions[] = $this->factory->get(
-                'NodeType\\PropertyDefinition',
-                array($nodeTypeXmlConverter->getPropertyDefinitionFromXml($property), $this->nodeTypeManager)
-            );
-        }
-
-        $this->declaredNodeDefinitions = new ArrayObject();
-        $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
-        foreach ($declaredNodeDefinitions as $nodeDefinition) {
-            $this->declaredNodeDefinitions[] = $this->factory->get(
-                'NodeType\\NodeDefinition',
-                array($nodeTypeXmlConverter->getNodeDefinitionFromXml($nodeDefinition), $this->nodeTypeManager)
-            );
-        }
+        $this->fromArray($nodeTypeXmlConverter->getNodeTypeDefinitionFromXml($node));
     }
 
     /**
