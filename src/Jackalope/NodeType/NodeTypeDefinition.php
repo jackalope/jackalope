@@ -169,6 +169,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->isQueryable = Helper::getBoolAttribute($node, 'isQueryable');
         $this->hasOrderableChildNodes = Helper::getBoolAttribute($node, 'hasOrderableChildNodes');
 
+        $nodeTypeXmlConverter = new NodeTypeXmlConverter($this->factory);
+
         $this->primaryItemName = $node->getAttribute('primaryItemName');
         if (empty($this->primaryItemName)) {
             $this->primaryItemName = null;
@@ -186,7 +188,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         foreach ($properties as $property) {
             $this->declaredPropertyDefinitions[] = $this->factory->get(
                 'NodeType\\PropertyDefinition',
-                array($property, $this->nodeTypeManager)
+                array($nodeTypeXmlConverter->getPropertyDefinitionFromXml($property), $this->nodeTypeManager)
             );
         }
 
@@ -195,7 +197,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
             $this->declaredNodeDefinitions[] = $this->factory->get(
                 'NodeType\\NodeDefinition',
-                array($nodeDefinition, $this->nodeTypeManager)
+                array($nodeTypeXmlConverter->getNodeDefinitionFromXml($nodeDefinition), $this->nodeTypeManager)
             );
         }
     }
