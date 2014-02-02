@@ -6,6 +6,9 @@ use Jackalope\TestCase;
 
 class NodeTypeTemplateTest extends TestCase
 {
+    /**
+     * @var NodeTypeManager
+     */
     protected $ntm;
 
     protected function setUp()
@@ -70,9 +73,10 @@ class NodeTypeTemplateTest extends TestCase
 
         $childrenAgain = $nt->getNodeDefinitionTemplates();
         $this->assertInstanceOf('ArrayObject', $childrenAgain);
-        $this->assertEquals(1, count($childrenAgain));
-        $this->assertSame($childnt, reset($childrenAgain));
-        $this->assertEquals('test:nodetype', reset($childrenAgain)->getName());
+        $this->assertCount(1, $childrenAgain);
+        $childrenArray = $childrenAgain->getArrayCopy();
+        $this->assertSame($childnt, reset($childrenArray));
+        $this->assertEquals('test:nodetype', reset($childrenArray)->getName());
     }
 
     /**
@@ -86,15 +90,17 @@ class NodeTypeTemplateTest extends TestCase
         $childnt->setName('test:nodetype');
 
         $children = $nt->getNodeDefinitionTemplates();
-        $this->assertEquals(1, count($children));
+        $this->assertCount(1, $children);
 
         $children[] = $childnt;
 
         $childrenAgain = $nt->getNodeDefinitionTemplates();
         $this->assertInstanceOf('ArrayObject', $childrenAgain);
-        $this->assertEquals(2, count($childrenAgain));
+        $this->assertCount(2, $childrenAgain);
         $this->assertContains($childnt, $childrenAgain);
-        $this->assertEquals('test:nodetype', end($childrenAgain)->getName());
+
+        $childrenArray = $childrenAgain->getArrayCopy();
+        $this->assertEquals('test:nodetype', end($childrenArray)->getName());
     }
 
     /**
@@ -114,9 +120,11 @@ class NodeTypeTemplateTest extends TestCase
 
         $propertiesAgain = $newnt->getPropertyDefinitionTemplates();
         $this->assertInstanceOf('ArrayObject', $propertiesAgain);
-        $this->assertEquals(1, count($propertiesAgain));
-        $this->assertSame($property, reset($propertiesAgain));
-        $this->assertEquals('test:propdef', reset($propertiesAgain)->getName());
+        $this->assertCount(1, $propertiesAgain);
+
+        $propertiesArray = $propertiesAgain->getArrayCopy();
+        $this->assertSame($property, reset($propertiesArray));
+        $this->assertEquals('test:propdef', reset($propertiesArray)->getName());
     }
 
     /**
@@ -138,9 +146,10 @@ class NodeTypeTemplateTest extends TestCase
 
         $propertiesAgain = $nt->getPropertyDefinitionTemplates();
         $this->assertInstanceOf('ArrayObject', $propertiesAgain);
-        $this->assertEquals(1, count($propertiesAgain));
-        $this->assertSame($property, reset($propertiesAgain));
-        $this->assertEquals('test:propdef', reset($propertiesAgain)->getName());
-    }
+        $this->assertCount(1, $propertiesAgain);
 
+        $propertiesArray = $propertiesAgain->getArrayCopy();
+        $this->assertSame($property, reset($propertiesArray));
+        $this->assertEquals('test:propdef', reset($propertiesArray)->getName());
+    }
 }
