@@ -461,13 +461,11 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 }
                 break;
             case PropertyType::STRING:
-                if (is_string($values) && UUIDHelper::isUUID($values)) {
                     $results = $this->objectManager->getNodesByIdentifier($values);
                     $results = $results->getArrayCopy();
                     if (array_keys($results) == $values) {
                         break;
                     }
-                }
             case PropertyType::PATH:    
             case PropertyType::NAME:
                 foreach ($values as $value) {
