@@ -58,15 +58,15 @@ class NodeTypeManagerTest extends TestCase
     {
         $allNodes = $this->ntm->getAllNodeTypes();
         $this->assertInstanceOf('Iterator', $allNodes);
-        $this->assertSame(52, count($allNodes));
+        $this->assertCount(52, $allNodes);
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $allNodes->current());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
         $this->assertInstanceOf('Iterator', $primaryNodes);
-        $this->assertSame(36, count($primaryNodes));
+        $this->assertCount(36, $primaryNodes);
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $primaryNodes->current());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
         $this->assertInstanceOf('Iterator', $mixinNodes);
-        $this->assertSame(16, count($mixinNodes));
+        $this->assertCount(16, $mixinNodes);
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $mixinNodes->current());
     }
 

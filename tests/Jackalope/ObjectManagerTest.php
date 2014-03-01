@@ -23,7 +23,7 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf('Jackalope\Node', $node);
         $children = $node->getNodes();
         $this->assertInstanceOf('Iterator', $children);
-        $this->assertSame(2, count($children));
+        $this->assertCount(2, $children);
         $this->assertSame($node, $this->om->getNodeByPath($path));
     }
 

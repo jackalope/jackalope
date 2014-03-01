@@ -18,7 +18,7 @@
     "require": {
         "jackalope/jackalope-transport": "*",
         "php": ">=5.3.2",
-        "ext-libxml": "*",
+        "ext-xml": "*",
         "phpcr/phpcr-utils": "~1.1.0",
         "phpcr/phpcr": "~2.1.0"
     },

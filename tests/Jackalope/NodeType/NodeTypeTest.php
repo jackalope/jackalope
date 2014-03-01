@@ -27,7 +27,7 @@ class NodeTypeTest extends TestCase
         $nt = $ntm->getNodeType('nt:configuration');
         $superTypes = $nt->getSupertypes();
         $this->assertEquals(array("mix:versionable", "nt:base"), $nt->getDeclaredSupertypeNames());
-        $this->assertEquals(4, count($superTypes), "Four supertypes expected.");
+        $this->assertCount(4, $superTypes);
 
         $this->assertSame(array(
             $ntm->getNodeType('mix:versionable'),
@@ -39,16 +39,16 @@ class NodeTypeTest extends TestCase
         $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertInstanceOf('Iterator', $declaredSubTypes);
-        $this->assertSame(0, count($declaredSubTypes));
+        $this->assertCount(0, $declaredSubTypes);
         $subTypes = $nt->getSubtypes();
         $this->assertInstanceOf('Iterator', $subTypes);
-        $this->assertSame(0, count($subTypes));
+        $this->assertCount(0, $subTypes);
         $this->assertTrue($nt->isNodeType('nt:configuration'));
         $this->assertTrue($nt->isNodeType('nt:base'));
         $this->assertTrue($nt->isNodeType('mix:simpleVersionable'));
         $this->assertFalse($nt->isNodeType('notanodetype'));
         $expectedProperties = array('jcr:root', 'jcr:predecessors', 'jcr:configuration', 'jcr:activity', 'jcr:mergeFailed', 'jcr:versionHistory', 'jcr:baseVersion', 'jcr:uuid', 'jcr:isCheckedOut', 'jcr:mixinTypes', 'jcr:primaryType');
-        $this->assertSame(count($expectedProperties), count($nt->getPropertyDefinitions()));
+        $this->assertCount(count($expectedProperties), $nt->getPropertyDefinitions());
         $i = 0;
         foreach ($nt->getPropertyDefinitions() as $propDef) {
             $this->assertInstanceOf('Jackalope\NodeType\PropertyDefinition', $propDef);
@@ -60,13 +60,13 @@ class NodeTypeTest extends TestCase
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertInstanceOf('Iterator', $declaredSubTypes);
-        $this->assertSame(5, count($declaredSubTypes));
+        $this->assertCount(5, $declaredSubTypes);
         $subnode = $declaredSubTypes->current();
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $subnode);
         $this->assertSame('nt:file', $subnode->getName());
         $subTypes = $nt->getSubtypes();
         $this->assertInstanceOf('Iterator', $subTypes);
-        $this->assertSame(7, count($subTypes));
+        $this->assertCount(7, $subTypes);
         $subTypes->seek(4);
         $subnode = $subTypes->current();
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $subnode);
@@ -74,7 +74,7 @@ class NodeTypeTest extends TestCase
 
         $nt = $ntm->getNodeType('rep:PrincipalAccessControl');
         $expectedChildNodes = array('rep:policy', '*', '*');
-        $this->assertSame(count($expectedChildNodes), count($nt->getChildNodeDefinitions()));
+        $this->assertCount(count($expectedChildNodes), $nt->getChildNodeDefinitions());
         $i = 0;
         foreach ($nt->getChildNodeDefinitions() as $childNode) {
             $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $childNode);
@@ -89,7 +89,7 @@ class NodeTypeTest extends TestCase
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
         $this->assertInternalType('array', $nodes);
-        $this->assertSame(1, count($nodes));
+        $this->assertCount(1, $nodes);
         $node = $nodes[0];
         $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('*', $node->getName());
@@ -102,7 +102,7 @@ class NodeTypeTest extends TestCase
         $nt = $ntm->getNodeType('nt:file');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
         $this->assertInternalType('array', $nodes);
-        $this->assertSame(1, count($nodes));
+        $this->assertCount(1, $nodes);
         $node = $nodes[0];
         $this->assertInstanceOf('Jackalope\NodeType\NodeDefinition', $node);
         $this->assertSame('jcr:content', $node->getName());
@@ -114,7 +114,7 @@ class NodeTypeTest extends TestCase
         //Test defaultPrimaryType
         $nt = $ntm->getNodeType('nt:nodeType');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertSame(2, count($nodes));
+        $this->assertCount(2, $nodes);
         $node = $nodes[0];
         $this->assertSame('nt:childNodeDefinition', $node->getDefaultPrimaryTypeName());
         $this->assertSame($ntm->getNodeType('nt:childNodeDefinition'), $node->getDefaultPrimaryType());
@@ -127,7 +127,7 @@ class NodeTypeTest extends TestCase
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertInternalType('array', $properties);
-        $this->assertSame(0, count($properties));
+        $this->assertCount(0, $properties);
 
         $nt = $ntm->getNodeType('mix:created');
         $this->assertInstanceOf('Jackalope\NodeType\NodeType', $nt);
@@ -142,7 +142,7 @@ class NodeTypeTest extends TestCase
         //ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
         $this->assertInternalType('array', $properties);
-        $this->assertSame(2, count($properties));
+        $this->assertCount(2, $properties);
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
         $this->assertSame('jcr:createdBy',$property->getName());
@@ -169,7 +169,7 @@ class NodeTypeTest extends TestCase
         $properties = $nt->getDeclaredPropertyDefinitions();
         $property = $properties[0];
         $defaultValues = $property->getDefaultValues();
-        $this->assertSame(1, count($defaultValues));
+        $this->assertCount(1, $defaultValues);
         $this->assertSame('true', $defaultValues[0]);
     }
 }
