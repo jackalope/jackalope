@@ -19,7 +19,6 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 
 use PHPCR\Util\PathHelper;
-use PHPCR\Util\UUIDHelper;
 
 /**
  * {@inheritDoc}
@@ -461,11 +460,13 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 }
                 break;
             case PropertyType::STRING:
+                    // try to find node(s) by string identifier(s)
                     $results = $this->objectManager->getNodesByIdentifier($values);
                     $results = $results->getArrayCopy();
                     if (array_keys($results) == $values) {
                         break;
                     }
+                    //fall to the next case if we did not find anything
             case PropertyType::PATH:    
             case PropertyType::NAME:
                 foreach ($values as $value) {
