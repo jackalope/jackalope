@@ -19,6 +19,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 
 use PHPCR\Util\PathHelper;
+use PHPCR\Util\UUIDHelper;
 
 /**
  * {@inheritDoc}
@@ -459,8 +460,16 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                     throw new ItemNotFoundException('One or more weak reference targets have not been found: ' . implode(',', array_diff(array_keys($results), $values)));
                 }
                 break;
-            case PropertyType::PATH:
             case PropertyType::STRING:
+                foreach ($values as $value) {
+                    if (UUIDHelper::isUUID($value)) {
+                        $results[] = $this->objectManager->getNodeByIdentifier($value);
+                    } else {
+                        $results[] = $this->objectManager->getNode($value, $this->parentPath);
+                    }
+                }
+                break;
+            case PropertyType::PATH:    
             case PropertyType::NAME:
                 foreach ($values as $value) {
                     // OPTIMIZE: use objectManager->getNodes instead of looping (but paths need to be absolute then)
