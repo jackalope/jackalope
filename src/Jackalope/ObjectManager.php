@@ -798,6 +798,10 @@ class ObjectManager
 
             $this->executeOperations($this->operationsLog);
 
+            if ($autoCreateOperations = $this->getAutoCreateOperations()) {
+                $this->executeOperations($autoCreateOperations);
+            }
+
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath['Node'])) {
                 foreach ($this->objectsByPath['Node'] as $node) {
@@ -1480,6 +1484,25 @@ class ObjectManager
         $operation = new AddNodeOperation($absPath, $node);
         $this->nodesAdd[$absPath] = $operation;
         $this->operationsLog[] = $operation;
+    }
+
+    protected function getAutoCreateOperations()
+    {
+        $autoCreateDefinitions = $this->transport->getAutoCreateDefinitions();
+        $operationsLog = array();
+
+        foreach ($autoCreateDefinitions as $autoCreateDefinition) {
+            list ($parentNode, $childDefinition) = $autoCreateDefinition;
+            $requiredPrimaryTypeNames = $childDefinition->getRequiredPrimaryTypeNames();
+            $primaryType = count($requiredPrimaryTypeNames) ? current($requiredPrimaryTypeNames) : null;
+            $node = $parentNode->addNode($childDefinition->getName(), $primaryType);
+            $absPath = $parentNode->getPath() . '/' . $childDefinition->getName();
+            $operation = new AddNodeOperation($absPath, $node);
+            $this->nodesAdd[$absPath] = $operation;
+            $operationsLog[] = $operation;
+        }
+
+        return $operationsLog;
     }
 
     /**
