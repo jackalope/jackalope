@@ -28,6 +28,17 @@ class Repository implements RepositoryInterface
      */
     const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
 
+    protected $jackalopeNotImplemented = array(
+        'jackalope.not_implemented.lock.get' => true,
+        'jackalope.not_implemented.lock.refresh' => true,
+        'jackalope.not_implemented.lock.global' => true,
+        'jackalope.not_implemented.lock.token' => true,
+        'jackalope.not_implemented.lock.token' => true,
+        'jackalope.not_implemented.node.description' => true,
+        'jackalope.not_implemented.node_type.unregister' => true,
+        'jackalope.not_implemented.session.impersonate' => true,
+    );
+
     /**
      * flag to call stream_wrapper_register only once
      */
@@ -157,13 +168,17 @@ class Repository implements RepositoryInterface
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
-            // TODO: return false for everything we know is not implemented in jackalope
+            case self::OPTION_LIFECYCLE_SUPPORTED:
+            case self::OPTION_SHAREABLE_NODES_SUPPORTED:
+            case self::OPTION_RETENTION_SUPPORTED:
+            case self::OPTION_ACCESS_CONTROL_SUPPORTED:
+                return false;
         }
 
         // handle the rest by the transport to allow non-feature complete transports
         // or use interface per capability?
         if (null === $this->descriptors) {
-            $this->descriptors = $this->transport->getRepositoryDescriptors();
+            $this->descriptors = $this->loadDescriptors();
         }
 
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
@@ -175,6 +190,9 @@ class Repository implements RepositoryInterface
      */
     protected function loadDescriptors()
     {
-        $this->descriptors = $this->transport->getRepositoryDescriptors();
+        $this->descriptors = array_merge(
+            $this->jackalopeNotImplemented,
+            $this->transport->getRepositoryDescriptors()
+        );
     }
 }
