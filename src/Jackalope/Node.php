@@ -462,7 +462,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function rename($newName)
     {
-        $this->session->move($this->path, $this->parentPath . '/' . $newName);
+        $newPath = $this->parentPath . '/' . $newName;
+
+        if (substr($newPath, 0, 2) == '//') {
+            $newPath = substr($newPath, 1);
+        }
+
+        $this->session->move($this->path, $newPath);
     }
 
     /**
