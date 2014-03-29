@@ -430,7 +430,11 @@ class Session implements SessionInterface
     public function save()
     {
         if ($this->getTransport() instanceof TransactionInterface) {
-            $utx = $this->workspace->getTransactionManager();
+            try {
+                $utx = $this->workspace->getTransactionManager();
+            } catch (UnsupportedRepositoryOperationException $e) {
+                // user transactions where disabled for this session, do no automatic transaction.
+            }
         }
 
         if (isset($utx) && !$utx->inTransaction()) {
