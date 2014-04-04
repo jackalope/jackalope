@@ -337,8 +337,8 @@ class ObjectManager
                         if ('/' == $parent) {
                             $parent = false;
                         } else {
-                            $parent = PathHelper::getParentPath($fetchPath);
-                            $relPath = '/' . PathHelper::getNodeName($fetchPath) . $relPath;
+                            $parent = PathHelper::getParentPath($parent);
+                            $relPath = '/' . PathHelper::getNodeName($parent) . $relPath;
                         }
                     }
                     if ($parent) {
