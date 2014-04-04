@@ -1190,7 +1190,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        throw new NotImplementedException();
+        $workspace = $this->session->getWorkspace();
+        $versionManager = $workspace->getVersionManager();
+
+        return $versionManager->isCheckedOut($this->getPath());
     }
 
     /**
