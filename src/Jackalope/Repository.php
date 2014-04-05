@@ -29,14 +29,19 @@ class Repository implements RepositoryInterface
     const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
 
     protected $jackalopeNotImplemented = array(
-        'jackalope.not_implemented.lock.get' => true,
-        'jackalope.not_implemented.lock.refresh' => true,
-        'jackalope.not_implemented.lock.global' => true,
-        'jackalope.not_implemented.lock.token' => true,
-        'jackalope.not_implemented.lock.token' => true,
-        'jackalope.not_implemented.node.description' => true,
+        'jackalope.not_implemented.node.definition' => true,
+        'jackalope.not_implemented.node.set_primary_type' => true,
+        'jackalope.not_implemented.node.can_add_mixin' => true,
+
         'jackalope.not_implemented.node_type.unregister' => true,
+
         'jackalope.not_implemented.session.impersonate' => true,
+        'jackalope.not_implemented.session.set_namespace_prefix' => true,
+
+        'jackalope.not_implemented.version.version_labels' => true,
+        'jackalope.not_implemented.version.merge' => true,
+        'jackalope.not_implemented.version.configuration' => true,
+        'jackalope.not_implemented.version.activity' => true,
     );
 
     /**
@@ -172,6 +177,7 @@ class Repository implements RepositoryInterface
             case self::OPTION_SHAREABLE_NODES_SUPPORTED:
             case self::OPTION_RETENTION_SUPPORTED:
             case self::OPTION_ACCESS_CONTROL_SUPPORTED:
+            case self::OPTION_LOCKING_SUPPORTED:
                 return false;
         }
 
