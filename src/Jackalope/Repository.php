@@ -29,18 +29,34 @@ class Repository implements RepositoryInterface
     const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
 
     protected $jackalopeNotImplemented = array(
+        // https://github.com/jackalope/jackalope/issues/217
         'jackalope.not_implemented.node.definition' => true,
+
+        // https://github.com/jackalope/jackalope/issues/218
         'jackalope.not_implemented.node.set_primary_type' => true,
+
+        // https://github.com/jackalope/jackalope/issues/219
         'jackalope.not_implemented.node.can_add_mixin' => true,
 
+        // https://github.com/jackalope/jackalope/issues/220
         'jackalope.not_implemented.node_type.unregister' => true,
 
+        // https://github.com/jackalope/jackalope/issues/221
         'jackalope.not_implemented.session.impersonate' => true,
+
+        // https://github.com/jackalope/jackalope/issues/222
         'jackalope.not_implemented.session.set_namespace_prefix' => true,
 
+        // https://github.com/jackalope/jackalope/issues/54
         'jackalope.not_implemented.version.version_labels' => true,
+
+        // https://github.com/jackalope/jackalope/issues/55
         'jackalope.not_implemented.version.merge' => true,
+
+        // https://github.com/jackalope/jackalope/issues/224
         'jackalope.not_implemented.version.configuration' => true,
+
+        // https://github.com/jackalope/jackalope/issues/223
         'jackalope.not_implemented.version.activity' => true,
     );
 
