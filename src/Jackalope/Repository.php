@@ -58,6 +58,15 @@ class Repository implements RepositoryInterface
 
         // https://github.com/jackalope/jackalope/issues/223
         'jackalope.not_implemented.version.activity' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.lock_token' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.get_lock' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.non_session_scoped_lock' => true,
     );
 
     /**
@@ -193,7 +202,6 @@ class Repository implements RepositoryInterface
             case self::OPTION_SHAREABLE_NODES_SUPPORTED:
             case self::OPTION_RETENTION_SUPPORTED:
             case self::OPTION_ACCESS_CONTROL_SUPPORTED:
-            case self::OPTION_LOCKING_SUPPORTED:
                 return false;
         }
 
