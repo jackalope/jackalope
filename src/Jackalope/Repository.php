@@ -28,6 +28,47 @@ class Repository implements RepositoryInterface
      */
     const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
 
+    protected $jackalopeNotImplemented = array(
+        // https://github.com/jackalope/jackalope/issues/217
+        'jackalope.not_implemented.node.definition' => true,
+
+        // https://github.com/jackalope/jackalope/issues/218
+        'jackalope.not_implemented.node.set_primary_type' => true,
+
+        // https://github.com/jackalope/jackalope/issues/219
+        'jackalope.not_implemented.node.can_add_mixin' => true,
+
+        // https://github.com/jackalope/jackalope/issues/220
+        'jackalope.not_implemented.node_type.unregister' => true,
+
+        // https://github.com/jackalope/jackalope/issues/221
+        'jackalope.not_implemented.session.impersonate' => true,
+
+        // https://github.com/jackalope/jackalope/issues/222
+        'jackalope.not_implemented.session.set_namespace_prefix' => true,
+
+        // https://github.com/jackalope/jackalope/issues/54
+        'jackalope.not_implemented.version.version_labels' => true,
+
+        // https://github.com/jackalope/jackalope/issues/55
+        'jackalope.not_implemented.version.merge' => true,
+
+        // https://github.com/jackalope/jackalope/issues/224
+        'jackalope.not_implemented.version.configuration' => true,
+
+        // https://github.com/jackalope/jackalope/issues/223
+        'jackalope.not_implemented.version.activity' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.lock_token' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.get_lock' => true,
+
+        // https://github.com/jackalope/jackalope/issues/67
+        'jackalope.not_implemented.non_session_scoped_lock' => true,
+    );
+
     /**
      * flag to call stream_wrapper_register only once
      */
@@ -157,13 +198,17 @@ class Repository implements RepositoryInterface
                 return $this->options['stream_wrapper'];
             case self::OPTION_TRANSACTIONS_SUPPORTED:
                 return $this->options['transactions'];
-            // TODO: return false for everything we know is not implemented in jackalope
+            case self::OPTION_LIFECYCLE_SUPPORTED:
+            case self::OPTION_SHAREABLE_NODES_SUPPORTED:
+            case self::OPTION_RETENTION_SUPPORTED:
+            case self::OPTION_ACCESS_CONTROL_SUPPORTED:
+                return false;
         }
 
         // handle the rest by the transport to allow non-feature complete transports
         // or use interface per capability?
         if (null === $this->descriptors) {
-            $this->descriptors = $this->transport->getRepositoryDescriptors();
+            $this->descriptors = $this->loadDescriptors();
         }
 
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
@@ -175,6 +220,9 @@ class Repository implements RepositoryInterface
      */
     protected function loadDescriptors()
     {
-        $this->descriptors = $this->transport->getRepositoryDescriptors();
+        $this->descriptors = array_merge(
+            $this->jackalopeNotImplemented,
+            $this->transport->getRepositoryDescriptors()
+        );
     }
 }

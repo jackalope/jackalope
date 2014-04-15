@@ -27,7 +27,7 @@ class RepositoryTest extends TestCase
         $session = $repo->login($credentials, $workspaceName);
         $this->assertInstanceOf('Jackalope\Session', $session);
 
-        $this->assertSame(array('bla'), $repo->getDescriptorKeys());
+        $this->assertContains('bla', $repo->getDescriptorKeys());
         $this->assertSame('bli', $repo->getDescriptor('bla'));
     }
     //descriptors are tested by jackalope-api-tests Access/RepositoryDescriptorsTest.php
