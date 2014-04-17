@@ -205,22 +205,24 @@ class Repository implements RepositoryInterface
                 return false;
         }
 
-        // handle the rest by the transport to allow non-feature complete transports
-        // or use interface per capability?
         if (null === $this->descriptors) {
             $this->descriptors = $this->loadDescriptors();
         }
 
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
-        //TODO: is this the proper behaviour? Or what should happen on inexisting key?
     }
 
     /**
-     * Load the descriptors from the transport and cache them
+     * Load the descriptors.
+     *
+     * Most of them come from the transport to allow for non-feature complete
+     * transports.
+     *
+     * @return array Hashmap of descriptor names to descriptor values
      */
     protected function loadDescriptors()
     {
-        $this->descriptors = array_merge(
+        return array_merge(
             $this->jackalopeNotImplemented,
             $this->transport->getRepositoryDescriptors()
         );
