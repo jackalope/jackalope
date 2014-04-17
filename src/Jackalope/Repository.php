@@ -206,14 +206,14 @@ class Repository implements RepositoryInterface
         }
 
         if (null === $this->descriptors) {
-            $this->descriptors = $this->loadDescriptors();
+            $this->loadDescriptors();
         }
 
         return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
     }
 
     /**
-     * Load the descriptors.
+     * Load the descriptors into $this->descriptors
      *
      * Most of them come from the transport to allow for non-feature complete
      * transports.
@@ -222,7 +222,7 @@ class Repository implements RepositoryInterface
      */
     protected function loadDescriptors()
     {
-        return array_merge(
+        $this->descriptors = array_merge(
             $this->jackalopeNotImplemented,
             $this->transport->getRepositoryDescriptors()
         );
