@@ -1672,7 +1672,7 @@ class ObjectManager
     public function isNodeDeleted($absPath)
     {
         return array_key_exists($absPath, $this->nodesRemove)
-        && !((array_key_exists($absPath, $this->nodesAdd) && $this->nodesAdd[$absPath])
+        && !(array_key_exists($absPath, $this->nodesAdd)
             || $this->getMoveSrcPath($absPath));
     }
 
