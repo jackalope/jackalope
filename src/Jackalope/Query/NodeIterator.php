@@ -86,6 +86,10 @@ class NodeIterator implements SeekableIterator, Countable
 
     public function key()
     {
+        if (!$this->valid()) {
+            return null;
+        }
+
         foreach ($this->rows[$this->position] as $column) {
             if ($column['dcr:name'] == 'jcr:path') {
                 $path = $column['dcr:value'];
