@@ -247,7 +247,7 @@ interface TransportInterface
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
      * @throws \PHPCR\NoSuchWorkspaceException if workspace does not exist
-     * @throws \LogicException                 if not logged in
+     * @throws \PHPCR\RepositoryException      if not logged in
      */
     public function getNodeByIdentifier($uuid);
 
