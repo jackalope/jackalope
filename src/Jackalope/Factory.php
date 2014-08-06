@@ -14,6 +14,11 @@ use ReflectionClass;
 class Factory implements FactoryInterface
 {
     /**
+     * @var array
+     */
+    protected $reflectionCache = array();
+
+    /**
      * {@inheritDoc}
      */
     public function get($name, array $params = array())
@@ -32,7 +37,12 @@ class Factory implements FactoryInterface
             return new $name;
         }
 
-        $class = new ReflectionClass($name);
+        if (isset($this->reflectionCache[$name])) {
+            $class = $this->reflectionCache[$name];
+        } else {
+            $class = new ReflectionClass($name);
+            $this->reflectionCache[$name] = $class;
+        }
 
         return $class->newInstanceArgs($params);
     }
