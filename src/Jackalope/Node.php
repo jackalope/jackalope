@@ -389,7 +389,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (false !== strpos($relPath, ']')) {
             throw new RepositoryException("The node '{$this->path}' does not allow an index in name of newly created node: $relPath");
         }
-        if (in_array($relPath, $this->nodes)) {
+        if (in_array($relPath, $this->nodes, true)) {
             throw new ItemExistsException("The node '{$this->path}' already has a child named '$relPath''."); //TODO: same-name siblings if nodetype allows for them
         }
 
