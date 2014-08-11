@@ -28,8 +28,6 @@ interface NodeTypeFilterInterface extends TransportInterface
      * @return array keys are the absolute paths, values is the node data as
      *      associative array (decoded from json with associative = true)
      *
-     * @throws \PHPCR\RepositoryException if not logged in
-     *
      * @see TransportInterface::getNodes
      */
     public function getNodesFiltered($paths, $typeFilter);
@@ -43,8 +41,6 @@ interface NodeTypeFilterInterface extends TransportInterface
      *      semantics as in Node::getNodes meaning a supertype must also match.
      *
      * @return array list of relative node names at that parent that match the criteria
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
      *
      * @see Node::getNodeNames
      */

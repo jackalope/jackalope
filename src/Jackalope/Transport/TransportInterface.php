@@ -14,6 +14,10 @@ use Jackalope\NodeType\NodeTypeManager;
  * Compliance</a> specification defines a larger set of functions, but we want
  * Jackalope to even work with very minimalistic backends.
  *
+ * Authentication.
+ * All methods in this interface should throw \PHPCR\RepositoryException if not logged in,
+ * except for sure "login" method.
+ *
  * See the README.md in this folder for general information about the transport
  * layer.
  *
@@ -106,8 +110,6 @@ interface TransportInterface
      * constants in \PHPCR\NamespaceRegistryInterface
      *
      * @return array Associative array of prefix => uri
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNamespaces();
 
@@ -174,7 +176,6 @@ interface TransportInterface
      *      associative = true)
      *
      * @throws \PHPCR\ItemNotFoundException If the item at path was not found
-     * @throws \PHPCR\RepositoryException   if not logged in
      */
     public function getNode($path);
 
@@ -198,8 +199,6 @@ interface TransportInterface
      *
      * @return array keys are the absolute paths, values is the node data as
      *      associative array (decoded from json with associative = true)
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodes($paths);
 
@@ -215,8 +214,6 @@ interface TransportInterface
      * @return array keys are the absolute paths, values is the node data as
      *      associative array (decoded from json with associative = true). they
      *      will have the identifier value set.
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
      */
     public function getNodesByIdentifier($identifiers);
 
@@ -247,7 +244,6 @@ interface TransportInterface
      * @throws \PHPCR\ItemNotFoundException if the backend does not know the
      *      uuid
      * @throws \PHPCR\NoSuchWorkspaceException if workspace does not exist
-     * @throws \LogicException                 if not logged in
      */
     public function getNodeByIdentifier($uuid);
 
@@ -326,8 +322,6 @@ interface TransportInterface
      *
      * @return array with the definitions (see
      *      Jackalope\NodeTypeDefinition::fromArray for what is expected)
-     *
-     * @throws \PHPCR\RepositoryException if not logged in
      *
      * @see Jackalope\NodeTypeDefinition::fromArray
      */

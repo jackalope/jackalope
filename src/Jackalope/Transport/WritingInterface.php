@@ -145,7 +145,7 @@ interface WritingInterface extends TransportInterface
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
+     * @throws \PHPCR\RepositoryException if error occurs
      */
     public function deleteNodeImmediately($path);
 
@@ -159,7 +159,7 @@ interface WritingInterface extends TransportInterface
      * @throws \PHPCR\PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
+     * @throws \PHPCR\RepositoryException if error occurs
      */
     public function deletePropertyImmediately($path);
 
@@ -182,7 +182,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param \Jackalope\Transport\AddNodeOperation[] $operations the operations containing the nodes to store
      *
-     * @throws \PHPCR\RepositoryException if not logged in or another error occurs
+     * @throws \PHPCR\RepositoryException if error occurs
      */
     public function storeNodes(array $operations);
 
