@@ -337,6 +337,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function addNode($relPath, $primaryNodeTypeName = null)
     {
+        $relPath = (string)$relPath;
+
         $this->checkState();
 
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
