@@ -18,7 +18,7 @@ improved in cooperation with all implementors of PHPCR and the JCR community.
 
 PHP code: https://github.com/phpcr/phpcr
 
-Documentation: https://phpcr.github.com/
+Documentation: https://phpcr.github.io/
 
 
 ## PHPCR utilities

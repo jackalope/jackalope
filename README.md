@@ -1,6 +1,6 @@
 # Jackalope [![Build Status](https://secure.travis-ci.org/jackalope/jackalope.png?branch=master)](http://travis-ci.org/jackalope/jackalope)
 
-A powerful implementation of the [PHPCR API](http://phpcr.github.com).
+A powerful implementation of the [PHPCR API](http://phpcr.github.io).
 
 You can use Jackalope with different storage backends. For now, we support:
 
