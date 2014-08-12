@@ -94,5 +94,5 @@ To hack on jackalope-jackrabbit, you might want to read the documentation of
 the protocol used between Jackalope and the Jackrabbit backend. We have 2 files
 to download:
 
-* "jcr-webdav.doc":https://fosswiki.liip.ch/download/attachments/11501816/jcr-webdav_read.doc
-* "jcr-webdav-protocol.doc":https://fosswiki.liip.ch/download/attachments/11501816/JCR_Webdav_Protocol.doc
+* "jcr-webdav.doc":http://jackalope.github.io/doc/jcr-webdav_read.doc
+* "jcr-webdav-protocol.doc":http://jackalope.github.io/doc/jcr-webdav_protocol.doc
