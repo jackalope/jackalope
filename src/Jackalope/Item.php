@@ -26,7 +26,7 @@ use PHPCR\Util\ValueConverter;
  * to be refreshed from the backend, this can be postponed until the item is
  * actually accessed again.
  *
- * <img src="https://fosswiki.liip.ch/download/attachments/11501816/Jackalope-Node-State.png" />
+ * <img src="http://jackalope.github.io/doc/Jackalope-Node-State.png" />
  *
  * <em>Figure: workflow state transitions</em>
  *
