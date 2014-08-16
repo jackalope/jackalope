@@ -456,7 +456,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             case PropertyType::WEAKREFERENCE:
                 $results = $this->objectManager->getNodesByIdentifier($values);
                 $results = $results->getArrayCopy();
-                if (array_keys($results) != $values) {
+                $uuids = array_keys($results);
+                sort($uuids);
+                sort($values);
+                if ($uuids != $values) {
                     throw new ItemNotFoundException('One or more weak reference targets have not been found: ' . implode(',', array_diff(array_keys($results), $values)));
                 }
                 break;
