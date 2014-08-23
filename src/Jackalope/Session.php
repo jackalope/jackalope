@@ -127,10 +127,12 @@ class Session implements SessionInterface
     {
         $this->factory = $factory;
         $this->repository = $repository;
-        $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this));
+        $this->objectManager = $this->factory->get('ObjectManager', array($transport, $this, $observationManager));
         $this->workspace = $this->factory->get('Workspace', array($this, $this->objectManager, $workspaceName));
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
+        $this->observationManager = $this->factory->get('Observation\ObservationManager', array($factory, $this, $transport));
+
         self::registerSession($this);
 
         $transport->setNodeTypeManager($this->workspace->getNodeTypeManager());

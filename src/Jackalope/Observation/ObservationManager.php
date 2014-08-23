@@ -43,6 +43,19 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
      */
     protected $session;
 
+    /**
+     * @var EventListenerInterface[] Events keyed by event type
+     */
+    protected $eventListeners = array(
+        EventInterface::NODE_ADDED => array(),
+        EventInterface::NODE_REMOVED => array(),
+        EventInterface::PROPERTY_ADDED => array(),
+        EventInterface::PROPERTY_REMOVED => array(),
+        EventInterface::PROPERTY_CHANGED => array(),
+        EventInterface::NODE_MOVED => array(),
+        EventInterface::PERSIST => array()
+    );
+
     public function __construct(FactoryInterface $factory, SessionInterface $session, ObservationInterface $transport)
     {
         $this->factory = $factory;
@@ -60,7 +73,12 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
         EventFilterInterface $filter
     )
     {
-        throw new NotImplementedException();
+        foreach ($filter->getEventTypes() as $eventType) {
+            $this->eventListeners[$eventType][] = array(
+                'listener' => $eventType,
+                'filter' => $filter
+            );
+        }
     }
 
     /**
