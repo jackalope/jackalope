@@ -88,11 +88,6 @@ class Repository implements RepositoryInterface
     protected $transport;
 
     /**
-     * @var ObservationManager
-     */
-    protected $observationManager;
-
-    /**
      * List of supported options
      * @var array
      */
