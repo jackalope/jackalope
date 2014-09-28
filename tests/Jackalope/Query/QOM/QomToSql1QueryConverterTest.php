@@ -90,7 +90,7 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
         );
         $this->qb->from($this->qf->selector('base', "nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
-        $this->assertSame("SELECT s FROM nt:base WHERE NOT bar = 'foo'", $statement);
+        $this->assertSame("SELECT s FROM nt:base WHERE (NOT bar = 'foo')", $statement);
     }
 }
 
