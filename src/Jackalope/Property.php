@@ -447,10 +447,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             case PropertyType::REFERENCE:
                 $results = $this->objectManager->getNodesByIdentifier($values);
                 $results = $results->getArrayCopy();
-                if (array_keys($results) != $values) {
-                    // @codeCoverageIgnoreStart
-                    throw new RepositoryException('Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.');
-                    // @codeCoverageIgnoreEnd
+                $diff = array_diff(array_values($values), array_keys($results));
+
+                if (count($diff) > 0) {
+                    throw new RepositoryException(sprintf(
+                        'Internal Error: Could not find one or more referenced nodes: "%s". ' .
+                        'If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+                        implode('", "', $diff)
+                    ));
                 }
                 break;
             case PropertyType::WEAKREFERENCE:

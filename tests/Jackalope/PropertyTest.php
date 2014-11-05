@@ -2,8 +2,63 @@
 
 namespace Jackalope;
 
+use Jackalope\Factory;
+use Jackalope\TestCase;
+use PHPCR\PropertyType;
+
 class PropertyTest extends TestCase
 {
+    public function provideGetNode()
+    {
+        return array(
+            array(
+                array('1234-1234', '4321-4321'),
+                array(),
+                'Could not find one or more referenced nodes: "1234-1234", "4321-4321"',
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('1234-1234'),
+                'Could not find one or more referenced nodes: "4321-4321"',
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('1234-1234', '4321-4321'),
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('4321-4321', '1234-1234'),
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider provideGetNode
+     */
+    public function testGetNode($values, $nodeUuids, $exceptionMessage = null)
+    {
+        if ($exceptionMessage) {
+            $this->setExpectedException('PHPCR\RepositoryException', $exceptionMessage);
+        }
+
+        $nodes = new \ArrayObject();
+
+        foreach ($nodeUuids as $nodeUuid) {
+            $nodes[$nodeUuid] = $this->getNodeMock();
+        }
+
+        $data = array(
+            'type' => PropertyType::REFERENCE, 'value' => $values,
+        );
+        $factory = new Factory();
+        $session = $this->getSessionMock();
+        $objectManager = $this->getObjectManagerMock(array(
+            'getNodesByIdentifier' => $nodes
+        ));
+        $property = new Property($factory, $data, '/path/to', $session, $objectManager);
+        $property->getNode();
+    }
+
     public function testTypeInstances()
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
