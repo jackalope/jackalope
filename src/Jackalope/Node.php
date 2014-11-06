@@ -956,6 +956,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if ($this->primaryType == $nodeTypeName) {
             return true;
         }
+        // is it one of the mixin types?
+        if (isset($this->properties['jcr:mixinTypes'])) {
+            if (in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue())) {
+                return true;
+            }
+        }
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
         // is the primary type a subtype of the type?
         if ($ntm->getNodeType($this->primaryType)->isNodeType($nodeTypeName)) {
@@ -964,10 +970,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // if there are no mixin types, then we now know this node is not of that type
         if (! isset($this->properties["jcr:mixinTypes"])) {
             return false;
-        }
-        // is it one of the mixin types?
-        if (in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue())) {
-            return true;
         }
         // is it an ancestor of any of the mixin types?
         foreach ($this->properties['jcr:mixinTypes'] as $mixin) {
