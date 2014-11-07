@@ -1018,7 +1018,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
-            if (array_search($mixinName, $this->properties['jcr:mixinTypes']->getValue()) === false) {
+            if (!in_array($mixinName, $this->properties['jcr:mixinTypes']->getValue())) {
                 $this->properties['jcr:mixinTypes']->addValue($mixinName);
                 $this->setModified();
             }
