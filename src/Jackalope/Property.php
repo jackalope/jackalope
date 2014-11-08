@@ -707,6 +707,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             throw new ValueFormatException('Can not set a single value property ('.$this->name.') with an array of values');
         }
 
+        if ($this->isMultiple && is_scalar($value)) {
+            throw new ValueFormatException('Can not set a multivalue property ('.$this->name.') with a scalar value');
+        }
+
         //TODO: check if changing type allowed.
         /*
          * if ($type !== null && ! canHaveType($type)) {
