@@ -137,7 +137,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             if (is_array($data['value'])) {
                 $this->isMultiple = true;
             }
-            $this->length = $data['value'];
+            $this->updateBinaryLength($data['value']);
             $this->value = null;
 
             return;
@@ -734,18 +734,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $value = $this->valueConverter->convertType($value, $targettype, $type);
 
         if (PropertyType::BINARY === $targettype) {
-            if (is_array($value)) {
-                $this->length = array();
-                foreach($value as $v) {
-                    $stat = is_resource($v) ? fstat($v) : array( 'size' => -1 );
-                    $this->length[] = $stat['size'];
-                }
-            } elseif(is_resource($value)) {
-                $stat = fstat($value);
-                $this->length = $stat['size'];
-            } else {
-                $this->length = -1;
-            }
+            $this->updateBinaryLength($value);
         }
 
         $this->type = $targettype;
@@ -777,6 +766,27 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 fclose($v);
                 unset($this->streams[$k]);
             }
+        }
+    }
+
+    /**
+     * Update the length for the given binary value
+     *
+     * @param mixed $value
+     */
+    private function updateBinaryLength($value)
+    {
+        if (is_array($value)) {
+            $this->length = array();
+            foreach($value as $v) {
+                $stat = is_resource($v) ? fstat($v) : array( 'size' => -1 );
+                $this->length[] = $stat['size'];
+            }
+        } elseif(is_resource($value)) {
+            $stat = fstat($value);
+            $this->length = $stat['size'];
+        } else {
+            $this->length = -1;
         }
     }
 }
