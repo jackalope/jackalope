@@ -314,14 +314,21 @@ class ObjectManager
 
             foreach ($data as $fetchPath => $item) {
                 // only add this node to the list if it was actually requested.
-                if (isset($inversePaths[$fetchPath]) &&
-                    (!$userlandTypeFilter || $this->matchNodeType($item, $typeFilter))
-                ) {
+                if (isset($inversePaths[$fetchPath])) {
                     // transform back to session paths from the fetch paths, in case of
                     // a pending move operation
                     $absPath = $inversePaths[$fetchPath];
 
-                    $nodes[$absPath] = $this->getNodeByPath($absPath, $class, $item);
+                    $node = $this->getNodeByPath($absPath, $class, $item);
+
+                    if ($userlandTypeFilter) {
+                        if (null !== $typeFilter && !$this->matchNodeType($node, $typeFilter)) {
+                            continue;
+                        }
+                    }
+
+                    $nodes[$absPath] = $node;
+
                     unset($inversePaths[$fetchPath]);
                 } else {
                     // this is either a prefetched node that was not requested
