@@ -4,6 +4,7 @@ namespace Jackalope\Transport;
 
 use PHPCR\RepositoryException;
 use PHPCR\Util\PathHelper;
+use Jackalope\NodeType\NodeProcessor;
 
 /**
  * Base class for transport implementation.
@@ -18,22 +19,10 @@ use PHPCR\Util\PathHelper;
 
 abstract class BaseTransport implements TransportInterface
 {
-    const VALIDATE_URI_RFC3986 = "
-/^
-([a-z][a-z0-9\\*\\-\\.]*):\\/\\/
-(?:
-  (?:(?:[\\w\\.\\-\\+!$&'\\(\\)*\\+,;=]|%[0-9a-f]{2})+:)*
-  (?:[\\w\\.\\-\\+%!$&'\\(\\)*\\+,;=]|%[0-9a-f]{2})+@
-)?
-(?:
-  (?:[a-z0-9\\-\\.]|%[0-9a-f]{2})+
-  |(?:\\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\\])
-)
-(?::[0-9]+)?
-(?:[\\/|\\?]
-  (?:[\\w#!:\\.\\?\\+=&@!$'~*,;\\/\\(\\)\\[\\]\\-]|%[0-9a-f]{2})
-*)?
-$/xi";
+    /**
+     * @deprecated Will be removed in 2.0
+     */
+    const VALIDATE_URI_RFC3986 = NodeProcessor::VALIDATE_URI_RFC3986;
 
     /**
     * The current fetchDepth

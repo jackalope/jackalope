@@ -25,6 +25,23 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Map return values to methods on given mock objects.
+     *
+     * @param 
+     * @param array
+     */
+    private function mapMockMethodReturnValues($mock, $methodsToValues)
+    {
+        foreach ($methodsToValues as $method => $value) {
+            $mock->expects($this->any())
+                ->method($method)
+                ->will($this->returnValue($value));
+        }
+
+        return $mock;
+    }
+
+    /**
      * Get a mock object for the read only transport.
      *
      * @return \Jackalope\Transport\TransportInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -114,9 +131,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return \Jackalope\Repository|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getRepositoryMock()
+    protected function getRepositoryMock($methodValueMap = array())
     {
-        return $this->getMockBuilder('Jackalope\Repository')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder('Jackalope\Repository')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
     }
 
     /**
@@ -124,19 +144,87 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return \Jackalope\ObjectManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getObjectManagerMock()
+    protected function getObjectManagerMock($methodValueMap = array())
     {
-        return $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
     }
 
     /**
      * Get a mock object for a node.
      *
+     * NOTE: This and other mock methods are public because they need to be accessed from within callbacks sometimes.
+     *
      * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeMock()
+    public function getNodeMock($methodValueMap = array())
     {
-        return $this->getMockBuilder('Jackalope\Node')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder('Jackalope\Node')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
+    }
+
+    /**
+     * Get a mock object for a node type
+     *
+     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getNodeTypeMock($methodValueMap = array())
+    {
+        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeType')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
+    }
+
+    /**
+     * Get a mock object for an item definition
+     *
+     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getItemDefinitionMock($methodValueMap = array())
+    {
+        $mock = $this->getMockBuilder('Jackalope\NodeType\ItemDefinition')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
+    }
+
+    /**
+     * Get a mock object for an item definition
+     *
+     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getNodeDefinitionMock($methodValueMap = array())
+    {
+        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeDefinition')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
+    }
+
+    /**
+     * Get a mock object for an item definition
+     *
+     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function getPropertyDefinitionMock($methodValueMap = array())
+    {
+        $mock = $this->getMockBuilder('PHPCR\NodeType\PropertyDefinitionInterface')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
+    }
+
+    public function getPropertyMock($methodValueMap = array())
+    {
+        $mock = $this->getMockBuilder('Jackalope\Property')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
     }
 
     /**
@@ -144,12 +232,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return \Jackalope\NodeType\NodeTypeManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeTypeManagerMock()
+    public function getNodeTypeManagerMock($methodValueMap = array())
     {
-        return $this->getMockBuilder('Jackalope\NodeType\NodeTypeManager')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeTypeManager')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
     }
 
     /**
