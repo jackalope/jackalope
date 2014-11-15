@@ -285,6 +285,15 @@ class NodeProcessorTest extends TestCase
         return array(
             array(
                 array(
+                    'getType' => PropertyType::STRING,
+                    'isMultiple' => false,
+                    'getValue' => 'some string',
+                    'getPath' => '/path/to',
+                ), 
+                null
+            ),
+            array(
+                array(
                     'getType' => PropertyType::NAME,
                     'isMultiple' => false,
                     'getValue' => 'hello',
@@ -299,24 +308,6 @@ class NodeProcessorTest extends TestCase
                     'getPath' => '/path/to',
                 ), 
                 'Invalid value for NAME property type at "/path/to", the namespace prefix "foo" does not exist'
-            ),
-            array(
-                array(
-                    'getType' => PropertyType::PATH,
-                    'isMultiple' => false,
-                    'getValue' => '/path/to/something',
-                    'getPath' => '/path/to',
-                ), 
-                null,
-            ),
-            array(
-                array(
-                    'getType' => PropertyType::PATH,
-                    'isMultiple' => false,
-                    'getValue' => '  pathto££333+_123£³[]/something[&&"£$]',
-                    'getPath' => '/path/to',
-                ), 
-                'Value "  pathto££333+_123£³[]/something[&&"£$]" for PATH property at "/path/to" is invalid',
             ),
             array(
                 array(
@@ -336,11 +327,56 @@ class NodeProcessorTest extends TestCase
                 ), 
                 'Invalid value "http://domain.dom  sd" for URI property at "/path/to". Value has to comply with RFC 3986',
             ),
+
+            // PATH
+            // ----
+
+            // VALID: Absolute
             array(
                 array(
-                    'getType' => PropertyType::STRING,
+                    'getType' => PropertyType::PATH,
                     'isMultiple' => false,
-                    'getValue' => 'some string',
+                    'getValue' => '/path/to/something',
+                    'getPath' => '/path/to',
+                ), 
+                null,
+            ),
+            // INVALID: Invalid characters
+            array(
+                array(
+                    'getType' => PropertyType::PATH,
+                    'isMultiple' => false,
+                    'getValue' => '  pathto££333+_123£³[]/something[&&"£$]',
+                    'getPath' => '/path/to',
+                ), 
+                'Value "  pathto££333+_123£³[]/something[&&"£$]" for PATH property at "/path/to" is invalid',
+            ),
+            // VALID: Relative to parent
+            array(
+                array(
+                    'getType' => PropertyType::PATH,
+                    'isMultiple' => false,
+                    'getValue' => '../index.txt/jcr:content/mydateprop',
+                    'getPath' => '/path/to',
+                ), 
+                null
+            ),
+            // VALID: Relative to parent of parent
+            array(
+                array(
+                    'getType' => PropertyType::PATH,
+                    'isMultiple' => false,
+                    'getValue' => '../../index.txt/jcr:content/mydateprop',
+                    'getPath' => '/path/to',
+                ), 
+                null
+            ),
+            // VALID: Relative to itself
+            array(
+                array(
+                    'getType' => PropertyType::PATH,
+                    'isMultiple' => false,
+                    'getValue' => 'index.txt/jcr:content/mydateprop',
                     'getPath' => '/path/to',
                 ), 
                 null
