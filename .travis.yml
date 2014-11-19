@@ -16,7 +16,3 @@ script: phpunit -c tests/phpunit.xml.dist
 
 notifications:
   irc: "irc.freenode.org#jackalope"
-
-matrix:
-    allow_failures:
-        - php: hhvm
