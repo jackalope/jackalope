@@ -55,7 +55,7 @@ $/xi";
     /**
      * Regex to assert the a string is a valid PATH
      */
-    const VALIDATE_PATH = '/^((\/|..)?[-a-zA-Z0-9:_]+)+$/';
+    const VALIDATE_PATH = '/^((\/|..)*[-a-zA-Z0-9:_]+)+$/';
 
     protected $additionalOperations = array();
     protected $userId;
