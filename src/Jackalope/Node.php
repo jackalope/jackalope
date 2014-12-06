@@ -464,6 +464,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function rename($newName)
     {
+        $names = (array) $this->getParent()->getNodeNames();
+        $pos = array_search($this->name, $names);
+        $next = isset($names[$pos + 1]) ? $names[$pos + 1] : null;
+
         $newPath = $this->parentPath . '/' . $newName;
 
         if (substr($newPath, 0, 2) == '//') {
@@ -471,6 +475,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $this->session->move($this->path, $newPath);
+        if ($next) {
+            $this->getParent()->orderBefore($newName, $next);
+        }
     }
 
     /**
