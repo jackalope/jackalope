@@ -130,12 +130,26 @@ abstract class PathValidatorTestCase extends TestCase
         return json_decode('"'.$char.'"');
     }
 
-    /**
-     * @expectedException Jackalope\Validation\Exception\InvalidPathException
-     */
-    public function testInvalidDestPath()
+    public function provideDestPath()
     {
-        $this->getValidator()->validateDestPath('foo/bar[0]');
+        return array(
+            array('/path/to[0]', false),
+            array('path/to/something', false),
+            array('', false),
+            array('/path/to/this', true),
+        );
+    }
+
+    /**
+     * @dataProvider provideDestPath
+     */
+    public function testDestPath($path, $isValid)
+    {
+        if (false === $isValid) {
+            $this->setExpectedException('Jackalope\Validation\Exception\InvalidPathException');
+        }
+
+        $this->getValidator()->validateDestPath($path);
     }
 }
 

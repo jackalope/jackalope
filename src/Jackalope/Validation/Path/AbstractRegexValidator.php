@@ -49,7 +49,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
             throw new InvalidPathException(sprintf('Path "%s" is not absolute', $path));
         }
 
-        return $this->validatePath($path);
+        $this->validatePath($path);
     }
 
     /**
@@ -57,11 +57,12 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
      */
     public function validateDestPath($path)
     {
+        $this->validateAbsPath($path);
+
         if (']' === substr($path, -1)) {
             throw new InvalidPathException(sprintf('Destination path "%s" must not end with an index', $path));
         }
 
-        return $this->validatePath($path);
     }
 
     /**
