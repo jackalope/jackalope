@@ -127,7 +127,7 @@ abstract class PathValidatorTestCase extends TestCase
 
     private function translateCharFromCode($char)
     {
-        return json_decode('"'.$char.'"');
+        return json_decode('"' . $char . '"');
     }
 
     public function provideDestPath()
