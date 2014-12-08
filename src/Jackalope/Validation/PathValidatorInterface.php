@@ -33,6 +33,16 @@ interface PathValidatorInterface
     public function validateAbsPath($absPath);
 
     /**
+     * Assert that the given path is a valid destination path
+     *
+     * @param string $path
+     *
+     * @return void
+     * @throws InvalidPathException
+     */
+    public function validateDestPath($destPath);
+
+    /**
      * Assert that the given path is a valid absolute path
      *
      * @param string $name

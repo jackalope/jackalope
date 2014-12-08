@@ -1,8 +1,10 @@
 <?php
 
-namespace Jackalope\Validation;
+namespace Jackalope\Validation\Path;
 
 use DOMElement;
+use Jackalope\Validation\Exception\InvalidPathException;
+use Jackalope\Validation\PathValidatorInterface;
 
 /**
  * Abstract class for regex based validators
@@ -14,8 +16,18 @@ use DOMElement;
  */
 abstract class AbstractRegexValidator implements PathValidatorInterface
 {
+    /**
+     * Return a regular expression for a valid path
+     *
+     * @return string
+     */
     abstract protected function getPathPattern();
 
+    /**
+     * Return a regular expression for a valid name
+     *
+     * @return string
+     */
     abstract protected function getNamePattern();
 
     /**
@@ -43,6 +55,18 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
     /**
      * {@inheritDoc}
      */
+    public function validateDestPath($path)
+    {
+        if (']' === substr($path, -1)) {
+            throw new InvalidPathException(sprintf('Destination path "%s" must not end with an index', $path));
+        }
+
+        return $this->validatePath($path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function validateName($path)
     {
         if (false === $this->validate($path, $this->getNamePattern())) {
@@ -50,6 +74,9 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     private function validate($path, $pattern)
     {
         $pattern = '{' . $pattern . '}u';

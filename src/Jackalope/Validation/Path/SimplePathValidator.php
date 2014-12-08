@@ -1,6 +1,6 @@
 <?php
 
-namespace Jackalope\Validation;
+namespace Jackalope\Validation\Path;
 
 use DOMElement;
 

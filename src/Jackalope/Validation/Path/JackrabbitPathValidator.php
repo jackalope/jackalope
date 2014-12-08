@@ -1,11 +1,11 @@
 <?php
 
-namespace Jackalope\Validation;
+namespace Jackalope\Validation\Path;
 
 use DOMElement;
 
 /**
- * Applies the same path validation rules as the Apache Jackrabbit PHPCR implementation.
+ * Applies the same path validation rules as the Apache Jackrabbit JCR implementation.
  *
  * Namespaces need to be valid XML elements according to the XML specification:
  *

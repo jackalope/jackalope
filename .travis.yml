@@ -12,7 +12,7 @@ before_script:
   - sed '/jackalope\/jackalope-transport/d' composer.json >> tmp; mv tmp composer.json
   - composer update --prefer-source
 
-script: phpunit -c tests/phpunit.xml.dist
+script: phpunit
 
 notifications:
   irc: "irc.freenode.org#jackalope"

@@ -13,6 +13,6 @@ if (!$loader = @include __DIR__.'/../vendor/autoload.php') {
         'php composer.phar install'.PHP_EOL);
 }
 
-### Load classes needed for jackalope unit tests ###
-require 'Jackalope/TestCase.php';
-require 'Jackalope/Observation/EventFilterTestCase.php';
+$loader->add('Jackalope', array(
+    'tests'
+));
