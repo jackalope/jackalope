@@ -173,4 +173,42 @@ class NodePathIteratorTest extends TestCase
             $res[$target] = $nodes[$target];
         }
     }
+
+    /**
+     * Count should not need any interaction with the object manager.
+     */
+    public function testCount()
+    {
+        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'), null, null, 3);
+        $this->assertCount(8, $iterator);
+    }
+
+    public function testSeek()
+    {
+        $nodes = array();
+        $nodes2 = array();
+        foreach (array('p1', 'p2', 'p3') as $name) {
+            $nodes[$name] = $this->getNodeMock();
+        }
+        foreach (array('p8', 'p9') as $name) {
+            $nodes2[$name] = $this->getNodeMock();
+        }
+
+        $this->objectManager->expects($this->at(0))
+            ->method('getNodesByPathAsArray')
+            ->with(array('p1', 'p2', 'p3'))
+            ->will($this->returnValue($nodes))
+        ;
+        $this->objectManager->expects($this->at(1))
+            ->method('getNodesByPathAsArray')
+            ->with(array('p8', 'p9'))
+            ->will($this->returnValue($nodes2))
+        ;
+
+        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'), null, null, 3);
+        $iterator->seek(7);
+        $iterator->valid();
+
+        $this->assertEquals($nodes2['p8'], $iterator->current());
+    }
 }
