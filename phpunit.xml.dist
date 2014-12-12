@@ -1,6 +1,6 @@
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         colors="false"
+         colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -8,11 +8,11 @@
          stopOnFailure="false"
          syntaxCheck="true"
          strict="false"
-         bootstrap="bootstrap.php">
+         bootstrap="tests/bootstrap.php">
 
     <testsuites>
         <testsuite name="Jackalope Tests">
-            <directory>./Jackalope</directory>
+            <directory>./tests/Jackalope</directory>
         </testsuite>
     </testsuites>
 
