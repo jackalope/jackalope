@@ -90,7 +90,12 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
         );
         $this->qb->from($this->qf->selector('base', "nt:base"));
         $statement = $this->qb->getQuery()->getStatement();
-        $this->assertSame("SELECT s FROM nt:base WHERE (NOT bar = 'foo')", $statement);
+
+        $variations = array(
+            "SELECT s FROM nt:base WHERE NOT bar = 'foo'",
+            "SELECT s FROM nt:base WHERE (NOT bar = 'foo')",
+        );
+        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
     }
 }
 
