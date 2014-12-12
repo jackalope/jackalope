@@ -8,7 +8,7 @@ use Jackalope\Node;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodePathIterator implements \Iterator, \ArrayAccess
+class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
 {
     protected $position = 0;
     protected $nodes = array();
@@ -221,5 +221,21 @@ class NodePathIterator implements \Iterator, \ArrayAccess
     public function offsetUnset($offset)
     {
         throw new \InvalidArgumentException('Node path collection is read only.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function seek($position)
+    {
+        $this->position = $position;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function count()
+    {
+        return count($this->paths);
     }
 }
