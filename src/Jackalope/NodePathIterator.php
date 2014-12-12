@@ -15,6 +15,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
     protected $paths;
     protected $typeFilter;
     protected $class;
+    protected $count = 0;
 
     protected $batchSize;
 
@@ -141,7 +142,13 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         );
 
         foreach ($paths as $path) {
-            $this->nodes[$path] = isset($nodes[$path]) ? $nodes[$path] : null;
+            if (isset($nodes[$path]) && $nodes[$path] !== '') {
+                $this->nodes[$path] =  $nodes[$path];
+                $this->count++;
+            } else {
+                $this->nodes[$path] =  null;
+            }
+
         }
     }
 
@@ -236,6 +243,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
      */
     public function count()
     {
-        return count($this->paths);
+        $this->ensurePathLoaded(count($this->paths));
+        return $this->count;
     }
 }

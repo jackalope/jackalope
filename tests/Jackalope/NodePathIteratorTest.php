@@ -179,7 +179,27 @@ class NodePathIteratorTest extends TestCase
      */
     public function testCount()
     {
-        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'), null, null, 3);
+        $nodes = array();
+        $nodes2 = array();
+        foreach (array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7') as $name) {
+            $nodes[$name] = $this->getNodeMock();
+        }
+        foreach (array('p8') as $name) {
+            $nodes2[$name] = $this->getNodeMock();
+        }
+
+        $this->objectManager->expects($this->at(0))
+            ->method('getNodesByPathAsArray')
+            ->with(array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'))
+            ->will($this->returnValue($nodes))
+        ;
+        $this->objectManager->expects($this->at(1))
+            ->method('getNodesByPathAsArray')
+            ->with(array('p8'))
+            ->will($this->returnValue($nodes2))
+        ;
+
+        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'), null, null, 7);
         $this->assertCount(8, $iterator);
     }
 
