@@ -454,11 +454,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 }
                 break;
             case PropertyType::WEAKREFERENCE:
-                $results = $this->objectManager->getNodesByIdentifier($values);
-                $results = $results->getArrayCopy();
-                if (array_keys($results) != $values) {
-                    throw new ItemNotFoundException('One or more weak reference targets have not been found: ' . implode(',', array_diff(array_keys($results), $values)));
-                }
+                $results = $this->getReferencedNodes($values, true);
                 break;
             case PropertyType::STRING:
                 foreach ($values as $value) {
@@ -469,7 +465,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                     }
                 }
                 break;
-            case PropertyType::PATH:    
+            case PropertyType::PATH:
             case PropertyType::NAME:
                 foreach ($values as $value) {
                     // OPTIMIZE: use objectManager->getNodes instead of looping (but paths need to be absolute then)
@@ -778,5 +774,45 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 unset($this->streams[$k]);
             }
         }
+    }
+
+    /**
+     * Get all nodes for $ids, ordered by that array, with duplicates if there are duplicates in $ids.
+     *
+     * @param string[] $ids  List of ids to fetch.
+     * @param boolean  $weak Whether these are weak references, to throw the right exception.
+     *
+     * @return Node[]
+     *
+     * @throws ItemNotFoundException If not all $ids are found and weak is true.
+     * @throws RepositoryException   If not all $ids are found and weak is false.
+     */
+    private function getReferencedNodes($ids, $weak)
+    {
+        $results = array();
+        $nodes = $this->objectManager->getNodesByIdentifier($ids);
+        $missing = array();
+        foreach ($ids as $id) {
+            if (isset($nodes[$id])) {
+                $results[] = $nodes[$id];
+            } else {
+                $missing[$id] = $id;
+            }
+        }
+        if (count($missing)) {
+            if ($weak) {
+                throw new ItemNotFoundException(sprintf(
+                    'One or more weak reference targets have not been found: "%s".',
+                    implode('", "', $missing)
+                ));
+            } else {
+                throw new RepositoryException(sprintf(
+                    'Internal Error: Could not find one or more referenced nodes: "%s". ' .
+                    'If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+                    implode('", "', $missing)
+                ));
+            }
+        }
+        return $results;
     }
 }
