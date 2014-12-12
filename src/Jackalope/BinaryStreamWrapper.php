@@ -209,6 +209,11 @@ class BinaryStreamWrapper
                 throw new LogicException('Trying to read a stream from a closed transport');
             }
             $property_path = $url['path'];
+            if (!empty($url['query'])) {
+                $property_path .= '?' . $url['query'];
+            } elseif ('?' === $this->path[strlen($this->path) - 1]) {
+                $property_path .= '?';
+            }
             $token = isset($url['user']) ? $url['user'] : null;
             if (null === $token) {
                 $this->stream = $this->session->getObjectManager()->getBinaryStream($property_path);
