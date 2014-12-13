@@ -45,6 +45,11 @@ class PropertyTest extends TestCase
 
         foreach ($nodeUuids as $nodeUuid) {
             $nodes[$nodeUuid] = $this->getNodeMock();
+            $nodes[$nodeUuid]
+                ->expects($this->any())
+                ->method('getIdentifier')
+                ->will($this->returnValue($nodeUuid))
+            ;
         }
 
         $data = array(
