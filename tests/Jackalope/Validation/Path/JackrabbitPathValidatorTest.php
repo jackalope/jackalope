@@ -60,13 +60,7 @@ class JackrabbitPathValidatorTest extends PathValidatorTestCase
             'localname_2' => true,
             'localname_3' => true,
             'localname_4' => true,
-
-            // For some reason \uFFFF does not qualify as being
-            // outside of the banned charcters in the regex in
-            // PHP versions <= 5.5. This could either be a regex
-            // issue or a json_decode issue, but its an
-            // edge case.
-            'localname_5' => !version_compare(phpversion(), '5.5.0', '<'),
+            'localname_5' => true,
         );
     }
 }

@@ -96,7 +96,7 @@ abstract class PathValidatorTestCase extends TestCase
             array('localname_2', 'foo:' . $this->translateCharFromCode('\u0002')),
             array('localname_3', 'foo:' . $this->translateCharFromCode('\u0003')),
             array('localname_4', 'foo:' . $this->translateCharFromCode('\u0008')),
-            array('localname_5', 'foo:' . $this->translateCharFromCode('\uFFFF')),
+            array('localname_5', 'foo:' . $this->translateCharFromCode('\uFFFD')),
         );
     }
 
