@@ -17,10 +17,10 @@
     "minimum-stability": "dev",
     "require": {
         "jackalope/jackalope-transport": "*",
-        "php": ">=5.3.2",
+        "php": ">=5.3.3",
         "ext-xml": "*",
         "phpcr/phpcr-utils": "~1.1",
-        "phpcr/phpcr": "~2.1.0"
+        "phpcr/phpcr": "~2.1.0,>=2.1.0-beta12"
     },
     "provide": {
         "phpcr/phpcr-implementation": "2.1.0"
