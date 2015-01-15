@@ -524,6 +524,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
+        if ($validate && 'jcr:uuid' === $name && !$this->isNodeType('mix:referenceable')) {
+            throw new ConstraintViolationException('You can only change the uuid of newly created nodes that have "referenceable" mixin.');
+        }
+
         if ($validate) {
             $types = $this->getMixinNodeTypes();
             array_push($types, $this->getPrimaryNodeType());
@@ -814,7 +818,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return $this->getPropertyValue('jcr:uuid');
         }
 
-        return null;
+        return $this->getPath();
     }
 
     /**
