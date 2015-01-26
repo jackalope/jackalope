@@ -16,6 +16,11 @@ class Factory implements FactoryInterface
     /**
      * @var array
      */
+    protected $classCache = array();
+    
+    /**
+     * @var array
+     */
     protected $reflectionCache = array();
 
     /**
@@ -23,10 +28,18 @@ class Factory implements FactoryInterface
      */
     public function get($name, array $params = array())
     {
-        if (class_exists('Jackalope\\' . $name)) {
-            $name = 'Jackalope\\' . $name;
-        } elseif (! class_exists($name)) {
-            throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
+        if (isset($this->classCache[$name])) {
+            $name = $this->classCache[$name];
+        } else {
+            $originalName = $name;
+
+            if (class_exists('Jackalope\\' . $name)) {
+                $name = 'Jackalope\\' . $name;
+            } elseif (! class_exists($name)) {
+                throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
+            }
+            
+            $this->classCache[$originalName] = $name;
         }
 
         if (0 === strpos($name, 'Jackalope\\')) {
