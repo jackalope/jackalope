@@ -95,7 +95,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         $xml = new FilteredXMLReader;
-        $xml->open($uri);
+        $xml->open($uri, null, LIBXML_PARSEHUGE);
         if (libxml_get_errors()) {
             libxml_use_internal_errors($use_errors);
             throw new InvalidSerializedDataException("Invalid xml file $uri");
