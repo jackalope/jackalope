@@ -88,6 +88,15 @@ class AccessControlManager implements AccessControlManagerInterface
      */
     public function getApplicablePolicies($absPath)
     {
+        if (count($this->getPolicies($absPath)) {
+            return array();
+        }
+
+        return array(new AccessControlList($this->factory));
+
+        // if there is no accees control list on this path yet, we return a new unbound list
+        // otherwise its just an empty array.
+
 //        return array(new AccessControlList());
         // only bind on setPolicy
     }
@@ -97,7 +106,11 @@ class AccessControlManager implements AccessControlManagerInterface
      */
     public function setPolicy($absPath, AccessControlPolicyInterface $policy)
     {
-        // TODO: track this so its saved
+        if (!$policy instanceof AccessControlList) {
+            throw new \InvalidArgumentException('Invalid policy given');
+        }
+
+        $this->om->setPolicy($absPath, $policy);
     }
 
     /**

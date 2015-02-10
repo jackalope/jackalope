@@ -4,7 +4,10 @@ namespace Jackalope;
 use ArrayIterator;
 use InvalidArgumentException;
 
+use Jackalope\Security\AccessControlList;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Transport\SetPolicyOperation;
+use PHPCR\Security\AccessControlPolicyInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -150,6 +153,8 @@ class ObjectManager
      * @var MoveNodeOperation[]
      */
     protected $nodesMove = array();
+
+    protected $policies = array();
 
     /**
      * Create the ObjectManager instance with associated session and transport
@@ -939,6 +944,9 @@ class ObjectManager
                 break;
             case Operation::REMOVE_PROPERTY:
                 $this->transport->deleteProperties($operations);
+                break;
+            case Operation::SET_POLICY:
+                $this->transport->setPolicy($operations);
                 break;
             //TODO: operation for acl changes
             default:
@@ -1810,5 +1818,12 @@ class ObjectManager
     public function getPolicies($path)
     {
         return $this->getNodeByPath($path . 'rep:policy', 'Security\AccessControlList');
+    }
+
+    public function setPolicy($absPath, AccessControlPolicyInterface $policy)
+    {
+        $operation = new SetPolicyOperation($absPath, $policy);
+
+        $this->operationsLog[] = $operation;
     }
 }

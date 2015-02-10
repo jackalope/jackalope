@@ -13,6 +13,23 @@ use PHPCR\Security\PrincipalInterface;
  */
 class AccessControlList extends Node implements AccessControlListInterface
 {
+    private $bound = false;
+
+    public function isModified()
+    {
+        return false;
+    }
+
+    public function isBound()
+    {
+        return $this->bound;
+    }
+
+    public function setBound($bound)
+    {
+        $this->bound =$bound;
+    }
+
     /**
      * {@inheritDoc}
      */
