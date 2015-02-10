@@ -2,41 +2,52 @@
 
 namespace Jackalope\Security;
 
-use Jackalope\Node;
+use Jackalope\FactoryInterface;
+use PHPCR\NodeInterface;
 use PHPCR\Security\AccessControlEntryInterface;
 use PHPCR\Security\AccessControlException;
 use PHPCR\Security\AccessControlListInterface;
+use PHPCR\Security\AccessControlManagerInterface;
 use PHPCR\Security\PrincipalInterface;
 
 /**
  * {@inheritDoc}
  */
-class AccessControlList extends Node implements AccessControlListInterface
+class AccessControlList extends AccessControlPolicy implements \IteratorAggregate, AccessControlListInterface
 {
-    private $bound = false;
+    private $aceList = array();
 
-    public function isModified()
+    /**
+     * @param FactoryInterface $factory
+     * @param NodeInterface $node
+     */
+    public function __construct(FactoryInterface $factory, AccessControlManagerInterface $acm, NodeInterface $node = null)
     {
-        return false;
+        $this->factory = $factory;
+        $this->acm = $acm;
+        $this->node = $node;
     }
 
-    public function isBound()
+    public function getIterator()
     {
-        return $this->bound;
+        return new \ArrayIterator($this->getAccessControlEntries());
     }
-
-    public function setBound($bound)
-    {
-        $this->bound =$bound;
-    }
-
     /**
      * {@inheritDoc}
      */
     public function getAccessControlEntries()
     {
-        // TODO: make these AccessControlEntry not node
-        return $this->getNodes(null, 'rep:ACE');
+        if (!$this->aceList && $this->node) {
+            foreach ($this->node->getNodes(null, 'rep:ACE') as $aceNode) {
+                $privileges = array();
+                foreach ($aceNode->getPropertyValue('privileges') as $priv) {
+                    $privileges[] = $this->acm->privilegeFromName($priv);
+                }
+                $this->aceList[] = new AccessControlEntry(new Principal($aceNode->getProperty('principal')), $privileges);
+            }
+        }
+
+        return $this->aceList;
     }
 
     /**
@@ -46,7 +57,7 @@ class AccessControlList extends Node implements AccessControlListInterface
     {
 //        $this->add
         // TODO factory?
-        $this->entries[] = new AccessControlEntry($principal, $privileges);
+        $this->aceList[] = new AccessControlEntry($principal, $privileges);
     }
 
     /**
@@ -54,8 +65,8 @@ class AccessControlList extends Node implements AccessControlListInterface
      */
     public function removeAccessControlEntry(AccessControlEntryInterface $ace)
     {
-        if ($key = array_search($ace, $this->entries, true)) {
-            unset($this->entries[$key]);
+        if ($key = array_search($ace, $this->aceList, true)) {
+            unset($this->aceList[$key]);
 
             return;
         }

@@ -205,6 +205,7 @@ class ObjectManager
 
         // do this even if we have item in cache, will throw error if path is deleted - sanity check
         $fetchPath = $this->getFetchPath($absPath, $class);
+
         if (!$object) {
             // this is the first request, get data from transport
             $object = $this->transport->getNode($fetchPath);
@@ -1817,7 +1818,11 @@ class ObjectManager
 
     public function getPolicies($path)
     {
-        return $this->getNodeByPath($path . 'rep:policy', 'Security\AccessControlList');
+        try {
+            return array($this->factory->get('Security\AccessControlList', array($this->session->getAccessControlManager(), $this->getNodeByPath($path . '/rep:policy', 'Security\AccessControlList'))));
+        } catch (ItemNotFoundException $e) {
+            return array();
+        }
     }
 
     public function setPolicy($absPath, AccessControlPolicyInterface $policy)

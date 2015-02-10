@@ -13,31 +13,9 @@ class Principal implements PrincipalInterface
      */
     private $name;
 
-    /**
-     * @var string
-     */
-    private $hash;
-
-    public function __construct($name, $hash)
+    public function __construct($name)
     {
         $this->name = $name;
-        $this->hash = $hash;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function equals($object)
-    {
-        // TODO
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hashCode()
-    {
-        return $this->hash;
     }
 
     /**

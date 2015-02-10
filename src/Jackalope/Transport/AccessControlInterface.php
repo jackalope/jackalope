@@ -15,7 +15,7 @@ interface AccessControlInterface extends TransportInterface
 
     public function getSupportedPrivileges($path = null);
 
-    public function setPolicy(SetPolicyOperation $operation);
+    public function setPolicy(array $operation);
 
     // TODO: store
 }

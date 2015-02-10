@@ -9,7 +9,7 @@ use PHPCR\Security\PrivilegeInterface;
 /**
  * {@inheritDoc}
  */
-class AccessControlEntry implements AccessControlEntryInterface
+class AccessControlEntry implements \IteratorAggregate, AccessControlEntryInterface
 {
     /**
      * @var PrincipalInterface
@@ -26,6 +26,11 @@ class AccessControlEntry implements AccessControlEntryInterface
         $this->principal = $principal;
         // TODO: validate privileges
         $this->privileges = $privileges;
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->privileges);
     }
 
     /**
