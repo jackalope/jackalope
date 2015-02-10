@@ -26,6 +26,18 @@ class AccessControlList extends AccessControlPolicy implements \IteratorAggregat
         $this->factory = $factory;
         $this->acm = $acm;
         $this->node = $node;
+
+        // TODO think about lazy initialization
+        if ($this->node) {
+            foreach ($this->node->getNodes(null, 'rep:ACE') as $aceNode) {
+                $privileges = array();
+                foreach ($aceNode->getPropertyValue('privileges') as $priv) {
+                    $privileges[] = $this->acm->privilegeFromName($priv);
+                }
+                $this->aceList[] = new AccessControlEntry(new Principal($aceNode->getProperty('principal')), $privileges);
+            }
+        }
+
     }
 
     public function getIterator()
@@ -37,16 +49,6 @@ class AccessControlList extends AccessControlPolicy implements \IteratorAggregat
      */
     public function getAccessControlEntries()
     {
-        if (!$this->aceList && $this->node) {
-            foreach ($this->node->getNodes(null, 'rep:ACE') as $aceNode) {
-                $privileges = array();
-                foreach ($aceNode->getPropertyValue('privileges') as $priv) {
-                    $privileges[] = $this->acm->privilegeFromName($priv);
-                }
-                $this->aceList[] = new AccessControlEntry(new Principal($aceNode->getProperty('principal')), $privileges);
-            }
-        }
-
         return $this->aceList;
     }
 

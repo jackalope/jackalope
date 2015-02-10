@@ -11,8 +11,6 @@ use PHPCR\Security\AccessControlPolicyInterface;
  */
 interface AccessControlInterface extends TransportInterface
 {
-    public function getPolicies($path);
-
     public function getSupportedPrivileges($path = null);
 
     public function setPolicy(array $operation);
