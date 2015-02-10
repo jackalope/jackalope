@@ -5,8 +5,10 @@ use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use Jackalope\Transport\AccessControlInterface;
 use PHPCR\RepositoryException;
+use PHPCR\Security\AccessControlException;
 use PHPCR\Security\AccessControlManagerInterface;
 use PHPCR\Security\AccessControlPolicyInterface;
+use PHPCR\Security\PrivilegeInterface;
 
 /**
  * {@inheritDoc}
@@ -28,6 +30,11 @@ class AccessControlManager implements AccessControlManagerInterface
      */
     private $transport;
 
+    /**
+     * @var PrivilegeInterface[]
+     */
+    private $supportedPrivilegesByPath = array();
+
     public function __construct(FactoryInterface $factory, ObjectManager $om, AccessControlInterface $transport)
     {
         $this->factory = $factory;
@@ -40,7 +47,11 @@ class AccessControlManager implements AccessControlManagerInterface
      */
     public function getSupportedPrivileges($absPath = null)
     {
-        return $this->transport->getSupportedPrivileges($absPath);
+        if (!isset($this->supportedPrivilegesByPath[$absPath])) {
+            $this->supportedPrivilegesByPath[$absPath] = $this->transport->getSupportedPrivileges($absPath);
+        }
+
+        return $this->supportedPrivilegesByPath[$absPath];
     }
 
     /**
@@ -48,7 +59,19 @@ class AccessControlManager implements AccessControlManagerInterface
      */
     public function privilegeFromName($privilegeName)
     {
-        return new Privilege($privilegeName);
+        foreach ($this->getSupportedPrivileges() as $privilege) {
+            if ($privilegeName === $privilege->getName()) {
+                return $privilege;
+            }
+
+            foreach ($privilege->getAggregatePrivileges() as $childPrivilege) {
+                if ($privilegeName === $childPrivilege->getName()) {
+                    return $childPrivilege;
+                }
+            }
+        }
+
+        throw new AccessControlException($privilegeName);
     }
 
     /**

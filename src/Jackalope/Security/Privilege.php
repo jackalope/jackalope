@@ -15,9 +15,14 @@ class Privilege implements PrivilegeInterface
     private $name;
 
     /**
-     * @var array
+     * @var PrivilegeInterface[]
      */
     private $declaredAggregate;
+
+    /**
+     * @var PrivilegeInterface[]
+     */
+    private $aggregate = array();
 
     public function __construct($name, $declaredAggregate = array())
     {
@@ -38,7 +43,7 @@ class Privilege implements PrivilegeInterface
      */
     public function isAbstract()
     {
-        // TODO: how to know this?
+        return false;
     }
 
     /**
@@ -46,7 +51,7 @@ class Privilege implements PrivilegeInterface
      */
     public function isAggregate()
     {
-        return count($this->aggregate) > 0;
+        return count($this->declaredAggregate) > 0;
     }
 
     /**
@@ -62,6 +67,13 @@ class Privilege implements PrivilegeInterface
      */
     public function getAggregatePrivileges()
     {
+        if (!$this->aggregate) {
+            foreach ($this->declaredAggregate as $privilege) {
+                $this->aggregate[] = $privilege;
+                $this->aggregate = array_merge($this->aggregate, $privilege->getAggregatePrivileges());
+            }
+        }
+
         return $this->aggregate;
     }
 }
