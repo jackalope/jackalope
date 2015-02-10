@@ -940,6 +940,7 @@ class ObjectManager
             case Operation::REMOVE_PROPERTY:
                 $this->transport->deleteProperties($operations);
                 break;
+            //TODO: operation for acl changes
             default:
                 throw new \Exception('internal error: unknown operation "' . $type . '"');
         }
@@ -1804,5 +1805,10 @@ class ObjectManager
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
         return true;
+    }
+
+    public function getPolicies($path)
+    {
+        return $this->getNodeByPath($path . 'rep:policy', 'Security\AccessControlList');
     }
 }
