@@ -27,7 +27,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Map return values to methods on given mock objects.
      *
-     * @param 
+     * @param
      * @param array
      */
     private function mapMockMethodReturnValues($mock, $methodsToValues)
