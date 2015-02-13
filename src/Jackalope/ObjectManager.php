@@ -590,8 +590,8 @@ class ObjectManager
     /**
      * Get the nodes identified by the given UUIDs.
      *
-     * Note UUIDs that are not found will be ignored. Also, the order of the
-     * identifiers may not be preserved.
+     * Note UUIDs that are not found will be ignored. Also, duplicate IDs
+     * will be eliminated by nature of using the IDs as keys.
      *
      * @param array  $identifiers UUIDs of nodes to retrieve.
      * @param string $class       Optional class name for the factory.
