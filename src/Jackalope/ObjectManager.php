@@ -596,7 +596,7 @@ class ObjectManager
      */
     public function getNodesByIdentifier($identifiers, $class = 'Node')
     {
-        $nodes = $fetchIdentifiers = array();
+        $nodes = $fetchPaths = array();
 
         foreach ($identifiers as $uuid) {
             if (!empty($this->objectsByUuid[$uuid])
@@ -606,6 +606,7 @@ class ObjectManager
                 $nodes[$uuid] = $this->objectsByPath[$class][$this->objectsByUuid[$uuid]];
             } else {
                 $fetchPaths[$uuid] = $uuid;
+                $nodes[$uuid] = $uuid; // keep position
             }
         }
 
@@ -616,9 +617,19 @@ class ObjectManager
                 // TODO: $absPath is the backend path. we should inverse the getFetchPath operation here
                 // build the node from the received data
                 $node = $this->getNodeByPath($absPath, $class, $item);
-                $nodes[$node->getIdentifier()] = $node;
+                $found[$node->getIdentifier()] = $node;
+            }
+            foreach ($nodes as $key => $node) {
+                if (is_string($node)) {
+                    if (isset($found[$node])) {
+                        $nodes[$key] = $found[$node];
+                    } else {
+                        unset($nodes[$key]);
+                    }
+                }
             }
         }
+        reset($nodes);
 
         return new ArrayIterator($nodes);
     }

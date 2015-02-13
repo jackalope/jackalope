@@ -2,8 +2,67 @@
 
 namespace Jackalope;
 
+use PHPCR\PropertyType;
+
 class PropertyTest extends TestCase
 {
+    public function provideGetNode()
+    {
+        return array(
+            array(
+                array('1234-1234', '4321-4321'),
+                array(),
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('1234-1234'),
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('1234-1234', '4321-4321'),
+            ),
+            array(
+                array('1234-1234', '4321-4321'),
+                array('4321-4321', '1234-1234'),
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider provideGetNode
+     */
+    public function testGetNode($values, $nodeUuids, $exceptionMessage = null)
+    {
+        if ($exceptionMessage) {
+            $this->setExpectedException('PHPCR\RepositoryException', $exceptionMessage);
+        }
+
+        $nodes = new \ArrayObject();
+
+        foreach ($nodeUuids as $nodeUuid) {
+            $nodes[$nodeUuid] = $this->getNodeMock();
+            $nodes[$nodeUuid]
+                ->expects($this->any())
+                ->method('getIdentifier')
+                ->will($this->returnValue($nodeUuid))
+            ;
+        }
+
+        $data = array(
+            'type' => PropertyType::REFERENCE, 'value' => $values,
+        );
+        $factory = new Factory();
+        $session = $this->getSessionMock();
+        $objectManager = $this->getObjectManagerMock(array(
+            'getNodesByIdentifier' => $nodes
+        ));
+        $property = new Property($factory, $data, '/path/to', $session, $objectManager);
+        $property->getNode();
+    }
+
     public function testTypeInstances()
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
