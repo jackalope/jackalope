@@ -588,12 +588,13 @@ class ObjectManager
     }
 
     /**
-     * Get the nodes identified by the given uuids
+     * Get the nodes identified by the given UUIDs.
      *
-     * Note uuids that are not found will be ignored
+     * Note UUIDs that are not found will be ignored. Also, the order of the
+     * identifiers may not be preserved.
      *
-     * @param array  $identifiers uuid
-     * @param string $class       optional class name for the factory
+     * @param array  $identifiers UUIDs of nodes to retrieve.
+     * @param string $class       Optional class name for the factory.
      *
      * @return Node[] Iterator of the specified nodes keyed by their unique ids
      *
