@@ -25,6 +25,23 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Map return values to methods on given mock objects.
+     *
+     * @param
+     * @param array
+     */
+    private function mapMockMethodReturnValues($mock, $methodsToValues)
+    {
+        foreach ($methodsToValues as $method => $value) {
+            $mock->expects($this->any())
+                ->method($method)
+                ->will($this->returnValue($value));
+        }
+
+        return $mock;
+    }
+
+    /**
      * Get a mock object for the read only transport.
      *
      * @return \Jackalope\Transport\TransportInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -124,9 +141,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return \Jackalope\ObjectManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getObjectManagerMock()
+    protected function getObjectManagerMock($methodValueMap = array())
     {
-        return $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
+        $this->mapMockMethodReturnValues($mock, $methodValueMap);
+
+        return $mock;
     }
 
     /**

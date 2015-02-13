@@ -12,12 +12,12 @@ class PropertyTest extends TestCase
             array(
                 array('1234-1234', '4321-4321'),
                 array(),
-                'Could not find one or more referenced nodes: "1234-1234", "4321-4321"',
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
             ),
             array(
                 array('1234-1234', '4321-4321'),
                 array('1234-1234'),
-                'Could not find one or more referenced nodes: "4321-4321"',
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
             ),
             array(
                 array('1234-1234', '4321-4321'),
@@ -26,6 +26,7 @@ class PropertyTest extends TestCase
             array(
                 array('1234-1234', '4321-4321'),
                 array('4321-4321', '1234-1234'),
+                'Internal Error: Could not find a referenced node. If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
             ),
         );
     }
