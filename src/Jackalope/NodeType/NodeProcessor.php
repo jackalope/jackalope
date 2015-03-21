@@ -9,11 +9,11 @@ use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
+use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\NamespaceException;
 
-use Jackalope\Transport\Operation;
 use Jackalope\Transport\AddNodeOperation;
 
 /**
@@ -21,7 +21,7 @@ use Jackalope\Transport\AddNodeOperation;
  *
  * - Validates properties
  * - Auto-generates property values
- * - Generates additional node addition operations that follow from the node definition.
+ * - Generates extra node addition operations that follow from the node definition.
  *
  * Adapted from the jackalope-doctrine-dbal implementation:
  * https://github.com/jackalope/jackalope-doctrine-dbal/blob/31cca1d1fb7fbe56423fa34478e15ce6d93313fd/src/Jackalope/Transport/DoctrineDBAL/Client.php
@@ -57,25 +57,6 @@ $/xi";
     const VALIDATE_STRING = '/[^\x{9}\x{a}\x{d}\x{20}-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]+/u';
 
     /**
-     * Regex to assert the a string is a valid PATH
-     *
-     * TODO: better regexp for this validation.
-     *
-     * We had /^((\/|..)?[-a-zA-Z0-9:_]+)+$/ which is too strict.
-     * We need to allow many more characters in the name, and we need to allow
-     * relative paths.
-     */
-    const VALIDATE_PATH = '(((/|..)?[-a-zA-Z0-9:_]+)+)';
-
-    /**
-     * List of additional operations that need to be done because of the node
-     * definition, For example, adding an autocreated child node.
-     *
-     * @var Operation[]
-     */
-    private $additionalOperations = array();
-
-    /**
      * @var string ID of the connected user
      */
     private $userId;
@@ -107,30 +88,30 @@ $/xi";
     }
 
     /**
-     * Process the given node.
-     *
-     * TODO: Either we should have this method return the additional operations, or call getAdditionalOperations
+     * Process the given node and return eventual extra operations determined from the node.
      *
      * @param NodeInterface $node
+     *
+     * @return AddNodeOperation[] Additional operations that the client must execute for autocreated nodes.
      */
     public function process(NodeInterface $node)
     {
         $this->validateNamespace($node->getName());
-        $this->additionalOperations = array();
 
         $nodeDef = $node->getPrimaryNodeType();
         $nodeTypes = $node->getMixinNodeTypes();
         array_unshift($nodeTypes, $nodeDef);
 
+        $additionalOperations = array();
         foreach ($nodeTypes as $nodeType) {
             /* @var $nodeType NodeTypeDefinitionInterface */
-            $this->processNodeWithType($node, $nodeType);
+            $additionalOperations = array_merge(
+                $additionalOperations,
+                $this->processNodeWithType($node, $nodeType)
+            );
         }
-    }
 
-    public function getAdditionalOperations()
-    {
-        return $this->additionalOperations;
+        return $additionalOperations;
     }
 
     /**
@@ -139,9 +120,13 @@ $/xi";
      *
      * @param NodeInterface $node
      * @param NodeType      $nodeTypeDefinition
+     *
+     * @return AddNodeOperation[] Additional operations to handle autocreated nodes.
      */
     private function processNodeWithType(NodeInterface $node, NodeType $nodeTypeDefinition)
     {
+        $additionalOperations = array();
+
         foreach ($nodeTypeDefinition->getDeclaredChildNodeDefinitions() as $childDef) {
             /* @var $childDef NodeDefinitionInterface */
             if (!$node->hasNode($childDef->getName())) {
@@ -164,7 +149,7 @@ $/xi";
                     $newNode = $node->addNode($childDef->getName(), $primaryType);
                     $absPath = $node->getPath() . '/' . $childDef->getName();
                     $operation = new AddNodeOperation($absPath, $newNode);
-                    $this->additionalOperations[] = $operation;
+                    $additionalOperations[] = $operation;
                 }
             }
         }
@@ -253,6 +238,8 @@ $/xi";
         foreach ($node->getProperties() as $property) {
             $this->assertValidProperty($property);
         }
+
+        return $additionalOperations;
     }
 
     /**
@@ -292,12 +279,11 @@ $/xi";
                     $values = array($values);
                 }
                 foreach ($values as $value) {
-                    if (!preg_match(self::VALIDATE_PATH, $value)) {
-                        throw new ValueFormatException(sprintf(
-                            'Value "%s" for PATH property at "%s" is invalid. Segments are separated by / and allowed chars are -a-zA-Z0-9:_',
-                            $value,
-                            $property->getPath()
-                        ));
+                    try {
+                        // making the path absolute also validates the result to be a valid path
+                        PathHelper::absolutizePath($value, $property->getPath());
+                    } catch (RepositoryException $e) {
+                        throw new ValueFormatException(sprintf('Value "%s" for PATH property at "%s" is invalid', $value, $property->getPath()), 0, $e);
                     }
                 }
                 break;

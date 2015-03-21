@@ -78,10 +78,9 @@ class NodeProcessorTest extends TestCase
             ->with('node-definition', 'type1')
             ->will($this->returnValue($newNode));
 
-        $this->processor->process($node);
-        $res = $this->processor->getAdditionalOperations();
+        $res = $this->processor->process($node);
 
-        $this->assertNotNull($res);
+        $this->assertInternalType('array', $res);
         $this->assertCount(1, $res);
         $operation = reset($res);
         $this->assertInstanceOf('Jackalope\Transport\AddNodeOperation', $operation);
@@ -314,17 +313,15 @@ class NodeProcessorTest extends TestCase
                 ),
                 null,
             ),
-            /*
             array(
                 array(
                     'getType' => PropertyType::PATH,
                     'isMultiple' => false,
-                    'getValue' => '  pathto££333+_123£³[]/something[&&"£$]',
+                    'getValue' => '  pathto££333+_123£³[]/something[&&"£$]/',
                     'getPath' => '/path/to',
                 ),
-                'Value "  pathto££333+_123£³[]/something[&&"£$]" for PATH property at "/path/to" is invalid',
+                'Value "  pathto££333+_123£³[]/something[&&"£$]/" for PATH property at "/path/to" is invalid',
             ),
-            */
             array(
                 array(
                     'getType' => PropertyType::URI,
