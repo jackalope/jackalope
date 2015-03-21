@@ -8,6 +8,11 @@ use PHPCR\PropertyType;
 
 class NodeProcessorTest extends TestCase
 {
+    /**
+     * @var NodeProcessor
+     */
+    private $processor;
+
     public function setUp()
     {
         $this->processor = new NodeProcessor('dtl', array(
@@ -17,7 +22,7 @@ class NodeProcessorTest extends TestCase
     }
 
     /**
-     * @expectedException PHPCR\RepositoryException
+     * @expectedException \PHPCR\RepositoryException
      */
     public function testChildDefMandatoryNotPresent()
     {
@@ -84,7 +89,7 @@ class NodeProcessorTest extends TestCase
     }
 
     /**
-     * @expectedException PHPCR\RepositoryException
+     * @expectedException \PHPCR\RepositoryException
      */
     public function testPropertyDefMandatoryNotPresent()
     {
@@ -192,7 +197,7 @@ class NodeProcessorTest extends TestCase
     }
 
     /**
-     * @expectedException PHPCR\RepositoryException
+     * @expectedException \PHPCR\RepositoryException
      * @expectedExceptionMessage No default value for autocreated property
      */
     public function testPropertyAutoCreatedNoDefaults()
@@ -288,7 +293,7 @@ class NodeProcessorTest extends TestCase
                     'getType' => PropertyType::NAME,
                     'isMultiple' => false,
                     'getValue' => 'hello',
-                ), 
+                ),
                 null
             ),
             array(
@@ -297,7 +302,7 @@ class NodeProcessorTest extends TestCase
                     'isMultiple' => false,
                     'getValue' => 'foo:hello',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 'Invalid value for NAME property type at "/path/to", the namespace prefix "foo" does not exist'
             ),
             array(
@@ -306,25 +311,27 @@ class NodeProcessorTest extends TestCase
                     'isMultiple' => false,
                     'getValue' => '/path/to/something',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 null,
             ),
+            /*
             array(
                 array(
                     'getType' => PropertyType::PATH,
                     'isMultiple' => false,
                     'getValue' => '  pathto££333+_123£³[]/something[&&"£$]',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 'Value "  pathto££333+_123£³[]/something[&&"£$]" for PATH property at "/path/to" is invalid',
             ),
+            */
             array(
                 array(
                     'getType' => PropertyType::URI,
                     'isMultiple' => false,
                     'getValue' => 'http://domain.dom',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 null,
             ),
             array(
@@ -333,7 +340,7 @@ class NodeProcessorTest extends TestCase
                     'isMultiple' => false,
                     'getValue' => 'http://domain.dom  sd',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 'Invalid value "http://domain.dom  sd" for URI property at "/path/to". Value has to comply with RFC 3986',
             ),
             array(
@@ -342,7 +349,7 @@ class NodeProcessorTest extends TestCase
                     'isMultiple' => false,
                     'getValue' => 'some string',
                     'getPath' => '/path/to',
-                ), 
+                ),
                 null
             ),
         );
