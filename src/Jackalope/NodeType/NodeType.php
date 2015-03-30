@@ -185,7 +185,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
         } catch (ValueFormatException $e) {
             if ($throw) {
-                throw new ValueFormatException($propertyName.': '.$e->getMessage(), $e->getCode(), $e);
+                throw new ValueFormatException(sprintf('Invalid value for property "%s": %s', $propertyName, $e->getMessage()), $e->getCode(), $e);
             }
 
             return false;
@@ -227,6 +227,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         // now check if any of the wildcards matches
+        /** @var $prop PropertyDefinition */
         foreach ($wildcards as $prop) {
             if (is_array($value) != $prop->isMultiple()) {
                 continue;
