@@ -5,6 +5,8 @@ use ArrayIterator;
 use InvalidArgumentException;
 
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Version\VersionHandler;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -828,6 +830,10 @@ class ObjectManager
                         $this->transport->updateProperties($node);
                         if ($node->needsChildReordering()) {
                             $this->transport->reorderChildren($node);
+                        }
+                        // add versioning properties
+                        if ($node->isNodeType(VersionHandler::MIX_VERSIONABLE)) {
+                            VersionHandler::addVersionProperties($node, $this->transport);
                         }
                     }
                 }

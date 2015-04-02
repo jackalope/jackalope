@@ -8,6 +8,7 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
+use Jackalope\Version\VersionHandler;
 use PHPCR\RepositoryException;
 use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
@@ -161,12 +162,14 @@ $/xi";
             }
 
             if (!$node->hasProperty($propertyDef->getName())) {
-                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated()) {
+                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated() &&
+                    $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
+                ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
-                         $propertyDef->getName(),
-                         $nodeTypeDefinition->getName(),
-                         $node->getPath()
+                        $propertyDef->getName(),
+                        $nodeTypeDefinition->getName(),
+                        $node->getPath()
                     ));
                 }
 
@@ -193,7 +196,7 @@ $/xi";
                                 $value = $defaultValues;
                             } elseif (isset($defaultValues[0])) {
                                 $value = $defaultValues[0];
-                            } else {
+                            } elseif ($nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE) {
                                 // When implementing versionable or activity, we need to handle more properties explicitly
                                 throw new RepositoryException(sprintf(
                                     'No default value for autocreated property "%s" at "%s"',
@@ -212,7 +215,7 @@ $/xi";
             } elseif ($propertyDef->isAutoCreated()) {
                 $prop = $node->getProperty($propertyDef->getName());
                 if (!$prop->isModified() && !$prop->isNew()) {
-                    switch($propertyDef->getName()) {
+                    switch ($propertyDef->getName()) {
                         case 'jcr:lastModified':
                             if ($this->autoLastModified) {
                                 $prop->setValue(new \DateTime());
@@ -269,7 +272,7 @@ $/xi";
                                 $property->getPath(),
                                 $prefix
                             ));
-                            }
+                        }
                     }
                 }
                 break;
@@ -304,7 +307,7 @@ $/xi";
                 break;
             case PropertyType::DECIMAL:
             case PropertyType::STRING:
-                $values = (array) $property->getValue();
+                $values = (array)$property->getValue();
                 foreach ($values as $value) {
                     if (0 !== preg_match(self::VALIDATE_STRING, $value)) {
                         throw new ValueFormatException(sprintf(
