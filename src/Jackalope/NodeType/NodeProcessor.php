@@ -2,19 +2,19 @@
 
 namespace Jackalope\NodeType;
 
+use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
+use Jackalope\Version\VersionHandler;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
-use Jackalope\Version\VersionHandler;
 use PHPCR\RepositoryException;
 use PHPCR\Util\PathHelper;
-use PHPCR\ValueFormatException;
 use PHPCR\Util\UUIDHelper;
-use PHPCR\NamespaceException;
 use Jackalope\Transport\AddNodeOperation;
+use PHPCR\ValueFormatException;
 
 /**
  * This class processes according to its declared node types.
@@ -171,8 +171,8 @@ $/xi";
             }
 
             if (!$node->hasProperty($propertyDef->getName())) {
-                if ($propertyDef->isMandatory()
-                    && !$propertyDef->isAutoCreated()
+                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated() &&
+                    $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
                 ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
@@ -205,7 +205,8 @@ $/xi";
                                 $value = $defaultValues;
                             } elseif (isset($defaultValues[0])) {
                                 $value = $defaultValues[0];
-                            } else {
+                            } elseif ($nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE) {
+                                // When implementing versionable or activity, we need to handle more properties explicitly
                                 throw new RepositoryException(sprintf(
                                     'No default value for autocreated property "%s" at "%s"',
                                     $propertyDef->getName(),

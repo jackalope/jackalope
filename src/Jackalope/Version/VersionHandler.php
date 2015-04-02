@@ -2,7 +2,6 @@
 
 namespace Jackalope\Version;
 
-use Jackalope\Property;
 use Jackalope\Session;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;

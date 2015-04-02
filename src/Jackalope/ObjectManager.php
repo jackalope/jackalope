@@ -5,6 +5,8 @@ use ArrayIterator;
 use InvalidArgumentException;
 use Jackalope\Transport\NodeTypeFilterInterface;
 use Jackalope\Version\GenericVersioningInterface;
+use Jackalope\Version\VersionHandler;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
