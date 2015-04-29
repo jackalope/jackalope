@@ -28,6 +28,13 @@ class DebugStack implements LoggerInterface
     public $enabled = true;
 
     /**
+     * Show the debug backtrace for each call
+     *
+     * @var boolean
+     */
+    public $backtrace = false;
+
+    /**
      * @var float|null
      */
     public $start = null;
@@ -44,8 +51,19 @@ class DebugStack implements LoggerInterface
     {
         if ($this->enabled) {
             $this->start = microtime(true);
-            $this->calls[++$this->currentQuery] = array('method' => $method, 'params' => $params, 'env' => $env, 'executionMS' => 0);
+            $call = array('method' => $method, 'params' => $params, 'env' => $env, 'executionMS' => 0);
+
+            if (true === $this->backtrace) {
+                $call['caller'] = $this->getBacktrace();
+            }
+
+            $this->calls[++$this->currentQuery] = $call;
         }
+    }
+
+    public function enableBacktrace()
+    {
+        $this->backtrace = true;
     }
 
     /**
@@ -56,5 +74,32 @@ class DebugStack implements LoggerInterface
         if ($this->enabled) {
             $this->calls[$this->currentQuery]['executionMS'] = microtime(true) - $this->start;
         }
+    }
+
+    /**
+     * Return a simple backtrace showing, for each caller, the class, function and line number.
+     *
+     * @retrun array
+     */
+    private function getBacktrace()
+    {
+        $fullBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
+        $backtrace = array();
+        foreach ($fullBacktrace as $trace) {
+            $string = '';
+            if (isset($trace['class'])) {
+                $string .= $trace['class'];
+            }
+            if (isset($trace['function'])) {
+                $string .= '->' . $trace['function'];
+            }
+            if (isset($trace['line'])) {
+                $string .= '#' . $trace['line'];
+            }
+            $backtrace[] = $string;
+        }
+
+        return $backtrace;
     }
 }
