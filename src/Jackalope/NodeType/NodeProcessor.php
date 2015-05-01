@@ -2,6 +2,7 @@
 
 namespace Jackalope\NodeType;
 
+use Doctrine\Common\Version;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
@@ -73,6 +74,11 @@ $/xi";
     private $namespaces = array();
 
     /**
+     * @var VersionHandler
+     */
+    private $versionHandler;
+
+    /**
      * @param string  $userId           ID of the connected user
      * @param array   $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
      * @param boolean $autoLastModified Whether the last modified property should be updated automatically
@@ -80,12 +86,14 @@ $/xi";
     public function __construct(
         $userId,
         $namespaces = array(),
-        $autoLastModified = true
+        $autoLastModified = true,
+        VersionHandler $versionHandler = null
     )
     {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
+        $this->versionHandler = $versionHandler;
     }
 
     /**
@@ -128,6 +136,10 @@ $/xi";
     {
         $additionalOperations = array();
 
+        if ($nodeTypeDefinition->isNodeType(VersionHandler::MIX_SIMPLE_VERSIONABLE)) {
+            $additionalOperations = $this->versionHandler->addVersionProperties($node);
+        }
+
         foreach ($nodeTypeDefinition->getDeclaredChildNodeDefinitions() as $childDef) {
             /* @var $childDef NodeDefinitionInterface */
             if (!$node->hasNode($childDef->getName())) {
@@ -162,8 +174,9 @@ $/xi";
             }
 
             if (!$node->hasProperty($propertyDef->getName())) {
-                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated() &&
-                    $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
+                if ($propertyDef->isMandatory()
+                    && !$propertyDef->isAutoCreated()
+                    && $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
                 ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
