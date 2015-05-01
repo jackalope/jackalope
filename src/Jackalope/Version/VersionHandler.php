@@ -7,6 +7,7 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;
 use PHPCR\InvalidItemStateException;
 use PHPCR\NodeInterface;
+use PHPCR\PropertyType;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\Version\VersionException;
@@ -115,7 +116,7 @@ class VersionHandler
 
         // TODO change base version
 
-        // TODO checkin the node
+        $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
 
         $this->session->save();
 
