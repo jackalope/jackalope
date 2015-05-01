@@ -101,7 +101,7 @@ class VersionHandler
     {
         $node = $this->objectManager->getNodeByPath($path);
 
-        if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
+        if (!$node->isNodeType(static::MIX_VERSIONABLE) || !$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
             throw new UnsupportedRepositoryOperationException(
                 'Node has to implement at least "mix:versionable" to use verisoning operations'
             );
