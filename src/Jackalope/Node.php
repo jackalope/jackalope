@@ -242,6 +242,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
+                        $type = null;
                         if (isset($rawData->{':' . $key})) {
                             /*
                              * this is an inconsistency between jackrabbit and
@@ -255,10 +256,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                             $type = is_numeric($rawData->{':' . $key})
                                     ? $rawData->{':' . $key}
                                     : PropertyType::valueFromName($rawData->{':' . $key});
-                        } else {
-                            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
                         }
-                        $this->_setProperty($key, $value, $type, true);
+
+                        $this->propertyData[$key] = array($type, $value);
                         break;
                 }
             }
@@ -654,7 +654,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         if (false === strpos($relPath, '/')) {
             if (!isset($this->properties[$relPath])) {
-                throw new PathNotFoundException("Property $relPath in ".$this->path);
+                return $this->lazyLoadProperty($relPath);
             }
             if ($this->properties[$relPath]->isDeleted()) {
                 throw new PathNotFoundException("Property '$relPath' of " . $this->path . ' is deleted');
@@ -1650,5 +1650,23 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         foreach ($this->properties as $prop) {
             $prop->rollbackTransaction();
         }
+    }
+
+    private function lazyLoadProperty($name)
+    {
+        if (!isset($this->propertyData[$name])) {
+            throw new PathNotFoundException(sprintf(
+                'Property "%s" not found in node at: %s', $name, $this->path
+            ));
+        }
+
+        $propertyData = $this->propertyData[$name];
+        list($value, $type) = $propertyData;
+
+        if (null === $type) {
+            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
+        }
+
+        return $this->_setProperty($name, $value, $type, true);
     }
 }
