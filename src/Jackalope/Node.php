@@ -52,8 +52,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * all properties are instantiated in the constructor
      *
-     * OPTIMIZE: lazy instantiate property objects, just have local array of values
-     *
      * @var Property[]
      */
     protected $properties = array();
@@ -82,6 +80,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @var array
      */
     protected $originalNodesOrder = null;
+
+    /**
+     * @var array
+     */
+    protected $propertyData = array();
 
     /**
      * Create a new node instance with data from the storage layer
@@ -196,7 +199,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                                 }
                             } else {
                                 // this will always fall into the creation mode
-                                $this->_setProperty($key, $value, PropertyType::BINARY, true);
+                                $this->propertyData[$key] = array($value, PropertyType::BINARY);
                             }
                         }
                     } //else this is a type declaration
@@ -232,12 +235,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                         $this->primaryType = $value;
                         // type information is exposed as property too,
                         // although there exist more specific methods
-                        $this->_setProperty('jcr:primaryType', $value, PropertyType::NAME, true);
+                        $this->propertyData[$key] = array($value, PropertyType::NAME);
                         break;
                     case 'jcr:mixinTypes':
                         // type information is exposed as property too,
                         // although there exist more specific methods
-                        $this->_setProperty($key, $value, PropertyType::NAME, true);
+                        $this->propertyData[$key] = array($value, PropertyType::NAME);
                         break;
 
                     // OPTIMIZE: do not instantiate properties until needed
@@ -258,7 +261,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                                     : PropertyType::valueFromName($rawData->{':' . $key});
                         }
 
-                        $this->propertyData[$key] = array($type, $value);
+                        $this->propertyData[$key] = array($value, $type);
                         break;
                 }
             }
@@ -681,7 +684,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (! $this->isDeleted()) {
             throw new InvalidItemStateException('You are not supposed to call this on a not deleted node');
         }
-        $myProperty = $this->properties['jcr:primaryType'];
+        $myProperty = $this->getProperty('jcr:primaryType');
         $myProperty->setClean();
         $path = $this->getChildPath('jcr:primaryType');
         $property = $this->factory->get(
@@ -738,12 +741,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         //OPTIMIZE: lazy iterator?
-        $names = self::filterNames($nameFilter, array_keys($this->properties));
+        $names = self::filterNames($nameFilter, array_keys($this->propertyData));
         $result = array();
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
-            $result[$name] = $this->properties[$name];
+            $result[$name] = $this->lazyLoadProperty($name);
         }
 
         return new ArrayIterator($result);
@@ -759,21 +762,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // OPTIMIZE: do not create properties in constructor, go over array here
-        $names = self::filterNames($nameFilter, array_keys($this->properties));
+        $names = self::filterNames($nameFilter, array_keys($this->propertyData));
         $result = array();
         foreach ($names as $name) {
+            $property = $this->getProperty($name);
             //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
-            $type = $this->properties[$name]->getType();
+            $type = $property->getType();
             if (! $dereference &&
                     (PropertyType::REFERENCE == $type
                     || PropertyType::WEAKREFERENCE == $type
                     || PropertyType::PATH == $type)
             ) {
-                $result[$name] = $this->properties[$name]->getString();
+                $result[$name] = $property->getString();
             } else {
                 // OPTIMIZE: collect the paths and call objectmanager->getNodesByPath once
-                $result[$name] = $this->properties[$name]->getValue();
+                $result[$name] = $property->getValue();
             }
         }
 
@@ -886,7 +890,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         if (false === strpos($relPath, '/')) {
-            return isset($this->properties[$relPath]);
+            return isset($this->properties[$relPath]) || isset($this->propertyData[$relPath]);
         }
         if (! strlen($relPath) || $relPath[0] == '/') {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
@@ -1654,6 +1658,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     private function lazyLoadProperty($name)
     {
+        if (isset($this->properties[$name])) {
+            return $this->properties[$name];
+        }
+
         if (!isset($this->propertyData[$name])) {
             throw new PathNotFoundException(sprintf(
                 'Property "%s" not found in node at: %s', $name, $this->path

@@ -31,7 +31,6 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
 use Jackalope\Transport\RemovePropertyOperation;
-use PHPCR\Query\QueryResultInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -1806,19 +1805,5 @@ class ObjectManager
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
         return true;
-    }
-
-    /**
-     * @param PHPCR\Query\RowInterface[] $rows
-     * @param boolean $prefetch
-     */
-    public function getNodesForRows($rows, $prefetch = false)
-    {
-        die('asd');
-        if ($prefetch !== true) {
-            return $this->factory->get('Query\NodeIterator', array($this, $rows));
-        }
-
-
     }
 }
