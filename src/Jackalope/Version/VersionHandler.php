@@ -80,7 +80,7 @@ class VersionHandler
     {
         $node = $this->objectManager->getNodeByPath($path);
 
-        if (!$node->isNodeType(static::MIX_VERSIONABLE) || !$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
+        if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
             throw new UnsupportedRepositoryOperationException(
                 'Node has to implement at least "mix:versionable" to use verisoning operations'
             );
@@ -103,16 +103,21 @@ class VersionHandler
 
         // TODO set subgraph to read only
 
-        $versionStorageNode = $this->objectManager->getNodeByPath('/jcr:system/jcr:versionStorage');
+        $versionHistoryNode = $node->getPropertyValue('jcr:versionHistory');
 
         // FIXME add some kind of sharding
-        $versionNode = $versionStorageNode->addNode(UUIDHelper::generateUUID(), 'nt:version');
+        $versionNode = $versionHistoryNode->addNode(UUIDHelper::generateUUID(), 'nt:version');
+        $versionNode->setProperty('jcr:uuid', UUIDHelper::generateUUID());
         $versionNode->setProperty('jcr:created', new \DateTime());
 
         // TODO create frozen node
 
-        // TODO also set the other predecessors and successors
         $versionNode->setProperty('jcr:predecessors', $node->getProperty('jcr:predecessors')->getString());
+        $node->setProperty('jcr:predecessors', array(), PropertyType::REFERENCE, false);
+        foreach ($versionNode->getProperty('jcr:predecessors') as $predecessorUuid) {
+            $predecessor = $this->objectManager->getNodeByIdentifier($predecessorUuid);
+            $predecessor->setProperty('jcr:successors', array_merge($predecessor->getPropertyValueWithDefault('jcr:successors', array()), array($versionNode)));
+        }
 
         // TODO change base version
 
@@ -121,5 +126,28 @@ class VersionHandler
         $this->session->save();
 
         return $versionNode->getPath();
+    }
+
+    public function checkoutItem($path)
+    {
+        $node = $this->objectManager->getNodeByPath($path);
+
+        if ($node->isCheckedOut()) {
+            return;
+        }
+
+        if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
+            throw new UnsupportedRepositoryOperationException(
+                'Node has to implement at least "mix:versionable" to use verisoning operations'
+            );
+        }
+
+        $node->setProperty('jcr:isCheckedOut', true, PropertyType::BOOLEAN, false);
+
+        // TODO unset read only from subgraph
+
+        // TODO add base version to predecessors
+
+        $this->session->save();
     }
 }
