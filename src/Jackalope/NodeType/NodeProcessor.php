@@ -209,8 +209,7 @@ $/xi";
                                 $value = $defaultValues;
                             } elseif (isset($defaultValues[0])) {
                                 $value = $defaultValues[0];
-                            } elseif ($nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE) {
-                                // When implementing versionable or activity, we need to handle more properties explicitly
+                            } else {
                                 throw new RepositoryException(sprintf(
                                     'No default value for autocreated property "%s" at "%s"',
                                     $propertyDef->getName(),
