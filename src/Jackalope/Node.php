@@ -1544,7 +1544,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param mixed   $value
      * @param string  $type
      * @param boolean $internal whether we are setting this node through api or internally
-     * @param boolean $validate whether we are validating the change or not
+     * @param boolean $validate whether we are validating the change or not, only internal parts of jackalope are
+     *                          allowed to set this to null
      *
      * @return Property
      *

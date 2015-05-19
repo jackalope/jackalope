@@ -12,6 +12,13 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\Version\VersionException;
 
+/**
+ * This class provides a basic implementation of the versioning capabilities as described in the JCR specification. It
+ * follows the specification, and can be used for any transport layer. However, there might be some performance tweaks
+ * which can be applied to certain transport layers.
+ *
+ * @see http://www.day.com/specs/jcr/2.0/15_Versioning.html
+ */
 class VersionHandler
 {
     const MIX_VERSIONABLE = 'mix:versionable';
@@ -33,13 +40,20 @@ class VersionHandler
         $this->session = $session;
     }
 
+    /**
+     * Adds the required version properties and nodes to the given node. Returns an array for the creation of the
+     * versioning nodes, which will be handled in the NodeProcessor.
+     * @param NodeInterface $node
+     * @return array
+     */
     public function addVersionProperties(NodeInterface $node)
     {
-        $additionalOperations = array();
-
         if ($node->hasProperty('jcr:isCheckedOut')) {
-            return $additionalOperations;
+            // Versioning properties have already been initialized, nothing to do
+            return array();
         }
+
+        $additionalOperations = array();
 
         $session = $node->getSession();
 
@@ -73,8 +87,10 @@ class VersionHandler
 
     /**
      * Performs a checkin for the node on the given path
-     * @param $path
-     * @return string
+     *
+     * @param string $path The absolute path of the node to checkin
+     *
+     * @return string The path to the node containing the version information
      */
     public function checkinItem($path)
     {
@@ -128,6 +144,13 @@ class VersionHandler
         return $versionNode->getPath();
     }
 
+    /**
+     * Performs a checkout for the node at the given path.
+     *
+     * @param string $path The absolute path of the node to checkout
+     *
+     * @throws \Exception
+     */
     public function checkoutItem($path)
     {
         $node = $this->objectManager->getNodeByPath($path);
@@ -138,7 +161,7 @@ class VersionHandler
 
         if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
             throw new UnsupportedRepositoryOperationException(
-                'Node has to implement at least "mix:versionable" to use verisoning operations'
+                'Node has to implement at least "mix:simpleVersionable" to use verisoning operations'
             );
         }
 
