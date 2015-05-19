@@ -65,8 +65,8 @@ class VersionHandler
         $versionStorageNode = $session->getNode('/jcr:system/jcr:versionStorage');
         $versionHistory = $versionStorageNode->addNode($node->getIdentifier(), 'nt:versionHistory');
         $versionHistory->setProperty('jcr:uuid', UUIDHelper::generateUUID());
-        $additionalOperations[] = new AddNodeOperation($versionHistory->getPath(), $versionHistory);
         $versionHistory->setProperty('jcr:versionableUuid', $node->getIdentifier());
+        $additionalOperations[] = new AddNodeOperation($versionHistory->getPath(), $versionHistory);
 
         // TODO Set jcr:copiedFrom if needed
 
@@ -74,12 +74,14 @@ class VersionHandler
         $additionalOperations[] = new AddNodeOperation($versionLabels->getPath(), $versionLabels);
         $rootVersion = $versionHistory->addNode('jcr:rootVersion', 'nt:version');
         $rootVersion->setProperty('jcr:uuid', UUIDHelper::generateUUID());
+        $rootVersion->setProperty('jcr:predecessors', array());
+        $rootVersion->setProperty('jcr:successors', array()); // not part of the specification, but seems to be required
         $additionalOperations[] = new AddNodeOperation($rootVersion->getPath(), $rootVersion);
 
         // TODO add frozen node to root version
 
         $node->setProperty('jcr:versionHistory', $versionHistory);
-        $node->setProperty('jcr:baseVersion', $rootVersion); // TODO set correct base version
+        $node->setProperty('jcr:baseVersion', $rootVersion);
         $node->setProperty('jcr:predecessors', array($rootVersion));
 
         return $additionalOperations;
@@ -103,14 +105,19 @@ class VersionHandler
         }
 
         if ($node->isModified()) {
-            throw new InvalidItemStateException(sprintf(
-                'Node "%s" contains unsaved changes',
-                $path
-            ));
+            throw new InvalidItemStateException(
+                sprintf(
+                    'Node "%s" contains unsaved changes',
+                    $path
+                )
+            );
         }
 
+        /** @var NodeInterface $baseVersionNode */
+        $baseVersionNode = $node->getPropertyValue('jcr:baseVersion');
+
         if (!$node->isCheckedOut()) {
-            return $path;
+            return $baseVersionNode->getPath();
         }
 
         if ($node->hasProperty('jcr:mergeFailed')) {
@@ -119,27 +126,68 @@ class VersionHandler
 
         // TODO set subgraph to read only
 
+        /** @var NodeInterface $versionHistoryNode */
         $versionHistoryNode = $node->getPropertyValue('jcr:versionHistory');
 
         // FIXME add some kind of sharding
         // should avoid to have too many nodes on the same level
+        /** @var NodeInterface $versionNode */
         $versionNode = $versionHistoryNode->addNode(UUIDHelper::generateUUID(), 'nt:version');
         $versionNode->setProperty('jcr:uuid', UUIDHelper::generateUUID());
         $versionNode->setProperty('jcr:created', new \DateTime());
+        $versionNode->setProperty('jcr:successors', array());
 
         // TODO create frozen node
+        $frozenNode = $versionNode->addNode('jcr:frozenNode', 'nt:frozenNode');
+        $frozenNode->setProperty('jcr:frozenPrimaryType', $node->getProperty('jcr:primaryType'));
+        if ($frozenNode->hasProperty('jcr:mixinTypes')) {
+            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes'));
+        }
+        $frozenNode->setProperty('jcr:frozenUuid', $node->getProperty('jcr:uuid'));
 
-        $versionNode->setProperty('jcr:predecessors', $node->getProperty('jcr:predecessors')->getString());
-        $node->setProperty('jcr:predecessors', array(), PropertyType::REFERENCE, false);
-        foreach ($versionNode->getProperty('jcr:predecessors') as $predecessorUuid) {
-            $predecessor = $this->objectManager->getNodeByIdentifier($predecessorUuid);
-            $predecessor->setProperty('jcr:successors', array_merge($predecessor->getPropertyValueWithDefault('jcr:successors', array()), array($versionNode)));
+        $baseVersionNode->setProperty('jcr:successors', array($versionNode), PropertyType::REFERENCE, false);
+        $baseVersionNode->setModified();
+        $versionNode->setProperty(
+            'jcr:predecessors',
+            $node->getProperty('jcr:predecessors')->getString(),
+            PropertyType::REFERENCE
+        );
+
+        // FIXME Find a better way to solve the referencing not existing nodes issue
+        $this->session->save();
+
+        $node->setProperty(
+            'jcr:predecessors',
+            array($versionNode),
+            PropertyType::REFERENCE,
+            false
+        ); // TODO double check with specification, this line seems not to be part of it
+        foreach ($versionNode->getPropertyValueWithDefault('jcr:predecessors', array()) as $predecessorNode) {
+            $predecessorNode->setProperty(
+                'jcr:successors',
+                    // TODO check why array_unique is required
+                    array_unique(
+                        array_merge(
+                            $predecessorNode->getProperty('jcr:successors')->getString(),
+                            array($versionNode->getIdentifier())
+                        )
+                    ),
+                PropertyType::REFERENCE,
+                false
+            );
+            $predecessorNode->setModified();
         }
 
-        // TODO change base version
+        $versionNode->setProperty(
+            'jcr:predecessors',
+            $node->getProperty('jcr:predecessors')->getString(),
+            PropertyType::REFERENCE,
+            false
+        );
 
         $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
-
+        $node->setProperty('jcr:baseVersion', $versionNode, PropertyType::REFERENCE, false);
+        $node->setModified();
         $this->session->save();
 
         return $versionNode->getPath();
@@ -167,6 +215,7 @@ class VersionHandler
         }
 
         $node->setProperty('jcr:isCheckedOut', true, PropertyType::BOOLEAN, false);
+        $node->setModified();
 
         // TODO unset read only from subgraph
 
