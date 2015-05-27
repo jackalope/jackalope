@@ -100,22 +100,29 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      *
      * On fetch all, already cached node types are kept.
      *
-     * @param string $name type name to fetch. defaults to null which will
+     * @param array $name type name to fetch. defaults to null which will
      *      fetch all nodes.
      */
-    protected function fetchNodeTypes($name = null)
+    protected function fetchNodeTypes($names = null)
     {
         if ($this->fetchedAllFromBackend) {
             return;
         }
 
-        if (null !== $name) {
-            if (!empty($this->primaryTypes[$name]) || !empty($this->mixinTypes[$name])) {
-                return; //we already know this node
+        if (null !== $names) {
+            $missing = array();
+            foreach ($names as $name) {
+                if (empty($this->primaryTypes[$name]) && empty($this->mixinTypes[$name])) {
+                    $missing[] = $name;
+                }
+            }
+
+            if (empty($missing)) {
+                return;
             }
 
             //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
-            $nodetypes = $this->objectManager->getNodeType($name);
+            $nodetypes = $this->objectManager->getNodeTypes($missing);
         } else {
             $nodetypes = $this->objectManager->getNodeTypes();
             $this->fetchedAllFromBackend = true;
@@ -184,8 +191,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function getSubtypes($nodeTypeName)
     {
-        // OPTIMIZE: any way to avoid loading all nodes at this point?
-        $this->fetchNodeTypes();
+        $subTypes = $this->objectManager->getSubTypes($nodeTypeName);
+
+        $this->fetchNodeTypes($subTypes);
         $ret = array();
         if (isset($this->nodeTree[$nodeTypeName])) {
             foreach ($this->nodeTree[$nodeTypeName] as $name => $subnode) {
@@ -209,9 +217,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
                 $this->nodeTree[$declaredSupertypeName] =
-                    array_merge($this->nodeTree[$declaredSupertypeName],
-                                array($nodetype->getName() => $nodetype)
-                               );
+                    array_merge($this->nodeTree[$declaredSupertypeName], array($nodetype->getName() => $nodetype));
             } else {
                 $this->nodeTree[$declaredSupertypeName] = array($nodetype->getName() => $nodetype);
             }
@@ -237,7 +243,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             $prefix = $this->namespaceRegistry->getPrefix($uri);
             $nodeTypeName = "$prefix:$name";
         }
-        $this->fetchNodeTypes($nodeTypeName);
+        $this->fetchNodeTypes(array($nodeTypeName));
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
@@ -256,15 +262,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function hasNodeType($name)
     {
-        try {
-            $this->fetchNodeTypes($name);
-        } catch (NoSuchNodeTypeException $e) {
-            // if we have not yet fetched all types and this type is not existing
-            // we get an exception. just ignore the exception, we don't have the type.
-            return false;
-        }
-
-        return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
+        return $this->objectManager->hasNodeType($name);
     }
 
     /**

@@ -192,6 +192,28 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
     /**
      * {@inheritDoc}
      */
+    public function hasNodeType($nodeTypeName)
+    {
+        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $result = $this->transport->hasNodeType($nodeTypeName);
+        $this->logger->stopCall();
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubTypes($nodeTypeName)
+    {
+        $this->logger->startCall(__FUNCTION__, func_get_args());
+        $result = $this->transport->getSubTypes($nodeTypeName);
+        $this->logger->stopCall();
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getNodeTypes($nodeTypes = array())
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
