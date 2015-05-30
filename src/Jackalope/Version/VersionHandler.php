@@ -7,9 +7,11 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;
 use PHPCR\InvalidItemStateException;
 use PHPCR\NodeInterface;
+use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\UUIDHelper;
+use PHPCR\Version\OnParentVersionAction;
 use PHPCR\Version\VersionException;
 
 /**
@@ -137,13 +139,7 @@ class VersionHandler
         $versionNode->setProperty('jcr:created', new \DateTime());
         $versionNode->setProperty('jcr:successors', array());
 
-        // TODO create frozen node
-        $frozenNode = $versionNode->addNode('jcr:frozenNode', 'nt:frozenNode');
-        $frozenNode->setProperty('jcr:frozenPrimaryType', $node->getProperty('jcr:primaryType'));
-        if ($frozenNode->hasProperty('jcr:mixinTypes')) {
-            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes'));
-        }
-        $frozenNode->setProperty('jcr:frozenUuid', $node->getProperty('jcr:uuid'));
+        $this->createFrozenNode($versionNode, $node);
 
         $baseVersionNode->setProperty('jcr:successors', array($versionNode), PropertyType::REFERENCE, false);
         $baseVersionNode->setModified();
@@ -165,13 +161,13 @@ class VersionHandler
         foreach ($versionNode->getPropertyValueWithDefault('jcr:predecessors', array()) as $predecessorNode) {
             $predecessorNode->setProperty(
                 'jcr:successors',
-                    // TODO check why array_unique is required
-                    array_unique(
-                        array_merge(
-                            $predecessorNode->getProperty('jcr:successors')->getString(),
-                            array($versionNode->getIdentifier())
-                        )
-                    ),
+                // TODO check why array_unique is required
+                array_unique(
+                    array_merge(
+                        $predecessorNode->getProperty('jcr:successors')->getString(),
+                        array($versionNode->getIdentifier())
+                    )
+                ),
                 PropertyType::REFERENCE,
                 false
             );
@@ -222,5 +218,41 @@ class VersionHandler
         // TODO add base version to predecessors
 
         $this->session->save();
+    }
+
+    /**
+     * Creates a frozen node
+     *
+     * @param NodeInterface $versionNode
+     * @param NodeInterface $node
+     */
+    private function createFrozenNode(NodeInterface $versionNode, NodeInterface $node)
+    {
+        $frozenNode = $versionNode->addNode('jcr:frozenNode', 'nt:frozenNode');
+        $frozenNode->setProperty('jcr:frozenUuid', $node->getProperty('jcr:uuid'));
+        $frozenNode->setProperty('jcr:frozenPrimaryType', $node->getProperty('jcr:primaryType'));
+        if ($frozenNode->hasProperty('jcr:mixinTypes')) {
+            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes'));
+        }
+
+        foreach ($node->getProperties() as $property) {
+            /** @var PropertyInterface $property */
+            $propertyName = $property->getName();
+            if ($propertyName == 'jcr:primaryType'
+                || $propertyName == 'jcr:mixinTypes'
+                || $propertyName == 'jcr:uuid'
+            ) {
+                continue;
+            }
+
+            $onParentValue = $property->getDefinition()->getOnParentVersion();
+            if ($onParentValue != OnParentVersionAction::COPY && $onParentValue != OnParentVersionAction::VERSION) {
+                continue;
+            }
+
+            // TODO apply other steps based on onParentValue
+
+            $frozenNode->setProperty($propertyName, $property->getValue());
+        }
     }
 }
