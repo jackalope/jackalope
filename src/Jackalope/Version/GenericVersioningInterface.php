@@ -5,8 +5,7 @@ namespace Jackalope\Version;
 use Jackalope\Transport\VersioningInterface;
 
 /**
- * This marker interface has to be implemented by classes which want to use the generic version handler provided by
- * jackalope
+ * This interface has to be implemented by classes which want to use the generic version handler provided by jackalope
  */
 interface GenericVersioningInterface extends VersioningInterface
 {
