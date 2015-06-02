@@ -122,6 +122,7 @@ class VersionHandler
         $versionHistoryNode = $node->getPropertyValue('jcr:versionHistory');
 
         // FIXME add some kind of sharding
+        // should avoid to have too many nodes on the same level
         $versionNode = $versionHistoryNode->addNode(UUIDHelper::generateUUID(), 'nt:version');
         $versionNode->setProperty('jcr:uuid', UUIDHelper::generateUUID());
         $versionNode->setProperty('jcr:created', new \DateTime());

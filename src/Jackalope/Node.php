@@ -1581,7 +1581,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 if ($this->properties[$name]->isDirty()) {
                     $this->properties[$name]->setClean();
                 }
-            } elseif($validate) {
+            } elseif ($validate) {
                 $this->properties[$name]->setValue($value, $type);
             } else {
                 $this->properties[$name]->_setValue($value, $type);

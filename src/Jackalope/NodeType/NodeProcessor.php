@@ -2,7 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use Doctrine\Common\Version;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
@@ -175,7 +174,6 @@ $/xi";
             if (!$node->hasProperty($propertyDef->getName())) {
                 if ($propertyDef->isMandatory()
                     && !$propertyDef->isAutoCreated()
-                    && $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
                 ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
