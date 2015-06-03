@@ -573,7 +573,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return null;
         }
 
-        return $this->_setProperty($name, $value, $type, false);
+        return $this->_setProperty($name, $value, $type, false, $validate);
     }
 
     /**
@@ -1522,6 +1522,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param mixed   $value
      * @param string  $type
      * @param boolean $internal whether we are setting this node through api or internally
+     * @param boolean $validate whether we are validating the change or not, only internal parts of jackalope are
+     *                          allowed to set this to null
      *
      * @return Property
      *
@@ -1529,7 +1531,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @see Node::refresh
      * @see Node::__construct
      */
-    protected function _setProperty($name, $value, $type, $internal)
+    protected function _setProperty($name, $value, $type, $internal, $validate = true)
     {
         if ($name == '' | false !== strpos($name, '/')) {
             throw new InvalidArgumentException("The name '$name' is no valid property name");
@@ -1557,8 +1559,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 if ($this->properties[$name]->isDirty()) {
                     $this->properties[$name]->setClean();
                 }
-            } else {
+            } elseif ($validate) {
                 $this->properties[$name]->setValue($value, $type);
+            } else {
+                $this->properties[$name]->_setValue($value, $type);
             }
         }
 
