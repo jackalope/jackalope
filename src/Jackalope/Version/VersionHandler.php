@@ -116,7 +116,8 @@ class VersionHandler
         }
 
         /** @var NodeInterface $baseVersionNode */
-        $baseVersionNode = $node->getPropertyValue('jcr:baseVersion');
+        $baseVersionUuid = $node->getProperty('jcr:baseVersion')->getString();
+        $baseVersionNode = $this->objectManager->getNodeByIdentifier($baseVersionUuid, 'Version\Version');
 
         if (!$node->isCheckedOut()) {
             return $baseVersionNode->getPath();
@@ -129,7 +130,8 @@ class VersionHandler
         // TODO set subgraph to read only
 
         /** @var NodeInterface $versionHistoryNode */
-        $versionHistoryNode = $node->getPropertyValue('jcr:versionHistory');
+        $versionHistoryUuid = $node->getProperty('jcr:versionHistory')->getString();
+        $versionHistoryNode = $this->objectManager->getNodeByIdentifier($versionHistoryUuid, 'Version\VersionHistory');
 
         // FIXME add some kind of sharding
         // should avoid to have too many nodes on the same level
