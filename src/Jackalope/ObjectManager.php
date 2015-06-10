@@ -5,6 +5,7 @@ use ArrayIterator;
 use InvalidArgumentException;
 
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Version\GenericVersioningInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -820,16 +821,15 @@ class ObjectManager
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath['Node'])) {
                 foreach ($this->objectsByPath['Node'] as $node) {
-                    /** @var $node Node */
-                    if ($node->isModified()) {
-                        if (! $node instanceof NodeInterface) {
-                            throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
-                        }
-                        $this->transport->updateProperties($node);
-                        if ($node->needsChildReordering()) {
-                            $this->transport->reorderChildren($node);
-                        }
-                    }
+                    $this->updateNode($node);
+                }
+            }
+
+            if (isset($this->objectsByPath['Version\\Version'])
+                && $this->transport instanceof GenericVersioningInterface
+            ) {
+                foreach ($this->objectsByPath['Version\\Version'] as $node) {
+                    $this->updateNode($node);
                 }
             }
 
@@ -1805,5 +1805,23 @@ class ObjectManager
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
         return true;
+    }
+
+    /**
+     * Updates a single node via the transport layer if the node is modified
+     * @param NodeInterface $node The node to update
+     */
+    private function updateNode($node)
+    {
+        /** @var $node Node */
+        if ($node->isModified()) {
+            if (!$node instanceof NodeInterface) {
+                throw new RepositoryException('Internal Error: Unknown type ' . get_class($node));
+            }
+            $this->transport->updateProperties($node);
+            if ($node->needsChildReordering()) {
+                $this->transport->reorderChildren($node);
+            }
+        }
     }
 }
