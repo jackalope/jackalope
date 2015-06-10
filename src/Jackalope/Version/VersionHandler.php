@@ -115,7 +115,6 @@ class VersionHandler
             );
         }
 
-        /** @var NodeInterface $baseVersionNode */
         $baseVersionUuid = $node->getProperty('jcr:baseVersion')->getString();
         $baseVersionNode = $this->objectManager->getNodeByIdentifier($baseVersionUuid, 'Version\Version');
 
@@ -135,7 +134,6 @@ class VersionHandler
 
         // FIXME add some kind of sharding
         // should avoid to have too many nodes on the same level
-        /** @var NodeInterface $versionNode */
         $versionNode = $versionHistoryNode->addNode(UUIDHelper::generateUUID(), 'nt:version');
         $versionNode->setProperty('jcr:uuid', UUIDHelper::generateUUID());
         $versionNode->setProperty('jcr:created', new \DateTime());
@@ -223,10 +221,10 @@ class VersionHandler
     }
 
     /**
-     * Creates a frozen node
+     * Attaches a nt:frozenNode copy of $node to $versionNode
      *
-     * @param NodeInterface $versionNode
-     * @param NodeInterface $node
+     * @param NodeInterface $versionNode The version to attach the nt:frozenNode to
+     * @param NodeInterface $node The node to be copied into an nt:frozenNode
      */
     private function createFrozenNode(NodeInterface $versionNode, NodeInterface $node)
     {
