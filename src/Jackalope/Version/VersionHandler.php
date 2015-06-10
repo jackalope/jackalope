@@ -193,18 +193,10 @@ class VersionHandler
             return;
         }
 
-<<<<<<< HEAD
         if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
             throw new UnsupportedRepositoryOperationException(
                 'Node has to implement at least "mix:simpleVersionable" to use verisoning operations'
             );
-=======
-        $versionNode->setProperty('jcr:predecessors', $node->getProperty('jcr:predecessors')->getString());
-        $node->setProperty('jcr:predecessors', array(), PropertyType::REFERENCE, false);
-        foreach ($versionNode->getProperty('jcr:predecessors') as $predecessorUuid) {
-            $predecessor = $this->objectManager->getNodeByIdentifier($predecessorUuid);
-            $predecessor->setProperty('jcr:successors', array_merge($predecessor->getPropertyValueWithDefault('jcr:successors', array()), array($versionNode)));
->>>>>>> added basic checkout method
         }
 
         $node->setProperty('jcr:isCheckedOut', true, PropertyType::BOOLEAN, false);
@@ -252,28 +244,5 @@ class VersionHandler
 
             $frozenNode->setProperty($propertyName, $property->getValue());
         }
-    }
-
-    public function checkoutItem($path)
-    {
-        $node = $this->objectManager->getNodeByPath($path);
-
-        if ($node->isCheckedOut()) {
-            return;
-        }
-
-        if (!$node->isNodeType(static::MIX_SIMPLE_VERSIONABLE)) {
-            throw new UnsupportedRepositoryOperationException(
-                'Node has to implement at least "mix:versionable" to use verisoning operations'
-            );
-        }
-
-        $node->setProperty('jcr:isCheckedOut', true, PropertyType::BOOLEAN, false);
-
-        // TODO unset read only from subgraph
-
-        // TODO add base version to predecessors
-
-        $this->session->save();
     }
 }
