@@ -149,9 +149,6 @@ class VersionHandler
             PropertyType::REFERENCE
         );
 
-        // FIXME Find a better way to solve the referencing not existing nodes issue
-        $this->session->save();
-
         $node->setProperty(
             'jcr:predecessors',
             array($versionNode),
@@ -173,13 +170,6 @@ class VersionHandler
             );
             $predecessorNode->setModified();
         }
-
-        $versionNode->setProperty(
-            'jcr:predecessors',
-            $node->getProperty('jcr:predecessors')->getString(),
-            PropertyType::REFERENCE,
-            false
-        );
 
         $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
         $node->setProperty('jcr:baseVersion', $versionNode, PropertyType::REFERENCE, false);
