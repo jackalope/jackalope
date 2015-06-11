@@ -9,6 +9,7 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\Version\OnParentVersionAction;
@@ -220,8 +221,8 @@ class VersionHandler
         $frozenNode = $versionNode->addNode('jcr:frozenNode', 'nt:frozenNode');
         $frozenNode->setProperty('jcr:frozenUuid', $node->getProperty('jcr:uuid'));
         $frozenNode->setProperty('jcr:frozenPrimaryType', $node->getProperty('jcr:primaryType'));
-        if ($frozenNode->hasProperty('jcr:mixinTypes')) {
-            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes'));
+        if ($node->hasProperty('jcr:mixinTypes')) {
+            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes')->getString());
         }
 
         foreach ($node->getProperties() as $property) {
@@ -262,11 +263,22 @@ class VersionHandler
         $versionNode = $this->objectManager->getNodeByPath($versionPath, 'Version\Version');
         $frozenNode = $versionNode->getNode('jcr:frozenNode');
 
-        // TODO reset primary type
+        if ($frozenNode->getPropertyValue('jcr:frozenUuid') != $node->getPropertyValue('jcr:uuid')) {
+            throw new RepositoryException(sprintf(
+                'The frozen node uuid "%s" does not match the actual node uuid "%s". This should never happen.',
+                $frozenNode->getPropertyValue('jcr:frozenUuid'),
+                $node->getPropertyValue('jcr:uuid'))
+            );
+        }
 
-        // TODO reset mixin types
+        // TODO reset primary type once the primary type can be changed
+        // also see (https://github.com/jackalope/jackalope/issues/247)
 
-        // TODO reset uuid
+        if ($frozenNode->hasProperty('jcr:frozenMixinTypes')) {
+            $node->setProperty('jcr:mixinTypes', $frozenNode->getPropertyValue('jcr:frozenMixinTypes'));
+        } elseif ($node->hasProperty('jcr:mixinTypes')) {
+            $node->getProperty('jcr:mixinTypes')->remove();
+        }
 
         foreach ($frozenNode->getProperties() as $property) {
             /** @var PropertyInterface $property */
