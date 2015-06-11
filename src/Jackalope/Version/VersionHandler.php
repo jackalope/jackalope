@@ -234,8 +234,8 @@ class VersionHandler
                 continue;
             }
 
-            $onParentValue = $property->getDefinition()->getOnParentVersion();
-            if ($onParentValue != OnParentVersionAction::COPY && $onParentValue != OnParentVersionAction::VERSION) {
+            $onParentVersion = $property->getDefinition()->getOnParentVersion();
+            if ($onParentVersion != OnParentVersionAction::COPY && $onParentVersion != OnParentVersionAction::VERSION) {
                 continue;
             }
 
@@ -244,5 +244,59 @@ class VersionHandler
 
             $frozenNode->setProperty($propertyName, $property->getValue());
         }
+    }
+
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
+        $node = $this->objectManager->getNodeByPath($path);
+
+        if ($node->isModified()) {
+            throw new InvalidItemStateException(
+                sprintf(
+                    'Node "%s" contains unsaved changes',
+                    $path
+                )
+            );
+        }
+
+        $versionNode = $this->objectManager->getNodeByPath($versionPath, 'Version\Version');
+        $frozenNode = $versionNode->getNode('jcr:frozenNode');
+
+        // TODO reset primary type
+
+        // TODO reset mixin types
+
+        // TODO reset uuid
+
+        foreach ($frozenNode->getProperties() as $property) {
+            /** @var PropertyInterface $property */
+            $propertyName = $property->getName();
+            if ($propertyName == 'jcr:frozenPrimaryType'
+                || $propertyName == 'jcr:frozenMixinTypes'
+                || $propertyName == 'jcr:frozenUuid'
+            ) {
+                continue;
+            }
+
+            $nodeProperty = $node->getProperty($propertyName);
+            $onParentVersion = $nodeProperty->getDefinition()->getOnParentVersion();
+            if ($onParentVersion == OnParentVersionAction::COPY || $onParentVersion == OnParentVersionAction::VERSION) {
+                $nodeProperty->setValue($property->getValue());
+            }
+
+            // TODO handle other onParentVersion cases
+        }
+
+        // TODO handle properties present on the node but not on the frozen node
+
+        // TODO handle identifier collisions
+
+        // TODO handle chained versions on restore
+
+        // TODO restoring child nodes
+
+        // TODO set checkout to false
+
+        $this->session->save();
     }
 }
