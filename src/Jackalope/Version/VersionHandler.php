@@ -295,7 +295,7 @@ class VersionHandler
 
         // TODO restoring child nodes
 
-        // TODO set checkout to false
+        $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
 
         $this->session->save();
     }
