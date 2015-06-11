@@ -290,10 +290,14 @@ class VersionHandler
                 continue;
             }
 
-            $nodeProperty = $node->getProperty($propertyName);
-            $onParentVersion = $nodeProperty->getDefinition()->getOnParentVersion();
-            if ($onParentVersion == OnParentVersionAction::COPY || $onParentVersion == OnParentVersionAction::VERSION) {
-                $nodeProperty->setValue($property->getValue());
+            if ($node->hasProperty($propertyName)) {
+                $nodeProperty = $node->getProperty($propertyName);
+                $onParentVersion = $nodeProperty->getDefinition()->getOnParentVersion();
+                if ($onParentVersion == OnParentVersionAction::COPY || $onParentVersion == OnParentVersionAction::VERSION) {
+                    $nodeProperty->setValue($property->getValue());
+                }
+            } else {
+                $node->setProperty($propertyName, $property->getValue());
             }
 
             // TODO handle other onParentVersion cases
