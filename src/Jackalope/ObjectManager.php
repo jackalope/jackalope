@@ -1804,19 +1804,18 @@ class ObjectManager
 
     /**
      * Updates a single node via the transport layer if the node is modified
+     *
      * @param NodeInterface $node The node to update
      */
-    private function updateNode($node)
+    private function updateNode(NodeInterface $node)
     {
-        /** @var $node Node */
-        if ($node->isModified()) {
-            if (!$node instanceof NodeInterface) {
-                throw new RepositoryException('Internal Error: Unknown type ' . get_class($node));
-            }
-            $this->transport->updateProperties($node);
-            if ($node->needsChildReordering()) {
-                $this->transport->reorderChildren($node);
-            }
+        if (!$node->isModified()) {
+            return;
+        }
+
+        $this->transport->updateProperties($node);
+        if ($node->needsChildReordering()) {
+            $this->transport->reorderChildren($node);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use Jackalope\Property;
 use Jackalope\Session;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;
@@ -76,8 +77,9 @@ class VersionHandler
         $additionalOperations[] = new AddNodeOperation($versionLabels->getPath(), $versionLabels);
         $rootVersion = $versionHistory->addNode('jcr:rootVersion', 'nt:version');
         $rootVersion->setProperty('jcr:uuid', UUIDHelper::generateUUID());
-        $rootVersion->setProperty('jcr:predecessors', array());
-        $rootVersion->setProperty('jcr:successors', array()); // not part of the specification, but seems to be required
+        $rootVersion->setProperty('jcr:predecessors', array(), PropertyType::REFERENCE);
+        // not part of the specification, but seems to be required
+        $rootVersion->setProperty('jcr:successors', array(), PropertyType::REFERENCE);
         $additionalOperations[] = new AddNodeOperation($rootVersion->getPath(), $rootVersion);
 
         // TODO add frozen node to root version
@@ -148,26 +150,24 @@ class VersionHandler
             $node->getProperty('jcr:predecessors')->getString(),
             PropertyType::REFERENCE
         );
+        $versionNode->setProperty(
+            'jcr:successors',
+            array(),
+            PropertyType::REFERENCE,
+            false
+        );
 
         $node->setProperty(
             'jcr:predecessors',
             array($versionNode),
             PropertyType::REFERENCE,
             false
-        ); // TODO double check with specification, this line seems not to be part of it
+        );
+
         foreach ($versionNode->getPropertyValueWithDefault('jcr:predecessors', array()) as $predecessorNode) {
-            $predecessorNode->setProperty(
-                'jcr:successors',
-                // TODO check why array_unique is required
-                array_unique(
-                    array_merge(
-                        $predecessorNode->getProperty('jcr:successors')->getString(),
-                        array($versionNode->getIdentifier())
-                    )
-                ),
-                PropertyType::REFERENCE,
-                false
-            );
+            /** @var NodeInterface $predecessorNode */
+            $successorProperty = $predecessorNode->getProperty('jcr:successors');
+            $successorProperty->addValue($versionNode);
             $predecessorNode->setModified();
         }
 
@@ -241,6 +241,7 @@ class VersionHandler
             }
 
             // TODO apply other steps based on onParentValue
+            // (see step 6 3.13.9 on http://www.day.com/specs/jcr/2.0/3_Repository_Model.html)
 
             $frozenNode->setProperty($propertyName, $property->getValue());
         }
