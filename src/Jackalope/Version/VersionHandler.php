@@ -280,6 +280,7 @@ class VersionHandler
             $node->getProperty('jcr:mixinTypes')->remove();
         }
 
+        // handle properties present on the frozen node
         foreach ($frozenNode->getProperties() as $property) {
             /** @var PropertyInterface $property */
             $propertyName = $property->getName();
@@ -303,7 +304,23 @@ class VersionHandler
             // TODO handle other onParentVersion cases
         }
 
-        // TODO handle properties present on the node but not on the frozen node
+        // handle properties present on the node but not on the frozen node
+        foreach ($node->getProperties() as $propertyName => $property) {
+            if ($frozenNode->hasProperty($propertyName)) {
+                continue;
+            }
+
+            $onParentVersion = $property->getDefinition()->getOnParentVersion();
+
+            if ($onParentVersion == OnParentVersionAction::COPY
+                || $onParentVersion == OnParentVersionAction::VERSION
+                || $onParentVersion == OnParentVersionAction::ABORT
+            ) {
+                $property->remove();
+            }
+
+            // TODO handle other onParentVersion cases
+        }
 
         // TODO handle identifier collisions
 
