@@ -655,18 +655,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (false === strpos($relPath, '/')) {
-            if (!isset($this->properties[$relPath])) {
-                return $this->lazyLoadProperty($relPath);
-            }
-            if ($this->properties[$relPath]->isDeleted()) {
-                throw new PathNotFoundException("Property '$relPath' of " . $this->path . ' is deleted');
-            }
-
-            return $this->properties[$relPath];
+        if (true === strpos($relPath, '/')) {
+            return $this->session->getProperty($this->getChildPath($relPath));
         }
 
-        return $this->session->getProperty($this->getChildPath($relPath));
+        if (!isset($this->properties[$relPath])) {
+            return $this->lazyLoadProperty($relPath);
+        }
+
+        if ($this->properties[$relPath]->isDeleted()) {
+            throw new PathNotFoundException(sprintf(
+                'Property "%s" in node "%s" has been deleted',
+                $relPath, $this->path
+            ));
+        }
+
+        return $this->properties[$relPath];
     }
 
     /**
@@ -740,11 +744,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        //OPTIMIZE: lazy iterator?
-        $names = self::filterNames($nameFilter, array_keys($this->propertyData));
+
+        $names = self::filterNames($nameFilter, array_merge(array_keys($this->propertyData), array_keys($this->properties)));
+
         $result = array();
         foreach ($names as $name) {
-            //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
             $result[$name] = $this->lazyLoadProperty($name);
         }
