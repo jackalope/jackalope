@@ -14,6 +14,7 @@ abstract class Operation
     const MOVE_NODE = 'move-node';
     const REMOVE_NODE = 'remove-node';
     const REMOVE_PROPERTY = 'remove-property';
+    const SET_POLICY = 'set-policy';
 
     /**
      * One of the type constants to know what kind of operation this is

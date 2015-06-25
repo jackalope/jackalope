@@ -22,6 +22,8 @@ use Jackalope\ImportExport\ImportExport;
 
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\Security\AccessControlManager;
+use Jackalope\Transport\AccessControlInterface;
 
 /**
  * {@inheritDoc}
@@ -101,6 +103,11 @@ class Session implements SessionInterface
      * @var NamespaceRegistry
      */
     protected $namespaceRegistry;
+
+    /**
+     * @var AccessControlManager
+     */
+    protected $accessControlManager;
 
     /**
      * List of local namespaces
@@ -663,7 +670,15 @@ class Session implements SessionInterface
      */
     public function getAccessControlManager()
     {
-        throw new UnsupportedRepositoryOperationException();
+        if (!$this->getTransport() instanceof AccessControlInterface) {
+            //throw new UnsupportedRepositoryOperationException();
+        }
+
+        if (!$this->accessControlManager) {
+            $this->accessControlManager = $this->factory->get('Security\AccessControlManager', array($this->objectManager, $this->getTransport()));
+        }
+
+        return $this->accessControlManager;
     }
 
     /**

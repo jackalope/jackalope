@@ -4,7 +4,10 @@ namespace Jackalope;
 use ArrayIterator;
 use InvalidArgumentException;
 
+use Jackalope\Security\AccessControlList;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Transport\SetPolicyOperation;
+use PHPCR\Security\AccessControlPolicyInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -151,6 +154,8 @@ class ObjectManager
      */
     protected $nodesMove = array();
 
+    protected $policies = array();
+
     /**
      * Create the ObjectManager instance with associated session and transport
      *
@@ -200,6 +205,7 @@ class ObjectManager
 
         // do this even if we have item in cache, will throw error if path is deleted - sanity check
         $fetchPath = $this->getFetchPath($absPath, $class);
+
         if (!$object) {
             // this is the first request, get data from transport
             $object = $this->transport->getNode($fetchPath);
@@ -941,6 +947,10 @@ class ObjectManager
             case Operation::REMOVE_PROPERTY:
                 $this->transport->deleteProperties($operations);
                 break;
+            case Operation::SET_POLICY:
+                $this->transport->setPolicy($operations);
+                break;
+            //TODO: operation for acl changes
             default:
                 throw new \Exception('internal error: unknown operation "' . $type . '"');
         }
@@ -1805,5 +1815,21 @@ class ObjectManager
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
         return true;
+    }
+
+    public function getPolicies($path)
+    {
+        try {
+            return array($this->factory->get('Security\AccessControlList', array($this->session->getAccessControlManager(), $this->getNodeByPath($path . '/rep:policy', 'Security\AccessControlList'))));
+        } catch (ItemNotFoundException $e) {
+            return array();
+        }
+    }
+
+    public function setPolicy($absPath, AccessControlPolicyInterface $policy)
+    {
+        $operation = new SetPolicyOperation($absPath, $policy);
+
+        $this->operationsLog[] = $operation;
     }
 }
