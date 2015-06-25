@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use Jackalope\NotImplementedException;
 use Jackalope\Session;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;
@@ -245,6 +246,18 @@ class VersionHandler
 
             $frozenNode->setProperty($propertyName, $property->getValue());
         }
+
+        foreach ($node->getNodes() as $childNode) {
+            /** @var NodeInterface $childNode */
+            // TODO also use the commented lines when getDefinition is implemented
+            //$onParentVersion = $childNode->getDefinition()->getOnParentVersion();
+
+            //if ($onParentVersion == OnParentVersionAction::COPY) {
+            // can't use the workspace copy command, because the parent node already has to exist
+            // TODO distinguish between COPY and VERSION onParentVersion
+            $this->copyIntoNode($childNode, $frozenNode);
+            //}
+        }
     }
 
     public function restoreItem($removeExisting, $versionPath, $path)
@@ -326,10 +339,79 @@ class VersionHandler
 
         // TODO handle chained versions on restore
 
-        // TODO restoring child nodes
+        // handle child nodes present on the frozen node
+        foreach ($frozenNode->getNodes() as $frozenChildNode) {
+            /** @var NodeInterface $frozenChildNode */
+            if (!$removeExisting) {
+                // TODO check occurence of node in repository
+                throw new NotImplementedException('Check for $removeExisting not implemented yet');
+            }
+
+            // TODO handle different onParentVersion values
+
+            $childNodePath = $node->getPath() . '/' . $frozenChildNode->getName();
+            if ($this->session->nodeExists($childNodePath)) {
+                $this->session->removeItem($childNodePath);
+            }
+
+            $this->restoreFromNode($node, $frozenChildNode);
+
+            // TODO remove any node with the same identifier or child identifiers
+        }
+
+        // handle child nodes present on the node but not the frozen node
+        foreach ($node->getNodes() as $childNode) {
+            /** @var NodeInterface $childNode */
+            if ($frozenNode->hasNode($childNode->getName())) {
+                continue;
+            }
+
+            // TODO That's the correct behavior for the OPVs COPY, VERSION and ABORT, handle others as well
+            $childNode->remove();
+        }
 
         $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
 
         $this->session->save();
+    }
+
+    /**
+     * @param NodeInterface $sourceNode
+     * @param NodeInterface $destinationNode
+     */
+    private function copyIntoNode(NodeInterface $sourceNode, NodeInterface $destinationNode)
+    {
+        $copiedNode = $destinationNode->addNode($sourceNode->getName(), $sourceNode->getPrimaryNodeType()->getName());
+
+        foreach ($sourceNode->getProperties() as $property) {
+            if ($property->getName() == 'jcr:primaryType') {
+                continue;
+            }
+
+            /** @var PropertyInterface $property */
+            $copiedNode->setProperty($property->getName(), $property->getValue(), $property->getType(), false);
+        }
+
+        foreach ($sourceNode->getNodes() as $childNode) {
+            $this->copyIntoNode($childNode, $copiedNode);
+        }
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @param NodeInterface $frozenNode
+     */
+    private function restoreFromNode(NodeInterface $node, NodeInterface $frozenNode)
+    {
+        $restoredNode = $node->addNode($frozenNode->getName(), $frozenNode->getPrimaryNodeType()->getName());
+
+        foreach ($frozenNode->getProperties() as $property) {
+            /** @var PropertyInterface $property */
+            $restoredNode->setProperty($property->getName(), $property->getValue(), $property->getType());
+        }
+
+        foreach ($frozenNode->getNodes() as $childNode) {
+            $this->restoreFromNode($restoredNode, $childNode);
+        }
     }
 }
