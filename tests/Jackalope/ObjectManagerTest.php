@@ -12,7 +12,8 @@ class ObjectManagerTest extends TestCase
     public function setUp()
     {
         $factory = new Factory;
-        $this->om = new ObjectManager($factory, $this->getTransportStub(), $this->getSessionMock());
+        $observationManager = $this->getMock('PHPCR\Observation\ObservationManagerInterface');
+        $this->om = new ObjectManager($factory, $this->getTransportStub(), $this->getSessionMock(), $observationManager);
     }
 
     public function testGetNodeByPath()

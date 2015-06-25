@@ -31,6 +31,7 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
 use Jackalope\Transport\RemovePropertyOperation;
+use PHPCR\Observation\ObservationManagerInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -68,6 +69,11 @@ class ObjectManager
      * @var TransportInterface
      */
     protected $transport;
+
+    /**
+     * @var ObservationManagerInterface
+     */
+    protected $observationManager;
 
     /**
      * Mapping of typename => absolutePath => node or item object.
@@ -158,11 +164,17 @@ class ObjectManager
      * @param TransportInterface $transport
      * @param SessionInterface   $session
      */
-    public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
+    public function __construct(
+        FactoryInterface $factory, 
+        TransportInterface $transport, 
+        SessionInterface $session,
+        ObservationManagerInterface $observationManager
+    )
     {
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
+        $this->observationManager = $observationManager;
     }
 
     /**
