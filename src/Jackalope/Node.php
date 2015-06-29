@@ -655,7 +655,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (true === strpos($relPath, '/')) {
+        if (false !== strpos($relPath, '/')) {
             return $this->session->getProperty($this->getChildPath($relPath));
         }
 
