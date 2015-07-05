@@ -745,7 +745,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
 
-        $names = self::filterNames($nameFilter, array_merge(array_keys($this->propertyData), array_keys($this->properties)));
+        $names = self::filterNames($nameFilter, $this->getPropertyNames());
 
         $result = array();
         foreach ($names as $name) {
@@ -766,7 +766,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // OPTIMIZE: do not create properties in constructor, go over array here
-        $names = self::filterNames($nameFilter, array_keys($this->propertyData));
+        $names = self::filterNames($nameFilter, $this->getPropertyNames());
         $result = array();
         foreach ($names as $name) {
             $property = $this->getProperty($name);
@@ -822,7 +822,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (isset($this->properties['jcr:uuid'])) {
+        if (isset($this->properties['jcr:uuid']) || isset($this->propertyData['jcr:uuid'])) {
             return $this->getPropertyValue('jcr:uuid');
         }
 
@@ -1680,5 +1680,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         return $this->_setProperty($name, $value, $type, true);
+    }
+
+    private function getPropertyNames()
+    {
+        $names = array_unique(array_merge(array_keys($this->propertyData), array_keys($this->properties)));
+        return $names;
     }
 }
