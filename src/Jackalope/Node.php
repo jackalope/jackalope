@@ -130,7 +130,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if ($update) {
             // keep backup of old state so we can remove what needs to be removed
             $oldNodes = array_flip(array_values($this->nodes));
-            $oldProperties = $this->properties;
+            $oldProperties = $this->getLocalProperties();
         }
         /*
          * we collect all nodes coming from the backend. if we update with
@@ -208,7 +208,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     continue;
                 }
 
-                if ($update && array_key_exists($key, $this->properties)) {
+                if ($update && $this->hasLocalProperty($key)) {
                     unset($oldProperties[$key]);
                     $prop = $this->properties[$key];
                     if ($keepChanges && $prop->isModified()) {
@@ -569,8 +569,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if (is_null($value)) {
-            if (isset($this->properties[$name])) {
-                $this->properties[$name]->remove();
+            if ($this->hasProperty($name)) {
+                $this->getProperty($name)->remove();
             }
 
             return null;
@@ -743,17 +743,21 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function getProperties($nameFilter = null)
     {
         $this->checkState();
-
-
         $names = self::filterNames($nameFilter, $this->getPropertyNames());
+        $result = $this->getLocalProperties($names);
+
+        return new ArrayIterator($result);
+    }
+
+    private function getLocalProperties($names = null)
+    {
+        $names = null === $names ? $this->getPropertyNames() : $names;
 
         $result = array();
         foreach ($names as $name) {
-            // array keys of the array we are accessing
             $result[$name] = $this->lazyLoadProperty($name);
         }
-
-        return new ArrayIterator($result);
+        return $result;
     }
 
     /**
@@ -822,7 +826,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (isset($this->properties['jcr:uuid']) || isset($this->propertyData['jcr:uuid'])) {
+        if ($this->hasProperty('jcr:uuid')) {
             return $this->getPropertyValue('jcr:uuid');
         }
 
@@ -894,13 +898,18 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         if (false === strpos($relPath, '/')) {
-            return isset($this->properties[$relPath]) || isset($this->propertyData[$relPath]);
+            return $this->hasLocalProperty($relPath);
         }
         if (! strlen($relPath) || $relPath[0] == '/') {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->propertyExists($this->getChildPath($relPath));
+    }
+
+    private function hasLocalProperty($name)
+    {
+        return isset($this->properties[$name]) || isset($this->propertyData[$name]);
     }
 
     /**
@@ -924,7 +933,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        return (! empty($this->properties));
+        return (!empty($this->properties) || !empty($this->propertyData));
     }
 
     /**
@@ -950,12 +959,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (!isset($this->properties['jcr:mixinTypes'])) {
+        if (!$this->hasProperty('jcr:mixinTypes')) {
             return array();
         }
         $res = array();
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
-        foreach ($this->properties['jcr:mixinTypes']->getValue() as $type) {
+        foreach ($this->getPropertyValue('jcr:mixinTypes') as $type) {
             $res[] = $ntm->getNodeType($type);
         }
 
@@ -976,8 +985,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return true;
         }
         // is it one of the mixin types?
-        if (isset($this->properties['jcr:mixinTypes'])) {
-            if (in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue())) {
+        if ($this->hasProperty('jcr:mixinTypes')) {
+            if (in_array($nodeTypeName, $this->getPropertyValue('jcr:mixinTypes'))) {
                 return true;
             }
         }
@@ -987,11 +996,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return true;
         }
         // if there are no mixin types, then we now know this node is not of that type
-        if (! isset($this->properties["jcr:mixinTypes"])) {
+        if (!$this->hasProperty('jcr:mixinTypes') || empty($this->getPropertyValue('jcr:mixinTypes'))) {
             return false;
         }
         // is it an ancestor of any of the mixin types?
-        foreach ($this->properties['jcr:mixinTypes'] as $mixin) {
+        foreach ($this->getPropertyValue('jcr:mixinTypes') as $mixin) {
             if ($ntm->getNodeType($mixin)->isNodeType($nodeTypeName)) {
                 return true;
             }
@@ -1037,8 +1046,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         // TODO handle LockException & VersionException cases
         if ($this->hasProperty('jcr:mixinTypes')) {
-            if (!in_array($mixinName, $this->properties['jcr:mixinTypes']->getValue())) {
-                $this->properties['jcr:mixinTypes']->addValue($mixinName);
+            if (!in_array($mixinName, $this->getPropertyValue('jcr:mixinTypes'))) {
+                $this->getProperty('jcr:mixinTypes')->addValue($mixinName);
                 $this->setModified();
             }
         } else {
@@ -1413,11 +1422,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
         $this->setModified();
 
-        if (!array_key_exists($name, $this->properties)) {
+        if (!$this->hasProperty($name)) {
             throw new ItemNotFoundException('Implementation Error: Could not remove property from node because it is already gone');
         }
-        $this->deletedProperties[$name] = $this->properties[$name];
-        unset($this->properties[$name]);
+        $this->deletedProperties[$name] = $this->getProperty($name);
+        unset($this->properties[$name], $this->propertyData[$name]);
     }
 
     /**
@@ -1425,7 +1434,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function confirmSaved()
     {
-        foreach ($this->properties as $property) {
+        foreach ($this->getLocalProperties() as $property) {
             if ($property->isModified() || $property->isNew()) {
                 $property->confirmSaved();
             }
@@ -1440,7 +1449,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function setPath($path, $move = false)
     {
         parent::setPath($path, $move);
-        foreach ($this->properties as $property) {
+        foreach ($this->getProperties() as $property) {
             $property->setPath($path.'/'.$property->getName(), $move);
         }
     }
@@ -1579,7 +1588,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function setDirty($keepChanges = false, $targetState = false)
     {
         parent::setDirty($keepChanges, $targetState);
-        foreach ($this->properties as $property) {
+        foreach ($this->getProperties() as $property) {
             if ($keepChanges && self::STATE_NEW !== $property->getState()) {
                 // if we want to keep changes, we do not want to set new properties dirty.
                 $property->setDirty($keepChanges, $targetState);
@@ -1606,7 +1615,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function setDeleted()
     {
         parent::setDeleted();
-        foreach ($this->properties as $property) {
+        foreach ($this->getLocalProperties() as $property) {
             $property->setDeleted(); // not all properties are tracked in objectmanager
         }
     }
@@ -1623,7 +1632,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         parent::beginTransaction();
 
         // Notify the children properties
-        foreach ($this->properties as $prop) {
+        foreach ($this->getLocalProperties() as $prop) {
             $prop->beginTransaction();
         }
     }
@@ -1639,7 +1648,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         parent::commitTransaction();
 
-        foreach ($this->properties as $prop) {
+        foreach ($this->getLocalProperties() as $prop) {
             $prop->commitTransaction();
         }
     }
@@ -1655,7 +1664,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         parent::rollbackTransaction();
 
-        foreach ($this->properties as $prop) {
+        foreach ($this->getLocalProperties() as $prop) {
             $prop->rollbackTransaction();
         }
     }
