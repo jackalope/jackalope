@@ -654,6 +654,26 @@ class ObjectManager
         return $this->transport->getBinaryStream($this->getFetchPath($path, 'Node'));
     }
 
+    public function hasNodeType($nodeTypeName)
+    {
+        return $this->transport->hasNodeType($nodeTypeName);
+
+        try {
+            $this->fetchNodeTypes($nodeTypeName);
+        } catch (NoSuchNodeTypeException $e) {
+            // if we have not yet fetched all types and this type is not existing
+            // we get an exception. just ignore the exception, we don't have the type.
+            return false;
+        }
+
+        return isset($this->primaryTypes[$name]) || isset($this->mixinTypes[$name]);
+    }
+
+    public function getSubTypes($nodeTypeName)
+    {
+        return $this->transport->getSubTypes($nodeTypeName);
+    }
+
     /**
      * Returns the node types specified by name in the array or all types if no
      * filter is given.

@@ -310,6 +310,10 @@ interface TransportInterface
      */
     public function setNodeTypeManager($nodeTypeManager);
 
+    public function hasNodeType($nodeTypeName);
+
+    public function getSubTypes($nodeTypeName);
+
     /**
      * Get node types, either filtered or all.
      *
