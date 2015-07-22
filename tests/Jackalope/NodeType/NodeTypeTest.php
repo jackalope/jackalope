@@ -36,7 +36,7 @@ class NodeTypeTest extends TestCase
             $ntm->getNodeType('nt:base')),
             $superTypes
         );
-        $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')),$nt->getDeclaredSupertypes());
+        $this->assertSame(array($ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')), $nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
         $this->assertInstanceOf('Iterator', $declaredSubTypes);
         $this->assertCount(0, $declaredSubTypes);
@@ -55,7 +55,7 @@ class NodeTypeTest extends TestCase
             $this->assertSame($expectedProperties[$i], $propDef->getName());
             $i++;
         }
-        $this->assertSame(array(),$nt->getChildNodeDefinitions());
+        $this->assertSame(array(), $nt->getChildNodeDefinitions());
 
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
@@ -145,12 +145,12 @@ class NodeTypeTest extends TestCase
         $this->assertCount(2, $properties);
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());
-        $this->assertSame('jcr:createdBy',$property->getName());
+        $this->assertSame('jcr:createdBy', $property->getName());
         $this->assertTrue($property->isAutoCreated());
         $this->assertFalse($property->isMandatory());
-        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY,$property->getOnParentVersion());
+        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $property->getOnParentVersion());
         $this->assertTrue($property->isProtected());
-        $this->assertSame(array(),$property->getDefaultValues());
+        $this->assertSame(array(), $property->getDefaultValues());
 
         //PropertyDefinition
         $this->assertSame(\PHPCR\PropertyType::STRING, $property->getRequiredType());

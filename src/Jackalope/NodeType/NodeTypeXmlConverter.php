@@ -5,10 +5,8 @@ namespace Jackalope\NodeType;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
-
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
-
 use Jackalope\Helper;
 use Jackalope\FactoryInterface;
 

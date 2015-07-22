@@ -70,5 +70,4 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     {
         return array($this);
     }
-
 }

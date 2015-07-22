@@ -1,6 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
+
 use Jackalope\Node;
 use Jackalope\Property;
 

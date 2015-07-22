@@ -3,7 +3,6 @@
 namespace Jackalope;
 
 use ReflectionClass;
-
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 use PHPCR\CredentialsInterface;

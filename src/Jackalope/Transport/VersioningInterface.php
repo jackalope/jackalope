@@ -15,7 +15,6 @@ use PHPCR\Version\VersionException;
  */
 interface VersioningInterface extends TransportInterface
 {
-
     /**
      * Check-in item at path.
      *
@@ -61,5 +60,4 @@ interface VersioningInterface extends TransportInterface
      * @throws VersionException
      */
     public function removeVersion($versionPath, $versionName);
-
 }

@@ -4,9 +4,7 @@ namespace Jackalope\Query;
 
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
-
 use PHPCR\Query\QueryResultInterface;
-
 use IteratorAggregate;
 
 /**

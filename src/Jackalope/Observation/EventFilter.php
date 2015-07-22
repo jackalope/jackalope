@@ -7,7 +7,6 @@ use PHPCR\PropertyInterface;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\Observation\EventInterface;
 use PHPCR\PathNotFoundException;
-
 use Jackalope\FactoryInterface;
 
 /**

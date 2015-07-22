@@ -13,7 +13,6 @@ namespace Jackalope\Query;
  */
 class XpathQuery extends Query
 {
-
     /**
      * Access the query statement from the transport layer
      *
@@ -34,7 +33,6 @@ class XpathQuery extends Query
      */
     public function getLanguage()
     {
-       return self::XPATH;
+        return self::XPATH;
     }
-
 }

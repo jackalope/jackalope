@@ -4,6 +4,7 @@ namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\FullTextSearchInterface;
 use PHPCR\Query\QOM\StaticOperandInterface;
+
 /**
  * {@inheritDoc}
  *

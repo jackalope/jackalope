@@ -3,7 +3,6 @@
 namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\ItemDefinitionInterface;
-
 use Jackalope\FactoryInterface;
 
 /**

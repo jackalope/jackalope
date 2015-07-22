@@ -25,5 +25,4 @@ class NodeDefinitionTemplateTest extends TestCase
         $this->assertNull($ndt->getDefaultPrimaryTypeName());
         $this->assertFalse($ndt->allowsSameNameSiblings());
     }
-
 }

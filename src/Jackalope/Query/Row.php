@@ -3,11 +3,9 @@
 namespace Jackalope\Query;
 
 use Iterator;
-
 use PHPCR\Query\RowInterface;
 use PHPCR\RepositoryException;
 use PHPCR\ItemNotFoundException;
-
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 

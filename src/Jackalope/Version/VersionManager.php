@@ -3,16 +3,13 @@
 namespace Jackalope\Version;
 
 use InvalidArgumentException;
-
 use PHPCR\NodeInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\InvalidItemStateException;
-
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
-
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
@@ -176,21 +173,17 @@ class VersionManager implements VersionManagerInterface
             $version = $vh->getVersion($version);
             $versionPath = $version->getPath();
             $nodePath = $absPath;
-
         } elseif (is_array($version)) {
             // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: implement restoring a list of versions');
             // @codeCoverageIgnoreEnd
-
         } elseif ($version instanceof VersionInterface && is_string($absPath)) {
             // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: implement restoring a version to a specified path');
             // @codeCoverageIgnoreEnd
-
         } elseif ($version instanceof VersionInterface) {
             $versionPath = $version->getPath();
             $nodePath = $this->objectManager->getNodeByIdentifier($version->getContainingHistory()->getVersionableIdentifier())->getPath();
-
         } else {
             throw new InvalidArgumentException();
         }
@@ -310,5 +303,4 @@ class VersionManager implements VersionManagerInterface
         throw new NotImplementedException();
         // @codeCoverageIgnoreEnd
     }
-
 }

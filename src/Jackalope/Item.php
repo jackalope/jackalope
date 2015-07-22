@@ -4,7 +4,6 @@ namespace Jackalope;
 
 use LogicException;
 use PHPCR\Util\PathHelper;
-
 use PHPCR\PropertyInterface;
 use PHPCR\ItemInterface;
 use PHPCR\ItemVisitorInterface;
@@ -689,35 +688,28 @@ abstract class Item implements ItemInterface
 
             // Case 1) and 2)
             $this->state = self::STATE_DELETED;
-
         } elseif (self::STATE_NEW === $this->savedState) {
 
             // Case 3)
             $this->state = self::STATE_NEW;
-
         } elseif (self::STATE_MODIFIED  === $this->state || self::STATE_MODIFIED === $this->savedState) {
 
             // Case 4) and 5)
             $this->state = self::STATE_MODIFIED;
-
         } elseif (self::STATE_CLEAN === $this->savedState) {
-
             if (self::STATE_CLEAN === $this->state) {
 
                 // Case 6) and 7), see the comment in the function setState()
                 $this->state = $this->savedState;
-
             } elseif (self::STATE_DIRTY === $this->state) {
 
                 // Case 8)
                 $this->state = self::STATE_DIRTY;
             }
-
         } elseif (self::STATE_DIRTY === $this->savedState) {
 
             // Case 9)
             $this->state = self::STATE_DIRTY;
-
         } else {
 
             // There might be some special case we do not handle. for the moment throw an exception

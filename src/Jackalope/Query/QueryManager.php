@@ -4,7 +4,6 @@ namespace Jackalope\Query;
 use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QueryManagerInterface;
 use PHPCR\Query\InvalidQueryException;
-
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;

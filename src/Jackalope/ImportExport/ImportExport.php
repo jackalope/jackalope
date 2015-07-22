@@ -3,7 +3,6 @@
 namespace Jackalope\ImportExport;
 
 use XMLReader;
-
 use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
 use PHPCR\ImportUUIDBehaviorInterface;

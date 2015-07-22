@@ -3,7 +3,6 @@
 namespace Jackalope\Transport;
 
 use PHPCR\CredentialsInterface;
-
 use Jackalope\NodeType\NodeTypeManager;
 
 /**

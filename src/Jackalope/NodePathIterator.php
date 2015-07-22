@@ -148,7 +148,6 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
             } else {
                 $this->nodes[$path] =  null;
             }
-
         }
     }
 

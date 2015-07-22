@@ -7,10 +7,8 @@ use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\OrderingInterface;
 use PHPCR\Query\QOM\ColumnInterface;
-
 use PHPCR\Util\QOM\Sql2Generator;
 use PHPCR\Util\QOM\QomToSql2QueryConverter;
-
 use Jackalope\ObjectManager;
 use Jackalope\Query\SqlQuery;
 use Jackalope\FactoryInterface;

@@ -52,4 +52,3 @@ interface PathValidatorInterface
      */
     public function validateName($name);
 }
-

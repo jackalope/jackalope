@@ -161,7 +161,7 @@ class TestItem extends Item
 {
     public function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
-        parent::__construct($factory,$path,$session,$objectManager,$new);
+        parent::__construct($factory, $path, $session, $objectManager, $new);
     }
 
     public function refresh($keep)

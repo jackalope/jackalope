@@ -7,7 +7,6 @@ use LogicException;
 use ArrayIterator;
 use IteratorAggregate;
 use InvalidArgumentException;
-
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
@@ -15,9 +14,7 @@ use PHPCR\RepositoryException;
 use PHPCR\ValueFormatException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemNotFoundException;
-
 use PHPCR\NodeType\PropertyDefinitionInterface;
-
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\UUIDHelper;
 
@@ -338,14 +335,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             $token = md5(uniqid(mt_rand(), true));
             // start with part = 1 since 0 will not be parsed properly by parse_url
             for ($i = 1; $i <= count($this->length); $i++) {
-                $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path , 'rwb+');
+                $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path, 'rwb+');
             }
 
             return $results;
         }
 
         // single property case
-        $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path , 'rwb+');
+        $result = fopen('jackalope://' . $this->session->getRegistryKey() . $this->path, 'rwb+');
         $this->streams[] = $result;
 
         return $result;
@@ -498,7 +495,6 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
 
         return $this->isMultiple() ? $results : $results[0];
-
     }
 
     /**
@@ -730,11 +726,11 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (PropertyType::BINARY === $targettype) {
             if (is_array($value)) {
                 $this->length = array();
-                foreach($value as $v) {
+                foreach ($value as $v) {
                     $stat = is_resource($v) ? fstat($v) : array( 'size' => -1 );
                     $this->length[] = $stat['size'];
                 }
-            } elseif(is_resource($value)) {
+            } elseif (is_resource($value)) {
                 $stat = fstat($value);
                 $this->length = $stat['size'];
             } else {

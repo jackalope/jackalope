@@ -6,11 +6,9 @@ use PHPCR\Transaction\UserTransactionInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
-
 use Jackalope\Transport\TransactionInterface;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
-
 use LogicException;
 
 /**

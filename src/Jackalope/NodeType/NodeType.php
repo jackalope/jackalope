@@ -4,7 +4,6 @@ namespace Jackalope\NodeType;
 
 use ArrayIterator;
 use Exception;
-
 use PHPCR\PropertyType;
 use PHPCR\ValueFormatException;
 use PHPCR\NodeType\NodeTypeInterface;
@@ -289,15 +288,15 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 return false;
             } catch (Exception $e) {
                 if ($throw) {
-                   $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: " . $e->getMessage();
-                   throw new ConstraintViolationException($errorMsg, null, $e);
+                    $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: " . $e->getMessage();
+                    throw new ConstraintViolationException($errorMsg, null, $e);
                 }
 
                 return false;
             }
         }
         foreach ($childDefs as $child) {
-            if ( '*' == $child->getName() || $childNodeName == $child->getName()) {
+            if ('*' == $child->getName() || $childNodeName == $child->getName()) {
                 if ($nodeTypeName == null) {
                     if ($child->getDefaultPrimaryTypeName() != null) {
                         return true;
@@ -329,7 +328,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
             if ($nodeName == $child->getName() &&
-                ( $child->isMandatory() || $child->isProtected() )
+                ($child->isMandatory() || $child->isProtected())
             ) {
                 if ($throw) {
                     if ($child->isMandatory()) {
@@ -357,7 +356,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         $propDefs = $this->getPropertyDefinitions();
         foreach ($propDefs as $prop) {
             if ($propertyName == $prop->getName() &&
-                ( $prop->isMandatory() || $prop->isProtected() )
+                ($prop->isMandatory() || $prop->isProtected())
             ) {
                 if ($throw) {
                     if ($prop->isMandatory()) {

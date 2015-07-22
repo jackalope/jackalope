@@ -3,7 +3,6 @@ namespace Jackalope;
 
 use ArrayIterator;
 use InvalidArgumentException;
-
 use Jackalope\Transport\NodeTypeFilterInterface;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
@@ -14,13 +13,10 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\ItemExistsException;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
-
 use PHPCR\Util\CND\Writer\CndWriter;
 use PHPCR\Version\VersionInterface;
-
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\CND\Parser\CndParser;
-
 use Jackalope\Transport\Operation;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\PermissionInterface;
@@ -527,7 +523,7 @@ class ObjectManager
         $absPath = PathHelper::normalizePath($absPath);
 
         $name = PathHelper::getNodeName($absPath); //the property name
-        $nodep = PathHelper::getParentPath($absPath,0,strrpos($absPath,'/')+1); //the node this property should be in
+        $nodep = PathHelper::getParentPath($absPath, 0, strrpos($absPath, '/')+1); //the node this property should be in
 
         return array($name, $nodep);
     }
@@ -915,7 +911,6 @@ class ObjectManager
         }
 
         $this->executeBatch($lastType, $batch);
-
     }
 
     /**
@@ -1788,7 +1783,7 @@ class ObjectManager
             $item = $this->objectsByPath['Node'][$absPath];
 
             if ($keepChanges &&
-                ( $item->isNew() || $this->getMoveSrcPath($absPath))
+                ($item->isNew() || $this->getMoveSrcPath($absPath))
             ) {
                 // we keep changes and this is a new node or it moved here
                 return false;

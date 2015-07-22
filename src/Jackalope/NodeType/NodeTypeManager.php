@@ -4,7 +4,6 @@ namespace Jackalope\NodeType;
 
 use IteratorAggregate;
 use ArrayIterator;
-
 use Jackalope\NamespaceRegistry;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NodeType\NodeTypeInterface;
@@ -12,7 +11,6 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\NodeType\NodeTypeExistsException;
-
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
@@ -310,7 +308,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createNodeTypeTemplate($ntd = null)
     {
-       return $this->factory->get('NodeType\\NodeTypeTemplate', array($this, $ntd));
+        return $this->factory->get('NodeType\\NodeTypeTemplate', array($this, $ntd));
     }
 
     /**
@@ -320,7 +318,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createNodeDefinitionTemplate()
     {
-       return $this->factory->get('NodeType\\NodeDefinitionTemplate', array($this));
+        return $this->factory->get('NodeType\\NodeDefinitionTemplate', array($this));
     }
 
     /**
@@ -330,7 +328,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createPropertyDefinitionTemplate()
     {
-       return $this->factory->get('NodeType\\PropertyDefinitionTemplate', array($this));
+        return $this->factory->get('NodeType\\PropertyDefinitionTemplate', array($this));
     }
 
     /**
