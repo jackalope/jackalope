@@ -10,6 +10,8 @@ php:
 env:
  - PACKAGE_VERSION=high
 
+sudo: false
+
 matrix:
   include:
     - php: 5.3.3
