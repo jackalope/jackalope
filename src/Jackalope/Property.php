@@ -8,6 +8,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use InvalidArgumentException;
 use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
@@ -496,29 +497,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         if (empty($this->definition)) {
-            $types = $this->getParent()->getMixinNodeTypes();
-            array_push($types, $this->getParent()->getPrimaryNodeType());
-            /** @var $nt \Jackalope\NodeType\NodeType */
-            foreach ($types as $nt) {
-                /** @var $candidate PropertyDefinitionInterface */
-                foreach ($nt->getPropertyDefinitions() as $candidate) {
-                    if ($candidate->getName() == $this->name) {
-                        $this->definition = $candidate;
-                        break 2;
-                    } elseif ('*' == $candidate->getName()) {
-                        // i guess if we have multiple wildcard property
-                        // definitions, they should be equivalent
-                        $this->definition = $candidate;
-                        // do not abort loop, in case we hit an exactly
-                        // matching definition
-                    }
-                }
-            }
-        }
-        // sanity check. theoretically, the property should not be able to
-        // exist if there is no definition for it
-        if (empty($this->definition)) {
-            throw new \RuntimeException('Found no property definition, this should not be possible');
+            $this->definition = $this->findItemDefinition(function (NodeTypeInterface $nt) {
+                return $nt->getPropertyDefinitions();
+            });
         }
 
         return $this->definition;

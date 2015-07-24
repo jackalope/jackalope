@@ -8,6 +8,8 @@ use Exception;
 use InvalidArgumentException;
 use Jackalope\NodeType\NodeType;
 use LogicException;
+use PHPCR\NodeType\NodeDefinitionInterface;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\PropertyType;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
@@ -80,6 +82,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @var array
      */
     protected $originalNodesOrder = null;
+
+    /**
+     * Cached instance of the node definition that defines this node
+     * @var NodeDefinitionInterface
+     * @see Node::getDefinition()
+     */
+    protected $definition;
 
     /**
      * Create a new node instance with data from the storage layer
@@ -1125,7 +1134,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        throw new NotImplementedException();
+        if ('rep:root' === $this->primaryType) {
+            throw new NotImplementedException('what is the definition of the root node?');
+        }
+
+        if (empty($this->definition)) {
+            $this->definition = $this->findItemDefinition(function (NodeTypeInterface $nt) {
+                return $nt->getChildNodeDefinitions();
+            });
+        }
+
+        return $this->definition;
     }
 
     /**
