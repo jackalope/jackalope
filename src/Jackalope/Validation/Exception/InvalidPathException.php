@@ -15,4 +15,3 @@ use PHPCR\ValueFormatException;
 class InvalidPathException extends ValueFormatException
 {
 }
-

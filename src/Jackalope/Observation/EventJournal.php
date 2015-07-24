@@ -3,11 +3,9 @@
 namespace Jackalope\Observation;
 
 use ArrayIterator;
-
 use Jackalope\Transport\ObservationInterface;
 use PHPCR\Observation\EventJournalInterface;
 use PHPCR\SessionInterface;
-
 use Jackalope\FactoryInterface;
 
 /**

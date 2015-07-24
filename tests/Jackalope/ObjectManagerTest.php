@@ -17,7 +17,6 @@ class ObjectManagerTest extends TestCase
 
     public function testGetNodeByPath()
     {
-
         $path = '/jcr:root';
         $node = $this->om->getNodeByPath($path);
         $this->assertInstanceOf('Jackalope\Node', $node);

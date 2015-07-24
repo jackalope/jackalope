@@ -10,5 +10,4 @@ class ItemDefinitionTest extends TestCase
     {
         $this->markTestSkipped('No tests for this class yet');
     }
-
 }

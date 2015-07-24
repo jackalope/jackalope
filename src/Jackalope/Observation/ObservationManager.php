@@ -3,12 +3,10 @@
 namespace Jackalope\Observation;
 
 use IteratorAggregate;
-
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\Observation\EventListenerInterface;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\SessionInterface;
-
 use Jackalope\Transport\ObservationInterface;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
@@ -58,8 +56,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
     public function addEventListener(
         EventListenerInterface $listener,
         EventFilterInterface $filter
-    )
-    {
+    ) {
         throw new NotImplementedException();
     }
 

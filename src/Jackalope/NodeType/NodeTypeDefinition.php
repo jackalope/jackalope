@@ -5,9 +5,7 @@ use DOMElement;
 use DOMXPath;
 use ArrayObject;
 use InvalidArgumentException;
-
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
-
 use Jackalope\Helper;
 use Jackalope\FactoryInterface;
 use PHPCR\Util\ValueConverter;
@@ -262,5 +260,4 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         return is_null($this->declaredNodeDefinitions)
             ? null : $this->declaredNodeDefinitions->getArrayCopy();
     }
-
 }

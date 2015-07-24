@@ -28,7 +28,6 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
 
         $this->eventFilter->setNodeTypes(array('nt:unstructured'));
         $this->assertFilterMatch($this->eventFilter, true);
-
     }
 
     public function testFilterFindNotType()
@@ -49,7 +48,6 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
 
         $this->eventFilter->setNodeTypes(array('nt:unstructured'));
         $this->assertFilterMatch($this->eventFilter, false);
-
     }
 
     public function testFilterNofind()
@@ -70,5 +68,4 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
         $event->setPath('/some/path');
         $this->assertEquals($expectedResult, $filter->match($event));
     }
-
 }

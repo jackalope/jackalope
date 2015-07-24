@@ -3,12 +3,9 @@ namespace Jackalope;
 
 use PHPCR\WorkspaceInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
-
 use PHPCR\Transaction\UserTransactionInterface;
-
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\ImportExport\ImportExport;
-
 use Jackalope\Transport\QueryInterface;
 use Jackalope\Transport\WritingInterface;
 use Jackalope\Transport\WorkspaceManagementInterface;

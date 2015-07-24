@@ -13,7 +13,6 @@ namespace Jackalope\Query;
  */
 class SqlQuery extends Query
 {
-
     /**
      * Access the query statement from the transport layer
      *
@@ -34,7 +33,6 @@ class SqlQuery extends Query
      */
     public function getLanguage()
     {
-       return self::JCR_SQL2;
+        return self::JCR_SQL2;
     }
-
 }

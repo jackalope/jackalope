@@ -4,7 +4,6 @@ namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\NodeDefinitionTemplateInterface;
 use PHPCR\Version\OnParentVersionAction;
-
 use Jackalope\FactoryInterface;
 
 /**

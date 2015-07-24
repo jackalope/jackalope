@@ -77,5 +77,4 @@ class EventFilterEventTypeTest extends EventFilterTestCase
             $this->assertEquals($mustAccept, $filter->match($event), $message);
         }
     }
-
 }

@@ -3,7 +3,6 @@
 namespace Jackalope\NodeType;
 
 use ArrayObject;
-
 use PHPCR\NodeType\NodeTypeTemplateInterface;
 
 /**
@@ -16,7 +15,6 @@ use PHPCR\NodeType\NodeTypeTemplateInterface;
  */
 class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInterface
 {
-
     /**
      * {@inheritDoc}
      *
@@ -114,5 +112,4 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
 
         return $this->declaredNodeDefinitions;
     }
-
 }

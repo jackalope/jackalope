@@ -62,7 +62,6 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
         if (']' === substr($path, -1)) {
             throw new InvalidPathException(sprintf('Destination path "%s" must not end with an index', $path));
         }
-
     }
 
     /**
@@ -92,4 +91,3 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
         return $isMatch;
     }
 }
-

@@ -3,7 +3,6 @@
 namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockInterface;
-
 use Jackalope\NotImplementedException;
 
 /**

@@ -34,7 +34,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -98,7 +98,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -139,7 +139,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -180,7 +180,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -244,7 +244,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -308,7 +308,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -372,7 +372,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -436,7 +436,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -477,7 +477,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -496,7 +496,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -541,7 +541,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -605,7 +605,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -787,7 +787,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -830,7 +830,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -1010,7 +1010,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -1074,7 +1074,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -1290,7 +1290,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:versionable',
@@ -1352,7 +1352,7 @@ class StandardNodeTypes
                         'isProtected' => false,
                         'onParentVersion' => 1,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'nt:base',
@@ -1367,7 +1367,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:hierarchyNode',
@@ -1386,7 +1386,7 @@ class StandardNodeTypes
                         'isProtected' => false,
                         'onParentVersion' => 2,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'nt:hierarchyNode',
@@ -1401,7 +1401,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -1536,7 +1536,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 6,
                         'allowsSameNameSiblings' => true,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'nt:base',
@@ -1551,7 +1551,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:created',
@@ -1613,7 +1613,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -1823,7 +1823,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2143,7 +2143,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2253,7 +2253,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2333,7 +2333,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -2457,7 +2457,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 6,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'nt:frozenNode',
@@ -2472,7 +2472,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -2587,7 +2587,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2633,7 +2633,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2679,7 +2679,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2813,7 +2813,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:Policy',
@@ -2847,7 +2847,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2866,7 +2866,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 5,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'rep:AccessControl',
@@ -2881,7 +2881,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 5,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'rep:PrincipalAccessControl',
@@ -2896,7 +2896,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -2914,7 +2914,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 5,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'rep:Policy',
@@ -2929,7 +2929,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -2978,7 +2978,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'mix:referenceable',
@@ -3082,7 +3082,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:hierarchyNode',
@@ -3131,7 +3131,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -3180,7 +3180,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:ACE',
@@ -3199,7 +3199,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:ACE',
@@ -3218,7 +3218,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:Authorizable',
@@ -3279,7 +3279,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -3320,7 +3320,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -3381,7 +3381,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -3400,7 +3400,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:AccessControl',
@@ -3419,7 +3419,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 5,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'rep:Policy',
@@ -3434,7 +3434,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -3452,7 +3452,7 @@ class StandardNodeTypes
                         'isProtected' => true,
                         'onParentVersion' => 5,
                         'allowsSameNameSiblings' => false,
-                        'defaultPrimaryTypeName' => NULL,
+                        'defaultPrimaryTypeName' => null,
                         'requiredPrimaryTypeNames' =>
                         array(
                             0 => 'rep:Policy',
@@ -3467,7 +3467,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -3531,7 +3531,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'rep:Authorizable',
@@ -3597,7 +3597,7 @@ class StandardNodeTypes
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                 ),
@@ -3638,7 +3638,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -3672,7 +3672,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:unstructured',
@@ -3706,7 +3706,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',
@@ -3800,7 +3800,7 @@ class StandardNodeTypes
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
-                'primaryItemName' => NULL,
+                'primaryItemName' => null,
                 'declaredSuperTypeNames' =>
                 array(
                     0 => 'nt:base',

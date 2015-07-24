@@ -3,11 +3,9 @@
 namespace Jackalope\Version;
 
 use ArrayIterator;
-
 use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionException;
-
 use Jackalope\Node;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;

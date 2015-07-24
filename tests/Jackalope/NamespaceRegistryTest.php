@@ -22,7 +22,7 @@ class NamespaceRegistryTest extends TestCase
      *
      * @param array $namespaces
      */
-    public function getNamespaceRegistry($namespaces,$getNamespaceHasToBeCalled = true)
+    public function getNamespaceRegistry($namespaces, $getNamespaceHasToBeCalled = true)
     {
         if ($getNamespaceHasToBeCalled) {
             $expects = $this->once();
@@ -52,7 +52,7 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testConstruct($expected, $namespaces)
     {
-        $nsr = $this->getNamespaceRegistry($namespaces,false);
+        $nsr = $this->getNamespaceRegistry($namespaces, false);
 
         $this->assertAttributeInstanceOf('Jackalope\Transport\TransportInterface', 'transport', $nsr);
         //after construct, userNamespaces is supposed to be null due to lazyLoading
@@ -100,7 +100,7 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testGetPrefixFromDefaultNamespace()
     {
-        $nsr = $this->getNamespaceRegistry(array(),false);
+        $nsr = $this->getNamespaceRegistry(array(), false);
         $this->assertEquals("xml", $nsr->getPrefix("http://www.w3.org/XML/1998/namespace"));
     }
 
@@ -189,7 +189,7 @@ class NamespaceRegistryTest extends TestCase
     public function testCheckPrefix()
     {
         $prefix = 'beastie';
-        $ns = $this->getNamespaceRegistry(array(),false);
+        $ns = $this->getNamespaceRegistry(array(), false);
 
         $this->assertNull($ns->checkPrefix($prefix));
     }
@@ -201,7 +201,7 @@ class NamespaceRegistryTest extends TestCase
      */
     public function testCheckPrefixExpexctingNamespaceException($prefix)
     {
-        $ns = $this->getNamespaceRegistry(array(),false);
+        $ns = $this->getNamespaceRegistry(array(), false);
         $ns->checkPrefix($prefix);
     }
 
@@ -231,7 +231,6 @@ class NamespaceRegistryTest extends TestCase
             'empty prefix' => array(''),
         );
     }
-
 }
 
 class NamespaceRegistryProxy extends \Jackalope\NamespaceRegistry

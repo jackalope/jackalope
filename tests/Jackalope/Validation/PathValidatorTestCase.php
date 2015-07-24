@@ -152,4 +152,3 @@ abstract class PathValidatorTestCase extends TestCase
         $this->getValidator()->validateDestPath($path);
     }
 }
-

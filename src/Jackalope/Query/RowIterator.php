@@ -5,7 +5,6 @@ namespace Jackalope\Query;
 use Countable;
 use SeekableIterator;
 use OutOfBoundsException;
-
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 

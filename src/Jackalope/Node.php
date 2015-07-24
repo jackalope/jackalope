@@ -7,7 +7,6 @@ use IteratorAggregate;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
-
 use PHPCR\PropertyType;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
@@ -17,10 +16,8 @@ use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
-
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
-
 use Jackalope\Factory;
 
 /**
@@ -358,7 +355,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 // with that name than if there is nothing at the path at all.
                 // lets see if the property exists
                 if ($this->session->propertyExists($parentPath)) {
-
                     throw new ConstraintViolationException("Node '{$this->path}': Not allowed to add a node below property at $parentPath");
                 }
 
@@ -799,7 +795,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if ($primary_item === null) {
-           throw new ItemNotFoundException("No primary item found for node '{$this->path}'");
+            throw new ItemNotFoundException("No primary item found for node '{$this->path}'");
         }
 
         return $primary_item;
@@ -1073,7 +1069,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $toRemove = array();
         if ($this->hasProperty('jcr:mixinTypes')) {
             foreach ($this->getPropertyValue('jcr:mixinTypes') as $mixin) {
-
                 if (false !== $key = array_search($mixin, $mixinNames)) {
                     unset($mixinNames[$key]);
                 } else {
@@ -1474,8 +1469,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $filtered = array();
             $filter = (array) $filter;
             foreach ($filter as $k => $f) {
-               $f = trim($f);
-               $filter[$k] = strtr($f, array('*'=>'.*', //wildcard
+                $f = trim($f);
+                $filter[$k] = strtr($f, array('*'=>'.*', //wildcard
                                              '.'  => '\\.', //escape regexp
                                              '\\' => '\\\\',
                                              '{'  => '\\{',

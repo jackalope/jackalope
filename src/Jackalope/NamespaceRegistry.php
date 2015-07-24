@@ -5,12 +5,10 @@ namespace Jackalope;
 use Iterator;
 use ArrayIterator;
 use IteratorAggregate;
-
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NamespaceException;
-
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
 

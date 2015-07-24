@@ -13,7 +13,6 @@ use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\NamespaceException;
-
 use Jackalope\Transport\AddNodeOperation;
 
 /**
@@ -80,8 +79,7 @@ $/xi";
         $userId,
         $namespaces = array(),
         $autoLastModified = true
-    )
-    {
+    ) {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
@@ -212,7 +210,7 @@ $/xi";
             } elseif ($propertyDef->isAutoCreated()) {
                 $prop = $node->getProperty($propertyDef->getName());
                 if (!$prop->isModified() && !$prop->isNew()) {
-                    switch($propertyDef->getName()) {
+                    switch ($propertyDef->getName()) {
                         case 'jcr:lastModified':
                             if ($this->autoLastModified) {
                                 $prop->setValue(new \DateTime());
@@ -269,7 +267,7 @@ $/xi";
                                 $property->getPath(),
                                 $prefix
                             ));
-                            }
+                        }
                     }
                 }
                 break;

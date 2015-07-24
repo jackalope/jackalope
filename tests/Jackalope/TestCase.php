@@ -3,7 +3,6 @@
 namespace Jackalope;
 
 use PHPCR\SimpleCredentials;
-
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\NodeTypeXmlConverter;
 

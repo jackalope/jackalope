@@ -36,6 +36,7 @@ class FactoryTest extends TestCase
 }
 
 namespace Other;
+
 class TestDummy
 {
     public function __construct()

@@ -104,13 +104,12 @@ class NodeTest extends TestCase
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
     }
-
 }
 
 class NodeMock extends Node
 {
-    public static function filterNames($filter,$names)
+    public static function filterNames($filter, $names)
     {
-        return parent::filterNames($filter,$names);
+        return parent::filterNames($filter, $names);
     }
 }

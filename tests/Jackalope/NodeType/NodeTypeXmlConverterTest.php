@@ -5,7 +5,7 @@ namespace Jackalope\NodeType;
 use Jackalope\TestCase;
 use Jackalope\Factory;
 
-class NodeTypeXmlConverterDefinitionTest extends TestCase
+class NodeTypeXmlConverterTest extends TestCase
 {
     private $converter;
 
@@ -25,7 +25,7 @@ class NodeTypeXmlConverterDefinitionTest extends TestCase
             'isMixin' => false,
             'isQueryable' => true,
             'hasOrderableChildNodes' => true,
-            'primaryItemName' => NULL,
+            'primaryItemName' => null,
             'declaredSuperTypeNames' => array(),
             'declaredPropertyDefinitions' => array(
                 array(
@@ -66,7 +66,7 @@ class NodeTypeXmlConverterDefinitionTest extends TestCase
             'isMixin' => false,
             'isQueryable' => true,
             'hasOrderableChildNodes' => true,
-            'primaryItemName' => NULL,
+            'primaryItemName' => null,
             'declaredSuperTypeNames' => array('nt:base'),
             'declaredPropertyDefinitions' => array(
                 array(
@@ -156,15 +156,15 @@ class NodeTypeXmlConverterDefinitionTest extends TestCase
 </nodeTypes>
 
 XML;
-          $dom = new \DOMDocument('1.0', 'UTF-8');
-          $dom->loadXML($xml);
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->loadXML($xml);
 
-          $xpath = new \DOMXpath($dom);
-          $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
-          if ($nodes->length != 1) {
-              $this->fail("Should have found exactly one element <nodeType> with name " . $name);
-          }
+        $xpath = new \DOMXpath($dom);
+        $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
+        if ($nodes->length != 1) {
+            $this->fail("Should have found exactly one element <nodeType> with name " . $name);
+        }
 
-          return $nodes->item(0);
+        return $nodes->item(0);
     }
 }

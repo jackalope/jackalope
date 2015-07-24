@@ -8,5 +8,4 @@ class HelperTest extends TestCase
     {
         $this->markTestSkipped('No tests for this class yet');
     }
-
 }

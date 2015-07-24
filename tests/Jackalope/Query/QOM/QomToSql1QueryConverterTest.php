@@ -4,7 +4,6 @@ namespace Jackalope\Query\QOM;
 
 use Jackalope\Query\QOM\QueryObjectModelFactory;
 use Jackalope\Factory;
-
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 use PHPCR\Util\QOM\QueryBuilder;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
@@ -20,7 +19,7 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->qf = new QueryObjectModelFactorySql1(new Factory());
-        $this->qb = new QueryBuilder($this->qf );
+        $this->qb = new QueryBuilder($this->qf);
     }
 
     public function doQuery($constraint)
@@ -33,7 +32,7 @@ class QomToSql1QueryConverterTest extends \PHPUnit_Framework_TestCase
 
     public function testFullText()
     {
-        $statement = $this->doQuery($this->qf->fullTextSearch('base', "foo","bar"));
+        $statement = $this->doQuery($this->qf->fullTextSearch('base', "foo", "bar"));
         $this->assertSame("SELECT s FROM nt:base WHERE CONTAINS(foo, 'bar')", $statement);
     }
 
@@ -111,8 +110,7 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
                         array $orderings = array(),
                         array $columns = array(),
                         $simpleQuery = false
-        )
-    {
+        ) {
         return $this->factory->get('Query\QOM\QueryObjectModelSql1',
         array($this->objectManager, $source, $constraint, $orderings, $columns));
     }

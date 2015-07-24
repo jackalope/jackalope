@@ -1,6 +1,7 @@
 <?php
 
 namespace Jackalope\Transport;
+
 use PHPCR\Lock\LockInterface;
 
 /**

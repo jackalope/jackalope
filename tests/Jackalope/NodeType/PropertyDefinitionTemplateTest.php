@@ -28,5 +28,4 @@ class PropertyDefinitionTemplateTest extends TestCase
         $this->assertFalse($ndt->isFullTextSearchable());
         $this->assertFalse($ndt->isQueryOrderable());
     }
-
 }

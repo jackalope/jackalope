@@ -3,7 +3,6 @@
 namespace Jackalope\Version;
 
 use PHPCR\Version\VersionInterface;
-
 use Jackalope\NotImplementedException;
 use Jackalope\Node;
 

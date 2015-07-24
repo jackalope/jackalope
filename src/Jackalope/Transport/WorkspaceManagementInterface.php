@@ -12,7 +12,6 @@ namespace Jackalope\Transport;
  */
 interface WorkspaceManagementInterface extends TransportInterface
 {
-
     /**
      * Creates a new Workspace with the specified name. The new workspace is
      * empty, meaning it contains only root node.

@@ -19,7 +19,6 @@ namespace Jackalope\Transport;
  */
 interface NodeTypeCndManagementInterface extends TransportInterface
 {
-
     /**
      * Register namespaces and new node types or update node types based on a
      * jackrabbit cnd string

@@ -40,8 +40,8 @@ class JackrabbitPathValidator extends AbstractRegexValidator
 
     public function __construct()
     {
-        $this->PAT_NAME_PREFIX_START_CHAR = 
-            '[' . 
+        $this->PAT_NAME_PREFIX_START_CHAR =
+            '[' .
             ':A-Z_a-z\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\x{2FF}\\x{370}-\\x{37D}\\x{37F}-\\x{1FFF}\\x{200C}-\\x{200D}\\x{2070}-' .
             '\\x{218F}\\x{2C00}-\\x{2FEF}\\x{3001}-\\x{D7FF}\\x{F900}-\\x{FDCF}\\x{FDF0}-\\x{FFFD}\\x{10000}-\\x{EFFFF}' .
             ']';

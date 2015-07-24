@@ -4,7 +4,6 @@ namespace Jackalope\Query\QOM;
 
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
-
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface;
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 use PHPCR\Query\QOM\SourceInterface;
@@ -198,7 +197,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function childNode($selectorName , $path)
+    public function childNode($selectorName, $path)
     {
         return new ChildNodeConstraint($selectorName, $path);
     }

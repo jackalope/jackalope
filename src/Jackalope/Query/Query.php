@@ -6,7 +6,6 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\RepositoryException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\Query\QueryInterface;
-
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 
@@ -202,5 +201,4 @@ abstract class Query implements QueryInterface
         // so this works for the extending QueryObjectModel as well
         throw new UnsupportedRepositoryOperationException('Not implemented: Write');
     }
-
 }

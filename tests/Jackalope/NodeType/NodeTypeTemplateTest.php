@@ -46,7 +46,7 @@ class NodeTypeTemplateTest extends TestCase
 
         $this->assertInstanceOf('Jackalope\NodeType\NodeTypeDefinition', $ntt);
         $this->assertInstanceOf('Jackalope\NodeType\NodeTypeTemplate', $ntt);
-        $this->assertSame($nt->getName(),$ntt->getName());
+        $this->assertSame($nt->getName(), $ntt->getName());
         $this->assertEquals($nt->isAbstract(), $ntt->isAbstract());
         $this->assertEquals($nt->isMixin(), $ntt->isMixin());
         $this->assertEquals($nt->isQueryable(), $ntt->isQueryable());
@@ -132,7 +132,6 @@ class NodeTypeTemplateTest extends TestCase
      */
     public function testEmptyPropertyDefinitionTemplatesMutable()
     {
-
         $nt = $this->ntm->createNodeTypeTemplate();
         $property = $this->ntm->createPropertyDefinitionTemplate();
         $property->setName('test:propdef');

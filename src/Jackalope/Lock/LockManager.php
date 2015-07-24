@@ -4,14 +4,12 @@ namespace Jackalope\Lock;
 
 use ArrayIterator;
 use IteratorAggregate;
-
 use PHPCR\SessionInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\Lock\LockManagerInterface;
 use PHPCR\Lock\LockInfoInterface;
 use PHPCR\Lock\LockException;
-
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 use Jackalope\Item;
@@ -260,7 +258,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
      */
     public function logout()
     {
-        foreach ($this->locks as $path => $lock) {;
+        foreach ($this->locks as $path => $lock) {
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
                 try {
                     $this->unlock($path); // will tell the lock its no longer live

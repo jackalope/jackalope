@@ -2,7 +2,6 @@
 namespace Jackalope;
 
 use DOMElement;
-
 use PHPCR\RepositoryException;
 
 /**

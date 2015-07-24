@@ -4,7 +4,6 @@ namespace Jackalope;
 
 use PHPCR\Util\PathHelper;
 use Exception;
-
 use PHPCR\RepositoryInterface;
 use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
@@ -15,11 +14,8 @@ use PHPCR\ItemExistsException;
 use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use InvalidArgumentException;
-
 use PHPCR\Security\AccessControlException;
-
 use Jackalope\ImportExport\ImportExport;
-
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
 
@@ -379,7 +375,6 @@ class Session implements SessionInterface
         }
 
         return true;
-
     }
 
     /**

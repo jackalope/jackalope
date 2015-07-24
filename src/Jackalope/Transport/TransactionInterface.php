@@ -12,7 +12,6 @@ namespace Jackalope\Transport;
  */
 interface TransactionInterface extends TransportInterface
 {
-
     /**
      * Initiates a "local transaction" on the root node
      *
