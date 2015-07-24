@@ -259,7 +259,6 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     public function logout()
     {
         foreach ($this->locks as $path => $lock) {
-            ;
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
                 try {
                     $this->unlock($path); // will tell the lock its no longer live
