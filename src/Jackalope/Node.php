@@ -6,6 +6,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use Exception;
 use InvalidArgumentException;
+use Jackalope\NodeType\NodeType;
 use LogicException;
 use PHPCR\PropertyType;
 use PHPCR\NodeInterface;
@@ -253,7 +254,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                                     ? $rawData->{':' . $key}
                                     : PropertyType::valueFromName($rawData->{':' . $key});
                         } else {
-                            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
+                            $type = $this->valueConverter->determineType($value);
                         }
                         $this->_setProperty($key, $value, $type, true);
                         break;
@@ -525,12 +526,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if ($validate) {
+            if (is_array($value)) {
+                foreach ($value as $key => $v) {
+                    if (null === $v) {
+                        unset($value[$key]);
+                    }
+                }
+            }
             $types = $this->getMixinNodeTypes();
             array_push($types, $this->getPrimaryNodeType());
             if (null !== $value) {
                 $exception = null;
                 foreach ($types as $nt) {
-                    /** @var $nt \Jackalope\NodeType\NodeType */
+                    /** @var $nt NodeType */
                     try {
                         $nt->canSetProperty($name, $value, true);
                         $exception = null;

@@ -61,11 +61,12 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @var boolean
      */
     protected $isMultiple = false;
+
     /**
      * the type constant from PropertyType
      * @var int
      */
-    protected $type;
+    protected $type = PropertyType::UNDEFINED;
 
     /**
      * cached instance of the property definition that defines this property
@@ -103,7 +104,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         $this->wrapBinaryStreams = $session->getRepository()->getDescriptor(Repository::JACKALOPE_OPTION_STREAM_WRAPPER);
 
-        if (empty($data) && $new) {
+        if (null === $data && $new) {
             return;
         }
 
@@ -111,48 +112,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             throw new InvalidArgumentException("Can't create property at $path without any data");
         }
 
-        if (isset($data['type']) && PropertyType::UNDEFINED !== $data['type']) {
-            $type = $data['type'];
-            if (is_string($type)) {
-                $type = PropertyType::valueFromName($type);
-            } elseif (!is_numeric($type)) {
-                // @codeCoverageIgnoreStart
-                throw new RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
-                // @codeCoverageIgnoreEnd
-            } else {
-                //sanity check. this will throw InvalidArgumentException if $type is not a valid type
-                PropertyType::nameFromValue($type);
-            }
-        } else {
-            // we are creating a node
-            $type = PropertyType::determineType(is_array($data['value']) ? reset($data['value']) : $data['value']);
-        }
-        $this->type = $type;
-
-        if ($type == PropertyType::BINARY && ! $new) {
-            // reading a binary property from backend, we do not get the stream immediately but just the size
-            if (is_array($data['value'])) {
-                $this->isMultiple = true;
-            }
-            $this->length = $data['value'];
-            $this->value = null;
-
-            return;
-        }
-
-        if (is_array($data['value'])) {
-            $this->isMultiple = true;
-            $this->value = array();
-            foreach ($data['value'] as $value) {
-                $this->value[] = $this->valueConverter->convertType($value, $type);
-            }
-        } elseif (null !== $data['value']) {
-            $this->value = $this->valueConverter->convertType($data['value'], $type);
-        } else {
-            // @codeCoverageIgnoreStart
-            throw new RepositoryException('INTERNAL ERROR -- data[value] may not be null');
-            // @codeCoverageIgnoreEnd
-        }
+        $this->_setValue($data['value'], isset($data['type']) ? $data['type'] : PropertyType::UNDEFINED, true);
     }
 
     /**
@@ -167,7 +127,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         // need to determine type to avoid unnecessary modification
         // don't try to determine if the value changed anyway (i.e. null to delete)
         if (PropertyType::UNDEFINED === $type && $this->value === $value) {
-            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType($value);
         }
 
         // Need to check both value and type, as native php type string is used for a number of phpcr types
@@ -666,26 +626,34 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * Internally used to set the value of the property without any notification
      * of changes nor state change.
      *
-     * @param mixed  $value
-     * @param string $type
+     * @param mixed      $value       The value to set.
+     * @param int|string $type        PropertyType constant
+     * @param boolean    $constructor Whether this is called from the constructor.
      *
      * @see Property::setValue()
      *
      * @private
      */
-    public function _setValue($value, $type = PropertyType::UNDEFINED)
+    public function _setValue($value, $type = PropertyType::UNDEFINED, $constructor = false)
     {
-        if (is_null($value)) {
+        if (null === $value) {
             $this->remove();
 
             return;
         }
-        if (! is_integer($type)) {
+
+        if (is_string($type)) {
+            $type = PropertyType::valueFromName($type);
+        } elseif (!is_numeric($type)) {
             // @codeCoverageIgnoreStart
-            throw new InvalidArgumentException("The type has to be one of the numeric constants defined in PHPCR\\PropertyType. $type");
+            throw new RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
             // @codeCoverageIgnoreEnd
+        } else {
+            //sanity check. this will throw InvalidArgumentException if $type is not a valid type
+            PropertyType::nameFromValue($type);
         }
-        if ($this->isNew()) {
+
+        if ($constructor || $this->isNew()) {
             $this->isMultiple = is_array($value);
         }
 
@@ -697,6 +665,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             throw new ValueFormatException('Can not set a multivalue property ('.$this->name.') with a scalar value');
         }
 
+        if ($this->isMultiple) {
+            foreach ($value as $key => $v) {
+                if (null === $v) {
+                    unset($value[$key]);
+                }
+            }
+        }
+
         //TODO: check if changing type allowed.
         /*
          * if ($type !== null && ! canHaveType($type)) {
@@ -705,25 +681,37 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
          */
 
         if (PropertyType::UNDEFINED === $type) {
-            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType($value);
         }
 
-        $targettype = $this->type;
+        $targetType = $type;
+
+        /*
+         * TODO: find out with node type definition if the new type is allowed
         if ($this->type !== $type) {
-            /* TODO: find out with node type definition if the new type is allowed
-              if (canHaveType($type)) {
-            */
-            $targettype = $type;
-            /*
-              } else {
-                  //convert to an allowed type. if the current type is defined $targettype = $this->type;
-              }
-            */
+            if (!canHaveType($type)) {
+                 //convert to an allowed type
+            }
+        }
+        */
+
+        if (PropertyType::BINARY !== $targetType || $constructor && $this->isNew()) {
+            // When in constructor mode, force conversion to re-determine the type as the desired type might not match the value
+            $value = $this->valueConverter->convertType($value, $targetType, $constructor ? PropertyType::UNDEFINED : $type);
         }
 
-        $value = $this->valueConverter->convertType($value, $targettype, $type);
+        if (PropertyType::BINARY === $targetType) {
+            if ($constructor && !$this->isNew()) {
+                // reading a binary property from backend, we do not get the stream immediately but just the size
+                if (is_array($value)) {
+                    $this->isMultiple = true;
+                }
+                $this->type = PropertyType::BINARY;
+                $this->length = $value;
+                $this->value = null;
 
-        if (PropertyType::BINARY === $targettype) {
+                return;
+            }
             if (is_array($value)) {
                 $this->length = array();
                 foreach ($value as $v) {
@@ -738,7 +726,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             }
         }
 
-        $this->type = $targettype;
+        $this->type = $targetType;
         $this->value = $value;
     }
 

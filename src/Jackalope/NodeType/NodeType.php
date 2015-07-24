@@ -181,7 +181,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     {
         $propDefs = $this->getPropertyDefinitions();
         try {
-            $type = $this->valueConverter->determineType(is_array($value) ? reset($value) : $value);
+            $type = $this->valueConverter->determineType($value);
         } catch (ValueFormatException $e) {
             if ($throw) {
                 throw new ValueFormatException(sprintf('Invalid value for property "%s": %s', $propertyName, $e->getMessage()), $e->getCode(), $e);
