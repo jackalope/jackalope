@@ -34,7 +34,7 @@ class SessionTest extends TestCase
         $transport = $this->getTransportStub();
         $transport->expects($this->once())
             ->method('logout');
-        $session = new Session($factory, $repository, 'x',  new SimpleCredentials('foo', 'bar'), $transport);
+        $session = new Session($factory, $repository, 'x', new SimpleCredentials('foo', 'bar'), $transport);
         $this->assertTrue($session->isLive());
         $key = $session->getRegistryKey();
         $this->assertSame($session, Session::getSessionFromRegistry($key));
