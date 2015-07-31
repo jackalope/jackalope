@@ -695,8 +695,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
         */
 
-        if (PropertyType::BINARY !== $targetType || $constructor && $this->isNew()) {
-            // When in constructor mode, force conversion to re-determine the type as the desired type might not match the value
+        if (PropertyType::BINARY !== $targetType
+            || $constructor && $this->isNew() // When in constructor mode, force conversion to re-determine the type as the desired type might not match the value
+            || !$this->isNew() && PropertyType::UNDEFINED !== $this->type && $this->type !== $targetType // changing an existing property to binary needs conversion
+        ) {
             $value = $this->valueConverter->convertType($value, $targetType, $constructor ? PropertyType::UNDEFINED : $type);
         }
 
