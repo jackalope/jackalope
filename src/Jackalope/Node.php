@@ -1570,6 +1570,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * Overwrite to set the properties dirty as well.
+     *
+     * @private
      */
     public function setDirty($keepChanges = false, $targetState = false)
     {
@@ -1583,9 +1585,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Set all cached children as dirty.
+     * Mark all cached children as dirty.
+     *
+     * @private
      */
-    private function setChildrenDirty()
+    public function setChildrenDirty()
     {
         foreach ($this->objectManager->getCachedDescendants($this->getPath()) as $childNode) {
             $childNode->setDirty();
@@ -1597,6 +1601,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * They will be automatically deleted by the backend, but the user might
      * still have a reference to one of the property objects.
+     *
+     * @private
      */
     public function setDeleted()
     {
