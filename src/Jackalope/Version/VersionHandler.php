@@ -241,9 +241,6 @@ class VersionHandler
                 continue;
             }
 
-            // TODO apply other steps based on onParentValue
-            // (see step 6 3.13.9 on http://www.day.com/specs/jcr/2.0/3_Repository_Model.html)
-
             $frozenNode->setProperty($propertyName, $property->getValue());
         }
 
@@ -260,6 +257,9 @@ class VersionHandler
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function restoreItem($removeExisting, $versionPath, $path)
     {
         $node = $this->objectManager->getNodeByPath($path);
@@ -311,10 +311,10 @@ class VersionHandler
                     $nodeProperty->setValue($property->getValue());
                 }
             } else {
+                // cannot check the onParentVersion attribute of a non existing property
+                // but if the property exists on the frozen node it has to be copy or version
                 $node->setProperty($propertyName, $property->getValue());
             }
-
-            // TODO handle other onParentVersion cases
         }
 
         // handle properties present on the node but not on the frozen node
@@ -398,19 +398,19 @@ class VersionHandler
     }
 
     /**
-     * @param NodeInterface $node
-     * @param NodeInterface $frozenNode
+     * @param NodeInterface $parentNode
+     * @param NodeInterface $frozenChildNode
      */
-    private function restoreFromNode(NodeInterface $node, NodeInterface $frozenNode)
+    private function restoreFromNode(NodeInterface $parentNode, NodeInterface $frozenChildNode)
     {
-        $restoredNode = $node->addNode($frozenNode->getName(), $frozenNode->getPrimaryNodeType()->getName());
+        $restoredNode = $parentNode->addNode($frozenChildNode->getName(), $frozenChildNode->getPrimaryNodeType()->getName());
 
-        foreach ($frozenNode->getProperties() as $property) {
+        foreach ($frozenChildNode->getProperties() as $property) {
             /** @var PropertyInterface $property */
             $restoredNode->setProperty($property->getName(), $property->getValue(), $property->getType());
         }
 
-        foreach ($frozenNode->getNodes() as $childNode) {
+        foreach ($frozenChildNode->getNodes() as $childNode) {
             $this->restoreFromNode($restoredNode, $childNode);
         }
     }
