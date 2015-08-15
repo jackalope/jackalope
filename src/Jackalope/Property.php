@@ -681,7 +681,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
          */
 
         if (PropertyType::UNDEFINED === $type) {
-            $type = $this->valueConverter->determineType($value);
+            // avoid changing type of multivalue property with empty array
+            if (!$this->isMultiple()
+                || count($value)
+                || PropertyType::UNDEFINED === $this->type
+            ) {
+                $type = $this->valueConverter->determineType($value);
+            } else {
+                $type = $this->type;
+            }
         }
 
         $targetType = $type;
