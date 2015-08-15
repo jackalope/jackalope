@@ -2,7 +2,10 @@
 
 namespace Jackalope;
 
+use Jackalope\NodeType\NodeType;
 use LogicException;
+use PHPCR\NodeType\ItemDefinitionInterface;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\PropertyInterface;
 use PHPCR\ItemInterface;
@@ -511,6 +514,44 @@ abstract class Item implements ItemInterface
     public function revert()
     {
         $this->refresh(false);
+    }
+
+    /**
+     * Find the matching item definition for this item.
+     *
+     * @param callable $definitions Function that extracts the ItemDefinitions from a NodeType
+     *
+     * @return ItemDefinitionInterface The definition for this item.
+     *
+     * @throws RepositoryException If no definition can be found.
+     */
+    protected function findItemDefinition($definitions)
+    {
+        $fallbackDefinition = null;
+        $types = $this->getParent()->getMixinNodeTypes();
+        array_push($types, $this->getParent()->getPrimaryNodeType());
+        /** @var $nt NodeTypeInterface */
+        foreach ($types as $nt) {
+            /** @var $candidate ItemDefinitionInterface */
+            foreach ($definitions($nt) as $candidate) {
+                if ($candidate->getName() === $this->name) {
+                    return $candidate;
+                }
+                if ('*' == $candidate->getName()) {
+                    // if we have multiple wildcard definitions, they are hopefully equivalent
+                    $fallbackDefinition = $candidate;
+                    // do not abort loop, in case we hit an exactly matching definition
+                }
+            }
+        }
+
+        // sanity check. theoretically, the item should not be able to
+        // exist if there is no definition for it
+        if (!$fallbackDefinition) {
+            throw new RepositoryException(sprintf('Found no definition for item %s, this should not be possible', $this->path));
+        }
+
+        return $fallbackDefinition;
     }
 
     /**
