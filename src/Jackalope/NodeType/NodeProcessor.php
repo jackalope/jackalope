@@ -86,8 +86,7 @@ $/xi";
         $namespaces = array(),
         $autoLastModified = true,
         VersionHandler $versionHandler = null
-    )
-    {
+    ) {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
