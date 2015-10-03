@@ -101,7 +101,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function getWorkspaceMock()
     {
         $factory = new Factory;
-        $mock = $this->getMock('\Jackalope\Workspace', array('getTransactionManager'), array($factory), '', false);
+        $mock = $this->getMock('\Jackalope\Workspace', array('getTransactionManager', 'getNodeTypeManager'), array($factory), '', false);
         $mock->expects($this->any())
              ->method('getTransactionManager')
              ->will($this->returnValue($this->getInactiveTransactionMock()));

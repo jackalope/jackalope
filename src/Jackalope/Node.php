@@ -21,6 +21,7 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
+use PHPCR\Util\UUIDHelper;
 use Jackalope\Factory;
 
 /**
@@ -819,6 +820,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
+     * @return string a universally unique id.
+     */
+    protected function generateUuid()
+    {
+        return UUIDHelper::generateUUID();
+    }
+
+    /**
      * {@inheritDoc}
      *
      * @api
@@ -827,7 +836,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (isset($this->properties['jcr:uuid'])) {
+        if ($this->isNodeType('mix:referenceable')) {
+            if (empty($this->properties['jcr:uuid'])) {
+                $this->setProperty('jcr:uuid', $this->generateUuid());
+            }
+
             return $this->getPropertyValue('jcr:uuid');
         }
 
