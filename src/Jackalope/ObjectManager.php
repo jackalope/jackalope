@@ -987,9 +987,11 @@ class ObjectManager
         // TODO: handle pending move operations?
 
         if (isset($this->objectsByPath['Node'][$nodePath])) {
+            $this->objectsByPath['Node'][$nodePath]->setChildrenDirty();
             $this->objectsByPath['Node'][$nodePath]->setDirty();
         }
         if (isset($this->objectsByPath['Version\\Version'][$versionPath])) {
+            $this->objectsByPath['Version\\Version'][$versionPath]->setChildrenDirty();
             $this->objectsByPath['Version\\Version'][$versionPath]->setDirty();
         }
 
