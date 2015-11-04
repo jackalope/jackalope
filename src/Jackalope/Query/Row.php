@@ -179,6 +179,12 @@ class Row implements Iterator, RowInterface
      */
     public function getNode($selectorName = null)
     {
+        $path = $this->getPath($selectorName);
+        if (!$path) {
+            // handle outer joins
+            return null;
+        }
+
         return $this->objectmanager->getNodeByPath($this->getPath($selectorName));
     }
 
@@ -193,7 +199,8 @@ class Row implements Iterator, RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        if (!isset($this->path[$selectorName])) {
+        // do not use isset, the path might be null on outer joins
+        if (!array_key_exists($selectorName, $this->path)) {
             throw new RepositoryException('Attempting to get the path for a non existent selector: '.$selectorName);
         }
 
@@ -211,7 +218,7 @@ class Row implements Iterator, RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        if (!isset($this->score[$selectorName])) {
+        if (!array_key_exists($selectorName, $this->score)) {
             throw new RepositoryException('Attempting to get the score for a non existent selector: '.$selectorName);
         }
 
