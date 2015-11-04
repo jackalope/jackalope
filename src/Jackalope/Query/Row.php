@@ -80,21 +80,22 @@ class Row implements Iterator, RowInterface
      * @param ObjectManager    $objectManager
      * @param array            $columns       array of array with fields dcr:name and dcr:value
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $columns)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $columns)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectmanager = $objectManager;
 
         // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
         foreach ($columns as $column) {
-            $pos = strpos($column['dcr:name'], '.');
-            if (false !== $pos) {
-                $selectorName = substr($column['dcr:name'], 0, $pos);
-                $column['dcr:name'] = substr($column['dcr:name'], $pos + 1);
-            } elseif (isset($column['dcr:selectorName'])) {
+            $selectorName = '';
+            if (isset($column['dcr:selectorName'])) {
                 $selectorName = $column['dcr:selectorName'];
             } else {
-                $selectorName = '';
+                $pos = strpos($column['dcr:name'], '.');
+                if (false !== $pos) {
+                    $selectorName = substr($column['dcr:name'], 0, $pos);
+                    $column['dcr:name'] = substr($column['dcr:name'], $pos + 1);
+                }
             }
 
             if ('jcr:score' === $column['dcr:name']) {
