@@ -203,9 +203,9 @@ class VersionManager implements VersionManagerInterface
      */
     public function restoreByLabel($absPath, $versionLabel, $removeExisting)
     {
-        // @codeCoverageIgnoreStart
-        throw new NotImplementedException();
-        // @codeCoverageIgnoreEnd
+        $vh = $this->getVersionHistory($absPath);
+        $version = $vh->getVersionByLabel($versionLabel);
+        $this->restore($removeExisting, $version);
     }
 
     /**
