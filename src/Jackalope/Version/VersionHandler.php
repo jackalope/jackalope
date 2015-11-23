@@ -246,14 +246,19 @@ class VersionHandler
 
         foreach ($node->getNodes() as $childNode) {
             /** @var NodeInterface $childNode */
-            // TODO also use the commented lines when getDefinition is implemented
-            //$onParentVersion = $childNode->getDefinition()->getOnParentVersion();
+            $onParentVersion = $childNode->getDefinition()->getOnParentVersion();
 
-            //if ($onParentVersion == OnParentVersionAction::COPY) {
-            // can't use the workspace copy command, because the parent node already has to exist
-            // TODO distinguish between COPY and VERSION onParentVersion
-            $this->copyIntoNode($childNode, $frozenNode);
-            //}
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                    $this->copyIntoNode($childNode, $frozenNode);
+                    break;
+                case OnParentVersionAction::VERSION:
+                    if (!$node->isNodeType(static::MIX_VERSIONABLE)) {
+                        $this->copyIntoNode($childNode, $frozenNode);
+                    } else {
+                        $this->createVersionedChildNode($childNode, $frozenNode);
+                    }
+            }
         }
     }
 
@@ -325,19 +330,19 @@ class VersionHandler
 
             $onParentVersion = $property->getDefinition()->getOnParentVersion();
 
-            if ($onParentVersion == OnParentVersionAction::COPY
-                || $onParentVersion == OnParentVersionAction::VERSION
-                || $onParentVersion == OnParentVersionAction::ABORT
-            ) {
-                $property->remove();
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                case OnParentVersionAction::VERSION:
+                case OnParentVersionAction::ABORT:
+                    $property->remove();
+                    break;
+                case OnParentVersionAction::INITIALIZE:
+                case OnParentVersionAction::COMPUTE: // implementation-specific, decided to handle as INITIALIZE
+                    // TODO how to get default value of property?
             }
-
-            // TODO handle other onParentVersion cases
         }
 
         // TODO handle identifier collisions
-
-        // TODO handle chained versions on restore
 
         // handle child nodes present on the frozen node
         foreach ($frozenNode->getNodes() as $frozenChildNode) {
@@ -354,7 +359,13 @@ class VersionHandler
                 $this->session->removeItem($childNodePath);
             }
 
-            $this->restoreFromNode($node, $frozenChildNode);
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                    $this->restoreFromNode($node, $frozenChildNode);
+                    break;
+                case OnParentVersionAction::VERSION:
+
+            }
 
             // TODO remove any node with the same identifier or child identifiers
         }
@@ -395,6 +406,16 @@ class VersionHandler
         foreach ($sourceNode->getNodes() as $childNode) {
             $this->copyIntoNode($childNode, $copiedNode);
         }
+    }
+
+    /**
+     * @param NodeInterface $sourceNode
+     * @param NodeInterface $destinationNode
+     */
+    private function createVersionedChildNode(NodeInterface $sourceNode, NodeInterface $destinationNode)
+    {
+        $versionedChildNode = $destinationNode->addNode($sourceNode->getName(), 'nt:versionedChild');
+        $versionedChildNode->setProperty('jcr:childVersionHistory', $sourceNode->getPropertyValue('jcr:versionHistory'));
     }
 
     /**
