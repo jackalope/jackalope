@@ -971,6 +971,22 @@ class ObjectManager
     }
 
     /**
+     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     */
+    public function addVersionLabel($path, $label, $moveLabel)
+    {
+        $this->transport->addVersionLabel($path, $label, $moveLabel);
+    }
+
+    /**
+     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     */
+    public function removeVersionLabel($path, $label)
+    {
+        $this->transport->removeVersionLabel($path, $label);
+    }
+
+    /**
      * Restore the node at $nodePath to the version at $versionPath
      *
      * Clears the node's cache after it has been restored.
