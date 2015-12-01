@@ -22,7 +22,6 @@ use PHPCR\ItemExistsException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
 use PHPCR\Util\UUIDHelper;
-use Jackalope\Factory;
 
 /**
  * {@inheritDoc}
@@ -97,20 +96,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * This is only to be called by the Factory::get() method even inside the
      * Jackalope implementation to allow for custom implementations of Nodes.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param array            $rawData in the format as returned from
-     *      \Jackalope\Transport\TransportInterface::getNode
-     * @param string        $path          the absolute path of this node
-     * @param Session       $session
-     * @param ObjectManager $objectManager
-     * @param boolean       $new           set to true if this is a new node being created.
+     * @param FactoryInterface $factory       the object factory
+     * @param array            $rawData       in the format as returned from TransportInterface::getNode
+     * @param string           $path          the absolute path of this node
+     * @param Session          $session
+     * @param ObjectManager    $objectManager
+     * @param boolean          $new           set to true if this is a new node being created.
      *      Defaults to false which means the node is loaded from storage.
      *
-     * @see \Jackalope\Transport\TransportInterface::getNode()
+     * @see TransportInterface::getNode()
      *
      * @private
      */
-    public function __construct(Factory $factory, $rawData, $path, Session $session, ObjectManager $objectManager, $new = false)
+    public function __construct(FactoryInterface $factory, $rawData, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;
