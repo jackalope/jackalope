@@ -35,7 +35,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
 
     /**
      * The jackalope object factory for this object
-     * @var \Jackalope\Factory
+     * @var \Jackalope\FactoryInterface
      */
     protected $factory;
 

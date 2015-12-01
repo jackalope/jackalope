@@ -22,7 +22,6 @@ use PHPCR\ItemExistsException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
 use PHPCR\Util\UUIDHelper;
-use Jackalope\Factory;
 
 /**
  * {@inheritDoc}
@@ -110,7 +109,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @private
      */
-    public function __construct(Factory $factory, $rawData, $path, Session $session, ObjectManager $objectManager, $new = false)
+    public function __construct(FactoryInterface $factory, $rawData, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
         $this->isNode = true;
