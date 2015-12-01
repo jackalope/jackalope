@@ -29,23 +29,23 @@ use Jackalope\NotImplementedException;
 class LockManager implements IteratorAggregate, LockManagerInterface
 {
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectmanager;
 
     /**
      * The jackalope object factory for this object
-     * @var \Jackalope\FactoryInterface
+     * @var FactoryInterface
      */
     protected $factory;
 
     /**
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     protected $session;
 
     /**
-     * @var \Jackalope\Transport\LockingInterface
+     * @var LockingInterface
      */
     protected $transport;
 
@@ -59,11 +59,11 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param  \Jackalope\FactoryInterface           $factory       An object factory implementing "get" as described in \Jackalope\FactoryInterface
-     * @param  \Jackalope\ObjectManager              $objectManager
-     * @param  \PHPCR\SessionInterface               $session
-     * @param  \Jackalope\Transport\LockingInterface $transport
-     * @return \Jackalope\Lock\LockManager
+     * @param  FactoryInterface $factory       An object factory implementing "get" as described in \Jackalope\FactoryInterface
+     * @param  ObjectManager    $objectManager
+     * @param  SessionInterface $session
+     * @param  LockingInterface $transport
+     * @return LockManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, SessionInterface $session, LockingInterface $transport)
     {
