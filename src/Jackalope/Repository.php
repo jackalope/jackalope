@@ -78,7 +78,7 @@ class Repository implements RepositoryInterface
     /**
      * The factory to instantiate objects
      *
-     * @var object
+     * @var FactoryInterface
      */
     protected $factory;
 

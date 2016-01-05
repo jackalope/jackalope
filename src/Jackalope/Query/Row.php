@@ -80,15 +80,16 @@ class Row implements Iterator, RowInterface
      * @param ObjectManager    $objectManager
      * @param array            $columns       array of array with fields dcr:name and dcr:value
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $columns)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $columns)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectmanager = $objectManager;
 
         // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
         foreach ($columns as $column) {
             $pos = strpos($column['dcr:name'], '.');
             if (false !== $pos) {
+                // jackalope-doctrine-dbal has the selector name both in the dcr:name and as separate column dcr:selectorName
                 $selectorName = substr($column['dcr:name'], 0, $pos);
                 $column['dcr:name'] = substr($column['dcr:name'], $pos + 1);
             } elseif (isset($column['dcr:selectorName'])) {
@@ -179,6 +180,12 @@ class Row implements Iterator, RowInterface
      */
     public function getNode($selectorName = null)
     {
+        $path = $this->getPath($selectorName);
+        if (!$path) {
+            // handle outer joins
+            return null;
+        }
+
         return $this->objectmanager->getNodeByPath($this->getPath($selectorName));
     }
 
@@ -193,7 +200,8 @@ class Row implements Iterator, RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        if (!isset($this->path[$selectorName])) {
+        // do not use isset, the path might be null on outer joins
+        if (!array_key_exists($selectorName, $this->path)) {
             throw new RepositoryException('Attempting to get the path for a non existent selector: '.$selectorName);
         }
 
@@ -211,7 +219,7 @@ class Row implements Iterator, RowInterface
             $selectorName = $this->defaultSelectorName;
         }
 
-        if (!isset($this->score[$selectorName])) {
+        if (!array_key_exists($selectorName, $this->score)) {
             throw new RepositoryException('Attempting to get the score for a non existent selector: '.$selectorName);
         }
 

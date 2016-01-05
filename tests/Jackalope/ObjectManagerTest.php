@@ -12,7 +12,17 @@ class ObjectManagerTest extends TestCase
     public function setUp()
     {
         $factory = new Factory;
-        $this->om = new ObjectManager($factory, $this->getTransportStub(), $this->getSessionMock());
+        $session = $this->getSessionMock();
+        $workspace = $session->getWorkspace();
+
+        $ntMock = $this->getNodeTypeMock(array('isNodeType' => true));
+        $ntmMock = $this->getNodeTypeManagerMock(array('getNodeType' => $ntMock));
+
+        $workspace->expects($this->any())
+            ->method('getNodeTypeManager')
+            ->will($this->returnValue($ntmMock));
+
+        $this->om = new ObjectManager($factory, $this->getTransportStub(), $session);
     }
 
     public function testGetNodeByPath()
