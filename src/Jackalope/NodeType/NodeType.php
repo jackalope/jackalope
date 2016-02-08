@@ -202,7 +202,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                         throw new ConstraintViolationException("The property definition is multivalued, but the value '$value' is not.");
                     }
                     if (is_array($value)) {
-                        throw new ConstraintViolationException("The value $value is multivalued, but the property definition is not.");
+                        throw new ConstraintViolationException('The value '.var_export($value, true) .' is multivalued, but the property definition for ['.$this->getName()."]:$propertyName is not.");
                     }
                 }
                 if (PropertyType::UNDEFINED == $prop->getRequiredType()
@@ -250,8 +250,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            $val = is_object($value) ? get_class($value) : (is_scalar($value) ? (string) $value : gettype($value));
-            throw new ConstraintViolationException("Node type definition does not allow to set the property with name '$propertyName' and value '$val'");
+            $val = is_object($value) ? get_class($value) : (is_scalar($value) ? (string) $value : is_array($value) ? var_export($value, true) : gettype($value));
+            throw new ConstraintViolationException("Node type definition ".$this->getName()." does not allow to set the property with name '$propertyName' and value '$val'");
         }
 
         return false;

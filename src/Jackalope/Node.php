@@ -558,7 +558,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     }
                 }
                 if (null !== $exception) {
-                    throw $exception;
+                    $types = 'Primary type '.$this->primaryType;
+                    if (isset($this->properties['jcr:mixinTypes'])) {
+                        $types .= ', mixins '.implode(',', $this->getPropertyValue('jcr:mixinTypes', PropertyType::STRING));
+                    }
+                    $msg = sprintf('Can not set property %s on node %s. Node types do not allow for this: %s', $name, $this->path, $types);
+
+                    throw new ConstraintViolationException($msg, 0, $exception);
                 }
             } else {
                 // $value is null for property removal
