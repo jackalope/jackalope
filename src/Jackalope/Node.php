@@ -1308,7 +1308,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         } catch (ItemNotFoundException $ex) {
 
             // The node was deleted in another session
-            if (! $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
+            if (false === $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
                 throw new LogicException($this->path . " should be purged and not kept");
             }
             $keepChanges = false; // delete never keeps changes
