@@ -2,6 +2,8 @@
 
 namespace Jackalope\Validation;
 
+use Jackalope\Validation\Exception\InvalidPathException;
+
 /**
  * Interface for path / name validator.
  *
@@ -25,7 +27,7 @@ interface PathValidatorInterface
     /**
      * Assert that the given path is a valid absolute path
      *
-     * @param string $path
+     * @param string $absPath
      *
      * @return void
      * @throws InvalidPathException
@@ -35,7 +37,7 @@ interface PathValidatorInterface
     /**
      * Assert that the given path is a valid destination path
      *
-     * @param string $path
+     * @param string $destPath
      *
      * @return void
      * @throws InvalidPathException
