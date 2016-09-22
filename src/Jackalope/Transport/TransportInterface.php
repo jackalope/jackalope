@@ -3,6 +3,7 @@
 namespace Jackalope\Transport;
 
 use PHPCR\CredentialsInterface;
+use Jackalope\NodeType\NodeTypeDefinition;
 use Jackalope\NodeType\NodeTypeManager;
 
 /**
@@ -319,12 +320,11 @@ interface TransportInterface
      * @param array string names of node types to fetch, if empty array all
      *      node types are retrieved
      *
-     * @return array with the definitions (see
-     *      Jackalope\NodeTypeDefinition::fromArray for what is expected)
+     * @return array with the definitions
      *
-     * @see \Jackalope\NodeTypeDefinition::fromArray
+     * @see NodeTypeDefinition::fromArray
      */
-    public function getNodeTypes($nodeTypes = array());
+    public function getNodeTypes(array $nodeTypes = array());
 
     /**
      * Sets the depth with which a transport should fetch childnodes

@@ -2,11 +2,9 @@
 namespace Jackalope\NodeType;
 
 use DOMElement;
-use DOMXPath;
 use ArrayObject;
 use InvalidArgumentException;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
-use Jackalope\Helper;
 use Jackalope\FactoryInterface;
 use PHPCR\Util\ValueConverter;
 
