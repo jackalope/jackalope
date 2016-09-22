@@ -5,6 +5,7 @@ namespace Jackalope\Transport;
 use Iterator;
 use PHPCR\SessionInterface;
 use PHPCR\Observation\EventFilterInterface;
+use PHPCR\RepositoryException;
 
 /**
  * Defines the methods needed for observation.
@@ -32,7 +33,7 @@ interface ObservationInterface extends TransportInterface
      *
      * @return Iterator
      *
-     * @throws \PHPCR\RepositoryException if an error occurs
+     * @throws RepositoryException if an error occurs
      */
     public function getEvents($date, EventFilterInterface $filter, SessionInterface $session);
 

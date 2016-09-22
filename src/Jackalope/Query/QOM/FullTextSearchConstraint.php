@@ -26,7 +26,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
     protected $propertyName;
 
     /**
-     * @var \PHPCR\Query\QOM\StaticOperandInterface
+     * @var StaticOperandInterface
      */
     protected $searchExpression;
 
@@ -36,6 +36,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      * @param string $selectorName
      * @param string $propertyName
      * @param string $fullTextSearchExpression
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName, $fullTextSearchExpression)
     {

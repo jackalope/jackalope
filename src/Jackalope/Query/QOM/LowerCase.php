@@ -16,7 +16,7 @@ use PHPCR\Query\QOM\DynamicOperandInterface;
 class LowerCase implements LowerCaseInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\DynamicOperandInterface
+     * @var DynamicOperandInterface
      */
     protected $operand;
 

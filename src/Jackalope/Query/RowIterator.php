@@ -16,12 +16,24 @@ use Jackalope\FactoryInterface;
  */
 class RowIterator implements SeekableIterator, Countable
 {
-    protected $objectmanager;
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
 
+    /**
+     * @var FactoryInterface
+     */
     protected $factory;
 
+    /**
+     * @var array
+     */
     protected $rows;
 
+    /**
+     * @var integer
+     */
     protected $position = 0;
 
     /**
@@ -31,13 +43,18 @@ class RowIterator implements SeekableIterator, Countable
      * @param ObjectManager    $objectManager
      * @param array            $rows          Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
         $this->rows = $rows;
     }
 
+    /**
+     * @param int $position
+     *
+     * @throws \OutOfBoundsException
+     */
     public function seek($position)
     {
         $this->position = $position;
@@ -47,6 +64,9 @@ class RowIterator implements SeekableIterator, Countable
         }
     }
 
+    /**
+     * @return integer
+     */
     public function count()
     {
         return count($this->rows);
@@ -63,7 +83,7 @@ class RowIterator implements SeekableIterator, Countable
             return null;
         }
 
-        return $this->factory->get('Query\Row', array($this->objectmanager, $this->rows[$this->position]));
+        return $this->factory->get('Query\Row', array($this->objectManager, $this->rows[$this->position]));
     }
 
     public function key()
@@ -76,6 +96,9 @@ class RowIterator implements SeekableIterator, Countable
         ++$this->position;
     }
 
+    /**
+     * @return boolean
+     */
     public function valid()
     {
         return isset($this->rows[$this->position]);

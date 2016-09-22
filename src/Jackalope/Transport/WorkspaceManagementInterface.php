@@ -2,6 +2,11 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\AccessDeniedException;
+use PHPCR\NoSuchWorkspaceException;
+use PHPCR\RepositoryException;
+use PHPCR\UnsupportedRepositoryOperationException;
+
 /**
  * Defines the methods needed for Workspace Management support.
  *
@@ -30,13 +35,13 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @param string $srcWorkspace The name of the workspace from which the new
      *      workspace is to be cloned.
      *
-     * @throws \PHPCR\AccessDeniedException if the session through which this
+     * @throws AccessDeniedException if the session through which this
      *      Workspace object was acquired does not have sufficient access to
      *      create the new workspace.
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository
+     * @throws UnsupportedRepositoryOperationException if the repository
      *      does not support the creation of workspaces.
-     * @throws \PHPCR\NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws \PHPCR\RepositoryException      if another error occurs.
+     * @throws NoSuchWorkspaceException if $srcWorkspace does not exist.
+     * @throws RepositoryException      if another error occurs.
      */
     public function createWorkspace($name, $srcWorkspace = null);
 
@@ -46,9 +51,9 @@ interface WorkspaceManagementInterface extends TransportInterface
      *
      * @param string $name The name of the workspace.
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException if the repository
+     * @throws UnsupportedRepositoryOperationException if the repository
      *      does not support the deletion of workspaces.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws RepositoryException if another error occurs.
      */
     public function deleteWorkspace($name);
 }

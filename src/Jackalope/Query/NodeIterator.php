@@ -23,7 +23,7 @@ class NodeIterator implements SeekableIterator, Countable
     /**
      * @var ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
 
     /**
      * @var FactoryInterface
@@ -36,13 +36,13 @@ class NodeIterator implements SeekableIterator, Countable
 
     /**
      * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectmanager
+     * @param ObjectManager    $objectManager
      * @param array            $rows
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
         $this->rows = $rows;
     }
 
@@ -80,7 +80,7 @@ class NodeIterator implements SeekableIterator, Countable
             return null;
         }
 
-        return $this->objectmanager->getNodeByPath($path);
+        return $this->objectManager->getNodeByPath($path);
     }
 
     public function key()

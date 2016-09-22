@@ -7,8 +7,11 @@ use LogicException;
 use ArrayIterator;
 use IteratorAggregate;
 use InvalidArgumentException;
+use PHPCR\AccessDeniedException;
+use PHPCR\Lock\LockException;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NodeTypeInterface;
+use PHPCR\NoSuchWorkspaceException;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
@@ -18,6 +21,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\UUIDHelper;
+use PHPCR\Version\VersionException;
 
 /**
  * {@inheritDoc}
@@ -98,6 +102,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *      manager
      * @param boolean $new optional: set to true to make this property aware
      *      its not yet existing on the server. defaults to false
+     *
+     * @throws RepositoryException
+     * @throws \InvalidArgumentException
      */
     public function __construct(FactoryInterface $factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
@@ -118,6 +125,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidItemStateException
+     * @throws AccessDeniedException
+     * @throws ItemNotFoundException
      *
      * @api
      */
@@ -159,6 +170,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws RepositoryException
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function addValue($value)
@@ -177,6 +191,10 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *
      * Used to make the parent node aware that this property has changed
      *
+     * @throws AccessDeniedException
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
+     *
      * @private
      */
     public function setModified()
@@ -192,18 +210,23 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * {@inheritDoc}
      *
      * @api
+     *
+     * @throws InvalidItemStateException
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
+     * @throws ValueFormatException
      */
     public function getValue()
     {
         $this->checkState();
 
-        if ($this->type == PropertyType::REFERENCE
-            || $this->type == PropertyType::WEAKREFERENCE
+        if ($this->type === PropertyType::REFERENCE
+            || $this->type === PropertyType::WEAKREFERENCE
         ) {
             return $this->getNode();
         }
 
-        if ($this->type == PropertyType::BINARY) {
+        if ($this->type === PropertyType::BINARY) {
             return $this->getBinary();
         }
 
@@ -217,6 +240,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * If this is a binary property, from the moment this method has been
      * called the stream will be read from the transport layer again.
      *
+     * @throws InvalidItemStateException
+     *
      * @private
      */
     public function getValueForStorage()
@@ -224,7 +249,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         $value = $this->value;
-        if (PropertyType::BINARY == $this->type) {
+        if (PropertyType::BINARY === $this->type) {
             //from now on,
             $this->value = null;
         }
@@ -235,16 +260,19 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidItemStateException
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function getString()
     {
         $this->checkState();
 
-        if ($this->type == PropertyType::BINARY && empty($this->value)) {
+        if ($this->type === PropertyType::BINARY && empty($this->value)) {
             return $this->valueConverter->convertType($this->getBinary(), PropertyType::STRING, $this->type);
         }
-        if ($this->type != PropertyType::STRING) {
+        if ($this->type !== PropertyType::STRING) {
             return $this->valueConverter->convertType($this->value, PropertyType::STRING, $this->type);
         }
 
@@ -254,21 +282,24 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidArgumentException
+     * @throws LogicException
+     *
      * @api
      */
     public function getBinary()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::BINARY) {
+        if ($this->type !== PropertyType::BINARY) {
             return $this->valueConverter->convertType($this->value, PropertyType::BINARY, $this->type);
         }
-        if (! $this->wrapBinaryStreams && null == $this->value) {
+        if (! $this->wrapBinaryStreams && null === $this->value) {
             // no caching the stream. we need to fetch the stream and then copy
             // it into a memory stream so it can be accessed more than once.
             $this->value = $this->objectManager->getBinaryStream($this->path);
         }
-        if ($this->value != null) {
+        if ($this->value !== null) {
             // we have the stream locally: no wrapping or new or updated property
             // copy the stream so the original stream stays usable for storing, fetching again...
             $val = is_array($this->value) ? $this->value : array($this->value);
@@ -312,13 +343,16 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidItemStateException
+     * @throws InvalidArgumentException
+     *
      * @api
      */
     public function getLong()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::LONG) {
+        if ($this->type !== PropertyType::LONG) {
             return $this->valueConverter->convertType($this->value, PropertyType::LONG, $this->type);
         }
 
@@ -328,13 +362,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidArgumentException
+     *
      * @api
      */
     public function getDouble()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::DOUBLE) {
+        if ($this->type !== PropertyType::DOUBLE) {
             return $this->valueConverter->convertType($this->value, PropertyType::DOUBLE, $this->type);
         }
 
@@ -344,13 +380,16 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidItemStateException
+     * @throws InvalidArgumentException
+     *
      * @api
      */
     public function getDecimal()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::DECIMAL) {
+        if ($this->type !== PropertyType::DECIMAL) {
             return $this->valueConverter->convertType($this->value, PropertyType::DECIMAL, $this->type);
         }
 
@@ -360,13 +399,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidArgumentException
+     *
      * @api
      */
     public function getDate()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::DATE) {
+        if ($this->type !== PropertyType::DATE) {
             return $this->valueConverter->convertType($this->value, PropertyType::DATE, $this->type);
         }
 
@@ -376,13 +417,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidArgumentException
+     *
      * @api
      */
     public function getBoolean()
     {
         $this->checkState();
 
-        if ($this->type != PropertyType::BOOLEAN) {
+        if ($this->type !== PropertyType::BOOLEAN) {
             return $this->valueConverter->convertType($this->value, PropertyType::BOOLEAN, $this->type);
         }
 
@@ -391,6 +434,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidItemStateException
+     * @throws NoSuchWorkspaceException
      *
      * @api
      */
@@ -433,6 +479,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidItemStateException
      *
      * @api
      */
@@ -536,6 +584,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      *
      * @uses Node::unsetProperty()
      *
+     * @throws ItemNotFoundException
+     *
      * @api
      */
     public function remove()
@@ -555,6 +605,11 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * Provide Traversable interface: redirect to getNodes with no filter
      *
      * @return \Iterator over all child nodes
+     *
+     * @throws InvalidItemStateException
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
+     * @throws ValueFormatException
      */
     public function getIterator()
     {
@@ -612,6 +667,15 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @param boolean    $constructor Whether this is called from the constructor.
      *
      * @see Property::setValue()
+     *
+     * @throws AccessDeniedException
+     * @throws ItemNotFoundException
+     * @throws LockException
+     * @throws ConstraintViolationException
+     * @throws RepositoryException
+     * @throws VersionException
+     * @throws InvalidArgumentException
+     * @throws ValueFormatException
      *
      * @private
      */

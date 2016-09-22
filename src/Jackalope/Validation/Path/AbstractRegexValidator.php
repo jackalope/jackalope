@@ -76,6 +76,8 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidPathException
      */
     private function validate($path, $pattern)
     {

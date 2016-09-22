@@ -2,10 +2,14 @@
 
 namespace Jackalope\NodeType;
 
+use PHPCR\ItemExistsException;
+use PHPCR\Lock\LockException;
 use PHPCR\NodeInterface;
+use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
+use PHPCR\PathNotFoundException;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
@@ -14,6 +18,7 @@ use PHPCR\ValueFormatException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\NamespaceException;
 use Jackalope\Transport\AddNodeOperation;
+use PHPCR\Version\VersionException;
 
 /**
  * This class processes according to its declared node types.
@@ -120,6 +125,15 @@ $/xi";
      * @param NodeType      $nodeTypeDefinition
      *
      * @return AddNodeOperation[] Additional operations to handle autocreated nodes.
+     *
+     * @throws \InvalidArgumentException
+     * @throws RepositoryException
+     * @throws ItemExistsException
+     * @throws LockException
+     * @throws ConstraintViolationException
+     * @throws PathNotFoundException
+     * @throws VersionException
+     * @throws ValueFormatException
      */
     private function processNodeWithType(NodeInterface $node, NodeType $nodeTypeDefinition)
     {
@@ -154,7 +168,7 @@ $/xi";
 
         foreach ($nodeTypeDefinition->getDeclaredPropertyDefinitions() as $propertyDef) {
             /* @var $propertyDef PropertyDefinitionInterface */
-            if ('*' == $propertyDef->getName()) {
+            if ('*' === $propertyDef->getName()) {
                 continue;
             }
 
@@ -245,6 +259,7 @@ $/xi";
      *
      * @param PropertyInterface $property
      *
+     * @throws RepositoryException
      * @throws ValueFormatException
      */
     private function assertValidProperty(PropertyInterface $property)
@@ -321,6 +336,8 @@ $/xi";
      * that the alias is registered.
      *
      * @param string $name
+     *
+     * @throws NamespaceException
      */
     private function validateNamespace($name)
     {

@@ -2,9 +2,14 @@
 
 namespace Jackalope\Transport;
 
-use PHPCR\CredentialsInterface;
 use Jackalope\NodeType\NodeTypeDefinition;
 use Jackalope\NodeType\NodeTypeManager;
+use PHPCR\CredentialsInterface;
+use PHPCR\ItemNotFoundException;
+use PHPCR\LoginException;
+use PHPCR\NoSuchWorkspaceException;
+use PHPCR\RepositoryException;
+use PHPCR\RepositoryInterface;
 
 /**
  * Core transport operations. Every transport must implement this interface. It
@@ -43,10 +48,10 @@ interface TransportInterface
      *
      * @return array with name => value/array of value for the descriptors
      *
-     * @throws \PHPCR\RepositoryException if error occurs
+     * @throws RepositoryException if error occurs
      *
      * @see http://www.day.com/specs/jcr/2.0/24_Repository_Compliance.html#24.2%20Repository%20Descriptors
-     * @see \PHPCR\RepositoryInterface
+     * @see RepositoryInterface
      */
     public function getRepositoryDescriptors();
 
@@ -74,11 +79,11 @@ interface TransportInterface
      *      $workspaceName unless that was null, where it is the name of the
      *      default workspace.
      *
-     * @throws \PHPCR\LoginException if authentication or authorization (for
+     * @throws LoginException if authentication or authorization (for
      *      the specified workspace) fails
-     * @throws \PHPCR\NoSuchWorkspaceException if the specified workspaceName
+     * @throws NoSuchWorkspaceException if the specified workspaceName
      *      is not recognized
-     * @throws \PHPCR\RepositoryException if another error occurs
+     * @throws RepositoryException if another error occurs
      */
     public function login(CredentialsInterface $credentials = null, $workspaceName = null);
 
@@ -175,7 +180,7 @@ interface TransportInterface
      * @return array associative array for the node (decoded from json with
      *      associative = true)
      *
-     * @throws \PHPCR\ItemNotFoundException If the item at path was not found
+     * @throws ItemNotFoundException If the item at path was not found
      */
     public function getNode($path);
 
@@ -241,9 +246,8 @@ interface TransportInterface
      * @return array associative array for the node (decoded from json with
      *      associative = true)
      *
-     * @throws \PHPCR\ItemNotFoundException if the backend does not know the
-     *      uuid
-     * @throws \PHPCR\NoSuchWorkspaceException if workspace does not exist
+     * @throws ItemNotFoundException if the backend does not know the uuid
+     * @throws NoSuchWorkspaceException if workspace does not exist
      */
     public function getNodeByIdentifier($uuid);
 
@@ -339,7 +343,6 @@ interface TransportInterface
      *
      * @param int $depth The depth with which the nodes should be fetched.
      */
-
     public function setFetchDepth($depth);
 
     /**

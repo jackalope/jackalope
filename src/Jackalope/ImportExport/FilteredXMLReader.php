@@ -22,7 +22,7 @@ class FilteredXMLReader extends XMLReader
         while (parent::read()) {
             if (self::WHITESPACE !== $this->nodeType
                 && self::COMMENT !== $this->nodeType
-                && !(self::SIGNIFICANT_WHITESPACE == $this->nodeType && '' == trim($this->value))
+                && !(self::SIGNIFICANT_WHITESPACE === $this->nodeType && '' === trim($this->value))
 
             ) {
                 return true;
@@ -35,7 +35,7 @@ class FilteredXMLReader extends XMLReader
     public function moveToNextElement()
     {
         while (parent::read()) {
-            if (self::ELEMENT == $this->nodeType) {
+            if (self::ELEMENT === $this->nodeType) {
                 return true;
             }
         }

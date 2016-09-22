@@ -29,6 +29,8 @@ class Selector implements SelectorInterface
      *
      * @param string $nodeTypeName
      * @param string $selectorName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $nodeTypeName)
     {

@@ -25,6 +25,8 @@ class Factory implements FactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws InvalidArgumentException
      */
     public function get($name, array $params = array())
     {

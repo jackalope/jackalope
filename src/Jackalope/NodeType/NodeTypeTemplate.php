@@ -92,7 +92,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      */
     public function getPropertyDefinitionTemplates()
     {
-        if (is_null($this->declaredPropertyDefinitions)) {
+        if (null === $this->declaredPropertyDefinitions) {
             $this->declaredPropertyDefinitions = new ArrayObject();
         }
 
@@ -106,7 +106,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      */
     public function getNodeDefinitionTemplates()
     {
-        if (is_null($this->declaredNodeDefinitions)) {
+        if (null === $this->declaredNodeDefinitions) {
             $this->declaredNodeDefinitions = new ArrayObject();
         }
 

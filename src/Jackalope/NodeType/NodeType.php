@@ -5,6 +5,7 @@ namespace Jackalope\NodeType;
 use ArrayIterator;
 use Exception;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\ValueFormatException;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
@@ -32,23 +33,29 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      * @var array
      */
     protected $declaredSupertypes = null;
+
     /**
      * Cache of the aggregated super node type names so they need to be
      * aggregated only once.
      * @var array
      */
     protected $superTypeNames = null;
+
     /**
      * Cache of the aggregated super NodeType instances so they need to be
      * instantiated only once.
+     *
+     * @var NodeTypeInterface[]
      */
     protected $superTypes = null;
+
     /**
      * Cache of the collected property definitions so they need to be
      * instantiated only once.
      * @var array
      */
     protected $propertyDefinitions = null;
+
     /**
      * Cache of the aggregated child node definitions from this type and all
      * its super type so they need to be gathered and instantiated only once.
@@ -175,6 +182,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ValueFormatException
+     * @throws ConstraintViolationException
+     * @throws \InvalidArgumentException
+     * @throws RepositoryException
+     *
      * @api
      */
     public function canSetProperty($propertyName, $value, $throw = false)
@@ -194,10 +206,10 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
         $wildcards = array();
         foreach ($propDefs as $prop) {
-            if ('*' == $prop->getName()) {
+            if ('*' === $prop->getName()) {
                 $wildcards[] = $prop;
             } elseif ($propertyName == $prop->getName()) {
-                if (is_array($value) != $prop->isMultiple()) {
+                if (is_array($value) !== $prop->isMultiple()) {
                     if ($prop->isMultiple()) {
                         throw new ConstraintViolationException("The property definition is multivalued, but the value '$value' is not.");
                     }
@@ -205,9 +217,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                         throw new ConstraintViolationException("The value $value is multivalued, but the property definition is not.");
                     }
                 }
-                if (PropertyType::UNDEFINED == $prop->getRequiredType()
-                    || $type == $prop->getRequiredType()
-                ) {
+                $requiredType = $prop->getRequiredType();
+                if (PropertyType::UNDEFINED === $requiredType || $type === $requiredType) {
                     return true;
                 }
                 // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
@@ -231,9 +242,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             if (is_array($value) != $prop->isMultiple()) {
                 continue;
             }
-            if (PropertyType::UNDEFINED == $prop->getRequiredType()
-                || $type == $prop->getRequiredType()
-            ) {
+            $requiredType = $prop->getRequiredType();
+            if (PropertyType::UNDEFINED === $requiredType || $type === $requiredType) {
                 return true;
             }
             // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
@@ -259,6 +269,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ConstraintViolationException
      *
      * @api
      */
@@ -296,8 +308,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         foreach ($childDefs as $child) {
-            if ('*' == $child->getName() || $childNodeName == $child->getName()) {
-                if ($nodeTypeName == null) {
+            if ('*' === $child->getName() || $childNodeName === $child->getName()) {
+                if ($nodeTypeName === null) {
                     if ($child->getDefaultPrimaryTypeName() != null) {
                         return true;
                     }
@@ -321,13 +333,15 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ConstraintViolationException
+     *
      * @api
      */
     public function canRemoveNode($nodeName, $throw = false)
     {
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
-            if ($nodeName == $child->getName() &&
+            if ($nodeName === $child->getName() &&
                 ($child->isMandatory() || $child->isProtected())
             ) {
                 if ($throw) {
@@ -349,13 +363,15 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ConstraintViolationException
+     *
      * @api
      */
     public function canRemoveProperty($propertyName, $throw = false)
     {
         $propDefs = $this->getPropertyDefinitions();
         foreach ($propDefs as $prop) {
-            if ($propertyName == $prop->getName() &&
+            if ($propertyName === $prop->getName() &&
                 ($prop->isMandatory() || $prop->isProtected())
             ) {
                 if ($throw) {

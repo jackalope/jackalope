@@ -15,7 +15,7 @@ use PHPCR\Query\QOM\PropertyValueInterface;
 class Length implements LengthInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\PropertyValueInterface
+     * @var PropertyValueInterface
      */
     protected $propertyValue;
 

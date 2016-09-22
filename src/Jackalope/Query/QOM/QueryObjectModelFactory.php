@@ -30,7 +30,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     protected $factory;
 
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
 
@@ -53,10 +53,16 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      *
      * @api
      */
-    public function createQuery(SourceInterface $source, ConstraintInterface $constraint = null, array $orderings = array(), array $columns = array())
+    public function createQuery(
+        SourceInterface $source,
+        ConstraintInterface $constraint = null,
+        array $orderings = array(),
+        array $columns = array())
     {
-        return $this->factory->get('Query\QOM\QueryObjectModel',
-                                   array($this->objectManager, $source, $constraint, $orderings, $columns));
+        return $this->factory->get(
+            'Query\QOM\QueryObjectModel',
+            array($this->objectManager, $source, $constraint, $orderings, $columns)
+        );
     }
 
     // TODO: should we use the factory ->get here? but this would mean all of them need to expect the factory as first parameter
@@ -175,6 +181,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function fullTextSearch($selectorName, $propertyName, $fullTextSearchExpression)
@@ -215,6 +223,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function propertyValue($selectorName, $propertyName)
@@ -235,6 +245,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function nodeName($selectorName)
@@ -254,6 +266,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -324,6 +338,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
      *
      * @api
      */

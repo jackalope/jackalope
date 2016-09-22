@@ -2,6 +2,10 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
+use PHPCR\NodeType\NodeTypeExistsException;
+use PHPCR\RepositoryException;
+
 /**
  * Defines the methods needed for Node Type Management support with
  * NodeTypeDefinition instances.
@@ -30,12 +34,12 @@ interface NodeTypeManagementInterface extends TransportInterface
      *
      * @return bool true on success
      *
-     * @throws \PHPCR\NodeType\InvalidNodeTypeDefinitionException if the
+     * @throws InvalidNodeTypeDefinitionException if the
      *      NodeTypeDefinitionInterface is invalid.
-     * @throws \PHPCR\NodeType\NodeTypeExistsException if allowUpdate is false
+     * @throws NodeTypeExistsException if allowUpdate is false
      *      and the NodeTypeDefinition specifies a node type name that is
      *      already registered.
-     * @throws \PHPCR\RepositoryException if another error occurs.
+     * @throws RepositoryException if another error occurs.
      */
     public function registerNodeTypes($types, $allowUpdate);
 }

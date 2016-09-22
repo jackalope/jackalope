@@ -4,6 +4,12 @@ namespace Jackalope;
 use ArrayIterator;
 use InvalidArgumentException;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use PHPCR\NamespaceException;
+use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
+use PHPCR\NodeType\NodeTypeExistsException;
+use PHPCR\NodeType\NodeTypeManagerInterface;
+use PHPCR\NoSuchWorkspaceException;
+use PHPCR\ReferentialIntegrityException;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -12,8 +18,10 @@ use PHPCR\AccessDeniedException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemExistsException;
 use PHPCR\PathNotFoundException;
+use PHPCR\Transaction\RollbackException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\CND\Writer\CndWriter;
+use PHPCR\Version\VersionException;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\CND\Parser\CndParser;
@@ -27,6 +35,7 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
 use Jackalope\Transport\RemovePropertyOperation;
+use Jackalope\Transport\VersioningInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -92,7 +101,7 @@ class ObjectManager
      * Add, remove and move actions need to be saved in the correct order to avoid
      * i.e. adding something where a node has not yet been moved to.
      *
-     * @var \Jackalope\Transport\Operation[]
+     * @var Operation[]
      */
     protected $operationsLog = array();
 
@@ -337,7 +346,7 @@ class ObjectManager
                         if (isset($inversePaths[$parent])) {
                             break;
                         }
-                        if ('/' == $parent) {
+                        if ('/' === $parent) {
                             $parent = false;
                         } else {
                             $parent = PathHelper::getParentPath($parent);
@@ -410,6 +419,7 @@ class ObjectManager
      *
      * @throws ItemNotFoundException if while walking backwards through the
      *      operations log we see this path was moved away or got deleted
+     * @throws RepositoryException
      */
     protected function getFetchPath($absPath, $class)
     {
@@ -422,7 +432,7 @@ class ObjectManager
         $op = end($this->operationsLog);
         while ($op) {
             if ($op instanceof MoveNodeOperation) {
-                if ($absPath == $op->srcPath) {
+                if ($absPath === $op->srcPath) {
                     throw new ItemNotFoundException("Path not found (moved in current session): $absPath");
                 }
                 if (strpos($absPath, $op->srcPath . '/') === 0) {
@@ -432,14 +442,14 @@ class ObjectManager
                     $absPath= substr_replace($absPath, $op->srcPath, 0, strlen($op->dstPath));
                 }
             } elseif ($op instanceof RemoveNodeOperation || $op instanceof RemovePropertyOperation) {
-                if ($absPath == $op->srcPath) {
+                if ($absPath === $op->srcPath) {
                     throw new ItemNotFoundException("Path not found (node deleted in current session): $absPath");
                 }
                 if (strpos($absPath, $op->srcPath . '/') === 0) {
                     throw new ItemNotFoundException("Path not found (parent node {$op->srcPath} deleted in current session): $absPath");
                 }
             } elseif ($op instanceof AddNodeOperation) {
-                if ($absPath == $op->srcPath) {
+                if ($absPath === $op->srcPath) {
                     // we added this node at this point so no more sanity checks needed.
                     return $absPath;
                 }
@@ -463,6 +473,8 @@ class ObjectManager
      * @return PropertyInterface
      *
      * @throws ItemNotFoundException if item is not found at this path
+     * @throws InvalidArgumentException
+     * @throws RepositoryException
      */
     public function getPropertyByPath($absPath)
     {
@@ -514,9 +526,11 @@ class ObjectManager
     /**
      * Get the node path for a property, and the property name
      *
-     * @param $absPath
+     * @param string $absPath
      *
      * @return array with name, node path
+     *
+     * @throws RepositoryException
      */
     protected function getNodePath($absPath)
     {
@@ -564,6 +578,7 @@ class ObjectManager
      *
      * @throws ItemNotFoundException If the path was not found
      * @throws RepositoryException   if another error occurs.
+     * @throws NoSuchWorkspaceException if the workspace was not found
      *
      * @see Session::getNodeByIdentifier()
      */
@@ -592,7 +607,7 @@ class ObjectManager
      * @param array  $identifiers UUIDs of nodes to retrieve.
      * @param string $class       Optional class name for the factory.
      *
-     * @return Node[] Iterator of the specified nodes keyed by their unique ids
+     * @return ArrayIterator|Node[] Iterator of the specified nodes keyed by their unique ids
      *
      * @throws RepositoryException if another error occurs.
      *
@@ -643,7 +658,10 @@ class ObjectManager
      *
      * @param string $path The absolute path to the stream
      *
-     * @return stream
+     * @return resource
+     *
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
      */
     public function getBinaryStream($path)
     {
@@ -658,9 +676,9 @@ class ObjectManager
      *
      * @param array $nodeTypes Empty for all or specify node types by name
      *
-     * @return \DOMDocument containing the nodetype information
+     * @return array|\DOMDocument containing the nodetype information
      */
-    public function getNodeTypes($nodeTypes = array())
+    public function getNodeTypes(array $nodeTypes = array())
     {
         return $this->transport->getNodeTypes($nodeTypes);
     }
@@ -689,6 +707,11 @@ class ObjectManager
      *      update it
      *
      * @return bool true on success
+     *
+     * @throws InvalidNodeTypeDefinitionException
+     * @throws NodeTypeExistsException
+     * @throws RepositoryException
+     * @throws UnsupportedRepositoryOperationException
      */
     public function registerNodeTypes($types, $allowUpdate)
     {
@@ -751,7 +774,6 @@ class ObjectManager
      *
      * @return ArrayIterator
      */
-
     protected function pathArrayToPropertiesIterator($propertyPaths)
     {
         //FIXME: this will break if we have non-persisted move
@@ -765,7 +787,17 @@ class ObjectManager
      *
      * @param  string  $cnd         a string with cnd information
      * @param  boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool    true on success
+     * @return bool|\Iterator    true on success or \Iterator over the registered node types if repository is not able to process
+     * CND directly
+     *
+     * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
+     * @throws AccessDeniedException
+     * @throws NamespaceException
+     * @throws InvalidNodeTypeDefinitionException
+     * @throws NodeTypeExistsException
+     *
+     * @see NodeTypeManagerInterface::registerNodeTypesCnd
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
@@ -881,6 +913,8 @@ class ObjectManager
      * stale data.
      *
      * @param Operation[] $operations
+     *
+     * @throws \Exception
      */
     protected function executeOperations(array $operations)
     {
@@ -896,7 +930,7 @@ class ObjectManager
                 $lastType = $operation->type;
             }
 
-            if ($operation->type != $lastType) {
+            if ($operation->type !== $lastType) {
                 $this->executeBatch($lastType, $batch);
                 $lastType = $operation->type;
                 $batch = array();
@@ -949,7 +983,11 @@ class ObjectManager
      *
      * @see VersionManager::checkin
      *
+     * @param string $absPath
      * @return VersionInterface node version
+     *
+     * @throws ItemNotFoundException
+     * @throws RepositoryException
      */
     public function checkin($absPath)
     {
@@ -971,7 +1009,7 @@ class ObjectManager
     }
 
     /**
-     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     * @see VersioningInterface::addVersionLabel
      */
     public function addVersionLabel($path, $label, $moveLabel)
     {
@@ -979,7 +1017,7 @@ class ObjectManager
     }
 
     /**
-     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     * @see VersioningInterface::addVersionLabel
      */
     public function removeVersionLabel($path, $label)
     {
@@ -1020,9 +1058,9 @@ class ObjectManager
      * @param string $versionPath The path to the version node
      * @param string $versionName The name of the version to remove
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException
-     * @throws \PHPCR\ReferentialIntegrityException
-     * @throws \PHPCR\Version\VersionException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws ReferentialIntegrityException
+     * @throws VersionException
      */
     public function removeVersion($versionPath, $versionName)
     {
@@ -1044,8 +1082,10 @@ class ObjectManager
             $version->setDeleted();
         }
 
-        unset($this->objectsByPath['Node'][$absPath]);
-        unset($this->objectsByPath['Version\\Version'][$absPath]);
+        unset(
+            $this->objectsByPath['Node'][$absPath],
+            $this->objectsByPath['Version\\Version'][$absPath]
+        );
 
         $this->cascadeDelete($absPath, false);
         $this->cascadeDeleteVersion($absPath);
@@ -1198,8 +1238,10 @@ class ObjectManager
             $this->transport->deleteNodeImmediately($absPath);
         }
 
-        unset($this->objectsByUuid[$node->getIdentifier()]);
-        unset($this->objectsByPath['Node'][$absPath]);
+        unset(
+            $this->objectsByUuid[$node->getIdentifier()],
+            $this->objectsByPath['Node'][$absPath]
+        );
 
         if ($sessionOperation) {
             // keep reference to object in case of refresh
@@ -1246,8 +1288,10 @@ class ObjectManager
         foreach ($this->objectsByPath['Version\\Version'] as $path => $node) {
             if (strpos($path, "$absPath/") === 0) {
                 // versions are read only, we simple unset them
-                unset($this->objectsByUuid[$node->getIdentifier()]);
-                unset($this->objectsByPath['Version\\Version'][$absPath]);
+                unset(
+                    $this->objectsByUuid[$node->getIdentifier()],
+                    $this->objectsByPath['Version\\Version'][$absPath]
+                );
                 if (!$node->isDeleted()) {
                     $node->setDeleted();
                 }
@@ -1439,6 +1483,10 @@ class ObjectManager
      * @param string $srcWorkspace the name of the workspace from which the
      *      copy is to be made.
      *
+     * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
+     * @throws ItemExistsException
+     *
      * @see Workspace::copy()
      */
     public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
@@ -1467,8 +1515,9 @@ class ObjectManager
      * @param string  $destAbsPath    the location to which the node at srcAbsPath is to be cloned in this workspace.
      * @param boolean $removeExisting
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException
-     * @throws \PHPCR\ItemExistsException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
+     * @throws ItemExistsException
      *
      * @see Workspace::cloneFrom()
      */
@@ -1494,6 +1543,7 @@ class ObjectManager
      * @param string        $absPath the path to the node or property, including the item name
      * @param NodeInterface $node    The item instance that is added.
      *
+     * @throws UnsupportedRepositoryOperationException
      * @throws ItemExistsException if a node already exists at that path
      */
     public function addNode($absPath, NodeInterface $node)
@@ -1529,6 +1579,8 @@ class ObjectManager
      * @param string $absPath absolute path to node to get permissions for it
      *
      * @return array of string
+     *
+     * @throws UnsupportedRepositoryOperationException
      */
     public function getPermissions($absPath)
     {
@@ -1573,6 +1625,7 @@ class ObjectManager
      *
      * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
+     * @throws |InvalidArgumentException
      */
     public function beginTransaction()
     {
@@ -1586,7 +1639,7 @@ class ObjectManager
      * TODO: Make sure RollbackException and AccessDeniedException are thrown
      * by the transport if corresponding problems occur.
      *
-     * @throws \PHPCR\Transaction\RollbackException if the transaction failed
+     * @throws RollbackException if the transaction failed
      *      and was rolled back rather than committed.
      * @throws AccessDeniedException if the session is not allowed to
      *      commit the transaction.

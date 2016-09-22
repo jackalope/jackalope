@@ -2,6 +2,10 @@
 
 namespace Jackalope\Version;
 
+use PHPCR\ItemNotFoundException;
+use PHPCR\NoSuchWorkspaceException;
+use PHPCR\PathNotFoundException;
+use PHPCR\RepositoryException;
 use PHPCR\Version\VersionInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Node;
@@ -29,6 +33,9 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
+     *
      * @api
      */
     public function getCreated()
@@ -39,17 +46,20 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
+     *
      * @api
      */
     public function getLinearSuccessor()
     {
-        $successors = $this->getProperty("jcr:successors")->getString();
+        $successors = $this->getProperty('jcr:successors')->getString();
         if (count($successors) > 1) {
             // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
             // @codeCoverageIgnoreEnd
         }
-        if (count($successors) == 0) {
+        if (count($successors) === 0) {
             return null; // no successor
         }
         $uuid = reset($successors);
@@ -59,6 +69,9 @@ class Version extends Node implements VersionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
      *
      * @api
      */
@@ -81,6 +94,11 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
+     * @throws ItemNotFoundException
+     * @throws NoSuchWorkspaceException
+     *
      * @api
      */
     public function getLinearPredecessor()
@@ -91,7 +109,7 @@ class Version extends Node implements VersionInterface
             throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
             // @codeCoverageIgnoreEnd
         }
-        if (count($predecessor) == 0) {
+        if (count($predecessor) === 0) {
             return null; // no successor
         }
         $uuid = reset($predecessor);
@@ -101,6 +119,9 @@ class Version extends Node implements VersionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
      *
      * @api
      */
@@ -139,7 +160,7 @@ class Version extends Node implements VersionInterface
     public function remove()
     {
         // A version node cannot be removed, so always throw an Exception
-        throw new \PHPCR\RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
+        throw new RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
     }
 
     /**

@@ -86,7 +86,9 @@ abstract class Item implements ItemInterface
      */
     protected $postDirtyState = -1;
 
-    /** @var array  The states an Item can take */
+    /**
+     * @var array The states an Item can take
+     */
     protected $available_states = array(
         self::STATE_NEW,
         self::STATE_DIRTY,
@@ -95,37 +97,59 @@ abstract class Item implements ItemInterface
         self::STATE_DELETED,
     );
 
-    /** @var FactoryInterface   The jackalope object factory for this object */
+    /**
+     * @var FactoryInterface The jackalope object factory for this object
+     */
     protected $factory;
 
-    /** @var Session    The session this item belongs to */
+    /**
+     * @var Session The session this item belongs to
+     */
     protected $session;
 
-    /** @var ObjectManager  The object manager to get nodes and properties from */
+    /**
+     * @var ObjectManager The object manager to get nodes and properties from
+     */
     protected $objectManager;
 
-    /** @var ValueConverter */
+    /**
+     * @var ValueConverter
+     */
     protected $valueConverter;
 
-    /** @var bool   false if item is read from backend, true if created locally in this session */
+    /**
+     * @var bool false if item is read from backend, true if created locally in this session
+     */
     protected $new;
 
-    /** @var string     the node or property name*/
+    /**
+     * @var string the node or property name
+     */
     protected $name;
 
-    /** @var string     Normalized and absolute path to this item. */
+    /**
+     * @var string     Normalized and absolute path to this item.
+     */
     protected $path;
 
-    /** @var string     While this item is moved but unsaved, stores the old path for refresh. */
+    /**
+     * @var string     While this item is moved but unsaved, stores the old path for refresh.
+     */
     protected $oldPath = null;
 
-    /** @var string     Normalized and absolute path to the parent item for convenience. */
+    /**
+     * @var string     Normalized and absolute path to the parent item for convenience.
+     */
     protected $parentPath;
 
-    /** @var int    Depth in the workspace graph */
+    /**
+     * @var int    Depth in the workspace graph
+     */
     protected $depth;
 
-    /** @var bool   Whether this item is a node (otherwise it is a property) */
+    /**
+     * @var bool   Whether this item is a node (otherwise it is a property)
+     */
     protected $isNode = false;
 
     /**
@@ -137,21 +161,27 @@ abstract class Item implements ItemInterface
      * @param ObjectManager    $objectManager
      * @param boolean          $new           can be set to true to tell the object that it has
      *      been created locally
+     *
+     * @throws RepositoryException
      */
-    protected function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
+    protected function __construct(
+        FactoryInterface $factory,
+        $path,
+        Session $session,
+        ObjectManager $objectManager,
+        $new = false)
     {
         $this->factory = $factory;
         $this->valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
-        if (! $new
+        if (!$new
             && $session->getRepository()->getDescriptor(RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)
+            && $session->getWorkspace()->getTransactionManager()->inTransaction()
         ) {
-            if ($session->getWorkspace()->getTransactionManager()->inTransaction()) {
-                // properly set previous state in case we get into a rollback
-                $this->savedState = self::STATE_CLEAN;
-            }
+            // properly set previous state in case we get into a rollback
+            $this->savedState = self::STATE_CLEAN;
         }
 
         $this->setPath($path);
@@ -168,7 +198,7 @@ abstract class Item implements ItemInterface
      */
     public function setPath($path, $move = false)
     {
-        if ($move && is_null($this->oldPath)) {
+        if ($move && null === $this->oldPath) {
             try {
                 $this->checkState();
             } catch (InvalidItemStateException $e) {
@@ -219,7 +249,7 @@ abstract class Item implements ItemInterface
         if ($depth < 0 || $depth > $this->depth) {
             throw new ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
-        if ($depth == $this->depth) {
+        if ($depth === $this->depth) {
             return $this;
         }
         // we do not use the PathHelper as this is a special case
@@ -399,6 +429,8 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidItemStateException
+     *
      * @api
      */
     public function remove()
@@ -406,7 +438,7 @@ abstract class Item implements ItemInterface
         $this->checkState(); // To avoid the possibility to delete an already deleted node
 
         // sanity checks
-        if ($this->getDepth() == 0) {
+        if ($this->getDepth() === 0) {
             throw new RepositoryException('Cannot remove root node');
         }
 
@@ -426,6 +458,8 @@ abstract class Item implements ItemInterface
      *
      * This will do nothing if the node is new, to avoid duplicating store commands.
      *
+     * @throws RepositoryException
+     *
      * @private
      */
     public function setModified()
@@ -439,6 +473,8 @@ abstract class Item implements ItemInterface
      * Tell this item that it is dirty and needs to be refreshed
      *
      * @param boolean $keepChanges whether to keep changes when reloading or not
+     *
+     * @throws RepositoryException
      *
      * @private
      */
@@ -465,6 +501,8 @@ abstract class Item implements ItemInterface
     /**
      * Tell this item it has been deleted and cannot be used anymore
      *
+     * @throws RepositoryException
+     *
      * @private
      */
     public function setDeleted()
@@ -474,6 +512,8 @@ abstract class Item implements ItemInterface
 
     /**
      * Tell this item it is clean (i.e. it has been refreshed after a modification)
+     *
+     * @throws RepositoryException
      *
      * @private
      */
@@ -485,6 +525,8 @@ abstract class Item implements ItemInterface
     /**
      * notify this item that it has been saved into the backend.
      * allowing it to clear the modified / new flags
+     *
+     * @throws RepositoryException
      *
      * @private
      */
@@ -537,7 +579,7 @@ abstract class Item implements ItemInterface
                 if ($candidate->getName() === $this->name) {
                     return $candidate;
                 }
-                if ('*' == $candidate->getName()) {
+                if ('*' === $candidate->getName()) {
                     // if we have multiple wildcard definitions, they are hopefully equivalent
                     $fallbackDefinition = $candidate;
                     // do not abort loop, in case we hit an exactly matching definition
@@ -754,7 +796,7 @@ abstract class Item implements ItemInterface
         } else {
 
             // There might be some special case we do not handle. for the moment throw an exception
-            throw new LogicException("There was an unexpected state transition during the transaction: " .
+            throw new LogicException('There was an unexpected state transition during the transaction: ' .
                                       "old state = {$this->savedState}, new state = {$this->state}");
         }
 

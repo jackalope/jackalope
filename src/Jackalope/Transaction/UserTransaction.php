@@ -29,18 +29,18 @@ class UserTransaction implements UserTransactionInterface
 
     /**
      * Instance of an implementation of the \PHPCR\SessionInterface.
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     protected $session;
 
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
 
     /**
      * Instance of an implementation of the TransactionInterface transport
-     * @var \Jackalope\Transport\TransactionInterface
+     * @var TransactionInterface
      */
     protected $transport;
 
@@ -55,16 +55,20 @@ class UserTransaction implements UserTransactionInterface
      * Registers the provided parameters as attribute to the instance.
      *
      * @param FactoryInterface   $factory   the object factory
-     * @param TransportInterface $transport
+     * @param TransactionInterface $transport
      * @param SessionInterface   $session
+     * @param ObjectManager $objectManager
      */
-    public function __construct(FactoryInterface $factory, TransactionInterface $transport,
-                                SessionInterface $session, ObjectManager $om)
+    public function __construct(
+        FactoryInterface $factory,
+        TransactionInterface $transport,
+        SessionInterface $session,
+        ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
-        $this->objectManager = $om;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -93,7 +97,7 @@ class UserTransaction implements UserTransactionInterface
     public function commit()
     {
         if (! $this->inTransaction) {
-            throw new LogicException("No transaction to commit.");
+            throw new LogicException('No transaction to commit.');
         }
 
         $this->objectManager->commitTransaction();
@@ -137,7 +141,7 @@ class UserTransaction implements UserTransactionInterface
     public function setTransactionTimeout($seconds = 0)
     {
         if ($seconds < 0) {
-            throw new RepositoryException("Value must be positive or 0. ". $seconds ." given.");
+            throw new RepositoryException('Value must be positive or 0. '. $seconds .' given.');
         }
         $this->transport->setTransactionTimeout($seconds);
     }

@@ -24,16 +24,15 @@ class Helper
      * @param string     $attribute name to fetch
      *
      * @return bool the value converted to bool
+     *
+     * @throws RepositoryException
      */
     public static function getBoolAttribute(DOMElement $node, $attribute)
     {
         if (! $node->hasAttribute($attribute)) {
             throw new RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());
         }
-        if ('false' === $node->getAttribute($attribute)) {
-            return false;
-        }
 
-        return true;
+        return 'false' !== $node->getAttribute($attribute);
     }
 }

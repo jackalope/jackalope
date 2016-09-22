@@ -2,6 +2,8 @@
 
 namespace Jackalope\Transport;
 
+use Jackalope\NodeType\NodeTypeManager;
+
 /**
  * Alternate interface for transports that implement direct support for the
  * "compact node type and namespace" definition.
@@ -28,7 +30,7 @@ interface NodeTypeCndManagementInterface extends TransportInterface
      *
      * @return bool true on success
      *
-     * @see \Jackalope\NodeTypeManager::registerNodeTypesCnd
+     * @see NodeTypeManager::registerNodeTypesCnd
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate);
 }

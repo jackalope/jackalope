@@ -2,6 +2,8 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\RepositoryException;
+
 /**
  * Defines the methods needed for Transaction support.
  *
@@ -17,7 +19,7 @@ interface TransactionInterface extends TransportInterface
      *
      * @return string The received transaction token
      *
-     * @throws \PHPCR\RepositoryException If no transaction token received.
+     * @throws RepositoryException If no transaction token received.
      */
     public function beginTransaction();
 

@@ -5,7 +5,6 @@ namespace Jackalope\Transport;
 use Jackalope\FactoryInterface;
 use Jackalope\Transport\Logging\LoggerInterface;
 use PHPCR\CredentialsInterface;
-use Jackalope\NodeType\NodeTypeManager;
 
 /**
  * abstract class for logging transport wrapper.

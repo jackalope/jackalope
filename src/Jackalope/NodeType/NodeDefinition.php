@@ -22,15 +22,18 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      * @var array
      */
     protected $requiredPrimaryTypes = array();
+
     /**
      * List of required primary type names as string.
      * @var array
      */
     protected $requiredPrimaryTypeNames = array();
+
     /**
      * @var string
      */
     protected $defaultPrimaryTypeName;
+
     /**
      * @var boolean
      */

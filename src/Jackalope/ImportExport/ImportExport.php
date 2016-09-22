@@ -2,17 +2,22 @@
 
 namespace Jackalope\ImportExport;
 
-use XMLReader;
+use PHPCR\AccessDeniedException;
+use PHPCR\ItemNotFoundException;
 use PHPCR\NodeInterface;
+use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\ImportUUIDBehaviorInterface;
 use PHPCR\NamespaceRegistryInterface;
+use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\NodeHelper;
 use PHPCR\InvalidSerializedDataException;
 use PHPCR\ItemExistsException;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
+use PHPCR\SessionInterface;
 use PHPCR\NamespaceException;
+use XMLReader;
 
 /**
  * Helper class with static methods to import and export data.
@@ -49,7 +54,10 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean                    $skipBinary as in exportSystemView
      * @param boolean                    $noRecurse  as in exportSystemView
      *
-     * @see PHPCR\SessionInterface::exportSystemView
+     * @throws \InvalidArgumentException
+     * @throws RepositoryException
+     *
+     * @see SessionInterface::exportSystemView
      */
     public static function exportSystemView(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse)
     {
@@ -66,7 +74,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean                    $skipBinary as in exportDocumentView
      * @param boolean                    $noRecurse  as in exportDocumentView
      *
-     * @see PHPCR\SessionInterface::exportDocumentView
+     * @throws RepositoryException
+     *
+     * @see SessionInterface::exportDocumentView
      */
     public static function exportDocumentView(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse)
     {
@@ -82,14 +92,17 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param string                     $uri          as in importXML
      * @param integer                    $uuidBehavior as in importXML
      *
-     * @see PHPCR\SessionInterface::importXML
+     * @throws \RuntimeException
+     * @throws \Exception
+     *
+     * @see SessionInterface::importXML
      */
     public static function importXML(NodeInterface $parentNode, NamespaceRegistryInterface $ns, $uri, $uuidBehavior)
     {
         $use_errors = libxml_use_internal_errors(true);
         libxml_clear_errors();
 
-        if (! file_exists($uri)) {
+        if (!file_exists($uri)) {
             throw new \RuntimeException("File $uri does not exist or is not readable");
         }
 
@@ -106,7 +119,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
 
         $xml->read();
         try {
-            if ('node' == $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI) {
+            if ('node' === $xml->localName && NamespaceRegistryInterface::NAMESPACE_SV === $xml->namespaceURI) {
                 // TODO: validate with DTD?
                 self::importSystemView($parentNode, $ns, $xml, $uuidBehavior);
             } else {
@@ -144,10 +157,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * prefix if needed.
      *
      * @param string $name A name encoded with escapeXmlName
+     * @param array $namespaceMap
      *
      * @return string the decoded name
      */
-    public static function unescapeXmlName($name, $namespaceMap)
+    public static function unescapeXmlName($name, array $namespaceMap)
     {
         foreach (self::$escaping as $raw => $escaped) {
             // Used a negative look behind to only replace non-escaped escape characters
@@ -165,13 +179,15 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *
      * @param string $name         potentially namespace prefixed xml name
      * @param array  $namespaceMap of document prefix => repository prefix
+     *
+     * @return string
      */
-    private static function cleanNamespace($name, $namespaceMap)
+    private static function cleanNamespace($name, array $namespaceMap)
     {
         if ($pos = strpos($name, ':')) {
             // map into repo namespace prefix
             $prefix = substr($name, 0, $pos);
-            if (isset($namespaceMap[$prefix])) {
+            if (array_key_exists($prefix, $namespaceMap)) {
                 // the values we remap are not xml names but attribute values.
                 // the namespace declaration is not obligatory
                 str_replace($prefix, $namespaceMap[$prefix], $name);
@@ -187,19 +203,21 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param \PHPCR\NodeInterface $parentNode   the node to add this node to
      * @param string               $nodename     the node name to use
      * @param string               $type         the primary type name to use
+     * @param array $properties
      * @param int                  $uuidBehavior one of the constants of ImportUUIDBehaviorInterface
      *
      * @return NodeInterface the created node
      *
-     * @throws \PHPCR\ItemExistsException if IMPORT_UUID_COLLISION_THROW and
+     * @throws RepositoryException
+     * @throws ItemExistsException if IMPORT_UUID_COLLISION_THROW and
      *      duplicate id
-     * @throws \PHPCR\NodeType\ConstraintViolationException if behavior is remove or
+     * @throws ConstraintViolationException if behavior is remove or
      *      replace and the node with the uuid is in the parent path.
      */
-    private static function addNode(NodeInterface $parentNode, $nodename, $type, $properties, $uuidBehavior)
+    private static function addNode(NodeInterface $parentNode, $nodename, $type, array $properties, $uuidBehavior)
     {
         $forceReferenceable = false;
-        if (isset($properties['jcr:uuid'])) {
+        if (array_key_exists('jcr:uuid', $properties)) {
             try {
                 $existing = $parentNode->getSession()->getNodeByIdentifier($properties['jcr:uuid']['values']);
                 switch ($uuidBehavior) {
@@ -211,16 +229,16 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         throw new ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
                     case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
                     case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
-                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior &&
-                            'jcr:root' == $nodename &&
-                            $existing->getDepth() == 0
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior &&
+                            'jcr:root' === $nodename &&
+                            $existing->getDepth() === 0
                         ) {
                             break;
                         }
                         if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
                             throw new ConstraintViolationException('Trying to remove/replace parent of the path we are adding to. '.$existing->getIdentifier(). ' at '.$existing->getPath());
                         }
-                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior) {
                             // replace the found node. spec is not precise: do we keep the name or use the one of existing?
                             $parentNode = $existing->getParent();
                         }
@@ -231,7 +249,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         throw new RepositoryException("Unexpected type $uuidBehavior");
                         // @codeCoverageIgnoreEnd
                 }
-            } catch (\PHPCR\ItemNotFoundException $e) {
+            } catch (ItemNotFoundException $e) {
                 // nothing to do, we can add the node without conflict
             }
         }
@@ -244,7 +262,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $type = 'nt:unstructured';
         }
 
-        if ('jcr:root' == $nodename && isset($existing) && $existing->getDepth() === 0 && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+        if ('jcr:root' === $nodename
+            && isset($existing)
+            && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior
+            && $existing->getDepth() === 0
+        ) {
             // update the root node properties
             // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
             NodeHelper::purgeWorkspace($parentNode->getSession());
@@ -254,9 +276,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         foreach ($properties as $name => $info) {
-            if ('jcr:primaryType' == $name) {
+            if ('jcr:primaryType' === $name) {
                 // handled in node constructor
-            } elseif ('jcr:mixinTypes' == $name) {
+            } elseif ('jcr:mixinTypes' === $name) {
                 if (is_array($info['values'])) {
                     foreach ($info['values'] as $type) {
                         $node->addMixin($type);
@@ -264,9 +286,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 } else {
                     $node->addMixin($info['values']);
                 }
-            } elseif ('jcr:created' == $name || 'jcr:createdBy' == $name) {
+            } elseif ('jcr:created' === $name || 'jcr:createdBy' === $name) {
                 // skip PROTECTED properties. TODO: get the names from node type instead of hardcode
-            } elseif ('jcr:uuid' == $name) {
+            } elseif ('jcr:uuid' === $name) {
                 //avoid to throw an exception when trying to set a UUID when importing from XML
                 $node->setProperty($name, $info['values'], $info['type'], false);
             } else {
@@ -286,6 +308,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * view format
      *
      * @param NodeInterface $node   the node to output
+     * @param NamespaceRegistryInterface $ns
      * @param resource      $stream The stream resource (i.e. acquired with fopen) to
      *      which the XML serialization of the subgraph will be output. Must
      *      support the fwrite method.
@@ -296,6 +319,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean $root Whether this is the root node of the resulting
      *      document, meaning the namespace declarations have to be included in
      *      it.
+     *
+     * @throws RepositoryException
+     * @throws \InvalidArgumentException
      */
     private static function exportSystemViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root=false)
     {
@@ -319,12 +345,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         foreach ($node->getProperties() as $name => $property) {
-            /** @var $property \PHPCR\PropertyInterface */
-            if ($name == 'jcr:primaryType' || $name == 'jcr:mixinTypes' || $name == 'jcr:uuid') {
+            /** @var $property PropertyInterface */
+
+            if (in_array($name, array('jcr:primaryType', 'jcr:mixinTypes', 'jcr:uuid'), true)) {
                 // explicitly handled before
                 continue;
             }
-            if (PropertyType::BINARY == $property->getType() && $skipBinary) {
+            if ($skipBinary && PropertyType::BINARY === $property->getType()) {
                 // do not output binary data in the xml
                 continue;
             }
@@ -335,7 +362,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $values = $property->isMultiple() ? $property->getString() : array($property->getString());
 
             foreach ($values as $value) {
-                if (PropertyType::BINARY == $property->getType()) {
+                if (PropertyType::BINARY === $property->getType()) {
                     $val = base64_encode($value);
                 } else {
                     $val = htmlspecialchars($value);
@@ -347,7 +374,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
         if (! $noRecurse) {
             foreach ($node as $child) {
-                if (! ($child->getDepth() == 1 && NodeHelper::isSystemItem($child))) {
+                if (! ($child->getDepth() === 1 && NodeHelper::isSystemItem($child))) {
                     self::exportSystemViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
                 }
             }
@@ -369,6 +396,8 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean $root Whether this is the root node of the resulting
      *      document, meaning the namespace declarations have to be included in
      *      it.
+     *
+     * @throws RepositoryException
      */
     private static function exportDocumentViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root=false)
     {
@@ -383,7 +412,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 // skip multiple properties. jackrabbit does this too. cheap but whatever. use system view for a complete export
                 continue;
             }
-            if (PropertyType::BINARY == $property->getType()) {
+            if (PropertyType::BINARY === $property->getType()) {
                 if ($skipBinary) {
                     continue;
                 }
@@ -398,7 +427,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         } else {
             fwrite($stream, '>');
             foreach ($node as $child) {
-                if (! ($child->getDepth() == 1 && NodeHelper::isSystemItem($child))) {
+                if (! ($child->getDepth() === 1 && NodeHelper::isSystemItem($child))) {
                     self::exportDocumentViewRecursive($child, $ns, $stream, $skipBinary, $noRecurse);
                 }
             }
@@ -430,11 +459,20 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param FilteredXMLReader          $xml
      * @param int                        $uuidBehavior
      * @param array                      $namespaceMap hashmap of prefix => uri for namespaces in the document
+     *
+     * @throws RepositoryException
+     * @throws \InvalidArgumentException
+     * @throws InvalidSerializedDataException
+     * @throws ConstraintViolationException
+     * @throws ItemExistsException
+     * @throws AccessDeniedException
+     * @throws NamespaceException
+     * @throws UnsupportedRepositoryOperationException
      */
-    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, $namespaceMap = array())
+    private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, array $namespaceMap = array())
     {
         while ($xml->moveToNextAttribute()) {
-            if ('xmlns' == $xml->prefix) {
+            if ('xmlns' === $xml->prefix) {
                 try {
                     $prefix = $ns->getPrefix($xml->value);
                 } catch (NamespaceException $e) {
@@ -442,16 +480,16 @@ class ImportExport implements ImportUUIDBehaviorInterface
                     $ns->registerNamespace($prefix, $xml->value);
                 }
                 // @codeCoverageIgnoreStart
-                if ('jcr' == $prefix && 'jcr' != $xml->localName) {
+                if ('jcr' === $prefix && 'jcr' !== $xml->localName) {
                     throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/1.0} namespace is not mapped to jcr');
                 }
-                if ('nt' == $prefix && 'nt' != $xml->localName) {
+                if ('nt' === $prefix && 'nt' !== $xml->localName) {
                     throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
                 }
                 // @codeCoverageIgnoreEnd
                 $namespaceMap[$xml->localName] = $prefix;
-            } elseif (NamespaceRegistryInterface::NAMESPACE_SV == $xml->namespaceURI
-                && 'name' == $xml->localName
+            } elseif (NamespaceRegistryInterface::NAMESPACE_SV === $xml->namespaceURI
+                && 'name' === $xml->localName
             ) {
                 $nodename = $xml->value;
             }
@@ -464,12 +502,19 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if (! $xml->read()) {
             throw new InvalidSerializedDataException('missing information to create node');
         }
-        if ('property' != $xml->localName || NamespaceRegistryInterface::NAMESPACE_SV != $xml->namespaceURI) {
+
+        if ('property' !== $xml->localName || NamespaceRegistryInterface::NAMESPACE_SV !== $xml->namespaceURI) {
             throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"'.$xml->nodeType);
         }
-        if (! $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV) || 'jcr:primaryType' != $xml->value) {
-            throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"');
+
+        if (! $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV)) {
+            throw new InvalidSerializedDataException('first child of node must have a sv:name property');
         }
+
+        if ('jcr:primaryType' !== $xml->value) {
+            throw new InvalidSerializedDataException('first child of node must be the sv:property node with a jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value);
+        }
+
         $xml->read(); // value child of property jcr:primaryType
         $xml->read(); // text content
         $nodetype = $xml->value;
@@ -484,7 +529,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         $xml->read(); // next thing
 
         // read the properties of the node. they must come first.
-        while (XMLReader::END_ELEMENT != $xml->nodeType && 'property' == $xml->localName) {
+        while (XMLReader::END_ELEMENT !== $xml->nodeType && 'property' === $xml->localName) {
             $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV);
             $name = $xml->value;
             $xml->moveToAttributeNs('type', NamespaceRegistryInterface::NAMESPACE_SV);
@@ -501,23 +546,23 @@ class ImportExport implements ImportUUIDBehaviorInterface
             // node closing tag
             $xml->read();
 
-            while ('value' == $xml->localName) {
+            while ('value' === $xml->localName) {
                 if ($xml->isEmptyElement) {
                     $values[] = '';
                 } else {
                     $xml->read();
-                    if (XMLReader::END_ELEMENT == $xml->nodeType) {
+                    if (XMLReader::END_ELEMENT === $xml->nodeType) {
                         // this is an empty tag
                         $values[] = '';
                     } else {
-                        $values[] = (PropertyType::BINARY == $type) ? base64_decode($xml->value) : $xml->value;
+                        $values[] = (PropertyType::BINARY === $type) ? base64_decode($xml->value) : $xml->value;
                         $xml->read(); // consume the content
                     }
                 }
                 $xml->read(); // consume closing tag
             }
 
-            if (! $multiple && count($values) == 1) {
+            if (! $multiple && count($values) === 1) {
                 $values = reset($values); // unbox if it does not need to be multivalue
             }
             $name = self::cleanNamespace($name, $namespaceMap);
@@ -529,7 +574,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
              * and don't consume the closing node tag after a self-closing
              * empty property
              */
-            if (XMLReader::END_ELEMENT == $xml->nodeType && 'property' == $xml->localName) {
+            if (XMLReader::END_ELEMENT === $xml->nodeType && 'property' === $xml->localName) {
                 $xml->read();
             }
         }
@@ -537,11 +582,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
 
         // if there are child nodes, they all come after the properties
 
-        while (XMLReader::END_ELEMENT != $xml->nodeType && 'node' == $xml->localName) {
+        while (XMLReader::END_ELEMENT !== $xml->nodeType && 'node' === $xml->localName) {
             self::importSystemView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
         }
 
-        if (XMLReader::END_ELEMENT != $xml->nodeType) {
+        if (XMLReader::END_ELEMENT !== $xml->nodeType) {
             throw new InvalidSerializedDataException('Unexpected element "'.$xml->localName.'" type "'.$xml->nodeType.'" with content "'.$xml->value.'" after ' . $node->getPath());
         }
         $xml->read(); // </node>
@@ -554,9 +599,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param NamespaceRegistryInterface $ns
      * @param FilteredXMLReader          $xml
      * @param int                        $uuidBehavior
-     * @param array                      $documentNamespaces hashmap of prefix => uri for namespaces in the document
+     * @param array                      $namespaceMap hashmap of prefix => uri for namespaces in the document
+     *
+     * @throws RepositoryException
      */
-    private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, $namespaceMap = array())
+    private static function importDocumentView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, array $namespaceMap = array())
     {
         $nodename = $xml->name;
         $properties = array();
@@ -564,7 +611,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
 
         while ($xml->moveToNextAttribute()) {
             $hasAttributes = true;
-            if ('xmlns' == $xml->prefix) {
+            if ('xmlns' === $xml->prefix) {
                 try {
                     $prefix = $ns->getPrefix($xml->value);
                 } catch (NamespaceException $e) {
@@ -585,7 +632,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         $prefix_nt = array_search(NamespaceRegistryInterface::PREFIX_NT, $namespaceMap);
-        if (false == $prefix_nt) {
+        if (false === $prefix_nt) {
             $namespaceMap[NamespaceRegistryInterface::PREFIX_NT] = NamespaceRegistryInterface::PREFIX_NT;
         } elseif ($prefix_nt !== NamespaceRegistryInterface::PREFIX_NT) {
             throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');
@@ -616,15 +663,15 @@ class ImportExport implements ImportUUIDBehaviorInterface
         // TODO: what about significant whitespace? maybe the read above should not even skip significant empty whitespace...
 
         // while we are on element and at same depth, these are children of the current node
-        while (XMLReader::ELEMENT == $xml->nodeType && $xml->depth == $depth) {
+        while (XMLReader::ELEMENT === $xml->nodeType && $xml->depth === $depth) {
             self::importDocumentView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
         }
 
-        if (XMLReader::END_ELEMENT != $xml->nodeType && $xml->depth != $depth - 1) {
+        if (XMLReader::END_ELEMENT !== $xml->nodeType && $xml->depth !== $depth - 1) {
             throw new InvalidSerializedDataException('Unexpected element in stream: '.$xml->name.'="'.$xml->value.'"');
         }
 
-        if (XMLReader::END_ELEMENT == $xml->nodeType) {
+        if (XMLReader::END_ELEMENT === $xml->nodeType) {
             $xml->read(); // end of element
         } // otherwise the previous element was self-closing and we are already on the next one
     }

@@ -1,7 +1,9 @@
 <?php
+
 namespace Jackalope;
 
 use LogicException;
+use PHPCR\SessionInterface;
 
 /**
  * This class implements a stream wrapper that allows for lazy loaded binary
@@ -43,13 +45,13 @@ class BinaryStreamWrapper
 
     /**
      * The stream once the wrapper has been accessed once.
-     * @var stream
+     * @var resource
      */
     private $stream = null;
 
     /**
      * The PHPCR session to fetch data through it.
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     private $session = null;
 
@@ -76,6 +78,8 @@ class BinaryStreamWrapper
      * @param int $count How many bytes to read from the stream.
      *
      * @return string data from the stream in utf-8 format.
+     *
+     * @throws LogicException
      */
     public function stream_read($count)
     {
@@ -88,6 +92,10 @@ class BinaryStreamWrapper
      * Make sure the stream is ready and write to the underlying stream.
      *
      * @param string $data the data to write to the stream (utf-8)
+     *
+     * @return int
+     *
+     * @throws LogicException
      */
     public function stream_write($data)
     {
@@ -98,6 +106,8 @@ class BinaryStreamWrapper
 
     /**
      * Make sure the stream is ready and specify the position in the stream.
+     *
+     * @throws LogicException
      */
     public function stream_tell()
     {
@@ -110,6 +120,8 @@ class BinaryStreamWrapper
      * Make sure the stream is ready and check whether the stream is at its end.
      *
      * @return bool true if the stream has ended.
+     *
+     * @throws LogicException
      */
     public function stream_eof()
     {
@@ -120,6 +132,9 @@ class BinaryStreamWrapper
 
     /**
      * Make sure the stream is ready and get information about the stream.
+     *
+     * @return array
+     * @throws LogicException
      */
     public function stream_stat()
     {
@@ -139,6 +154,8 @@ class BinaryStreamWrapper
      *               unavailable values should be set to a rational value
      *               (usually 0).
      *
+     * @throws LogicException
+     *
      * @see http://php.net/manual/en/streamwrapper.url-stat.php
      */
     public function url_stat($path, $flags)
@@ -154,6 +171,10 @@ class BinaryStreamWrapper
      *
      * @param int $offset the position in the stream in bytes from the beginning
      * @param int $whence whether to seek relative or absolute
+     *
+     * @return int
+     *
+     * @throws LogicException
      */
     public function stream_seek($offset, $whence)
     {

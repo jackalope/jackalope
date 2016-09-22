@@ -4,14 +4,12 @@ namespace Jackalope\Version;
 
 use ArrayIterator;
 use Jackalope\Property;
-use PHPCR\NodeInterface;
+use PHPCR\RepositoryException;
 use PHPCR\Util\NodeHelper;
 use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionException;
 use Jackalope\Node;
-use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}
@@ -107,6 +105,8 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *      from
      *
      * @return array list of VersionInterface
+     *
+     * @throws RepositoryException
      */
     protected function getEventualSuccessors($node)
     {
@@ -265,6 +265,8 @@ class VersionHistory extends Node implements VersionHistoryInterface
 
     /**
      * This method fetches all version labels, if the cache array is not initialized yet.
+     *
+     * @throws RepositoryException
      */
     private function initVersionLabels()
     {

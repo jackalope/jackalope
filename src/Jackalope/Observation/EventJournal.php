@@ -74,7 +74,11 @@ class EventJournal implements EventJournalInterface
      * @param ObservationInterface $transport a transport implementing the
      *                                        observation methods.
      */
-    public function __construct(FactoryInterface $factory, EventFilter $filter, SessionInterface $session, ObservationInterface $transport)
+    public function __construct(
+        FactoryInterface $factory,
+        EventFilter $filter,
+        SessionInterface $session,
+        ObservationInterface $transport)
     {
         $this->factory = $factory;
         $this->filter = $filter;

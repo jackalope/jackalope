@@ -25,7 +25,7 @@ class QueryManager implements QueryManagerInterface
     protected $factory;
 
     /**
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
 

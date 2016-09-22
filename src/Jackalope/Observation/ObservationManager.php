@@ -6,6 +6,7 @@ use IteratorAggregate;
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\Observation\EventListenerInterface;
 use PHPCR\Observation\EventFilterInterface;
+use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 use Jackalope\Transport\ObservationInterface;
 use Jackalope\FactoryInterface;
@@ -117,6 +118,8 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
     }
     /**
      * @return \Traversable The list of event listeners
+     *
+     * @throws RepositoryException
      *
      * @see getRegisteredEventListeners
      */

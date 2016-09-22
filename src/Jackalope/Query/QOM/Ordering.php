@@ -16,7 +16,7 @@ use PHPCR\Query\QOM\DynamicOperandInterface;
 class Ordering implements OrderingInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\DynamicOperandInterface
+     * @var DynamicOperandInterface
      */
     protected $operand;
 

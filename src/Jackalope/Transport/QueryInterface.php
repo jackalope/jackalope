@@ -3,6 +3,7 @@
 namespace Jackalope\Transport;
 
 use Jackalope\Query\Query;
+use Jackalope\Query\QueryResult;
 
 /**
  * Defines the methods needed for Query support
@@ -40,7 +41,7 @@ interface QueryInterface extends TransportInterface
      *
      * @return array data with search result. TODO: what to return? should be some simple array
      *
-     * @see \Jackalope\Query\QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
+     * @see QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */
     public function query(Query $query);
 

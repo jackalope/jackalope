@@ -2,8 +2,6 @@
 
 namespace Jackalope\Validation\Path;
 
-use DOMElement;
-
 /**
  * Applies the same path validation rules as the Apache Jackrabbit JCR implementation.
  *
