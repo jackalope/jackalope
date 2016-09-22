@@ -1,5 +1,7 @@
 <?php
+
 namespace Jackalope;
+
 use LogicException;
 
 /**
