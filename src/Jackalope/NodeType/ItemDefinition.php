@@ -4,6 +4,8 @@ namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\ItemDefinitionInterface;
 use Jackalope\FactoryInterface;
+use PHPCR\NodeType\NoSuchNodeTypeException;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -93,6 +95,9 @@ class ItemDefinition implements ItemDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws NoSuchNodeTypeException
+     * @throws RepositoryException
      *
      * @api
      */

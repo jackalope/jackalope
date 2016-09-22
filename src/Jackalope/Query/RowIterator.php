@@ -16,7 +16,7 @@ use Jackalope\FactoryInterface;
  */
 class RowIterator implements SeekableIterator, Countable
 {
-    protected $objectmanager;
+    protected $objectManager;
 
     protected $factory;
 
@@ -31,10 +31,10 @@ class RowIterator implements SeekableIterator, Countable
      * @param ObjectManager    $objectManager
      * @param array            $rows          Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectmanager, $rows)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
         $this->rows = $rows;
     }
 
@@ -63,7 +63,7 @@ class RowIterator implements SeekableIterator, Countable
             return null;
         }
 
-        return $this->factory->get('Query\Row', array($this->objectmanager, $this->rows[$this->position]));
+        return $this->factory->get('Query\Row', array($this->objectManager, $this->rows[$this->position]));
     }
 
     public function key()

@@ -26,7 +26,7 @@ class Row implements Iterator, RowInterface
     /**
      * @var ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
 
     /**
      * @var FactoryInterface
@@ -83,7 +83,7 @@ class Row implements Iterator, RowInterface
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $columns)
     {
         $this->factory = $factory;
-        $this->objectmanager = $objectManager;
+        $this->objectManager = $objectManager;
 
         // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
         foreach ($columns as $column) {
@@ -164,7 +164,7 @@ class Row implements Iterator, RowInterface
         // defined result so we return null
         if (is_array($value)) {
             if (is_scalar($value[0]) && !is_bool($value[0])) {
-                $value = join(' ', $value);
+                $value = implode(' ', $value);
             } else {
                 $value = null;
             }
@@ -186,7 +186,7 @@ class Row implements Iterator, RowInterface
             return null;
         }
 
-        return $this->objectmanager->getNodeByPath($this->getPath($selectorName));
+        return $this->objectManager->getNodeByPath($this->getPath($selectorName));
     }
 
     /**

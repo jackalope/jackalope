@@ -57,6 +57,8 @@ class NodeTypeXmlConverter
      * @param DOMElement $node
      *
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
     public function getPropertyDefinitionFromXml(DOMElement $node)
     {

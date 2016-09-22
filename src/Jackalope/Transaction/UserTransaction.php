@@ -55,16 +55,17 @@ class UserTransaction implements UserTransactionInterface
      * Registers the provided parameters as attribute to the instance.
      *
      * @param FactoryInterface   $factory   the object factory
-     * @param TransportInterface $transport
+     * @param TransactionInterface $transport
      * @param SessionInterface   $session
+     * @param ObjectManager $objectManager
      */
     public function __construct(FactoryInterface $factory, TransactionInterface $transport,
-                                SessionInterface $session, ObjectManager $om)
+                                SessionInterface $session, ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;
-        $this->objectManager = $om;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -137,7 +138,7 @@ class UserTransaction implements UserTransactionInterface
     public function setTransactionTimeout($seconds = 0)
     {
         if ($seconds < 0) {
-            throw new RepositoryException("Value must be positive or 0. ". $seconds ." given.");
+            throw new RepositoryException('Value must be positive or 0. '. $seconds .' given.');
         }
         $this->transport->setTransactionTimeout($seconds);
     }

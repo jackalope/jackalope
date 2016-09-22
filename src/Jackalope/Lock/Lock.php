@@ -4,6 +4,8 @@ namespace Jackalope\Lock;
 
 use PHPCR\Lock\LockInterface;
 use Jackalope\NotImplementedException;
+use PHPCR\PathNotFoundException;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -90,6 +92,10 @@ class Lock implements LockInterface
      * {@inheritDoc}
      *
      * @api
+     *
+     * @throws NotImplementedException
+     * @throws PathNotFoundException
+     * @throws RepositoryException
      */
     public function getNode()
     {

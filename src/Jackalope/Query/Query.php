@@ -89,7 +89,7 @@ abstract class Query implements QueryInterface
      */
     public function execute()
     {
-        if (is_null($this->objectManager)) {
+        if (null === $this->objectManager) {
             // if the ObjectManager was not injected in the header. this is only supposed to happen in the DBAL client.
             throw new RepositoryException('Jackalope implementation error: This query was built for parsing only. (There is no ObjectManager to run the query against.)');
         }
@@ -183,7 +183,7 @@ abstract class Query implements QueryInterface
      */
     public function getStoredQueryPath()
     {
-        if ($this->path == null) {
+        if ($this->path === null) {
             throw new ItemNotFoundException('Not a stored query');
         }
 

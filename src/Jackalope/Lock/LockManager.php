@@ -122,6 +122,8 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * {@inheritDoc}
      *
+     * @throws \InvalidArgumentException
+     *
      * @api
      */
     public function holdsLock($absPath)
@@ -185,7 +187,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
             $absPath,
             $lockInfo->getIsDeep(),
             $lockInfo->getIsSessionScoped(),
-            $lockInfo->getTimeOutHint(),
+            $lockInfo->getTimeoutHint(),
             $lockInfo->getOwnerInfo()
         );
     }

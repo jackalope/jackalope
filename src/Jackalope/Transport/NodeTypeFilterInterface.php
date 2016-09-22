@@ -21,7 +21,7 @@ interface NodeTypeFilterInterface extends TransportInterface
      * list of node type names of which the nodes must be to be included in
      * the result.
      *
-     * @param array        $path       Absolute paths to the nodes.
+     * @param array        $paths       Absolute paths to the nodes.
      * @param array|string $typeFilter List of node types to find, with
      *      semantics as in Node::getNodes meaning a supertype must also match.
      *
@@ -30,7 +30,7 @@ interface NodeTypeFilterInterface extends TransportInterface
      *
      * @see TransportInterface::getNodes
      */
-    public function getNodesFiltered($paths, $typeFilter);
+    public function getNodesFiltered(array $paths, $typeFilter);
 
     /**
      * Get the names of child nodes of a node filtered by a type filter.

@@ -180,7 +180,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      */
     public function getDeclaredSupertypeNames()
     {
-        if (is_null($this->declaredSuperTypeNames)) {
+        if (null === $this->declaredSuperTypeNames) {
             return array(self::NAME_NT_BASE);
         }
 
@@ -244,7 +244,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      */
     public function getDeclaredPropertyDefinitions()
     {
-        return is_null($this->declaredPropertyDefinitions)
+        return null === $this->declaredPropertyDefinitions
             ? null : $this->declaredPropertyDefinitions->getArrayCopy();
     }
 
@@ -255,7 +255,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      */
     public function getDeclaredChildNodeDefinitions()
     {
-        return is_null($this->declaredNodeDefinitions)
+        return null === $this->declaredNodeDefinitions
             ? null : $this->declaredNodeDefinitions->getArrayCopy();
     }
 }

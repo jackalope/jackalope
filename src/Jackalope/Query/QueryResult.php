@@ -20,7 +20,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     /**
      * @var ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
 
     /**
      * @var FactoryInterface
@@ -44,11 +44,11 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * @param array            $rawData       the data as returned by the transport
      * @param ObjectManager    $objectManager
      */
-    public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectmanager)
+    public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->rows = $rawData;
-        $this->objectmanager = $objectmanager;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -100,7 +100,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getRows()
     {
-        return $this->factory->get('Query\RowIterator', array($this->objectmanager, $this->rows));
+        return $this->factory->get('Query\RowIterator', array($this->objectManager, $this->rows));
     }
 
     /**
@@ -111,7 +111,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     public function getNodes($prefetch = false)
     {
         if ($prefetch !== true) {
-            return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
+            return $this->factory->get('Query\NodeIterator', array($this->objectManager, $this->rows));
         }
 
         $paths = array();
@@ -119,7 +119,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
             $paths[] = $row->getPath();
         }
 
-        return $this->objectmanager->getNodesByPath($paths);
+        return $this->objectManager->getNodesByPath($paths);
     }
 
     /**

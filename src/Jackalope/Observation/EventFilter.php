@@ -48,26 +48,30 @@ class EventFilter implements EventFilterInterface
      */
     public function match(EventInterface $event)
     {
-        if (!is_null($this->eventTypes)) {
+        if (null !== $this->eventTypes) {
             if ($this->skipByType($event)) {
                 return false;
             }
         }
-        if (!is_null($this->absPath)) {
+
+        if (null !== $this->absPath) {
             if ($this->skipByPath($event)) {
                 return false;
             }
         }
-        if (!is_null($this->identifiers)) {
+
+        if (null !== $this->identifiers) {
             if ($this->skipByIdentifiers($event)) {
                 return false;
             }
         }
-        if (!is_null($this->nodeTypes)) {
+
+        if (null !== $this->nodeTypes) {
             if ($this->skipByNodeTypes($event)) {
                 return false;
             }
         }
+
         if ($this->noLocal) {
             throw new \Jackalope\NotImplementedException;
             if ($this->skipByNoLocal($event)) {

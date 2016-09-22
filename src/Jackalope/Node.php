@@ -373,7 +373,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return $parentNode->addNode($newName, $primaryNodeTypeName);
         }
 
-        if (is_null($primaryNodeTypeName)) {
+        if (null === $primaryNodeTypeName) {
             if ($this->primaryType === 'rep:root') {
                 $primaryNodeTypeName = 'nt:unstructured';
             } else {
@@ -386,6 +386,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     }
                 }
             }
+
             if (is_null($primaryNodeTypeName)) {
                 throw new ConstraintViolationException("No matching child node definition found for `$relPath' in type `{$this->primaryType}' for node '{$this->path}'. Please specify the type explicitly.");
             }
@@ -449,12 +450,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function orderBefore($srcChildRelPath, $destChildRelPath)
     {
-        if ($srcChildRelPath == $destChildRelPath) {
+        if ($srcChildRelPath === $destChildRelPath) {
             //nothing to move
             return;
         }
 
-        if (null == $this->originalNodesOrder) {
+        if (null === $this->originalNodesOrder) {
             $this->originalNodesOrder = $this->nodes;
         }
 
@@ -475,7 +476,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $newPath = $this->parentPath . '/' . $newName;
 
-        if (substr($newPath, 0, 2) == '//') {
+        if (substr($newPath, 0, 2) === '//') {
             $newPath = substr($newPath, 1);
         }
 
@@ -597,7 +598,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        if (strlen($relPath) == 0 || '/' == $relPath[0]) {
+        if ($relPath === '' || '/' === $relPath[0]) {
             throw new PathNotFoundException("$relPath is not a relative path");
         }
 
@@ -621,7 +622,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $names = self::filterNames($nameFilter, $this->nodes);
         $result = array();
-        if (!empty($names)) {
+        if (count($names) !== 0) {
             $paths = array();
             foreach ($names as $name) {
                 $paths[] = PathHelper::absolutizePath($name, $this->path);
@@ -714,12 +715,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getPropertyValue($name, $type=null)
+    public function getPropertyValue($name, $type = null)
     {
         $this->checkState();
 
         $val = $this->getProperty($name)->getValue();
-        if (! is_null($type)) {
+        if (null !== $type) {
             $val = $this->valueConverter->convertType($val, $type);
         }
 
@@ -893,7 +894,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (false === strpos($relPath, '/')) {
             return array_search($relPath, $this->nodes) !== false;
         }
-        if (! strlen($relPath) || $relPath[0] == '/') {
+
+        if (! strlen($relPath) || $relPath[0] === '/') {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
@@ -912,7 +914,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
         }
-        if (! strlen($relPath) || $relPath[0] == '/') {
+        if (! strlen($relPath) || $relPath[0] === '/') {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
@@ -928,7 +930,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        return !empty($this->nodes);
+        return count($this->nodes) !== 0;
     }
 
     /**
@@ -940,7 +942,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        return (! empty($this->properties));
+        return count($this->properties) !== 0;
     }
 
     /**
@@ -1564,7 +1566,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function _setProperty($name, $value, $type, $internal)
     {
-        if ($name == '' | false !== strpos($name, '/')) {
+        if ($name === '' | false !== strpos($name, '/')) {
             throw new InvalidArgumentException("The name '$name' is no valid property name");
         }
 

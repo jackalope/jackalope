@@ -4,7 +4,6 @@ namespace Jackalope\NodeType;
 
 use IteratorAggregate;
 use ArrayIterator;
-use Jackalope\NamespaceRegistry;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
@@ -14,6 +13,7 @@ use PHPCR\NodeType\NodeTypeExistsException;
 use Jackalope\ObjectManager;
 use Jackalope\NotImplementedException;
 use Jackalope\FactoryInterface;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -76,7 +76,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * There may be only one instance per session
      * @param FactoryInterface  $factory
      * @param ObjectManager     $objectManager
-     * @param NamespaceRegistry $namespaceRegistry
+     * @param NamespaceRegistryInterface $namespaceRegistry
      */
     public function __construct(
         FactoryInterface $factory,
@@ -113,18 +113,18 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             }
 
             //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
-            $nodetypes = $this->objectManager->getNodeType($name);
+            $nodeTypes = $this->objectManager->getNodeType($name);
         } else {
-            $nodetypes = $this->objectManager->getNodeTypes();
+            $nodeTypes = $this->objectManager->getNodeTypes();
             $this->fetchedAllFromBackend = true;
         }
 
-        foreach ($nodetypes as $nodetype) {
-            $nodetype = $this->factory->get('NodeType\\NodeType', array($this, $nodetype));
-            $name = $nodetype->getName();
+        foreach ($nodeTypes as $nodeType) {
+            $nodeType = $this->factory->get('NodeType\\NodeType', array($this, $nodeType));
+            $name = $nodeType->getName();
             //do not overwrite existing types. maybe they where changed locally
             if (empty($this->primaryTypes[$name]) && empty($this->mixinTypes[$name])) {
-                $this->addNodeType($nodetype);
+                $this->addNodeType($nodeType);
             }
         }
     }
@@ -132,16 +132,16 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * Stores the node type in our internal structures (flat && tree)
      *
-     * @param NodeTypeInterface $nodetype The nodetype to add
+     * @param NodeTypeInterface $nodeType The nodetype to add
      */
-    protected function addNodeType(NodeTypeInterface $nodetype)
+    protected function addNodeType(NodeTypeInterface $nodeType)
     {
-        if ($nodetype->isMixin()) {
-            $this->mixinTypes[$nodetype->getName()] = $nodetype;
+        if ($nodeType->isMixin()) {
+            $this->mixinTypes[$nodeType->getName()] = $nodeType;
         } else {
-            $this->primaryTypes[$nodetype->getName()] = $nodetype;
+            $this->primaryTypes[$nodeType->getName()] = $nodeType;
         }
-        $this->addToNodeTree($nodetype);
+        $this->addToNodeTree($nodeType);
     }
 
     /**
@@ -338,7 +338,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
-        self::registerNodeTypes(array($ntd), $allowUpdate);
+        $this->registerNodeTypes(array($ntd), $allowUpdate);
 
         return each($ntd);
     }
@@ -351,7 +351,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      *
      * @return NodeType the new node type
      *
-     * @throws \PHPCR\NodeType\NodeTypeExistsException
+     * @throws RepositoryException
+     * @throws NodeTypeExistsException
      */
     protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
@@ -442,7 +443,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * Provide Traversable interface: redirect to getAllNodeTypes
      *
-     * @return Iterator over all node types
+     * @return \Iterator over all node types
+     * @throws RepositoryException
      */
     public function getIterator()
     {

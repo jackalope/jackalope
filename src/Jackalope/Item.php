@@ -137,6 +137,8 @@ abstract class Item implements ItemInterface
      * @param ObjectManager    $objectManager
      * @param boolean          $new           can be set to true to tell the object that it has
      *      been created locally
+     *
+     * @throws RepositoryException
      */
     protected function __construct(FactoryInterface $factory, $path, Session $session, ObjectManager $objectManager, $new = false)
     {
@@ -145,13 +147,12 @@ abstract class Item implements ItemInterface
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
-        if (! $new
+        if (!$new
             && $session->getRepository()->getDescriptor(RepositoryInterface::OPTION_TRANSACTIONS_SUPPORTED)
+            && $session->getWorkspace()->getTransactionManager()->inTransaction()
         ) {
-            if ($session->getWorkspace()->getTransactionManager()->inTransaction()) {
-                // properly set previous state in case we get into a rollback
-                $this->savedState = self::STATE_CLEAN;
-            }
+            // properly set previous state in case we get into a rollback
+            $this->savedState = self::STATE_CLEAN;
         }
 
         $this->setPath($path);
@@ -168,7 +169,7 @@ abstract class Item implements ItemInterface
      */
     public function setPath($path, $move = false)
     {
-        if ($move && is_null($this->oldPath)) {
+        if ($move && null === $this->oldPath) {
             try {
                 $this->checkState();
             } catch (InvalidItemStateException $e) {
@@ -219,7 +220,7 @@ abstract class Item implements ItemInterface
         if ($depth < 0 || $depth > $this->depth) {
             throw new ItemNotFoundException('Depth must be between 0 and '.$this->depth.' for this Item');
         }
-        if ($depth == $this->depth) {
+        if ($depth === $this->depth) {
             return $this;
         }
         // we do not use the PathHelper as this is a special case
@@ -406,7 +407,7 @@ abstract class Item implements ItemInterface
         $this->checkState(); // To avoid the possibility to delete an already deleted node
 
         // sanity checks
-        if ($this->getDepth() == 0) {
+        if ($this->getDepth() === 0) {
             throw new RepositoryException('Cannot remove root node');
         }
 
@@ -537,7 +538,7 @@ abstract class Item implements ItemInterface
                 if ($candidate->getName() === $this->name) {
                     return $candidate;
                 }
-                if ('*' == $candidate->getName()) {
+                if ('*' === $candidate->getName()) {
                     // if we have multiple wildcard definitions, they are hopefully equivalent
                     $fallbackDefinition = $candidate;
                     // do not abort loop, in case we hit an exactly matching definition
