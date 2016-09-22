@@ -5,6 +5,7 @@ namespace Jackalope\Transport;
 use PHPCR\ReferentialIntegrityException;
 use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
+use PHPCR\Version\LabelExistsVersionException;
 use PHPCR\Version\VersionException;
 
 /**

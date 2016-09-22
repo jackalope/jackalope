@@ -40,7 +40,7 @@ interface TransportInterface
      * but client code could check the descriptors and be confused if you
      * announce invalid capabilities here.
      *
-     * @return Array with name => value/array of value for the descriptors
+     * @return array with name => value/array of value for the descriptors
      *
      * @throws \PHPCR\RepositoryException if error occurs
      *
@@ -322,7 +322,7 @@ interface TransportInterface
      * @return array with the definitions (see
      *      Jackalope\NodeTypeDefinition::fromArray for what is expected)
      *
-     * @see Jackalope\NodeTypeDefinition::fromArray
+     * @see \Jackalope\NodeTypeDefinition::fromArray
      */
     public function getNodeTypes($nodeTypes = array());
 
