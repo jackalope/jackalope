@@ -2,17 +2,22 @@
 
 namespace Jackalope\ImportExport;
 
-use XMLReader;
+use PHPCR\AccessDeniedException;
+use PHPCR\ItemNotFoundException;
 use PHPCR\NodeInterface;
+use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use PHPCR\ImportUUIDBehaviorInterface;
 use PHPCR\NamespaceRegistryInterface;
+use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\NodeHelper;
 use PHPCR\InvalidSerializedDataException;
 use PHPCR\ItemExistsException;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\RepositoryException;
+use PHPCR\SessionInterface;
 use PHPCR\NamespaceException;
+use XMLReader;
 
 /**
  * Helper class with static methods to import and export data.
@@ -49,7 +54,10 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @param boolean                    $skipBinary as in exportSystemView
      * @param boolean                    $noRecurse  as in exportSystemView
      *
-     * @see \PHPCR\SessionInterface::exportSystemView
+     * @throws \InvalidArgumentException
+     * @throws RepositoryException
+     *
+     * @see SessionInterface::exportSystemView
      */
     public static function exportSystemView(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse)
     {
@@ -68,7 +76,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *
      * @throws RepositoryException
      *
-     * @see \PHPCR\SessionInterface::exportDocumentView
+     * @see SessionInterface::exportDocumentView
      */
     public static function exportDocumentView(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse)
     {
@@ -87,7 +95,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @throws \RuntimeException
      * @throws \Exception
      *
-     * @see \PHPCR\SessionInterface::importXML
+     * @see SessionInterface::importXML
      */
     public static function importXML(NodeInterface $parentNode, NamespaceRegistryInterface $ns, $uri, $uuidBehavior)
     {
@@ -201,15 +209,15 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @return NodeInterface the created node
      *
      * @throws RepositoryException
-     * @throws \PHPCR\ItemExistsException if IMPORT_UUID_COLLISION_THROW and
+     * @throws ItemExistsException if IMPORT_UUID_COLLISION_THROW and
      *      duplicate id
-     * @throws \PHPCR\NodeType\ConstraintViolationException if behavior is remove or
+     * @throws ConstraintViolationException if behavior is remove or
      *      replace and the node with the uuid is in the parent path.
      */
     private static function addNode(NodeInterface $parentNode, $nodename, $type, array $properties, $uuidBehavior)
     {
         $forceReferenceable = false;
-        if (isset($properties['jcr:uuid'])) {
+        if (array_key_exists('jcr:uuid', $properties)) {
             try {
                 $existing = $parentNode->getSession()->getNodeByIdentifier($properties['jcr:uuid']['values']);
                 switch ($uuidBehavior) {
@@ -230,7 +238,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         if (! strncmp($existing->getPath().'/', $parentNode->getPath()."/$nodename", strlen($existing->getPath().'/'))) {
                             throw new ConstraintViolationException('Trying to remove/replace parent of the path we are adding to. '.$existing->getIdentifier(). ' at '.$existing->getPath());
                         }
-                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING == $uuidBehavior) {
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior) {
                             // replace the found node. spec is not precise: do we keep the name or use the one of existing?
                             $parentNode = $existing->getParent();
                         }
@@ -241,7 +249,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         throw new RepositoryException("Unexpected type $uuidBehavior");
                         // @codeCoverageIgnoreEnd
                 }
-            } catch (\PHPCR\ItemNotFoundException $e) {
+            } catch (ItemNotFoundException $e) {
                 // nothing to do, we can add the node without conflict
             }
         }
@@ -254,7 +262,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
             $type = 'nt:unstructured';
         }
 
-        if ('jcr:root' === $nodename && isset($existing) && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior && $existing->getDepth() === 0) {
+        if ('jcr:root' === $nodename
+            && isset($existing)
+            && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior
+            && $existing->getDepth() === 0)
+        {
             // update the root node properties
             // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
             NodeHelper::purgeWorkspace($parentNode->getSession());
@@ -333,13 +345,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         foreach ($node->getProperties() as $name => $property) {
-            /** @var $property \PHPCR\PropertyInterface */
+            /** @var $property PropertyInterface */
 
-            if ($name === 'jcr:primaryType' || $name === 'jcr:mixinTypes' || $name === 'jcr:uuid') {
+            if (in_array($name, array('jcr:primaryType', 'jcr:mixinTypes', 'jcr:uuid'), true)) {
                 // explicitly handled before
                 continue;
             }
-            if (PropertyType::BINARY === $property->getType() && $skipBinary) {
+            if ($skipBinary && PropertyType::BINARY === $property->getType()) {
                 // do not output binary data in the xml
                 continue;
             }
@@ -453,6 +465,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
      * @throws InvalidSerializedDataException
      * @throws ConstraintViolationException
      * @throws ItemExistsException
+     * @throws AccessDeniedException
+     * @throws NamespaceException
+     * @throws UnsupportedRepositoryOperationException
      */
     private static function importSystemView(NodeInterface $parentNode, NamespaceRegistryInterface $ns, FilteredXMLReader $xml, $uuidBehavior, array $namespaceMap = array())
     {

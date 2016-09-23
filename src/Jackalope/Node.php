@@ -8,6 +8,7 @@ use Exception;
 use InvalidArgumentException;
 use Jackalope\NodeType\NodeType;
 use LogicException;
+use PHPCR\Lock\LockException;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\PropertyType;
@@ -19,9 +20,12 @@ use PHPCR\PathNotFoundException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
+use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
 use PHPCR\Util\UUIDHelper;
+use PHPCR\ValueFormatException;
+use PHPCR\Version\VersionException;
 
 /**
  * {@inheritDoc}
@@ -592,13 +596,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws InvalidItemStateException
+     *
      * @api
      */
     public function getNode($relPath)
     {
         $this->checkState();
 
-        if ($relPath === '' || '/' === $relPath[0]) {
+        if ('' === $relPath || '/' === $relPath[0]) {
             throw new PathNotFoundException("$relPath is not a relative path");
         }
 
@@ -622,7 +628,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $names = self::filterNames($nameFilter, $this->nodes);
         $result = array();
-        if (count($names) !== 0) {
+        if (count($names)) {
             $paths = array();
             foreach ($names as $name) {
                 $paths[] = PathHelper::absolutizePath($name, $this->path);
@@ -1539,6 +1545,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * Provide Traversable interface: redirect to getNodes with no filter
      *
      * @return \Iterator over all child nodes
+     * @throws RepositoryException
      */
     public function getIterator()
     {
@@ -1560,13 +1567,21 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @return Property
      *
+     * @throws \InvalidArgumentException
+     * @throws LockException
+     * @throws ConstraintViolationException
+     * @throws RepositoryException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws ValueFormatException
+     * @throws VersionException
+     *
      * @see Node::setProperty
      * @see Node::refresh
      * @see Node::__construct
      */
     protected function _setProperty($name, $value, $type, $internal)
     {
-        if ($name === '' | false !== strpos($name, '/')) {
+        if ($name === '' || false !== strpos($name, '/')) {
             throw new InvalidArgumentException("The name '$name' is no valid property name");
         }
 

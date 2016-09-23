@@ -2,8 +2,11 @@
 
 namespace Jackalope\Transport;
 
-use Jackalope\Property;
 use Jackalope\Node;
+use Jackalope\Workspace;
+use PHPCR\PathNotFoundException;
+use PHPCR\RepositoryException;
+use PHPCR\WorkspaceInterface;
 
 /**
  * Defines the methods needed for Writing support
@@ -31,7 +34,7 @@ interface WritingInterface extends TransportInterface
      *
      * @return boolean always true, if the name is not valid a RepositoryException is thrown
      *
-     * @throws \PHPCR\RepositoryException if the name contains invalid characters
+     * @throws RepositoryException if the name contains invalid characters
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      */
@@ -55,7 +58,7 @@ interface WritingInterface extends TransportInterface
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
-     * @see \PHPCR\WorkspaceInterface::copy
+     * @see WorkspaceInterface::copy
      */
     public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null);
 
@@ -76,7 +79,7 @@ interface WritingInterface extends TransportInterface
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
-     * @see \PHPCR\WorkspaceInterface::cloneFrom
+     * @see WorkspaceInterface::cloneFrom
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
@@ -91,7 +94,7 @@ interface WritingInterface extends TransportInterface
     /**
      * Perform a batch of move operations in the order of the passed array
      *
-     * @param \Jackalope\Transport\MoveNodeOperation[] $operations
+     * @param MoveNodeOperation[] $operations
      */
     public function moveNodes(array $operations);
 
@@ -104,7 +107,7 @@ interface WritingInterface extends TransportInterface
      *
      * @link http://www.ietf.org/rfc/rfc2518.txt
      *
-     * @see \Jackalope\Workspace::moveNode
+     * @see Workspace::moveNode
      */
     public function moveNodeImmediately($srcAbsPath, $dstAbsPath);
 
@@ -124,14 +127,14 @@ interface WritingInterface extends TransportInterface
      * Take care that cyclic REFERENCE properties of to be deleted nodes do not
      * lead to errors.
      *
-     * @param \Jackalope\Transport\RemoveNodeOperation[] $operations
+     * @param RemoveNodeOperation[] $operations
      */
     public function deleteNodes(array $operations);
 
     /**
      * Perform a batch remove operation.
      *
-     * @param \Jackalope\Transport\RemovePropertyOperation[] $operations
+     * @param RemovePropertyOperation[] $operations
      */
     public function deleteProperties(array $operations);
 
@@ -140,12 +143,12 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the node
      *
-     * @see \Jackalope\Workspace::removeItem
+     * @see Workspace::removeItem
      *
-     * @throws \PHPCR\PathNotFoundException if the item is already deleted on
+     * @throws PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if error occurs
+     * @throws RepositoryException if error occurs
      */
     public function deleteNodeImmediately($path);
 
@@ -154,12 +157,12 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $path Absolute path to the property
      *
-     * @see \Jackalope\Workspace::removeItem
+     * @see Workspace::removeItem
      *
-     * @throws \PHPCR\PathNotFoundException if the item is already deleted on
+     * @throws PathNotFoundException if the item is already deleted on
      *      the server. This should not happen if ObjectManager is correctly
      *      checking.
-     * @throws \PHPCR\RepositoryException if error occurs
+     * @throws RepositoryException if error occurs
      */
     public function deletePropertyImmediately($path);
 
@@ -180,9 +183,9 @@ interface WritingInterface extends TransportInterface
      *
      * @see BaseTransport::validateNode
      *
-     * @param \Jackalope\Transport\AddNodeOperation[] $operations the operations containing the nodes to store
+     * @param AddNodeOperation[] $operations the operations containing the nodes to store
      *
-     * @throws \PHPCR\RepositoryException if error occurs
+     * @throws RepositoryException if error occurs
      */
     public function storeNodes(array $operations);
 

@@ -4,8 +4,10 @@ namespace Jackalope;
 use ArrayIterator;
 use InvalidArgumentException;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use PHPCR\NamespaceException;
 use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
 use PHPCR\NodeType\NodeTypeExistsException;
+use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\NoSuchWorkspaceException;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
@@ -779,9 +781,17 @@ class ObjectManager
      *
      * @param  string  $cnd         a string with cnd information
      * @param  boolean $allowUpdate whether to fail if node already exists or to update it
-     * @return bool    true on success
+     * @return bool|\Iterator    true on success or \Iterator over the registered node types if repository is not able to process
+     * CND directly
      *
      * @throws UnsupportedRepositoryOperationException
+     * @throws RepositoryException
+     * @throws AccessDeniedException
+     * @throws NamespaceException
+     * @throws InvalidNodeTypeDefinitionException
+     * @throws NodeTypeExistsException
+     *
+     * @see NodeTypeManagerInterface::registerNodeTypesCnd
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
@@ -801,7 +811,6 @@ class ObjectManager
                 $nsRegistry->registerNamespace($prefix, $uri);
             }
 
-            // TODO: Is @return type bool wrong?
             return $workspace->getNodeTypeManager()->registerNodeTypes($types, $allowUpdate);
         }
 

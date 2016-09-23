@@ -33,6 +33,6 @@ class Helper
             throw new RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());
         }
 
-        return !('false' === $node->getAttribute($attribute));
+        return 'false' !== $node->getAttribute($attribute);
     }
 }

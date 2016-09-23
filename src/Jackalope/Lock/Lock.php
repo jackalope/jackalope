@@ -93,7 +93,6 @@ class Lock implements LockInterface
      *
      * @api
      *
-     * @throws NotImplementedException
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
