@@ -8,6 +8,7 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
+use Jackalope\Version\VersionHandler;
 use PHPCR\RepositoryException;
 use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
@@ -71,6 +72,11 @@ $/xi";
     private $namespaces = array();
 
     /**
+     * @var VersionHandler
+     */
+    private $versionHandler;
+
+    /**
      * @param string  $userId           ID of the connected user
      * @param array   $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
      * @param boolean $autoLastModified Whether the last modified property should be updated automatically
@@ -78,11 +84,13 @@ $/xi";
     public function __construct(
         $userId,
         $namespaces = array(),
-        $autoLastModified = true
+        $autoLastModified = true,
+        VersionHandler $versionHandler = null
     ) {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
+        $this->versionHandler = $versionHandler;
     }
 
     /**
@@ -125,6 +133,10 @@ $/xi";
     {
         $additionalOperations = array();
 
+        if ($nodeTypeDefinition->isNodeType(VersionHandler::MIX_SIMPLE_VERSIONABLE)) {
+            $additionalOperations = $this->versionHandler->addVersionProperties($node);
+        }
+
         foreach ($nodeTypeDefinition->getDeclaredChildNodeDefinitions() as $childDef) {
             /* @var $childDef NodeDefinitionInterface */
             if (!$node->hasNode($childDef->getName())) {
@@ -159,12 +171,14 @@ $/xi";
             }
 
             if (!$node->hasProperty($propertyDef->getName())) {
-                if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated()) {
+                if ($propertyDef->isMandatory()
+                    && !$propertyDef->isAutoCreated()
+                ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
-                         $propertyDef->getName(),
-                         $nodeTypeDefinition->getName(),
-                         $node->getPath()
+                        $propertyDef->getName(),
+                        $nodeTypeDefinition->getName(),
+                        $node->getPath()
                     ));
                 }
 
@@ -192,7 +206,6 @@ $/xi";
                             } elseif (isset($defaultValues[0])) {
                                 $value = $defaultValues[0];
                             } else {
-                                // When implementing versionable or activity, we need to handle more properties explicitly
                                 throw new RepositoryException(sprintf(
                                     'No default value for autocreated property "%s" at "%s"',
                                     $propertyDef->getName(),
@@ -302,7 +315,7 @@ $/xi";
                 break;
             case PropertyType::DECIMAL:
             case PropertyType::STRING:
-                $values = (array) $property->getValue();
+                $values = (array)$property->getValue();
                 foreach ($values as $value) {
                     if (0 !== preg_match(self::VALIDATE_STRING, $value)) {
                         throw new ValueFormatException(sprintf(

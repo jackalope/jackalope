@@ -2,6 +2,8 @@
 
 namespace Jackalope;
 
+use Jackalope\Version\GenericVersioningInterface;
+use Jackalope\Version\VersionHandler;
 use ReflectionClass;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
@@ -152,6 +154,10 @@ class Repository implements RepositoryInterface
         if ($this->options['transactions']) {
             $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session, $session->getObjectManager()));
             $session->getWorkspace()->setTransactionManager($utx);
+        }
+
+        if ($this->transport instanceof GenericVersioningInterface) {
+            $this->transport->setVersionHandler(new VersionHandler($session));
         }
 
         return $session;
