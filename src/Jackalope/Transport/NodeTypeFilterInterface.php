@@ -2,8 +2,6 @@
 
 namespace Jackalope\Transport;
 
-use PHPCR\RepositoryException;
-
 /**
  * Defines the methods needed for getting nodes while filtering for type.
  *
@@ -30,7 +28,7 @@ interface NodeTypeFilterInterface extends TransportInterface
      *
      * @see TransportInterface::getNodes
      */
-    public function getNodesFiltered(array $paths, $typeFilter);
+    public function getNodesFiltered($paths, $typeFilter);
 
     /**
      * Get the names of child nodes of a node filtered by a type filter.

@@ -5,7 +5,6 @@ namespace Jackalope\Transport;
 use Jackalope\FactoryInterface;
 use Jackalope\Transport\Logging\LoggerInterface;
 use PHPCR\CredentialsInterface;
-use Jackalope\NodeType\NodeTypeManager;
 
 /**
  * abstract class for logging transport wrapper.
@@ -191,7 +190,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
     /**
      * {@inheritDoc}
      */
-    public function getNodeTypes(array $nodeTypes = array())
+    public function getNodeTypes($nodeTypes = array())
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getNodeTypes($nodeTypes);

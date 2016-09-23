@@ -328,7 +328,7 @@ interface TransportInterface
      *
      * @see NodeTypeDefinition::fromArray
      */
-    public function getNodeTypes(array $nodeTypes = array());
+    public function getNodeTypes($nodeTypes = array());
 
     /**
      * Sets the depth with which a transport should fetch childnodes
