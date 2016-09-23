@@ -265,8 +265,8 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if ('jcr:root' === $nodename
             && isset($existing)
             && self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior
-            && $existing->getDepth() === 0)
-        {
+            && $existing->getDepth() === 0
+        ) {
             // update the root node properties
             // http://www.day.com/specs/jcr/2.0/11_Import.html#11.9%20Importing%20%3CI%3Ejcr:root%3C/I%3E
             NodeHelper::purgeWorkspace($parentNode->getSession());
