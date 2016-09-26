@@ -23,6 +23,8 @@ class FullTextSearchScore implements FullTextSearchScoreInterface
      * Constructor
      *
      * @param string $selectorName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName)
     {

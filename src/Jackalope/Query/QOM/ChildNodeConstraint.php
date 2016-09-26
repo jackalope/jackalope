@@ -29,6 +29,8 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @param string $selectorName
      * @param string $parentPath   parent path the node must be child of
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $parentPath)
     {

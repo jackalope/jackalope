@@ -154,6 +154,8 @@ class BinaryStreamWrapper
      *               unavailable values should be set to a rational value
      *               (usually 0).
      *
+     * @throws LogicException
+     *
      * @see http://php.net/manual/en/streamwrapper.url-stat.php
      */
     public function url_stat($path, $flags)

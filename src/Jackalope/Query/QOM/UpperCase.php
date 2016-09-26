@@ -16,7 +16,7 @@ use PHPCR\Query\QOM\DynamicOperandInterface;
 class UpperCase implements UpperCaseInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\DynamicOperandInterface
+     * @var DynamicOperandInterface
      */
     protected $operand;
 

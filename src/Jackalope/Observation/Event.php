@@ -21,34 +21,54 @@ use PHPCR\RepositoryException;
  */
 class Event implements EventInterface
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $type;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $path;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $userId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $identifier;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $info = array();
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $userData;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $date;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $primaryNodeTypeName;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $mixinNodeTypeNames = array();
 
-    /** @var \PHPCR\NodeType\NodeTypeManagerInterface */
+    /**
+     * @var NodeTypeManagerInterface
+     */
     protected $ntm;
 
     /**
@@ -63,6 +83,7 @@ class Event implements EventInterface
         self::PROPERTY_REMOVED,
         self::PROPERTY_CHANGED,
     );
+
     /**
      * Events that support getting the property type.
      * @var array

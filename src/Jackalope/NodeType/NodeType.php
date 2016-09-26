@@ -5,6 +5,7 @@ namespace Jackalope\NodeType;
 use ArrayIterator;
 use Exception;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\ValueFormatException;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
@@ -181,6 +182,11 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ValueFormatException
+     * @throws ConstraintViolationException
+     * @throws \InvalidArgumentException
+     * @throws RepositoryException
+     *
      * @api
      */
     public function canSetProperty($propertyName, $value, $throw = false)
@@ -264,6 +270,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ConstraintViolationException
+     *
      * @api
      */
     public function canAddChildNode($childNodeName, $nodeTypeName = null, $throw = false)
@@ -325,6 +333,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ConstraintViolationException
+     *
      * @api
      */
     public function canRemoveNode($nodeName, $throw = false)
@@ -352,6 +362,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ConstraintViolationException
      *
      * @api
      */

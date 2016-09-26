@@ -35,6 +35,8 @@ class Column implements ColumnInterface
      * @param string $selectorName
      * @param string $propertyName
      * @param string $columnName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName, $columnName = null)
     {

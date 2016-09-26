@@ -16,12 +16,12 @@ use PHPCR\Query\QOM\ConstraintInterface;
 class AndConstraint implements AndInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\ConstraintInterface
+     * @var ConstraintInterface
      */
     protected $constraint1;
 
     /**
-     * @var \PHPCR\Query\QOM\ConstraintInterface
+     * @var ConstraintInterface
      */
     protected $constraint2;
 

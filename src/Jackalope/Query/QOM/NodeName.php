@@ -23,6 +23,8 @@ class NodeName implements NodeNameInterface
      * Constructor
      *
      * @param string $selectorName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName)
     {

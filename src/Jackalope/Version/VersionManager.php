@@ -3,11 +3,15 @@
 namespace Jackalope\Version;
 
 use InvalidArgumentException;
+use PHPCR\ItemNotFoundException;
 use PHPCR\NodeInterface;
+use PHPCR\NoSuchWorkspaceException;
 use PHPCR\Util\PathHelper;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\InvalidItemStateException;
+use PHPCR\ValueFormatException;
+use PHPCR\Version\ActivityViolationException;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
 use Jackalope\ObjectManager;
@@ -89,6 +93,8 @@ class VersionManager implements VersionManagerInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ActivityViolationException
+     *
      * @api
      */
     public function checkpoint($absPath)
@@ -117,6 +123,12 @@ class VersionManager implements VersionManagerInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ItemNotFoundException
+     * @throws NoSuchWorkspaceException
+     * @throws \InvalidArgumentException
+     * @throws PathNotFoundException
+     * @throws ValueFormatException
+     *
      * @api
      */
     public function getVersionHistory($absPath)
@@ -142,6 +154,11 @@ class VersionManager implements VersionManagerInterface
     /**
      * {@inheritDoc}
      *
+     * @throws ItemNotFoundException
+     * @throws \InvalidArgumentException
+     * @throws ValueFormatException
+     * @throws NoSuchWorkspaceException
+     *
      * @api
      */
     public function getBaseVersion($absPath)
@@ -159,6 +176,8 @@ class VersionManager implements VersionManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -201,6 +220,12 @@ class VersionManager implements VersionManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
+     * @throws ItemNotFoundException
+     * @throws NoSuchWorkspaceException
+     * @throws PathNotFoundException
+     * @throws ValueFormatException
      *
      * @api
      */

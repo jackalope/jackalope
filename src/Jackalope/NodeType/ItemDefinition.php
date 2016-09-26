@@ -33,26 +33,31 @@ class ItemDefinition implements ItemDefinitionInterface
      * @var string
      */
     protected $declaringNodeType;
+
     /**
      * Name of this node type.
      * @var string
      */
     protected $name;
+
     /**
      * Whether this item is autocreated.
      * @var boolean
      */
     protected $isAutoCreated;
+
     /**
      * Whether this item is mandatory.
      * @var boolean
      */
     protected $isMandatory;
+
     /**
      * Whether this item is protected.
      * @var boolean
      */
     protected $isProtected;
+
     /**
      * On parent version constant
      * @var int

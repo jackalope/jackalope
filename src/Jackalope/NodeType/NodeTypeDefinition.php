@@ -50,25 +50,36 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * @var boolean
      */
     protected $isMixin = false;
+
     /**
      * @var boolean
      */
     protected $isQueryable = true;
+
     /**
      * @var boolean
      */
     protected $hasOrderableChildNodes = false;
+
     /**
      * Name of the primary item of this node type.
      * @var string
      */
     protected $primaryItemName= null;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $declaredSuperTypeNames = null;
-    /** @var ArrayObject */
+
+    /**
+     * @var ArrayObject
+     */
     protected $declaredPropertyDefinitions = null;
-    /** @var ArrayObject */
+
+    /**
+     * @var ArrayObject
+     */
     protected $declaredNodeDefinitions = null;
 
     /**

@@ -27,12 +27,12 @@ use Jackalope\NotImplementedException;
 class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\SourceInterface
+     * @var SourceInterface
      */
     protected $source;
 
     /**
-     * @var \PHPCR\Query\QOM\ConstraintInterface
+     * @var ConstraintInterface
      */
     protected $constraint;
 
@@ -49,17 +49,22 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * Constructor
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager (can be omitted if you do not want
+     * @param FactoryInterface $factory the object factory
+     * @param ObjectManager $objectManager (can be omitted if you do not want
      *      to execute the query but just use it with a parser)
-     * @param SourceInterface     $source
+     * @param SourceInterface $source
      * @param ConstraintInterface $constraint
-     * @param array               $orderings
-     * @param array               $columns
+     * @param array $orderings
+     * @param array $columns
+     *
+     * @throws \InvalidArgumentException
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null,
-                                SourceInterface $source, ConstraintInterface $constraint = null,
-                                array $orderings, array $columns)
+    public function __construct(
+        FactoryInterface $factory,
+        ObjectManager $objectManager = null,
+        SourceInterface $source,
+        ConstraintInterface $constraint = null,
+        array $orderings, array $columns)
     {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {

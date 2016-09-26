@@ -21,28 +21,34 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      * @var int
      */
     protected $requiredType;
+
     /**
      * The constraint information array (array of strings)
      * @var array
      */
     protected $valueConstraints = array();
+
     /**
      * @var mixed
      */
     protected $defaultValues = array();
+
     /**
      * @var boolean
      */
     protected $isMultiple;
+
     /**
      * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface
      * @var array
      */
     protected $availableQueryOperators = array();
+
     /**
      * @var boolean
      */
     protected $isFullTextSearchable;
+
     /**
      * @var boolean
      */

@@ -23,6 +23,8 @@ class NodeLocalName implements NodeLocalNameInterface
      * Constructor
      *
      * @param string $selectorName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName)
     {

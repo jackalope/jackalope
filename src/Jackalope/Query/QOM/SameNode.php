@@ -29,6 +29,8 @@ class SameNode implements SameNodeInterface
      *
      * @param string $selectorName
      * @param string $path
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $path)
     {

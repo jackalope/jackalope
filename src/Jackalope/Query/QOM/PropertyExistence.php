@@ -29,6 +29,8 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @param string $selectorName
      * @param string $propertyName
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName)
     {

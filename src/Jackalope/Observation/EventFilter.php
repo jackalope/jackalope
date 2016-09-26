@@ -84,12 +84,21 @@ class EventFilter implements EventFilterInterface
 
     /**
      * Bitwise and on the event type
+     *
+     * @param EventInterface $event
+     *
+     * @return bool
      */
     private function skipByType(EventInterface $event)
     {
         return ! ($event->getType() & $this->eventTypes);
     }
 
+    /**
+     * @param EventInterface $event
+     *
+     * @return bool
+     */
     private function skipByPath(EventInterface $event)
     {
         $eventPath = $event->getPath();
@@ -108,6 +117,11 @@ class EventFilter implements EventFilterInterface
         return false;
     }
 
+    /**
+     * @param EventInterface $event
+     *
+     * @return bool
+     */
     private function skipByIdentifiers(EventInterface $event)
     {
         if (! $identifier = $event->getIdentifier()) {
@@ -118,6 +132,11 @@ class EventFilter implements EventFilterInterface
         return ! in_array($identifier, $this->identifiers);
     }
 
+    /**
+     * @param EventInterface $event
+     *
+     * @return bool
+     */
     private function skipByNodeTypes(EventInterface $event)
     {
         if (! $path = $event->getPath()) {

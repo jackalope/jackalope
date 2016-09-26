@@ -17,7 +17,7 @@ use PHPCR\Query\QOM\DynamicOperandInterface;
 class ComparisonConstraint implements ComparisonInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\DynamicOperandInterface
+     * @var DynamicOperandInterface
      */
     protected $operand1;
 
@@ -27,7 +27,7 @@ class ComparisonConstraint implements ComparisonInterface
     protected $operator;
 
     /**
-     * @var \PHPCR\Query\QOM\StaticOperandInterface
+     * @var StaticOperandInterface
      */
     protected $operand2;
 

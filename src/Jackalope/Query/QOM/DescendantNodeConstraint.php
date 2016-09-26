@@ -29,6 +29,8 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @param string $selectorName
      * @param string $path
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $path)
     {

@@ -6,6 +6,7 @@ use DOMDocument;
 use DOMElement;
 use DOMXPath;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\Version\OnParentVersionAction;
 use Jackalope\Helper;
 use Jackalope\FactoryInterface;
@@ -122,6 +123,9 @@ class NodeTypeXmlConverter
      * @param DOMElement $node
      *
      * @return array
+     *
+     * @throws RepositoryException
+     * @throws \InvalidArgumentException
      */
     public function getNodeTypeDefinitionFromXml(DOMElement $node)
     {

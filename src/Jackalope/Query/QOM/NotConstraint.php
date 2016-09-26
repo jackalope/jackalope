@@ -16,7 +16,7 @@ use PHPCR\Query\QOM\ConstraintInterface;
 class NotConstraint implements NotInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\ConstraintInterface
+     * @var ConstraintInterface
      */
     protected $constraint;
 

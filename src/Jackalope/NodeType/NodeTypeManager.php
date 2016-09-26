@@ -4,6 +4,8 @@ namespace Jackalope\NodeType;
 
 use IteratorAggregate;
 use ArrayIterator;
+use PHPCR\AccessDeniedException;
+use PHPCR\NamespaceException;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
@@ -33,6 +35,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * @var FactoryInterface
      */
     protected $factory;
+
     /**
      * @var ObjectManager
      */
@@ -48,11 +51,13 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * @var array
      */
     protected $primaryTypes;
+
     /**
      * Cache of already fetched mixin node type instances.
      * @var array
      */
     protected $mixinTypes;
+
     /**
      * Array of arrays with the super type as key and its sub types as values.
      * @var array
@@ -226,6 +231,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         if (null === $nodeTypeName) {
             throw new NoSuchNodeTypeException('nodeTypeName is <null>');
         }
+
         if ('' === $nodeTypeName) {
             throw new NoSuchNodeTypeException('nodeTypeName is empty string');
         }
@@ -235,11 +241,13 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             $prefix = $this->namespaceRegistry->getPrefix($uri);
             $nodeTypeName = "$prefix:$name";
         }
+
         $this->fetchNodeTypes($nodeTypeName);
 
         if (isset($this->primaryTypes[$nodeTypeName])) {
             return $this->primaryTypes[$nodeTypeName];
         }
+
         if (isset($this->mixinTypes[$nodeTypeName])) {
             return $this->mixinTypes[$nodeTypeName];
         }
@@ -389,6 +397,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws AccessDeniedException
+     * @throws NamespaceException
      *
      * @api
      */

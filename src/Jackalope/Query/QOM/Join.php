@@ -17,12 +17,12 @@ use PHPCR\Query\QOM\JoinConditionInterface;
 class Join implements JoinInterface
 {
     /**
-     * @var \PHPCR\Query\QOM\SourceInterface
+     * @var SourceInterface
      */
     protected $left;
 
     /**
-     * @var \PHPCR\Query\QOM\SourceInterface
+     * @var SourceInterface
      */
     protected $right;
 
@@ -32,7 +32,7 @@ class Join implements JoinInterface
     protected $joinType;
 
     /**
-     * @var \PHPCR\Query\QOM\JoinConditionInterface
+     * @var JoinConditionInterface
      */
     protected $joinCondition;
 
@@ -44,7 +44,11 @@ class Join implements JoinInterface
      * @param string                 $joinType
      * @param JoinConditionInterface $joinCondition
      */
-    public function __construct(SourceInterface $left, SourceInterface $right, $joinType, JoinConditionInterface $joinCondition)
+    public function __construct(
+        SourceInterface $left,
+        SourceInterface $right,
+        $joinType,
+        JoinConditionInterface $joinCondition)
     {
         $this->left = $left;
         $this->right = $right;

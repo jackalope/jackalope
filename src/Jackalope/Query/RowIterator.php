@@ -52,6 +52,8 @@ class RowIterator implements SeekableIterator, Countable
 
     /**
      * @param int $position
+     *
+     * @throws \OutOfBoundsException
      */
     public function seek($position)
     {
