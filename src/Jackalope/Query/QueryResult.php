@@ -6,6 +6,7 @@ use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 use PHPCR\Query\QueryResultInterface;
 use IteratorAggregate;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -20,7 +21,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     /**
      * @var ObjectManager
      */
-    protected $objectManager;
+    protected $objectmanager;
 
     /**
      * @var FactoryInterface
@@ -28,8 +29,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     protected $factory;
 
     /**
-     * Storing the query result raw data in the format documented at
-     * \Jackalope\Transport\QueryInterface::query()
+     * Storing the query result raw data
+     * @see QueryInterface::query()
      * @var array
      */
     protected $rows = array();
@@ -37,8 +38,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     /**
      * Create a new query result from raw data from transport.
      *
-     * The raw data format is documented in
-     * \Jackalope\Transport\QueryInterface::query()
+     * @see QueryInterface::query() The raw data format
      *
      * @param FactoryInterface $factory       the object factory
      * @param array            $rawData       the data as returned by the transport
@@ -48,7 +48,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     {
         $this->factory = $factory;
         $this->rows = $rawData;
-        $this->objectManager = $objectManager;
+        $this->objectmanager = $objectManager;
     }
 
     /**
@@ -59,7 +59,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      *      Keys are the row position in this result set, Values are the
      *      RowInterface instances.
      *
-     * @throws \PHPCR\RepositoryException if this call is the second time
+     * @throws RepositoryException if this call is the second time
      *      getIterator(), getRows() or getNodes() has been called on the same
      *      QueryResult object or if another error occurs.
      *
@@ -81,8 +81,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
 
         foreach ($this->rows as $row) {
             foreach ($row as $columns) {
-                if ('jcr:path' != substr($columns['dcr:name'], -8)
-                    && 'jcr:score' != substr($columns['dcr:name'], -9)
+                if ('jcr:path' !== substr($columns['dcr:name'], -8)
+                    && 'jcr:score' !== substr($columns['dcr:name'], -9)
                 ) {
                     // skip the meta information path and score that is also in the raw result table
                     $columnNames[] = $columns['dcr:name'];
@@ -100,7 +100,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getRows()
     {
-        return $this->factory->get('Query\RowIterator', array($this->objectManager, $this->rows));
+        return $this->factory->get('Query\RowIterator', array($this->objectmanager, $this->rows));
     }
 
     /**
@@ -111,7 +111,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     public function getNodes($prefetch = false)
     {
         if ($prefetch !== true) {
-            return $this->factory->get('Query\NodeIterator', array($this->objectManager, $this->rows));
+            return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
         }
 
         $paths = array();
@@ -119,7 +119,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
             $paths[] = $row->getPath();
         }
 
-        return $this->objectManager->getNodesByPath($paths);
+        return $this->objectmanager->getNodesByPath($paths);
     }
 
     /**

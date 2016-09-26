@@ -27,25 +27,29 @@ abstract class Query implements QueryInterface
      * @var FactoryInterface
      */
     protected $factory;
+
     /**
      * The query statement
      * @var string
      */
     protected $statement;
+
     /**
      * Limit for the query
      * @var integer
      */
     protected $limit;
+
     /**
      * Offset to start results from
      * @var integer
      */
     protected $offset;
+
     /**
      * The object manager to execute the query with.
      *
-     * @var \Jackalope\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
     /**

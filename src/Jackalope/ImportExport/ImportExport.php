@@ -276,9 +276,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         foreach ($properties as $name => $info) {
-            if ('jcr:primaryType' == $name) {
+            if ('jcr:primaryType' === $name) {
                 // handled in node constructor
-            } elseif ('jcr:mixinTypes' == $name) {
+            } elseif ('jcr:mixinTypes' === $name) {
                 if (is_array($info['values'])) {
                     foreach ($info['values'] as $type) {
                         $node->addMixin($type);
@@ -286,9 +286,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 } else {
                     $node->addMixin($info['values']);
                 }
-            } elseif ('jcr:created' == $name || 'jcr:createdBy' == $name) {
+            } elseif ('jcr:created' === $name || 'jcr:createdBy' === $name) {
                 // skip PROTECTED properties. TODO: get the names from node type instead of hardcode
-            } elseif ('jcr:uuid' == $name) {
+            } elseif ('jcr:uuid' === $name) {
                 //avoid to throw an exception when trying to set a UUID when importing from XML
                 $node->setProperty($name, $info['values'], $info['type'], false);
             } else {
@@ -502,12 +502,19 @@ class ImportExport implements ImportUUIDBehaviorInterface
         if (! $xml->read()) {
             throw new InvalidSerializedDataException('missing information to create node');
         }
+
         if ('property' !== $xml->localName || NamespaceRegistryInterface::NAMESPACE_SV !== $xml->namespaceURI) {
             throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"'.$xml->nodeType);
         }
-        if ('jcr:primaryType' !== $xml->value || !$xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV)) {
-            throw new InvalidSerializedDataException('first child of node must be sv:property for jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value.'"');
+
+        if (! $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV)) {
+            throw new InvalidSerializedDataException('first child of node must have a sv:name property');
         }
+
+        if ('jcr:primaryType' !== $xml->value) {
+            throw new InvalidSerializedDataException('first child of node must be the sv:property node with a jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value
+        }
+
         $xml->read(); // value child of property jcr:primaryType
         $xml->read(); // text content
         $nodetype = $xml->value;
@@ -625,7 +632,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         $prefix_nt = array_search(NamespaceRegistryInterface::PREFIX_NT, $namespaceMap);
-        if (false == $prefix_nt) {
+        if (false === $prefix_nt) {
             $namespaceMap[NamespaceRegistryInterface::PREFIX_NT] = NamespaceRegistryInterface::PREFIX_NT;
         } elseif ($prefix_nt !== NamespaceRegistryInterface::PREFIX_NT) {
             throw new RepositoryException('Can not handle a document where the {http://www.jcp.org/jcr/nt/1.0} namespace is not mapped to nt');

@@ -25,7 +25,7 @@ class Repository implements RepositoryInterface
      * the value of this descriptor is the string "2.0".
      * @api
      */
-    const JACKALOPE_OPTION_STREAM_WRAPPER = "jackalope.option.stream_wrapper";
+    const JACKALOPE_OPTION_STREAM_WRAPPER = 'jackalope.option.stream_wrapper';
 
     protected $jackalopeNotImplemented = array(
         // https://github.com/jackalope/jackalope/issues/217
@@ -122,7 +122,7 @@ class Repository implements RepositoryInterface
      */
     public function __construct(FactoryInterface $factory = null, TransportInterface $transport, array $options = null)
     {
-        $this->factory = is_null($factory) ? new Factory : $factory;
+        $this->factory = null === $factory ? new Factory() : $factory;
         $this->transport = $transport;
         $this->options = array_merge($this->options, (array) $options);
         $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionInterface;
@@ -137,6 +137,8 @@ class Repository implements RepositoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -218,6 +220,8 @@ class Repository implements RepositoryInterface
      * transports.
      *
      * @return array Hashmap of descriptor names to descriptor values
+     *
+     * @throws RepositoryException
      */
     protected function loadDescriptors()
     {

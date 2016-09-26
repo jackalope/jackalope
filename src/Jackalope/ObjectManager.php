@@ -9,6 +9,7 @@ use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
 use PHPCR\NodeType\NodeTypeExistsException;
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\NoSuchWorkspaceException;
+use PHPCR\ReferentialIntegrityException;
 use PHPCR\SessionInterface;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
@@ -17,8 +18,10 @@ use PHPCR\AccessDeniedException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemExistsException;
 use PHPCR\PathNotFoundException;
+use PHPCR\Transaction\RollbackException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\CND\Writer\CndWriter;
+use PHPCR\Version\VersionException;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\CND\Parser\CndParser;
@@ -32,6 +35,7 @@ use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
 use Jackalope\Transport\RemovePropertyOperation;
+use Jackalope\Transport\VersioningInterface;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -97,7 +101,7 @@ class ObjectManager
      * Add, remove and move actions need to be saved in the correct order to avoid
      * i.e. adding something where a node has not yet been moved to.
      *
-     * @var \Jackalope\Transport\Operation[]
+     * @var Operation[]
      */
     protected $operationsLog = array();
 
@@ -469,6 +473,8 @@ class ObjectManager
      * @return PropertyInterface
      *
      * @throws ItemNotFoundException if item is not found at this path
+     * @throws InvalidArgumentException
+     * @throws RepositoryException
      */
     public function getPropertyByPath($absPath)
     {
@@ -1003,7 +1009,7 @@ class ObjectManager
     }
 
     /**
-     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     * @see VersioningInterface::addVersionLabel
      */
     public function addVersionLabel($path, $label, $moveLabel)
     {
@@ -1011,7 +1017,7 @@ class ObjectManager
     }
 
     /**
-     * @see Jackalope\Transport\VersioningInterface::addVersionLabel
+     * @see VersioningInterface::addVersionLabel
      */
     public function removeVersionLabel($path, $label)
     {
@@ -1052,9 +1058,9 @@ class ObjectManager
      * @param string $versionPath The path to the version node
      * @param string $versionName The name of the version to remove
      *
-     * @throws \PHPCR\UnsupportedRepositoryOperationException
-     * @throws \PHPCR\ReferentialIntegrityException
-     * @throws \PHPCR\Version\VersionException
+     * @throws UnsupportedRepositoryOperationException
+     * @throws ReferentialIntegrityException
+     * @throws VersionException
      */
     public function removeVersion($versionPath, $versionName)
     {
@@ -1633,7 +1639,7 @@ class ObjectManager
      * TODO: Make sure RollbackException and AccessDeniedException are thrown
      * by the transport if corresponding problems occur.
      *
-     * @throws \PHPCR\Transaction\RollbackException if the transaction failed
+     * @throws RollbackException if the transaction failed
      *      and was rolled back rather than committed.
      * @throws AccessDeniedException if the session is not allowed to
      *      commit the transaction.

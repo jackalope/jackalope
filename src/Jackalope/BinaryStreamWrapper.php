@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use LogicException;
+use PHPCR\SessionInterface;
 
 /**
  * This class implements a stream wrapper that allows for lazy loaded binary
@@ -50,7 +51,7 @@ class BinaryStreamWrapper
 
     /**
      * The PHPCR session to fetch data through it.
-     * @var \PHPCR\SessionInterface
+     * @var SessionInterface
      */
     private $session = null;
 

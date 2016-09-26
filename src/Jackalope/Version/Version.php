@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use PHPCR\RepositoryException;
 use PHPCR\Version\VersionInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Node;
@@ -139,7 +140,7 @@ class Version extends Node implements VersionInterface
     public function remove()
     {
         // A version node cannot be removed, so always throw an Exception
-        throw new \PHPCR\RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
+        throw new RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
     }
 
     /**

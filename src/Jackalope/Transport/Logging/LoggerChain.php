@@ -11,14 +11,14 @@ namespace Jackalope\Transport\Logging;
 class LoggerChain implements LoggerInterface
 {
     /**
-     * @var \Jackalope\Transport\Logging\LoggerInterface[]
+     * @var LoggerInterface[]
      */
     private $loggers = array();
 
     /**
      * Adds a logger in the chain.
      *
-     * @param \Jackalope\Transport\Logging\LoggerInterface $logger
+     * @param LoggerInterface $logger
      *
      * @return void
      */

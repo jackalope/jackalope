@@ -785,9 +785,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             // array keys of the array we are accessing
             $type = $this->properties[$name]->getType();
             if (! $dereference &&
-                    (PropertyType::REFERENCE == $type
-                    || PropertyType::WEAKREFERENCE == $type
-                    || PropertyType::PATH == $type)
+                    (PropertyType::REFERENCE === $type
+                    || PropertyType::WEAKREFERENCE === $type
+                    || PropertyType::PATH === $type)
             ) {
                 $result[$name] = $this->properties[$name]->getString();
             } else {
@@ -996,7 +996,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // is it the primary type?
-        if ($this->primaryType == $nodeTypeName) {
+        if ($this->primaryType === $nodeTypeName) {
             return true;
         }
         // is it one of the mixin types?
@@ -1403,7 +1403,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Adds child node to this node for internal reference
      *
-     * @param string  $node  The name of the child node
+     * @param NodeInterface $node  The name of the child node
      * @param boolean $check whether to check state
      * @param string  $name  is used in cases where $node->getName would not return the correct name (during move operation)
      *

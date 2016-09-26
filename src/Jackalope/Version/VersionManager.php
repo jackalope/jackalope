@@ -28,7 +28,10 @@ class VersionManager implements VersionManagerInterface
      * @var ObjectManager
      */
     protected $objectManager;
-    /** @var FactoryInterface   The jackalope object factory for this object */
+
+    /**
+     * @var FactoryInterface  The jackalope object factory for this object
+     */
     protected $factory;
 
     /**

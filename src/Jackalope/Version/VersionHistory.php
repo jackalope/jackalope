@@ -4,14 +4,11 @@ namespace Jackalope\Version;
 
 use ArrayIterator;
 use Jackalope\Property;
-use PHPCR\NodeInterface;
 use PHPCR\Util\NodeHelper;
 use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionException;
 use Jackalope\Node;
-use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
 
 /**
  * {@inheritDoc}

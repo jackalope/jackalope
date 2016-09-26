@@ -16,12 +16,24 @@ use Jackalope\FactoryInterface;
  */
 class RowIterator implements SeekableIterator, Countable
 {
+    /**
+     * @var ObjectManager
+     */
     protected $objectManager;
 
+    /**
+     * @var FactoryInterface
+     */
     protected $factory;
 
+    /**
+     * @var array
+     */
     protected $rows;
 
+    /**
+     * @var integer
+     */
     protected $position = 0;
 
     /**
@@ -38,6 +50,9 @@ class RowIterator implements SeekableIterator, Countable
         $this->rows = $rows;
     }
 
+    /**
+     * @param int $position
+     */
     public function seek($position)
     {
         $this->position = $position;
@@ -47,6 +62,9 @@ class RowIterator implements SeekableIterator, Countable
         }
     }
 
+    /**
+     * @return integer
+     */
     public function count()
     {
         return count($this->rows);
@@ -76,6 +94,9 @@ class RowIterator implements SeekableIterator, Countable
         ++$this->position;
     }
 
+    /**
+     * @return boolean
+     */
     public function valid()
     {
         return isset($this->rows[$this->position]);
