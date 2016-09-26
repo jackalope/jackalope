@@ -512,7 +512,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         }
 
         if ('jcr:primaryType' !== $xml->value) {
-            throw new InvalidSerializedDataException('first child of node must be the sv:property node with a jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value
+            throw new InvalidSerializedDataException('first child of node must be the sv:property node with a jcr:primaryType. Found {'.$xml->namespaceURI.'}'.$xml->localName.'="'.$xml->value);
         }
 
         $xml->read(); // value child of property jcr:primaryType
