@@ -253,7 +253,7 @@ class VersionHandler
                     $this->copyIntoNode($childNode, $frozenNode);
                     break;
                 case OnParentVersionAction::VERSION:
-                    if (!$node->isNodeType(static::MIX_VERSIONABLE)) {
+                    if (!$childNode->isNodeType(static::MIX_VERSIONABLE)) {
                         $this->copyIntoNode($childNode, $frozenNode);
                     } else {
                         $this->createVersionedChildNode($childNode, $frozenNode);
@@ -352,20 +352,13 @@ class VersionHandler
                 throw new NotImplementedException('Check for $removeExisting not implemented yet');
             }
 
-            // TODO handle different onParentVersion values
-
             $childNodePath = $node->getPath() . '/' . $frozenChildNode->getName();
             if ($this->session->nodeExists($childNodePath)) {
                 $this->session->removeItem($childNodePath);
             }
 
-            switch ($onParentVersion) {
-                case OnParentVersionAction::COPY:
-                    $this->restoreFromNode($node, $frozenChildNode);
-                    break;
-                case OnParentVersionAction::VERSION:
-
-            }
+            // TODO handle onParentVersion?
+            $this->restoreFromNode($node, $frozenChildNode);
 
             // TODO remove any node with the same identifier or child identifiers
         }
