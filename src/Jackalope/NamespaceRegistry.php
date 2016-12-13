@@ -20,6 +20,8 @@ use Jackalope\Transport\WritingInterface;
  */
 class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 {
+    const PREFIX_REP = 'rep';
+    const NAMESPACE_REP = 'internal';
     /**
      * Instance of an implementation of the TransportInterface
      * @var WritingInterface
@@ -38,6 +40,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     protected $defaultNamespaces = array(
         self::PREFIX_JCR   => self::NAMESPACE_JCR,
+        self::PREFIX_REP   => self::NAMESPACE_REP,
         self::PREFIX_SV    => self::NAMESPACE_SV,
         self::PREFIX_NT    => self::NAMESPACE_NT,
         self::PREFIX_MIX   => self::NAMESPACE_MIX,
