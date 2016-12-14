@@ -357,8 +357,11 @@ class VersionHandler
                 $this->session->removeItem($childNodePath);
             }
 
-            // TODO handle onParentVersion?
-            $this->restoreFromNode($node, $frozenChildNode);
+            if (!$frozenChildNode->isNodeType('nt:versionedChild')) {
+                $this->restoreFromNode($node, $frozenChildNode);
+            } else {
+                // TODO handle restoring from frozenChildNode with OPV of VERSION
+            }
 
             // TODO remove any node with the same identifier or child identifiers
         }
