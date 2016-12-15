@@ -362,7 +362,7 @@ class VersionHandler
             if (!$frozenChildNode->isNodeType('nt:versionedChild')) {
                 $this->restoreFromNode($node, $frozenChildNode);
             } else {
-                // TODO handle restoring from frozenChildNode with OPV of VERSION
+                throw new NotImplementedException('Restoring from nodes with an OPV of VERSION is not implemented.');
             }
 
             // TODO remove any node with the same identifier or child identifiers
