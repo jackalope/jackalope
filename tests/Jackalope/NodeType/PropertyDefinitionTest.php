@@ -55,4 +55,24 @@ class PropertyDefinitionTest extends TestCase
 
         $this->assertSame($nodeType, $propType->getDeclaringNodeType());
     }
+
+    public function testDetermineDefaultValueSingleProperty()
+    {
+        $factory = $this->getMock('Jackalope\Factory');
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
+        $data = array_merge($this->defaultData, array('defaultValues' => array('one')));
+        $propType = new PropertyDefinition($factory, $data, $nodeTypeManager);
+
+        $this->assertEquals('one', $propType->determineDefaultValue());
+    }
+
+    public function testDetermineDefaultValueMultipleProperty()
+    {
+        $factory = $this->getMock('Jackalope\Factory');
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
+        $data = array_merge($this->defaultData, array('defaultValues' => array('one', 'two'), 'multiple' => true));
+        $propType = new PropertyDefinition($factory, $data, $nodeTypeManager);
+
+        $this->assertEquals(array('one', 'two'), $propType->determineDefaultValue());
+    }
 }

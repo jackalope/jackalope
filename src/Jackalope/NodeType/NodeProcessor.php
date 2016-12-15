@@ -5,7 +5,6 @@ namespace Jackalope\NodeType;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\NodeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
-use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
 use Jackalope\Version\VersionHandler;
@@ -165,7 +164,7 @@ $/xi";
         }
 
         foreach ($nodeTypeDefinition->getDeclaredPropertyDefinitions() as $propertyDef) {
-            /* @var $propertyDef PropertyDefinitionInterface */
+            /** @var $propertyDef PropertyDefinition */
             if ('*' == $propertyDef->getName()) {
                 continue;
             }
@@ -173,6 +172,7 @@ $/xi";
             if (!$node->hasProperty($propertyDef->getName())) {
                 if ($propertyDef->isMandatory()
                     && !$propertyDef->isAutoCreated()
+                    && $nodeTypeDefinition->getName() !== VersionHandler::MIX_VERSIONABLE
                 ) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
@@ -200,18 +200,7 @@ $/xi";
                             $value = 'TODO: generate from binary properties of this node';
                             break;
                         default:
-                            $defaultValues = $propertyDef->getDefaultValues();
-                            if ($propertyDef->isMultiple()) {
-                                $value = $defaultValues;
-                            } elseif (isset($defaultValues[0])) {
-                                $value = $defaultValues[0];
-                            } else {
-                                throw new RepositoryException(sprintf(
-                                    'No default value for autocreated property "%s" at "%s"',
-                                    $propertyDef->getName(),
-                                    $node->getPath()
-                                ));
-                            }
+                            $value = $propertyDef->determineDefaultValue();
                     }
 
                     $node->setProperty(

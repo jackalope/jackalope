@@ -212,7 +212,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function getPropertyDefinitionMock($methodValueMap = array())
     {
-        $mock = $this->getMockBuilder('PHPCR\NodeType\PropertyDefinitionInterface')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder('Jackalope\NodeType\PropertyDefinition')->disableOriginalConstructor()->getMock();
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;

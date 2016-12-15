@@ -2,7 +2,9 @@
 
 namespace Jackalope\NodeType;
 
+use Jackalope\Version\VersionHandler;
 use PHPCR\NodeType\PropertyDefinitionInterface;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -135,5 +137,28 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     public function isQueryOrderable()
     {
         return $this->isQueryOrderable;
+    }
+
+    /**
+     * Returns the default value for properties with this PropertyDefinition.
+     *
+     * @internal
+     */
+    public function determineDefaultValue()
+    {
+        if ($this->isMultiple()) {
+            $value = $this->defaultValues;
+        } elseif (isset($this->defaultValues[0])) {
+            $value = $this->defaultValues[0];
+        } elseif (($nodeTypeName = $this->getDeclaringNodeType()->getName()) !== VersionHandler::MIX_VERSIONABLE) {
+            // When implementing versionable or activity, we need to handle more properties explicitly
+            throw new RepositoryException(sprintf(
+                'No default value for autocreated property "%s" for node type "%s"',
+                $this->getName(),
+                $nodeTypeName
+            ));
+        }
+
+        return $value;
     }
 }

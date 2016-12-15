@@ -2,7 +2,8 @@
 
 namespace Jackalope\Version;
 
-use Jackalope\Property;
+use Jackalope\NodeType\PropertyDefinition;
+use Jackalope\NotImplementedException;
 use Jackalope\Session;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\WritingInterface;
@@ -10,6 +11,7 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\Version\OnParentVersionAction;
@@ -221,8 +223,8 @@ class VersionHandler
         $frozenNode = $versionNode->addNode('jcr:frozenNode', 'nt:frozenNode');
         $frozenNode->setProperty('jcr:frozenUuid', $node->getProperty('jcr:uuid'));
         $frozenNode->setProperty('jcr:frozenPrimaryType', $node->getProperty('jcr:primaryType'));
-        if ($frozenNode->hasProperty('jcr:mixinTypes')) {
-            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes'));
+        if ($node->hasProperty('jcr:mixinTypes')) {
+            $frozenNode->setProperty('jcr:frozenMixinTypes', $node->getProperty('jcr:mixinTypes')->getString());
         }
 
         foreach ($node->getProperties() as $property) {
@@ -235,15 +237,212 @@ class VersionHandler
                 continue;
             }
 
-            $onParentValue = $property->getDefinition()->getOnParentVersion();
-            if ($onParentValue != OnParentVersionAction::COPY && $onParentValue != OnParentVersionAction::VERSION) {
+            $onParentVersion = $property->getDefinition()->getOnParentVersion();
+            if ($onParentVersion != OnParentVersionAction::COPY && $onParentVersion != OnParentVersionAction::VERSION) {
                 continue;
             }
 
-            // TODO apply other steps based on onParentValue
-            // (see step 6 3.13.9 on http://www.day.com/specs/jcr/2.0/3_Repository_Model.html)
-
             $frozenNode->setProperty($propertyName, $property->getValue());
+        }
+
+        foreach ($node->getNodes() as $childNode) {
+            /** @var NodeInterface $childNode */
+            $onParentVersion = $childNode->getDefinition()->getOnParentVersion();
+
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                    $this->copyIntoNode($childNode, $frozenNode);
+                    break;
+                case OnParentVersionAction::VERSION:
+                    if (!$childNode->isNodeType(static::MIX_VERSIONABLE)) {
+                        $this->copyIntoNode($childNode, $frozenNode);
+                    } else {
+                        $this->createVersionedChildNode($childNode, $frozenNode);
+                    }
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function restoreItem($removeExisting, $versionPath, $path)
+    {
+        $node = $this->objectManager->getNodeByPath($path);
+
+        if ($node->isModified()) {
+            throw new InvalidItemStateException(
+                sprintf(
+                    'Node "%s" contains unsaved changes',
+                    $path
+                )
+            );
+        }
+
+        $versionNode = $this->objectManager->getNodeByPath($versionPath, 'Version\Version');
+        $frozenNode = $versionNode->getNode('jcr:frozenNode');
+
+        if ($frozenNode->getPropertyValue('jcr:frozenUuid') != $node->getPropertyValue('jcr:uuid')) {
+            throw new RepositoryException(sprintf(
+                'The frozen node uuid "%s" does not match the actual node uuid "%s". This should never happen.',
+                $frozenNode->getPropertyValue('jcr:frozenUuid'),
+                $node->getPropertyValue('jcr:uuid'))
+            );
+        }
+
+        // TODO reset primary type once the primary type can be changed
+        // also see (https://github.com/jackalope/jackalope/issues/247)
+
+        if ($frozenNode->hasProperty('jcr:frozenMixinTypes')) {
+            $node->setProperty('jcr:mixinTypes', $frozenNode->getPropertyValue('jcr:frozenMixinTypes'));
+        } elseif ($node->hasProperty('jcr:mixinTypes')) {
+            $node->getProperty('jcr:mixinTypes')->remove();
+        }
+
+        // handle properties present on the frozen node
+        foreach ($frozenNode->getProperties() as $property) {
+            /** @var PropertyInterface $property */
+            $propertyName = $property->getName();
+            if ($propertyName == 'jcr:frozenPrimaryType'
+                || $propertyName == 'jcr:frozenMixinTypes'
+                || $propertyName == 'jcr:frozenUuid'
+            ) {
+                continue;
+            }
+
+            if ($node->hasProperty($propertyName)) {
+                $nodeProperty = $node->getProperty($propertyName);
+                $onParentVersion = $nodeProperty->getDefinition()->getOnParentVersion();
+                if ($onParentVersion == OnParentVersionAction::COPY || $onParentVersion == OnParentVersionAction::VERSION) {
+                    $nodeProperty->setValue($property->getValue());
+                }
+            } else {
+                // cannot check the onParentVersion attribute of a non existing property
+                // but if the property exists on the frozen node it has to be copy or version
+                $node->setProperty($propertyName, $property->getValue());
+            }
+        }
+
+        // handle properties present on the node but not on the frozen node
+        foreach ($node->getProperties() as $propertyName => $property) {
+            if ($frozenNode->hasProperty($propertyName)) {
+                continue;
+            }
+
+            /** @var PropertyDefinition $propertyDefinition */
+            $propertyDefinition = $property->getDefinition();
+            $onParentVersion = $propertyDefinition->getOnParentVersion();
+
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                case OnParentVersionAction::VERSION:
+                case OnParentVersionAction::ABORT:
+                    $property->remove();
+                    break;
+                case OnParentVersionAction::INITIALIZE:
+                    $property->setValue($propertyDefinition->determineDefaultValue());
+            }
+        }
+
+        // TODO handle identifier collisions
+
+        // handle child nodes present on the frozen node
+        foreach ($frozenNode->getNodes() as $frozenChildNode) {
+            /** @var NodeInterface $frozenChildNode */
+            if (!$removeExisting) {
+                // TODO check occurence of node in repository
+                throw new NotImplementedException('Check for $removeExisting not implemented yet');
+            }
+
+            $childNodePath = $node->getPath() . '/' . $frozenChildNode->getName();
+            if ($this->session->nodeExists($childNodePath)) {
+                $this->session->removeItem($childNodePath);
+            }
+
+            if (!$frozenChildNode->isNodeType('nt:versionedChild')) {
+                $this->restoreFromNode($node, $frozenChildNode);
+            } else {
+                throw new NotImplementedException('Restoring from nodes with an OPV of VERSION is not implemented.');
+            }
+
+            // TODO remove any node with the same identifier or child identifiers
+        }
+
+        // handle child nodes present on the node but not the frozen node
+        foreach ($node->getNodes() as $childNode) {
+            /** @var NodeInterface $childNode */
+            if ($frozenNode->hasNode($childNode->getName())) {
+                continue;
+            }
+
+            $childNodeDefinition = $childNode->getDefinition();
+            $onParentVersion = $childNodeDefinition->getOnParentVersion();
+
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                case OnParentVersionAction::VERSION:
+                case OnParentVersionAction::ABORT:
+                    $childNode->remove();
+                    break;
+                case OnParentVersionAction::INITIALIZE:
+                    $childNode->remove();
+                    $node->addNode($childNodeDefinition->getName(), $childNodeDefinition->getDefaultPrimaryTypeName());
+                    break;
+            }
+        }
+
+        $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
+
+        $this->session->save();
+    }
+
+    /**
+     * @param NodeInterface $sourceNode
+     * @param NodeInterface $destinationNode
+     */
+    private function copyIntoNode(NodeInterface $sourceNode, NodeInterface $destinationNode)
+    {
+        $copiedNode = $destinationNode->addNode($sourceNode->getName(), $sourceNode->getPrimaryNodeType()->getName());
+
+        foreach ($sourceNode->getProperties() as $property) {
+            if ($property->getName() == 'jcr:primaryType') {
+                continue;
+            }
+
+            /** @var PropertyInterface $property */
+            $copiedNode->setProperty($property->getName(), $property->getValue(), $property->getType(), false);
+        }
+
+        foreach ($sourceNode->getNodes() as $childNode) {
+            $this->copyIntoNode($childNode, $copiedNode);
+        }
+    }
+
+    /**
+     * @param NodeInterface $sourceNode
+     * @param NodeInterface $destinationNode
+     */
+    private function createVersionedChildNode(NodeInterface $sourceNode, NodeInterface $destinationNode)
+    {
+        $versionedChildNode = $destinationNode->addNode($sourceNode->getName(), 'nt:versionedChild');
+        $versionedChildNode->setProperty('jcr:childVersionHistory', $sourceNode->getPropertyValue('jcr:versionHistory'));
+    }
+
+    /**
+     * @param NodeInterface $parentNode
+     * @param NodeInterface $frozenChildNode
+     */
+    private function restoreFromNode(NodeInterface $parentNode, NodeInterface $frozenChildNode)
+    {
+        $restoredNode = $parentNode->addNode($frozenChildNode->getName(), $frozenChildNode->getPrimaryNodeType()->getName());
+
+        foreach ($frozenChildNode->getProperties() as $property) {
+            /** @var PropertyInterface $property */
+            $restoredNode->setProperty($property->getName(), $property->getValue(), $property->getType());
+        }
+
+        foreach ($frozenChildNode->getNodes() as $childNode) {
+            $this->restoreFromNode($restoredNode, $childNode);
         }
     }
 }
