@@ -375,8 +375,18 @@ class VersionHandler
                 continue;
             }
 
-            // TODO That's the correct behavior for the OPVs COPY, VERSION and ABORT, handle others as well
-            $childNode->remove();
+            $onParentVersion = $childNode->getDefinition()->getOnParentVersion();
+
+            switch ($onParentVersion) {
+                case OnParentVersionAction::COPY:
+                case OnParentVersionAction::VERSION:
+                case OnParentVersionAction::ABORT:
+                    $childNode->remove();
+                    break;
+                case OnParentVersionAction::INITIALIZE:
+                    // TODO reinitialize node as defined in its node type
+                    break;
+            }
         }
 
         $node->setProperty('jcr:isCheckedOut', false, PropertyType::BOOLEAN, false);
