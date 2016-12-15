@@ -147,13 +147,13 @@ class NodeProcessorTest extends TestCase
         $userPropertySingle = $this->getPropertyDefinitionMock(array(
             'getName' => 'dtl:single',
             'isAutoCreated' => true,
-            'getDefaultValues' => array('one', 'two')
+            'determineDefaultValue' => 'one',
         ));
         $userPropertyMultiple = $this->getPropertyDefinitionMock(array(
             'getName' => 'dtl:multiple',
             'isAutoCreated' => true,
             'isMultiple' => true,
-            'getDefaultValues' => array('one', 'two')
+            'determineDefaultValue' => array('one', 'two')
         ));
 
         $nodeType = $this->getNodeTypeMock(array(
@@ -191,36 +191,6 @@ class NodeProcessorTest extends TestCase
                 array('dtl:single', 'one', null),
                 array('dtl:multiple', array('one', 'two'), null)
             );
-
-        $this->processor->process($node);
-    }
-
-    /**
-     * @expectedException \PHPCR\RepositoryException
-     * @expectedExceptionMessage No default value for autocreated property
-     */
-    public function testPropertyAutoCreatedNoDefaults()
-    {
-        $userPropertySingle = $this->getPropertyDefinitionMock(array(
-            'getName' => 'dtl:single',
-            'isAutoCreated' => true,
-            'getDefaultValues' => array()
-        ));
-
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array($userPropertySingle),
-            'getDeclaredSupertypes' => array(),
-            'getName' => 'node-type-1',
-        ));
-
-        $node = $this->getNodeMock(array(
-            'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
-            'getName' => 'node1',
-            'getPath' => 'path/to/node',
-        ));
 
         $this->processor->process($node);
     }

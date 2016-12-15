@@ -55,4 +55,36 @@ class PropertyDefinitionTest extends TestCase
 
         $this->assertSame($nodeType, $propType->getDeclaringNodeType());
     }
+
+    public function testDetermineDefaultValueSingleProperty()
+    {
+        $nodeType = $this->getMock('Jackalope\NodeType\NodeTypeDefinition', array(), array(), '', false);
+        $factory = $this->getMock('Jackalope\Factory');
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
+        $nodeTypeManager
+            ->expects($this->once())
+            ->method('getNodeType')
+            ->with($this->equalTo('nt:unstructured'))
+            ->will($this->returnValue($nodeType));
+        $data = array_merge($this->defaultData, array('defaultValues' => array('one')));
+        $propType = new PropertyDefinition($factory, $data, $nodeTypeManager);
+
+        $this->assertEquals('one', $propType->determineDefaultValue());
+    }
+
+    public function testDetermineDefaultValueMultipleProperty()
+    {
+        $nodeType = $this->getMock('Jackalope\NodeType\NodeTypeDefinition', array(), array(), '', false);
+        $factory = $this->getMock('Jackalope\Factory');
+        $nodeTypeManager = $this->getNodeTypeManagerMock();
+        $nodeTypeManager
+            ->expects($this->once())
+            ->method('getNodeType')
+            ->with($this->equalTo('nt:unstructured'))
+            ->will($this->returnValue($nodeType));
+        $data = array_merge($this->defaultData, array('defaultValues' => array('one', 'two'), 'multiple' => true));
+        $propType = new PropertyDefinition($factory, $data, $nodeTypeManager);
+
+        $this->assertEquals(array('one', 'two'), $propType->determineDefaultValue());
+    }
 }

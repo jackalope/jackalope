@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use Jackalope\NodeType\PropertyDefinition;
 use Jackalope\NotImplementedException;
 use Jackalope\Session;
 use Jackalope\Transport\AddNodeOperation;
@@ -328,7 +329,9 @@ class VersionHandler
                 continue;
             }
 
-            $onParentVersion = $property->getDefinition()->getOnParentVersion();
+            /** @var PropertyDefinition $propertyDefinition */
+            $propertyDefinition = $property->getDefinition();
+            $onParentVersion = $propertyDefinition->getOnParentVersion();
 
             switch ($onParentVersion) {
                 case OnParentVersionAction::COPY:
@@ -337,8 +340,7 @@ class VersionHandler
                     $property->remove();
                     break;
                 case OnParentVersionAction::INITIALIZE:
-                case OnParentVersionAction::COMPUTE: // implementation-specific, decided to handle as INITIALIZE
-                    // TODO how to get default value of property?
+                    $property->setValue($propertyDefinition->determineDefaultValue());
             }
         }
 
