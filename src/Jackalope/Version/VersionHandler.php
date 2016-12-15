@@ -375,7 +375,8 @@ class VersionHandler
                 continue;
             }
 
-            $onParentVersion = $childNode->getDefinition()->getOnParentVersion();
+            $childNodeDefinition = $childNode->getDefinition();
+            $onParentVersion = $childNodeDefinition->getOnParentVersion();
 
             switch ($onParentVersion) {
                 case OnParentVersionAction::COPY:
@@ -384,7 +385,8 @@ class VersionHandler
                     $childNode->remove();
                     break;
                 case OnParentVersionAction::INITIALIZE:
-                    // TODO reinitialize node as defined in its node type
+                    $childNode->remove();
+                    $node->addNode($childNodeDefinition->getName(), $childNodeDefinition->getDefaultPrimaryTypeName());
                     break;
             }
         }
