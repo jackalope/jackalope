@@ -342,12 +342,12 @@ $/xi";
     private function validateNamespace($name)
     {
         $alias = null;
-        $aliasLength = $aliasLength = strpos($name, ':');
-        if ($aliasLength === false) {
+        $aliasLength = strpos($name, ':');
+        if (false === $aliasLength) {
             return;
-        } else {
-            $alias = substr($name, 0, $aliasLength);
-        }
+        } 
+        
+        $alias = substr($name, 0, $aliasLength);
 
         if (!isset($this->namespaces[$alias])) {
             throw new NamespaceException(sprintf(
