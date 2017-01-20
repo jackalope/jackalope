@@ -2,7 +2,7 @@
 
 namespace Jackalope\NodeType;
 
-use Jackalope\NodeType\NodeProcessor;
+use ArrayObject;
 use Jackalope\TestCase;
 use PHPCR\PropertyType;
 
@@ -15,10 +15,10 @@ class NodeProcessorTest extends TestCase
 
     public function setUp()
     {
-        $this->processor = new NodeProcessor('dtl', array(
+        $this->processor = new NodeProcessor('dtl', new ArrayObject(array(
             'ns' => 'Namespace',
             'dtl' => 'http://www.dantleech.com/ns',
-        ));
+        )));
     }
 
     /**

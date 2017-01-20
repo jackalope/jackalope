@@ -2,6 +2,7 @@
 
 namespace Jackalope\NodeType;
 
+use ArrayObject;
 use PHPCR\ItemExistsException;
 use PHPCR\Lock\LockException;
 use PHPCR\NodeInterface;
@@ -71,18 +72,18 @@ $/xi";
     private $autoLastModified;
 
     /**
-     * @var array List of namespaces known to the current session. Keys are prefix, values are URI.
+     * @var ArrayObject List of namespaces known to the current session. Keys are prefix, values are URI.
      */
-    private $namespaces = array();
+    private $namespaces;
 
     /**
-     * @param string  $userId           ID of the connected user
-     * @param array   $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
-     * @param boolean $autoLastModified Whether the last modified property should be updated automatically
+     * @param string      $userId           ID of the connected user
+     * @param ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
+     * @param bool        $autoLastModified Whether the last modified property should be updated automatically
      */
     public function __construct(
         $userId,
-        $namespaces = array(),
+        ArrayObject $namespaces,
         $autoLastModified = true
     ) {
         $this->userId = (string) $userId;
@@ -341,21 +342,20 @@ $/xi";
      */
     private function validateNamespace($name)
     {
-        $alias = null;
         $aliasLength = strpos($name, ':');
+
         if (false === $aliasLength) {
             return;
-        } 
-        
+        }
+
         $alias = substr($name, 0, $aliasLength);
 
         if (!isset($this->namespaces[$alias])) {
-            throw new NamespaceException(sprintf(
-                'Namespace alias "%s" is not known for name "%s", known namespace aliases are: "%s"',
-                $alias,
-                $name,
-                implode('", "', array_keys($this->namespaces))
-            ));
+            $aliases = implode("', '", array_keys($this->namespaces->getArrayCopy()));
+
+            throw new NamespaceException(
+                "Namespace alias '$alias' is not known for name '$name', known namespace aliases are: '$aliases'"
+            );
         }
     }
 }
