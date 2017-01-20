@@ -342,21 +342,16 @@ $/xi";
      */
     private function validateNamespace($name)
     {
-        $alias = null;
         $aliasLength = strpos($name, ':');
 
-        if ($aliasLength === false) {
+        if (false === $aliasLength) {
             return;
-        } else {
-            $alias = substr($name, 0, $aliasLength);
         }
 
-        if (!isset($this->namespaces[$alias])) {
-            if ($this->namespaces instanceof ArrayObject) {
-                $this->namespaces = $this->namespaces->getArrayCopy();
-            }
+        $alias = substr($name, 0, $aliasLength);
 
-            $aliases = implode("', '", array_keys($this->namespaces));
+        if (!isset($this->namespaces[$alias])) {
+            $aliases = implode("', '", array_keys($this->namespaces->getArrayCopy()));
 
             throw new NamespaceException(
                 "Namespace alias '$alias' is not known for name '$name', known namespace aliases are: '$aliases'"
