@@ -1872,4 +1872,25 @@ class ObjectManager
         // objectsByPath and the calling parent node can forget it
         return true;
     }
+
+    /**
+     * Register a given node path against a UUID.
+     *
+     * This is called when setting the UUID property of a node to ensure that
+     * it can be subsequently referenced by the UUID.
+     *
+     * @param string $uuid
+     * @param string $absPath
+     */
+    public function registerUuid($uuid, $absPath)
+    {
+        if (isset($this->objectsByUuid[$uuid])) {
+            throw new \RuntimeException(sprintf(
+                'Object path for UUID "%s" has already been registered to "%s"',
+                $uuid, $this->objectsByUuid[$uuid]
+            ));
+        }
+
+        $this->objectsByUuid[$uuid] = $absPath;
+    }
 }

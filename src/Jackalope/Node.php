@@ -619,6 +619,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return null;
         }
 
+        // if the property is the UUID, then register the UUID against the path
+        // of this node.
+        if ($name === 'jcr:uuid') {
+            $this->objectManager->registerUuid($value, $this->getPath());
+        }
+
         return $this->_setProperty($name, $value, $type, false);
     }
 

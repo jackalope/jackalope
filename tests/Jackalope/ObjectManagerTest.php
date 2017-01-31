@@ -43,4 +43,22 @@ class ObjectManagerTest extends TestCase
         $nodetypes = $this->om->getNodeTypes(array('nt:folder', 'nt:file'));
         $this->assertInstanceOf('DOMDocument', $nodetypes);
     }
+
+    public function testRegisterUuid()
+    {
+        $this->om->registerUuid('1234', '/jcr:root');
+        $node = $this->om->getNodeByIdentifier('1234');
+
+        $this->assertInstanceOf('Jackalope\Node', $node);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Object path for UUID "1234" has already been registered to "/path/to/this"
+     */
+    public function testRegisterUuidAlreadyMapped()
+    {
+        $this->om->registerUuid('1234', '/path/to/this');
+        $this->om->registerUuid('1234', '/path/to/that');
+    }
 }
