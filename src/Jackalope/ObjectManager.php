@@ -901,6 +901,7 @@ class ObjectManager
                 if ($item->isModified() || $item->isMoved()) {
                     $item->confirmSaved();
                 }
+                $item->setClean();
             }
         }
 
@@ -1161,10 +1162,10 @@ class ObjectManager
 
         /** @var $node Node */
         foreach ($this->objectsByPath['Node'] as $node) {
-            if (! $keepChanges || ! ($node->isDeleted() || $node->isNew())) {
+            if (false === $keepChanges || ! ($node->isDeleted() || $node->isNew())) {
                 // if we keep changes, do not restore a deleted item
                 $this->objectsByUuid[$node->getIdentifier()] = $node->getPath();
-                $node->setDirty($keepChanges);
+                $node->setDirty(false);
             }
         }
     }
@@ -1865,6 +1866,7 @@ class ObjectManager
             if (false !== $uuid) {
                 unset($this->objectsByUuid[$uuid]);
             }
+
             unset($this->objectsByPath['Node'][$absPath]);
             $item->setDeleted();
         }
