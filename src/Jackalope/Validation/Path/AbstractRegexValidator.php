@@ -85,9 +85,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
         $isMatch = 1 === preg_match($pattern, $path);
 
         if (false === $isMatch) {
-            throw new InvalidPathException(sprintf(
-                '"%s" does not match regexp "%s"', $path, $pattern
-            ));
+            throw new InvalidPathException(sprintf('"%s" does not match regexp "%s"', $path, $pattern));
         }
 
         return $isMatch;

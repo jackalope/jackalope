@@ -1,6 +1,7 @@
 <?php
 namespace Jackalope\Query;
 
+use Jackalope\Query\QOM\QueryObjectModelFactory;
 use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QueryManagerInterface;
 use PHPCR\Query\InvalidQueryException;
@@ -20,6 +21,7 @@ class QueryManager implements QueryManagerInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -51,13 +53,14 @@ class QueryManager implements QueryManagerInterface
         if (!in_array($language, $this->getSupportedQueryLanguages())) {
             throw new InvalidQueryException("Unsupported query language: $language");
         }
+
         switch ($language) {
             case QueryInterface::JCR_SQL2:
-                return $this->factory->get('Query\SqlQuery', array($statement, $this->objectManager));
+                return $this->factory->get(SqlQuery::class, [$statement, $this->objectManager]);
             case QueryInterface::XPATH:
-                return $this->factory->get('Query\XpathQuery', array($statement, $this->objectManager));
+                return $this->factory->get(XpathQuery::class, [$statement, $this->objectManager]);
             case QueryInterface::SQL:
-                return $this->factory->get('Query\Sql1Query', array($statement, $this->objectManager));
+                return $this->factory->get(Sql1Query::class, [$statement, $this->objectManager]);
             case QueryInterface::JCR_JQOM:
                 throw new InvalidQueryException('Please use getQOMFactory to get the query object model factory. You can not build a QOM query from a string.');
             default:
@@ -72,7 +75,7 @@ class QueryManager implements QueryManagerInterface
      */
     public function getQOMFactory()
     {
-        return $this->factory->get('Query\QOM\QueryObjectModelFactory', array($this->objectManager));
+        return $this->factory->get(QueryObjectModelFactory::class, [$this->objectManager]);
     }
 
     /**

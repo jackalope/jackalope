@@ -19,6 +19,7 @@ class ItemDefinition implements ItemDefinitionInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -30,36 +31,42 @@ class ItemDefinition implements ItemDefinitionInterface
 
     /**
      * Name of the declaring node type.
+     *
      * @var string
      */
     protected $declaringNodeType;
 
     /**
      * Name of this node type.
+     *
      * @var string
      */
     protected $name;
 
     /**
      * Whether this item is autocreated.
+     *
      * @var boolean
      */
     protected $isAutoCreated;
 
     /**
      * Whether this item is mandatory.
+     *
      * @var boolean
      */
     protected $isMandatory;
 
     /**
      * Whether this item is protected.
+     *
      * @var boolean
      */
     protected $isProtected;
 
     /**
      * On parent version constant
+     *
      * @var int
      */
     protected $onParentVersion;

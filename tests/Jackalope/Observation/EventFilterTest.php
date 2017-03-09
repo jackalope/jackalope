@@ -17,9 +17,9 @@ class EventFilterTest extends EventFilterTestCase
         $this->assertEquals('/somepath', $this->eventFilter->getAbsPath());
         $this->eventFilter->setIsDeep(true);
         $this->assertTrue($this->eventFilter->getIsDeep());
-        $this->eventFilter->setIdentifiers(array('1', '2', '3'));
-        $this->assertEquals(array('1', '2', '3'), $this->eventFilter->getIdentifiers());
-        $this->eventFilter->setNodeTypes(array('nodeType'));
-        $this->assertEquals(array('nodeType'), $this->eventFilter->getNodeTypes());
+        $this->eventFilter->setIdentifiers(['1', '2', '3']);
+        $this->assertEquals(['1', '2', '3'], $this->eventFilter->getIdentifiers());
+        $this->eventFilter->setNodeTypes(['nodeType']);
+        $this->assertEquals(['nodeType'], $this->eventFilter->getNodeTypes());
     }
 }

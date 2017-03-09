@@ -26,12 +26,12 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      * The constraint information array (array of strings)
      * @var array
      */
-    protected $valueConstraints = array();
+    protected $valueConstraints = [];
 
     /**
      * @var mixed
      */
-    protected $defaultValues = array();
+    protected $defaultValues = [];
 
     /**
      * @var boolean
@@ -40,9 +40,10 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
 
     /**
      * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface
+     *
      * @var array
      */
-    protected $availableQueryOperators = array();
+    protected $availableQueryOperators = [];
 
     /**
      * @var boolean
@@ -68,9 +69,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
         $this->isMultiple = isset($data['multiple']) ? $data['multiple'] : false;
         $this->isFullTextSearchable = isset($data['fullTextSearchable']) ? $data['fullTextSearchable'] : false;
         $this->isQueryOrderable = isset($data['queryOrderable']) ? $data['queryOrderable'] : false;
-        $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : array();
-        $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : array();
-        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : array();
+        $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : [];
+        $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : [];
+        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : [];
     }
 
     /**

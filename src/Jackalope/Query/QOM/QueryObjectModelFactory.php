@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use InvalidArgumentException;
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface;
@@ -25,6 +26,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -56,12 +58,12 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     public function createQuery(
         SourceInterface $source,
         ConstraintInterface $constraint = null,
-        array $orderings = array(),
-        array $columns = array())
+        array $orderings = [],
+        array $columns = [])
     {
         return $this->factory->get(
-            'Query\QOM\QueryObjectModel',
-            array($this->objectManager, $source, $constraint, $orderings, $columns)
+            QueryObjectModel::class,
+            [$this->objectManager, $source, $constraint, $orderings, $columns]
         );
     }
 
@@ -181,7 +183,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */
@@ -223,7 +225,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */
@@ -245,7 +247,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */
@@ -267,7 +269,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */

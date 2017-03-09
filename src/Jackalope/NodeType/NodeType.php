@@ -71,7 +71,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     public function getSupertypes()
     {
         if (null === $this->superTypes) {
-            $this->superTypes = array();
+            $this->superTypes = [];
             foreach ($this->getDeclaredSupertypes() as $superType) {
                 $this->superTypes[] = $superType;
                 $this->superTypes = array_merge($this->superTypes, $superType->getSupertypes());
@@ -89,7 +89,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     public function getSupertypeNames()
     {
         if (null === $this->superTypeNames) {
-            $this->superTypeNames = array();
+            $this->superTypeNames = [];
             foreach ($this->getSupertypes() as $superType) {
                 $this->superTypeNames[] = $superType->getName();
             }
@@ -106,7 +106,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     public function getDeclaredSupertypes()
     {
         if (null === $this->declaredSupertypes) {
-            $this->declaredSupertypes = array();
+            $this->declaredSupertypes = [];
             foreach ($this->declaredSuperTypeNames as $declaredSuperTypeName) {
                 $this->declaredSupertypes[] = $this->nodeTypeManager->getNodeType($declaredSuperTypeName);
             }
@@ -142,7 +142,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      */
     public function isNodeType($nodeTypeName)
     {
-        return $this->getName() == $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
+        return $this->getName() === $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
     }
 
     /**
@@ -204,23 +204,26 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
         // check explicit matches first and keep wildcard definitions for later
 
-        $wildcards = array();
+        $wildcards = [];
         foreach ($propDefs as $prop) {
             if ('*' === $prop->getName()) {
                 $wildcards[] = $prop;
-            } elseif ($propertyName == $prop->getName()) {
+            } elseif ($propertyName === $prop->getName()) {
                 if (is_array($value) !== $prop->isMultiple()) {
                     if ($prop->isMultiple()) {
                         throw new ConstraintViolationException("The property definition is multivalued, but the value '$value' is not.");
                     }
+
                     if (is_array($value)) {
                         throw new ConstraintViolationException("The value $value is multivalued, but the property definition is not.");
                     }
                 }
+
                 $requiredType = $prop->getRequiredType();
                 if (PropertyType::UNDEFINED === $requiredType || $type === $requiredType) {
                     return true;
                 }
+
                 // try if we can convert. OPTIMIZE: would be nice to know without actually attempting to convert
                 try {
                     $this->valueConverter->convertType($value, $prop->getRequiredType(), $type);
@@ -239,7 +242,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         // now check if any of the wildcards matches
         /** @var $prop PropertyDefinition */
         foreach ($wildcards as $prop) {
-            if (is_array($value) != $prop->isMultiple()) {
+            if (is_array($value) !== $prop->isMultiple()) {
                 continue;
             }
             $requiredType = $prop->getRequiredType();
@@ -310,7 +313,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         foreach ($childDefs as $child) {
             if ('*' === $child->getName() || $childNodeName === $child->getName()) {
                 if ($nodeTypeName === null) {
-                    if ($child->getDefaultPrimaryTypeName() != null) {
+                    if ($child->getDefaultPrimaryTypeName() !== null) {
                         return true;
                     }
                 } else {

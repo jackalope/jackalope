@@ -11,8 +11,11 @@ namespace Jackalope\Transport;
 abstract class Operation
 {
     const ADD_NODE = 'add-node';
+
     const MOVE_NODE = 'move-node';
+
     const REMOVE_NODE = 'remove-node';
+
     const REMOVE_PROPERTY = 'remove-property';
 
     /**

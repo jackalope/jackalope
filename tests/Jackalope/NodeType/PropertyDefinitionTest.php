@@ -2,12 +2,13 @@
 
 namespace Jackalope\NodeType;
 
+use Jackalope\Factory;
 use Jackalope\TestCase;
 use PHPCR\Version\OnParentVersionAction;
 
 class PropertyDefinitionTest extends TestCase
 {
-    private $defaultData = array(
+    private $defaultData = [
         'declaringNodeType' => 'nt:unstructured',
         'name' => 'foo',
         'isAutoCreated' => false,
@@ -18,14 +19,14 @@ class PropertyDefinitionTest extends TestCase
         'multiple' => false,
         'fullTextSearchable' => false,
         'queryOrderable' => false,
-        'valueConstraints' => array(),
-        'availableQueryOperators' => array(),
+        'valueConstraints' => [],
+        'availableQueryOperators' => [],
         'defaultValues' => '',
-    );
+    ];
 
     public function testCreateFromArray()
     {
-        $factory = $this->getMock('Jackalope\Factory');
+        $factory = $this->createMock(Factory::class);
         $nodeTypeManager = $this->getNodeTypeManagerMock();
         $propType = new PropertyDefinition($factory, $this->defaultData, $nodeTypeManager);
 
@@ -42,8 +43,14 @@ class PropertyDefinitionTest extends TestCase
 
     public function testGetDeclaringNodeType()
     {
-        $nodeType = $this->getMock('Jackalope\NodeType\NodeTypeDefinition', array(), array(), '', false);
-        $factory = $this->getMock('Jackalope\Factory');
+        $nodeType = $this->getMockBuilder(NodeTypeDefinition::class)
+            ->setMethods([])
+            ->setConstructorArgs([])
+            ->setMockClassName('')
+            ->disableOriginalConstructor()
+        ;
+
+        $factory = $this->createMock(Factory::class);
         $nodeTypeManager = $this->getNodeTypeManagerMock();
         $nodeTypeManager
             ->expects($this->once())

@@ -17,7 +17,7 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeType\NodeTypeTemplate::__construct
+     * @covers \Jackalope\NodeType\NodeTypeTemplate::__construct
      */
     public function testCreateNodeTypeTemplateEmpty()
     {
@@ -25,7 +25,7 @@ class NodeTypeTemplateTest extends TestCase
 
         // is empty as defined by doc
         $this->assertNull($ntt->getName());
-        $this->assertSame(array('nt:base'), $ntt->getDeclaredSupertypeNames());
+        $this->assertSame(['nt:base'], $ntt->getDeclaredSupertypeNames());
         $this->assertFalse($ntt->isAbstract());
         $this->assertFalse($ntt->isMixin());
         $this->assertFalse($ntt->hasOrderableChildNodes());
@@ -36,16 +36,16 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeType\NodeTypeTemplate::__construct
-     * @covers Jackalope\NodeType\NodeTypeDefinition::fromNodeTypeDefinition
+     * @covers \Jackalope\NodeType\NodeTypeTemplate::__construct
+     * @covers \Jackalope\NodeType\NodeTypeDefinition::fromNodeTypeDefinition
      */
     public function testCreateNodeTypeTemplateFromDefinition()
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $ntt = $this->ntm->createNodeTypeTemplate($nt);
 
-        $this->assertInstanceOf('Jackalope\NodeType\NodeTypeDefinition', $ntt);
-        $this->assertInstanceOf('Jackalope\NodeType\NodeTypeTemplate', $ntt);
+        $this->assertInstanceOf(NodeTypeDefinition::class, $ntt);
+        $this->assertInstanceOf(NodeTypeTemplate::class, $ntt);
         $this->assertSame($nt->getName(), $ntt->getName());
         $this->assertEquals($nt->isAbstract(), $ntt->isAbstract());
         $this->assertEquals($nt->isMixin(), $ntt->isMixin());
@@ -58,7 +58,7 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
+     * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
      */
     public function testEmptyNodeTypeTemplatesMutable()
     {
@@ -80,7 +80,7 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
+     * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
      */
     public function testNodeTypeTemplatesMutable()
     {
@@ -104,7 +104,7 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
+     * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
      */
     public function testPropertyDefinitionTemplatesMutable()
     {
@@ -128,7 +128,7 @@ class NodeTypeTemplateTest extends TestCase
     }
 
     /**
-     * @covers Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
+     * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
      */
     public function testEmptyPropertyDefinitionTemplatesMutable()
     {

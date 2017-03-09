@@ -2,8 +2,6 @@
 
 namespace Jackalope\Validation\Path;
 
-use DOMElement;
-
 /**
  * Simple path validator
  *

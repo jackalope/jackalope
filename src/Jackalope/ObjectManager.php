@@ -1,9 +1,12 @@
 <?php
+
 namespace Jackalope;
 
 use ArrayIterator;
+use Exception;
 use InvalidArgumentException;
 use Jackalope\Transport\NodeTypeFilterInterface;
+use Jackalope\Version\Version;
 use PHPCR\NamespaceException;
 use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
 use PHPCR\NodeType\NodeTypeExistsException;
@@ -36,6 +39,7 @@ use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\RemoveNodeOperation;
 use Jackalope\Transport\RemovePropertyOperation;
 use Jackalope\Transport\VersioningInterface;
+use RuntimeException;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -82,7 +86,7 @@ class ObjectManager
      *
      * @var array
      */
-    protected $objectsByPath = array('Node' => array());
+    protected $objectsByPath = [Node::class => []];
 
     /**
      * Mapping of uuid => absolutePath.
@@ -92,7 +96,7 @@ class ObjectManager
      *
      * @var array
      */
-    protected $objectsByUuid = array();
+    protected $objectsByUuid = [];
 
     /**
      * This is an ordered list of all operations to commit to the transport
@@ -103,7 +107,7 @@ class ObjectManager
      *
      * @var Operation[]
      */
-    protected $operationsLog = array();
+    protected $operationsLog = [];
 
     /**
      * Contains the list of paths that have been added to the workspace in the
@@ -113,7 +117,7 @@ class ObjectManager
      *
      * @var AddNodeOperation[]
      */
-    protected $nodesAdd = array();
+    protected $nodesAdd = [];
 
     /**
      * Contains the list of node remove operations for the current session.
@@ -126,7 +130,7 @@ class ObjectManager
      *
      * @var RemoveNodeOperation[]
      */
-    protected $nodesRemove = array();
+    protected $nodesRemove = [];
 
     /**
      * Contains the list of property remove operations for the current session.
@@ -135,7 +139,7 @@ class ObjectManager
      *
      * @var RemovePropertyOperation[]
      */
-    protected $propertiesRemove = array();
+    protected $propertiesRemove = [];
 
     /**
      * Contains a list of nodes that where moved during this session.
@@ -154,7 +158,7 @@ class ObjectManager
      *
      * @var MoveNodeOperation[]
      */
-    protected $nodesMove = array();
+    protected $nodesMove = [];
 
     /**
      * Create the ObjectManager instance with associated session and transport
@@ -194,7 +198,7 @@ class ObjectManager
      *
      * @see Session::getNode()
      */
-    public function getNodeByPath($absPath, $class = 'Node', $object = null)
+    public function getNodeByPath($absPath, $class = Node::class, $object = null)
     {
         $absPath = PathHelper::normalizePath($absPath);
 
@@ -217,7 +221,7 @@ class ObjectManager
                 $countObjVars = count($objVars);
                 // if there's more than one objectvar or just one and this isn't jcr:uuid,
                 // then we assume this child was pre-fetched from the backend completely
-                if ($countObjVars > 1 || ($countObjVars == 1 && !isset($objVars['jcr:uuid']))) {
+                if ($countObjVars > 1 || ($countObjVars === 1 && !isset($objVars['jcr:uuid']))) {
                     try {
                         $parentPath = ('/' === $absPath) ? '/' : $absPath . '/';
                         $this->getNodeByPath($parentPath . $name, $class, $properties);
@@ -229,17 +233,10 @@ class ObjectManager
         }
 
         /** @var $node NodeInterface */
-        $node = $this->factory->get(
-            $class,
-            array(
-                $object,
-                $absPath,
-                $this->session,
-                $this
-            )
-        );
+        $node = $this->factory->get($class, [$object, $absPath, $this->session, $this]);
+
         if ($uuid = $node->getIdentifier()) {
-            // map even nodes that are not mix:referenceable, as long as they have a uuid
+            // Map even nodes that are not mix:referenceable, as long as they have a uuid
             $this->objectsByUuid[$uuid] = $absPath;
         }
         $this->objectsByPath[$class][$absPath] = $node;
@@ -248,11 +245,9 @@ class ObjectManager
     }
 
     /**
-     * Get multiple nodes identified by an absolute paths. Missing nodes are
-     * ignored.
+     * Get multiple nodes identified by an absolute paths. Missing nodes are ignored.
      *
-     * Note paths that cannot be found will be ignored and missing from the
-     * result.
+     * Note paths that cannot be found will be ignored and missing from the result.
      *
      * Uses the factory to create Node objects.
      *
@@ -262,29 +257,24 @@ class ObjectManager
      *      fetch data separately for Version and normal Node?
      * @param array|null $typeFilter Node type list to skip some nodes
      *
-     * @return Node[] Iterator that contains all found NodeInterface
-     *      instances keyed by their path
+     * @return Node[] Iterator that contains all found NodeInterface instances keyed by their path
      *
-     * @throws RepositoryException If the path is not absolute or not
-     *      well-formed
+     * @throws RepositoryException If the path is not absolute or not well-formed
      *
      * @see Session::getNodes()
      */
-    public function getNodesByPath($absPaths, $class = 'Node', $typeFilter = null)
+    public function getNodesByPath($absPaths, $class = Node::class, $typeFilter = null)
     {
-        $nodesPathIterator = new NodePathIterator(
-            $this, $absPaths, $class, $typeFilter
-        );
-
-        return $nodesPathIterator;
+        return new NodePathIterator($this, $absPaths, $class, $typeFilter);
     }
 
-    public function getNodesByPathAsArray($paths, $class = 'Node', $typeFilter = null)
+    public function getNodesByPathAsArray($paths, $class = Node::class, $typeFilter = null)
     {
         if (is_string($typeFilter)) {
-            $typeFilter = array($typeFilter);
+            $typeFilter = [$typeFilter];
         }
-        $nodes = $fetchPaths = array();
+
+        $nodes = $fetchPaths = [];
 
         foreach ($paths as $absPath) {
             if (!empty($this->objectsByPath[$class][$absPath])) {
@@ -426,7 +416,7 @@ class ObjectManager
         $absPath = PathHelper::normalizePath($absPath);
 
         if (!isset($this->objectsByPath[$class])) {
-            $this->objectsByPath[$class] = array();
+            $this->objectsByPath[$class] = [];
         }
 
         $op = end($this->operationsLog);
@@ -500,20 +490,20 @@ class ObjectManager
     public function getPropertiesByPath($absPaths)
     {
         // list of nodes to fetch
-        $nodemap = array();
+        $nodemap = [];
         // ordered list of what to return
-        $returnmap = array();
+        $returnmap = [];
 
         foreach ($absPaths as $path) {
             list($name, $nodep) = $this->getNodePath($path);
             if (! isset($nodemap[$nodep])) {
                 $nodemap[$nodep] = $nodep;
             }
-            $returnmap[$path] = array('name' => $name, 'path' => $nodep);
+            $returnmap[$path] = ['name' => $name, 'path' => $nodep];
         }
         $nodes = $this->getNodesByPath($nodemap);
 
-        $properties = array();
+        $properties = [];
         foreach ($returnmap as $key => $data) {
             if (isset($nodes[$data['path']]) && $nodes[$data['path']]->hasProperty($data['name'])) {
                 $properties[$key] = $nodes[$data['path']]->getProperty($data['name']);
@@ -537,9 +527,9 @@ class ObjectManager
         $absPath = PathHelper::normalizePath($absPath);
 
         $name = PathHelper::getNodeName($absPath); //the property name
-        $nodep = PathHelper::getParentPath($absPath, 0, strrpos($absPath, '/')+1); //the node this property should be in
+        $nodep = PathHelper::getParentPath($absPath, 0, strrpos($absPath, '/') + 1); //the node this property should be in
 
-        return array($name, $nodep);
+        return [$name, $nodep];
     }
 
     /**
@@ -560,7 +550,7 @@ class ObjectManager
      *
      * @see Session::getNode()
      */
-    public function getNode($relPath, $context, $class = 'Node')
+    public function getNode($relPath, $context, $class = Node::class)
     {
         $path = PathHelper::absolutizePath($relPath, $context);
 
@@ -582,7 +572,7 @@ class ObjectManager
      *
      * @see Session::getNodeByIdentifier()
      */
-    public function getNodeByIdentifier($identifier, $class = 'Node')
+    public function getNodeByIdentifier($identifier, $class = Node::class)
     {
         if (empty($this->objectsByUuid[$identifier])) {
             $data = $this->transport->getNodeByIdentifier($identifier);
@@ -613,9 +603,9 @@ class ObjectManager
      *
      * @see Session::getNodesByIdentifier()
      */
-    public function getNodesByIdentifier($identifiers, $class = 'Node')
+    public function getNodesByIdentifier($identifiers, $class = Node::class)
     {
-        $nodes = $fetchPaths = array();
+        $nodes = $fetchPaths = [];
 
         foreach ($identifiers as $uuid) {
             if (!empty($this->objectsByUuid[$uuid])
@@ -648,6 +638,7 @@ class ObjectManager
                 }
             }
         }
+
         reset($nodes);
 
         return new ArrayIterator($nodes);
@@ -665,12 +656,11 @@ class ObjectManager
      */
     public function getBinaryStream($path)
     {
-        return $this->transport->getBinaryStream($this->getFetchPath($path, 'Node'));
+        return $this->transport->getBinaryStream($this->getFetchPath($path, Node::class));
     }
 
     /**
-     * Returns the node types specified by name in the array or all types if no
-     * filter is given.
+     * Returns the node types specified by name in the array or all types if no filter is given.
      *
      * This is only a proxy to the transport
      *
@@ -678,7 +668,7 @@ class ObjectManager
      *
      * @return array|\DOMDocument containing the nodetype information
      */
-    public function getNodeTypes(array $nodeTypes = array())
+    public function getNodeTypes(array $nodeTypes = [])
     {
         return $this->transport->getNodeTypes($nodeTypes);
     }
@@ -694,7 +684,7 @@ class ObjectManager
      */
     public function getNodeType($nodeType)
     {
-        return $this->getNodeTypes(array($nodeType));
+        return $this->getNodeTypes([$nodeType]);
     }
 
     /**
@@ -742,7 +732,7 @@ class ObjectManager
      */
     public function getReferences($path, $name = null)
     {
-        $references = $this->transport->getReferences($this->getFetchPath($path, 'Node'), $name);
+        $references = $this->transport->getReferences($this->getFetchPath($path, Node::class), $name);
 
         return $this->pathArrayToPropertiesIterator($references);
     }
@@ -761,7 +751,7 @@ class ObjectManager
      */
     public function getWeakReferences($path, $name = null)
     {
-        $references = $this->transport->getWeakReferences($this->getFetchPath($path, 'Node'), $name);
+        $references = $this->transport->getWeakReferences($this->getFetchPath($path, Node::class), $name);
 
         return $this->pathArrayToPropertiesIterator($references);
     }
@@ -846,8 +836,8 @@ class ObjectManager
             $this->executeOperations($this->operationsLog);
 
             // loop through cached nodes and commit all dirty and set them to clean.
-            if (isset($this->objectsByPath['Node'])) {
-                foreach ($this->objectsByPath['Node'] as $node) {
+            if (isset($this->objectsByPath[Node::class])) {
+                foreach ($this->objectsByPath[Node::class] as $node) {
                     /** @var $node Node */
                     if ($node->isModified()) {
                         if (! $node instanceof NodeInterface) {
@@ -862,7 +852,7 @@ class ObjectManager
             }
 
             $this->transport->finishSave();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->transport->rollbackSave();
 
             if (! $e instanceof RepositoryException) {
@@ -874,18 +864,18 @@ class ObjectManager
 
         foreach ($this->operationsLog as $operation) {
             if ($operation instanceof MoveNodeOperation) {
-                if (isset($this->objectsByPath['Node'][$operation->dstPath])) {
+                if (isset($this->objectsByPath[Node::class][$operation->dstPath])) {
                     // might not be set if moved again afterwards
                     // move is not treated as modified, need to confirm separately
-                    $this->objectsByPath['Node'][$operation->dstPath]->confirmSaved();
+                    $this->objectsByPath[Node::class][$operation->dstPath]->confirmSaved();
                 }
             }
         }
 
         //clear those lists before reloading the newly added nodes from backend, to avoid collisions
-        $this->nodesRemove = array();
-        $this->propertiesRemove = array();
-        $this->nodesMove = array();
+        $this->nodesRemove = [];
+        $this->propertiesRemove = [];
+        $this->nodesMove = [];
 
         foreach ($this->operationsLog as $operation) {
             if ($operation instanceof AddNodeOperation) {
@@ -895,8 +885,8 @@ class ObjectManager
             }
         }
 
-        if (isset($this->objectsByPath['Node'])) {
-            foreach ($this->objectsByPath['Node'] as $item) {
+        if (isset($this->objectsByPath[Node::class])) {
+            foreach ($this->objectsByPath[Node::class] as $item) {
                 /** @var $item Item */
                 if ($item->isModified() || $item->isMoved()) {
                     $item->confirmSaved();
@@ -904,8 +894,8 @@ class ObjectManager
             }
         }
 
-        $this->nodesAdd = array();
-        $this->operationsLog = array();
+        $this->nodesAdd = [];
+        $this->operationsLog = [];
     }
 
     /**
@@ -919,7 +909,7 @@ class ObjectManager
     protected function executeOperations(array $operations)
     {
         $lastType = null;
-        $batch = array();
+        $batch = [];
 
         foreach ($operations as $operation) {
             if ($operation->skip) {
@@ -933,7 +923,7 @@ class ObjectManager
             if ($operation->type !== $lastType) {
                 $this->executeBatch($lastType, $batch);
                 $lastType = $operation->type;
-                $batch = array();
+                $batch = [];
             }
 
             $batch[] = $operation;
@@ -971,13 +961,12 @@ class ObjectManager
                 $this->transport->deleteProperties($operations);
                 break;
             default:
-                throw new \Exception('internal error: unknown operation "' . $type . '"');
+                throw new Exception("internal error: unknown operation '$type'");
         }
     }
 
     /**
-     * Removes the cache of the predecessor version after the node has been
-     * checked in.
+     * Removes the cache of the predecessor version after the node has been checked in.
      *
      * TODO: document more clearly
      *
@@ -993,11 +982,10 @@ class ObjectManager
     {
         $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
 
-        return $this->getNodeByPath($path, 'Version\\Version');
+        return $this->getNodeByPath($path, Version::class);
     }
     /**
-     * Removes the cache of the predecessor version after the node has been
-     * checked in.
+     * Removes the cache of the predecessor version after the node has been checked in.
      *
      * TODO: document more clearly. This looks like copy-paste from checkin
      *
@@ -1040,13 +1028,13 @@ class ObjectManager
     {
         // TODO: handle pending move operations?
 
-        if (isset($this->objectsByPath['Node'][$nodePath])) {
-            $this->objectsByPath['Node'][$nodePath]->setChildrenDirty();
-            $this->objectsByPath['Node'][$nodePath]->setDirty();
+        if (isset($this->objectsByPath[Node::class][$nodePath])) {
+            $this->objectsByPath[Node::class][$nodePath]->setChildrenDirty();
+            $this->objectsByPath[Node::class][$nodePath]->setDirty();
         }
-        if (isset($this->objectsByPath['Version\\Version'][$versionPath])) {
-            $this->objectsByPath['Version\\Version'][$versionPath]->setChildrenDirty();
-            $this->objectsByPath['Version\\Version'][$versionPath]->setDirty();
+        if (isset($this->objectsByPath[Version::class][$versionPath])) {
+            $this->objectsByPath[Version::class][$versionPath]->setChildrenDirty();
+            $this->objectsByPath[Version::class][$versionPath]->setDirty();
         }
 
         $this->transport->restoreItem($removeExisting, $versionPath, $nodePath);
@@ -1068,23 +1056,23 @@ class ObjectManager
 
         // Adjust the in memory state
         $absPath = $versionPath . '/' . $versionName;
-        if (isset($this->objectsByPath['Node'][$absPath])) {
+        if (isset($this->objectsByPath[Node::class][$absPath])) {
             /** @var $node Node */
-            $node = $this->objectsByPath['Node'][$absPath];
+            $node = $this->objectsByPath[Node::class][$absPath];
             unset($this->objectsByUuid[$node->getIdentifier()]);
             $node->setDeleted();
         }
 
-        if (isset($this->objectsByPath['Version\\Version'][$absPath])) {
-            /** @var $version \Jackalope\Version\Version */
-            $version = $this->objectsByPath['Version\\Version'][$absPath];
+        if (isset($this->objectsByPath[Version::class][$absPath])) {
+            /** @var $version Version */
+            $version = $this->objectsByPath[Version::class][$absPath];
             unset($this->objectsByUuid[$version->getIdentifier()]);
             $version->setDeleted();
         }
 
         unset(
-            $this->objectsByPath['Node'][$absPath],
-            $this->objectsByPath['Version\\Version'][$absPath]
+            $this->objectsByPath[Node::class][$absPath],
+            $this->objectsByPath[Version::class][$absPath]
         );
 
         $this->cascadeDelete($absPath, false);
@@ -1104,63 +1092,63 @@ class ObjectManager
         if (! $keepChanges) {
             // revert all scheduled add, remove and move operations
 
-            $this->operationsLog = array();
+            $this->operationsLog = [];
 
             foreach ($this->nodesAdd as $path => $operation) {
                 if (! $operation->skip) {
                     $operation->node->setDeleted();
-                    unset($this->objectsByPath['Node'][$path]); // did you see anything? it never existed
+                    unset($this->objectsByPath[Node::class][$path]); // did you see anything? it never existed
                 }
             }
-            $this->nodesAdd = array();
+            $this->nodesAdd = [];
 
             // the code below will set this to dirty again. but it must not
             // be in state deleted or we will fail the sanity checks
             foreach ($this->propertiesRemove as $path => $operation) {
                 $operation->property->setClean();
             }
-            $this->propertiesRemove = array();
+            $this->propertiesRemove = [];
             foreach ($this->nodesRemove as $path => $operation) {
                 $operation->node->setClean();
 
-                $this->objectsByPath['Node'][$path] = $operation->node; // back in glory
+                $this->objectsByPath[Node::class][$path] = $operation->node; // back in glory
 
                 $parentPath = PathHelper::getParentPath($path);
-                if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
+                if (array_key_exists($parentPath, $this->objectsByPath[Node::class])) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->addChildNode($operation->node, false);
+                    $this->objectsByPath[Node::class][$parentPath]->addChildNode($operation->node, false);
                 }
             }
-            $this->nodesRemove = array();
+            $this->nodesRemove = [];
 
             foreach (array_reverse($this->nodesMove) as $operation) {
-                if (isset($this->objectsByPath['Node'][$operation->dstPath])) {
+                if (isset($this->objectsByPath[Node::class][$operation->dstPath])) {
                     // not set if we moved twice
-                    $item = $this->objectsByPath['Node'][$operation->dstPath];
+                    $item = $this->objectsByPath[Node::class][$operation->dstPath];
                     $item->setPath($operation->srcPath);
                 }
                 $parentPath = PathHelper::getParentPath($operation->dstPath);
-                if (array_key_exists($parentPath, $this->objectsByPath['Node'])) {
+                if (array_key_exists($parentPath, $this->objectsByPath[Node::class])) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->unsetChildNode(PathHelper::getNodeName($operation->dstPath), false);
+                    $this->objectsByPath[Node::class][$parentPath]->unsetChildNode(PathHelper::getNodeName($operation->dstPath), false);
                 }
                 // TODO: from in a two step move might fail. we should merge consecutive moves
                 $parentPath = PathHelper::getParentPath($operation->srcPath);
-                if (array_key_exists($parentPath, $this->objectsByPath['Node']) && isset($item) && $item instanceof Node) {
+                if (array_key_exists($parentPath, $this->objectsByPath[Node::class]) && isset($item) && $item instanceof Node) {
                     // tell the parent about its restored child
-                    $this->objectsByPath['Node'][$parentPath]->addChildNode($item, false);
+                    $this->objectsByPath[Node::class][$parentPath]->addChildNode($item, false);
                 }
                 // move item to old location
-                $this->objectsByPath['Node'][$operation->srcPath] = $this->objectsByPath['Node'][$operation->dstPath];
-                unset($this->objectsByPath['Node'][$operation->dstPath]);
+                $this->objectsByPath[Node::class][$operation->srcPath] = $this->objectsByPath[Node::class][$operation->dstPath];
+                unset($this->objectsByPath[Node::class][$operation->dstPath]);
             }
-            $this->nodesMove = array();
+            $this->nodesMove = [];
         }
 
-        $this->objectsByUuid = array();
+        $this->objectsByUuid = [];
 
         /** @var $node Node */
-        foreach ($this->objectsByPath['Node'] as $node) {
+        foreach ($this->objectsByPath[Node::class] as $node) {
             if (! $keepChanges || ! ($node->isDeleted() || $node->isNew())) {
                 // if we keep changes, do not restore a deleted item
                 $this->objectsByUuid[$node->getIdentifier()] = $node->getPath();
@@ -1181,7 +1169,7 @@ class ObjectManager
         if (count($this->operationsLog)) {
             return true;
         }
-        foreach ($this->objectsByPath['Node'] as $item) {
+        foreach ($this->objectsByPath[Node::class] as $item) {
             if ($item->isModified()) {
                 return true;
             }
@@ -1240,7 +1228,7 @@ class ObjectManager
 
         unset(
             $this->objectsByUuid[$node->getIdentifier()],
-            $this->objectsByPath['Node'][$absPath]
+            $this->objectsByPath[Node::class][$absPath]
         );
 
         if ($sessionOperation) {
@@ -1263,7 +1251,7 @@ class ObjectManager
      */
     protected function cascadeDelete($absPath, $sessionOperation = true)
     {
-        foreach ($this->objectsByPath['Node'] as $path => $node) {
+        foreach ($this->objectsByPath[Node::class] as $path => $node) {
             if (strpos($path, "$absPath/") === 0) {
                 // notify item and let it call removeItem again. save()
                 // makes sure no children of already deleted items are
@@ -1285,12 +1273,12 @@ class ObjectManager
     protected function cascadeDeleteVersion($absPath)
     {
         // delete all versions, similar to cascadeDelete
-        foreach ($this->objectsByPath['Version\\Version'] as $path => $node) {
+        foreach ($this->objectsByPath[Version::class] as $path => $node) {
             if (strpos($path, "$absPath/") === 0) {
                 // versions are read only, we simple unset them
                 unset(
                     $this->objectsByUuid[$node->getIdentifier()],
-                    $this->objectsByPath['Version\\Version'][$absPath]
+                    $this->objectsByPath[Version::class][$absPath]
                 );
                 if (!$node->isDeleted()) {
                     $node->setDeleted();
@@ -1325,7 +1313,7 @@ class ObjectManager
         }
 
         // the object is always cached as invocation flow goes through Item::remove() without exception
-        if (!isset($this->objectsByPath['Node'][$absPath])) {
+        if (!isset($this->objectsByPath[Node::class][$absPath])) {
             throw new RepositoryException("Internal error: Item not found in local cache at $absPath");
         }
 
@@ -1333,7 +1321,7 @@ class ObjectManager
             $absPath = PathHelper::absolutizePath($property->getName(), $absPath);
             $this->performPropertyRemove($absPath, $property);
         } else {
-            $node = $this->objectsByPath['Node'][$absPath];
+            $node = $this->objectsByPath[Node::class][$absPath];
             $this->performNodeRemove($absPath, $node);
             $this->cascadeDelete($absPath);
         }
@@ -1355,23 +1343,23 @@ class ObjectManager
         $parentCurPath = PathHelper::getParentPath($curPath);
         $parentNewPath = PathHelper::getParentPath($newPath);
 
-        if (isset($this->objectsByPath['Node'][$parentCurPath])) {
+        if (isset($this->objectsByPath[Node::class][$parentCurPath])) {
             /** @var $node Node */
-            $node = $this->objectsByPath['Node'][$parentCurPath];
+            $node = $this->objectsByPath[Node::class][$parentCurPath];
             if (! $node->hasNode(PathHelper::getNodeName($curPath))) {
                 throw new PathNotFoundException("Source path can not be found: $curPath");
             }
             $node->unsetChildNode(PathHelper::getNodeName($curPath), true);
         }
-        if (isset($this->objectsByPath['Node'][$parentNewPath])) {
+        if (isset($this->objectsByPath[Node::class][$parentNewPath])) {
             /** @var $node Node */
-            $node = $this->objectsByPath['Node'][$parentNewPath];
+            $node = $this->objectsByPath[Node::class][$parentNewPath];
             $node->addChildNode($this->getNodeByPath($curPath), true, PathHelper::getNodeName($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
         /** @var $node Node */
-        foreach ($this->objectsByPath['Node'] as $path => $node) {
+        foreach ($this->objectsByPath[Node::class] as $path => $node) {
             // is it current or child?
             if ((strpos($path, $curPath . '/') === 0)||($path == $curPath)) {
                 // curPath = /foo
@@ -1379,10 +1367,10 @@ class ObjectManager
                 // path    = /foo/bar
                 // newItemPath= /mo/bar
                 $newItemPath = substr_replace($path, $newPath, 0, strlen($curPath));
-                if (isset($this->objectsByPath['Node'][$path])) {
-                    $node = $this->objectsByPath['Node'][$path];
-                    $this->objectsByPath['Node'][$newItemPath] = $node;
-                    unset($this->objectsByPath['Node'][$path]);
+                if (isset($this->objectsByPath[Node::class][$path])) {
+                    $node = $this->objectsByPath[Node::class][$path];
+                    $this->objectsByPath[Node::class][$newItemPath] = $node;
+                    unset($this->objectsByPath[Node::class][$path]);
                     $node->setPath($newItemPath, true);
                 }
 
@@ -1552,11 +1540,11 @@ class ObjectManager
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
-        if (isset($this->objectsByPath['Node'][$absPath])) {
+        if (isset($this->objectsByPath[Node::class][$absPath])) {
             throw new ItemExistsException($absPath); //FIXME: same-name-siblings...
         }
 
-        $this->objectsByPath['Node'][$absPath] = $node;
+        $this->objectsByPath[Node::class][$absPath] = $node;
         // a new item never has a uuid, no need to add to objectsByUuid
 
         $operation = new AddNodeOperation($absPath, $node);
@@ -1601,12 +1589,12 @@ class ObjectManager
      */
     public function clear()
     {
-        $this->objectsByPath = array('Node' => array());
-        $this->objectsByUuid = array();
-        $this->nodesAdd = array();
-        $this->nodesRemove = array();
-        $this->propertiesRemove = array();
-        $this->nodesMove = array();
+        $this->objectsByPath = [Node::class => []];
+        $this->objectsByUuid = [];
+        $this->nodesAdd = [];
+        $this->nodesRemove = [];
+        $this->propertiesRemove = [];
+        $this->nodesMove = [];
     }
 
     /**
@@ -1685,12 +1673,12 @@ class ObjectManager
      */
     protected function notifyItems($method)
     {
-        if (! in_array($method, array('beginTransaction', 'commitTransaction', 'rollbackTransaction'))) {
+        if (! in_array($method, ['beginTransaction', 'commitTransaction', 'rollbackTransaction'])) {
             throw new InvalidArgumentException("Unknown notification method '$method'");
         }
 
         // Notify the loaded nodes
-        foreach ($this->objectsByPath['Node'] as $node) {
+        foreach ($this->objectsByPath[Node::class] as $node) {
             $node->$method();
         }
 
@@ -1733,7 +1721,7 @@ class ObjectManager
     private function getMoveSrcPath($dstPath)
     {
         foreach ($this->nodesMove as $operation) {
-            if ($operation->dstPath == $dstPath) {
+            if ($operation->dstPath === $dstPath) {
                 return $operation->srcPath;
             }
         }
@@ -1773,11 +1761,12 @@ class ObjectManager
      *
      * @see Node::refresh()
      */
-    public function getCachedNode($absPath, $class = 'Node')
+    public function getCachedNode($absPath, $class = Node::class)
     {
         if (isset($this->objectsByPath[$class][$absPath])) {
             return $this->objectsByPath[$class][$absPath];
         }
+
         if (array_key_exists($absPath, $this->nodesRemove)) {
             return $this->nodesRemove[$absPath]->node;
         }
@@ -1797,9 +1786,9 @@ class ObjectManager
      *
      * @return ArrayIterator
      */
-    public function getCachedDescendants($absPath, $class = 'Node')
+    public function getCachedDescendants($absPath, $class = Node::class)
     {
-        $descendants = array();
+        $descendants = [];
 
         foreach ($this->objectsByPath[$class] as $path => $node) {
             if (0 === strpos($path, "$absPath/")) {
@@ -1825,7 +1814,7 @@ class ObjectManager
      *
      * @return NodeInterface or null
      */
-    public function getCachedNodeByUuid($uuid, $class = 'Node')
+    public function getCachedNodeByUuid($uuid, $class = Node::class)
     {
         if (array_key_exists($uuid, $this->objectsByUuid)) {
             return $this->getCachedNode($this->objectsByUuid[$uuid], $class);
@@ -1850,8 +1839,8 @@ class ObjectManager
      */
     public function purgeDisappearedNode($absPath, $keepChanges)
     {
-        if (array_key_exists($absPath, $this->objectsByPath['Node'])) {
-            $item = $this->objectsByPath['Node'][$absPath];
+        if (array_key_exists($absPath, $this->objectsByPath[Node::class])) {
+            $item = $this->objectsByPath[Node::class][$absPath];
 
             if ($keepChanges &&
                 ($item->isNew() || $this->getMoveSrcPath($absPath))
@@ -1865,7 +1854,7 @@ class ObjectManager
             if (false !== $uuid) {
                 unset($this->objectsByUuid[$uuid]);
             }
-            unset($this->objectsByPath['Node'][$absPath]);
+            unset($this->objectsByPath[Node::class][$absPath]);
             $item->setDeleted();
         }
         // if the node moved away from this node, we did not find it in
@@ -1885,7 +1874,7 @@ class ObjectManager
     public function registerUuid($uuid, $absPath)
     {
         if (isset($this->objectsByUuid[$uuid])) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Object path for UUID "%s" has already been registered to "%s"',
                 $uuid, $this->objectsByUuid[$uuid]
             ));

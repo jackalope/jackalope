@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use InvalidArgumentException;
 use PHPCR\Query\QOM\QueryObjectModelInterface;
 use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
@@ -13,6 +14,7 @@ use Jackalope\ObjectManager;
 use Jackalope\Query\SqlQuery;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use PHPCR\Util\ValueConverter;
 
 /**
  * {@inheritDoc}
@@ -57,7 +59,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      * @param array $orderings
      * @param array $columns
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         FactoryInterface $factory,
@@ -68,14 +70,16 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {
-                throw new \InvalidArgumentException('Not a valid ordering: '.$o);
+                throw new InvalidArgumentException("Not a valid ordering: $o");
             }
         }
+
         foreach ($columns as $c) {
             if (! $c instanceof ColumnInterface) {
-                throw new \InvalidArgumentException('Not a valid column: '.$c);
+                throw new InvalidArgumentException("Not a valid column: $c");
             }
         }
+
         parent::__construct($factory, '', $objectManager);
         $this->source = $source;
         $this->constraint = $constraint;
@@ -141,7 +145,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
      */
     public function getStatement()
     {
-        $valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $valueConverter = $this->factory->get(ValueConverter::class);
         $converter = new QomToSql2QueryConverter(new Sql2Generator($valueConverter));
 
         return $converter->convert($this);

@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use InvalidArgumentException;
 use PHPCR\Query\QOM\ColumnInterface;
 
 /**
@@ -36,16 +37,18 @@ class Column implements ColumnInterface
      * @param string $propertyName
      * @param string $columnName
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName, $columnName = null)
     {
         if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new InvalidArgumentException('Required argument selectorName may not be null.');
         }
+
         if ((null === $propertyName) != (null === $columnName)) {
-            throw new \InvalidArgumentException('Either both propertyName and columnName must be both null, or both non-null.');
+            throw new InvalidArgumentException('Either both propertyName and columnName must be both null, or both non-null.');
         }
+
         $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
         $this->columnName = $columnName;

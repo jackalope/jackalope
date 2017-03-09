@@ -3,6 +3,8 @@
 namespace Jackalope\NodeType;
 
 use ArrayObject;
+use DateTime;
+use InvalidArgumentException;
 use PHPCR\ItemExistsException;
 use PHPCR\Lock\LockException;
 use PHPCR\NodeInterface;
@@ -81,11 +83,8 @@ $/xi";
      * @param ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
      * @param bool        $autoLastModified Whether the last modified property should be updated automatically
      */
-    public function __construct(
-        $userId,
-        ArrayObject $namespaces,
-        $autoLastModified = true
-    ) {
+    public function __construct($userId, ArrayObject $namespaces, $autoLastModified = true)
+    {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
@@ -106,7 +105,7 @@ $/xi";
         $nodeTypes = $node->getMixinNodeTypes();
         array_unshift($nodeTypes, $nodeDef);
 
-        $additionalOperations = array();
+        $additionalOperations = [];
         foreach ($nodeTypes as $nodeType) {
             /* @var $nodeType NodeTypeDefinitionInterface */
             $additionalOperations = array_merge(
@@ -127,7 +126,7 @@ $/xi";
      *
      * @return AddNodeOperation[] Additional operations to handle autocreated nodes.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws RepositoryException
      * @throws ItemExistsException
      * @throws LockException
@@ -138,7 +137,7 @@ $/xi";
      */
     private function processNodeWithType(NodeInterface $node, NodeType $nodeTypeDefinition)
     {
-        $additionalOperations = array();
+        $additionalOperations = [];
 
         foreach ($nodeTypeDefinition->getDeclaredChildNodeDefinitions() as $childDef) {
             /* @var $childDef NodeDefinitionInterface */
@@ -194,7 +193,7 @@ $/xi";
                             break;
                         case 'jcr:created':
                         case 'jcr:lastModified':
-                            $value = new \DateTime();
+                            $value = new DateTime();
                             break;
                         case 'jcr:etag':
                             // TODO: http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.7.12.1%20mix:etag
@@ -228,7 +227,7 @@ $/xi";
                     switch ($propertyDef->getName()) {
                         case 'jcr:lastModified':
                             if ($this->autoLastModified) {
-                                $prop->setValue(new \DateTime());
+                                $prop->setValue(new DateTime());
                             }
                             break;
                         case 'jcr:lastModifiedBy':
@@ -270,7 +269,7 @@ $/xi";
             case PropertyType::NAME:
                 $values = $property->getValue();
                 if (!$property->isMultiple()) {
-                    $values = array($values);
+                    $values = [$values];
                 }
                 foreach ($values as $value) {
                     $pos = strpos($value, ':');
@@ -290,7 +289,7 @@ $/xi";
             case PropertyType::PATH:
                 $values = $property->getValue();
                 if (!$property->isMultiple()) {
-                    $values = array($values);
+                    $values = [$values];
                 }
                 foreach ($values as $value) {
                     try {
@@ -304,7 +303,7 @@ $/xi";
             case PropertyType::URI:
                 $values = $property->getValue();
                 if (!$property->isMultiple()) {
-                    $values = array($values);
+                    $values = [$values];
                 }
                 foreach ($values as $value) {
                     if (!preg_match(self::VALIDATE_URI_RFC3986, $value)) {

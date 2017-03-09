@@ -34,19 +34,21 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * List of predefined namespaces.
+     *
      * @var array
      */
-    protected $defaultNamespaces = array(
+    protected $defaultNamespaces = [
         self::PREFIX_JCR   => self::NAMESPACE_JCR,
         self::PREFIX_SV    => self::NAMESPACE_SV,
         self::PREFIX_NT    => self::NAMESPACE_NT,
         self::PREFIX_MIX   => self::NAMESPACE_MIX,
         self::PREFIX_XML   => self::NAMESPACE_XML,
         self::PREFIX_EMPTY => self::NAMESPACE_EMPTY,
-    );
+    ];
 
     /**
      * Set of namespaces registered by the user.
+     *
      * @var array
      */
     protected $userNamespaces = null;
@@ -76,7 +78,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     {
         if ($this->userNamespaces === null) {
             $namespaces = $this->transport->getNamespaces();
-            $this->userNamespaces = array();
+            $this->userNamespaces = [];
             foreach ($namespaces as $prefix => $uri) {
                 if (! array_key_exists($prefix, $this->defaultNamespaces)) {
                     $this->userNamespaces[$prefix] = $uri;
@@ -103,6 +105,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         if (false !== array_search($uri, $this->defaultNamespaces)) {
             throw new NamespaceException("Can not change default namespace $prefix = $uri");
         }
+
         $this->lazyLoadNamespaces();
         //first try putting the stuff in backend, and only afterwards update local info
 
@@ -114,6 +117,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
             // the backend takes care of storing this, but we have to update frontend info
             unset($this->userNamespaces[$oldpref]);
         }
+
         $this->userNamespaces[$prefix] = $uri;
     }
 
@@ -239,9 +243,11 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         if (! strncasecmp('xml', $prefix, 3)) {
             throw new NamespaceException("Do not use xml in prefixes for namespace changes: '$prefix'");
         }
+
         if (array_key_exists($prefix, $this->defaultNamespaces)) {
             throw new NamespaceException("Do not change the predefined prefixes: '$prefix'");
         }
+
         if (false !== strpos($prefix, ' ') || false !== strpos($prefix, ':')) {
             throw new NamespaceException("Not a valid namespace prefix '$prefix'");
         }

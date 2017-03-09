@@ -2,6 +2,8 @@
 
 namespace Jackalope\NodeType;
 
+use DOMDocument;
+use DOMXPath;
 use Jackalope\TestCase;
 use Jackalope\Factory;
 
@@ -19,16 +21,16 @@ class NodeTypeXmlConverterTest extends TestCase
     {
         $data = $this->converter->getNodeTypeDefinitionFromXml($this->getNodeTypeDOMElement('nt:base'));
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'name' => 'nt:base',
             'isAbstract' => true,
             'isMixin' => false,
             'isQueryable' => true,
             'hasOrderableChildNodes' => true,
             'primaryItemName' => null,
-            'declaredSuperTypeNames' => array(),
-            'declaredPropertyDefinitions' => array(
-                array(
+            'declaredSuperTypeNames' => [],
+            'declaredPropertyDefinitions' => [
+                [
                     'declaringNodeType' => '',
                     'name' => 'jcr:primaryType',
                     'isAutoCreated' => true,
@@ -39,7 +41,8 @@ class NodeTypeXmlConverterTest extends TestCase
                     'multiple' => false,
                     'fullTextSearchable' => true,
                     'queryOrderable' => true,
-                ), array(
+                ],
+                [
                     'declaringNodeType' => '',
                     'name' => 'jcr:mixinTypes',
                     'isAutoCreated' => true,
@@ -50,26 +53,26 @@ class NodeTypeXmlConverterTest extends TestCase
                     'multiple' => true,
                     'fullTextSearchable' => true,
                     'queryOrderable' => true,
-                ),
-            ),
-            'declaredNodeDefinitions' => array(),
-        ), $data);
+                ],
+            ],
+            'declaredNodeDefinitions' => [],
+        ], $data);
     }
 
     public function testConvertNtUnstructured()
     {
         $data = $this->converter->getNodeTypeDefinitionFromXml($this->getNodeTypeDOMElement('nt:unstructured'));
 
-        $this->assertEquals(array(
+        $this->assertEquals([
             'name' => 'nt:unstructured',
             'isAbstract' => false,
             'isMixin' => false,
             'isQueryable' => true,
             'hasOrderableChildNodes' => true,
             'primaryItemName' => null,
-            'declaredSuperTypeNames' => array('nt:base'),
-            'declaredPropertyDefinitions' => array(
-                array(
+            'declaredSuperTypeNames' => ['nt:base'],
+            'declaredPropertyDefinitions' => [
+                [
                     'declaringNodeType' => 'nt:unstructured',
                     'name' => '*',
                     'isAutoCreated' => false,
@@ -80,10 +83,10 @@ class NodeTypeXmlConverterTest extends TestCase
                     'multiple' => true,
                     'fullTextSearchable' => true,
                     'queryOrderable' => true,
-                ),
-            ),
-            'declaredNodeDefinitions' => array(
-                array(
+                ],
+            ],
+            'declaredNodeDefinitions' => [
+                [
                     'declaringNodeType' => 'nt:unstructured',
                     'name' => '*',
                     'isAutoCreated' => false,
@@ -92,9 +95,10 @@ class NodeTypeXmlConverterTest extends TestCase
                     'onParentVersion' => 2,
                     'allowsSameNameSiblings' => false,
                     'defaultPrimaryTypeName' => 'nt:unstructured',
-                    'requiredPrimaryTypeNames' => array('nt:base'),
-                ),
-        )), $data);
+                    'requiredPrimaryTypeNames' => ['nt:base'],
+                ],
+            ]
+        ], $data);
     }
 
     public function getNodeTypeDOMElement($name)
@@ -156,13 +160,13 @@ class NodeTypeXmlConverterTest extends TestCase
 </nodeTypes>
 
 XML;
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($xml);
 
-        $xpath = new \DOMXpath($dom);
+        $xpath = new DOMXpath($dom);
         $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
         if ($nodes->length != 1) {
-            $this->fail("Should have found exactly one element <nodeType> with name " . $name);
+            $this->fail("Should have found exactly one element <nodeType> with name $name");
         }
 
         return $nodes->item(0);

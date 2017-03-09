@@ -2,6 +2,7 @@
 
 namespace Jackalope\Version;
 
+use InvalidArgumentException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\NoSuchWorkspaceException;
 use PHPCR\PathNotFoundException;
@@ -27,13 +28,13 @@ class Version extends Node implements VersionInterface
      */
     public function getContainingHistory()
     {
-        return $this->objectManager->getNode($this->parentPath, '/', 'Version\\VersionHistory');
+        return $this->objectManager->getNode($this->parentPath, '/', VersionHistory::class);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -46,7 +47,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -64,13 +65,13 @@ class Version extends Node implements VersionInterface
         }
         $uuid = reset($successors);
 
-        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, Version::class);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -82,10 +83,10 @@ class Version extends Node implements VersionInterface
          * with the objectManager
          */
         $successors = $this->getProperty("jcr:successors")->getString();
-        $results = array();
+        $results = [];
         foreach ($successors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
-            $results[] = $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
+            $results[] = $this->objectManager->getNodeByIdentifier($uuid, Version::class);
         }
 
         return $results;
@@ -94,7 +95,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws PathNotFoundException
      * @throws ItemNotFoundException
      * @throws NoSuchWorkspaceException
@@ -114,7 +115,7 @@ class Version extends Node implements VersionInterface
         }
         $uuid = reset($predecessor);
 
-        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, Version::class);
     }
 
     /**
@@ -133,10 +134,10 @@ class Version extends Node implements VersionInterface
          * with the objectManager. see 3.13.2.6
          */
         $predecessors = $this->getProperty("jcr:predecessors")->getString();
-        $results = array();
+        $results = [];
         foreach ($predecessors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
-            $results[] = $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
+            $results[] = $this->objectManager->getNodeByIdentifier($uuid, Version::class);
         }
 
         return $results;
@@ -172,7 +173,7 @@ class Version extends Node implements VersionInterface
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
         foreach ($this->getProperty('jcr:predecessors')->getString() as $preuuid) {
-            $pre = $this->objectManager->getCachedNodeByUuid($preuuid, 'Version\\Version');
+            $pre = $this->objectManager->getCachedNodeByUuid($preuuid, Version::class);
             if ($pre) {
                 $pre->setDirty();
             }
@@ -188,7 +189,7 @@ class Version extends Node implements VersionInterface
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
         foreach ($this->getProperty('jcr:successors')->getString() as $postuuid) {
-            $post = $this->objectManager->getCachedNodeByUuid($postuuid, 'Version\\Version');
+            $post = $this->objectManager->getCachedNodeByUuid($postuuid, Version::class);
             if ($post) {
                 $post->setDirty();
             }

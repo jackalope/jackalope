@@ -58,7 +58,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      */
     public function getRootVersion()
     {
-        return $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), 'Version\\Version');
+        return $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), Version::class);
     }
 
     /**
@@ -89,7 +89,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
         // OPTIMIZE: special iterator that delays loading the versions
         if (!$this->versions) {
             $rootVersion = $this->getRootVersion();
-            $results = array($rootVersion->getName() => $rootVersion);
+            $results = [$rootVersion->getName() => $rootVersion];
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
         }
 
@@ -111,7 +111,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     protected function getEventualSuccessors($node)
     {
         $successors = $node->getSuccessors();
-        $results = array();
+        $results = [];
         foreach ($successors as $successor) {
             $results[$successor->getName()] = $successor;
             // OPTIMIZE: use a stack instead of recursion
@@ -129,7 +129,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     public function getAllLinearFrozenNodes()
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
-        $frozenNodes = array();
+        $frozenNodes = [];
         foreach ($this->getAllLinearVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
@@ -145,7 +145,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     public function getAllFrozenNodes()
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
-        $frozenNodes = array();
+        $frozenNodes = [];
         foreach ($this->getAllVersions() as $version) {
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
@@ -252,7 +252,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             throw new VersionException(sprintf('Version %s not found in history of %s', $version->getIdentifier(), $this->getPath()));
         }
 
-        $result = array();
+        $result = [];
         foreach ($this->versionLabels as $label => $labelVersion) {
             /* @var VersionInterface $labelVersion */
             if ($labelVersion->getIdentifier() == $version->getIdentifier()) {
@@ -274,14 +274,15 @@ class VersionHistory extends Node implements VersionHistoryInterface
             return;
         }
 
-        $this->versionLabels = array();
+        $this->versionLabels = [];
+
         $node = $this->getNode('jcr:versionLabels');
         foreach ($node->getProperties() as $property) {
             /* @var Property $property */
 
             if (NodeHelper::isSystemItem($node)) {
                 $name = $property->getName();
-                $value = $this->objectManager->getNodeByIdentifier($property->getValue()->getIdentifier(), 'Version\\Version');
+                $value = $this->objectManager->getNodeByIdentifier($property->getValue()->getIdentifier(), Version::class);
                 $this->versionLabels[$name] = $value;
             }
         }

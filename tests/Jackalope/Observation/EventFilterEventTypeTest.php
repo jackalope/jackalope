@@ -3,15 +3,13 @@
 namespace Jackalope\Observation;
 
 use PHPCR\Observation\EventInterface;
-use Jackalope\Observation\Event;
-use Jackalope\Observation\EventFilter;
 
 /**
  * Unit tests for the EventFilter
  */
 class EventFilterEventTypeTest extends EventFilterTestCase
 {
-    protected $allEventTypes = array(
+    protected $allEventTypes = [
         EventInterface::NODE_ADDED,
         EventInterface::NODE_MOVED,
         EventInterface::NODE_REMOVED,
@@ -19,13 +17,13 @@ class EventFilterEventTypeTest extends EventFilterTestCase
         EventInterface::PROPERTY_ADDED,
         EventInterface::PROPERTY_CHANGED,
         EventInterface::PROPERTY_REMOVED
-    );
+    ];
 
     public function testNoMatchFilter()
     {
         foreach ($this->allEventTypes as $type) {
             $this->eventFilter->setEventTypes(0);
-            $this->assertFilterMatch($this->eventFilter, array());
+            $this->assertFilterMatch($this->eventFilter, []);
         }
     }
 
@@ -33,15 +31,15 @@ class EventFilterEventTypeTest extends EventFilterTestCase
     {
         foreach ($this->allEventTypes as $type) {
             $this->eventFilter->setEventTypes($type);
-            $this->assertFilterMatch($this->eventFilter, array($type));
+            $this->assertFilterMatch($this->eventFilter, [$type]);
         }
     }
 
     public function testMultipleTypeFilter()
     {
-        $this->assertMultiTypeFilter(array(EventInterface::NODE_REMOVED, EventInterface::PROPERTY_REMOVED));
-        $this->assertMultiTypeFilter(array(EventInterface::PROPERTY_REMOVED, EventInterface::PROPERTY_ADDED, EventInterface::PROPERTY_CHANGED));
-        $this->assertMultiTypeFilter(array(EventInterface::NODE_REMOVED, EventInterface::NODE_ADDED, EventInterface::NODE_MOVED, EventInterface::PERSIST));
+        $this->assertMultiTypeFilter([EventInterface::NODE_REMOVED, EventInterface::PROPERTY_REMOVED]);
+        $this->assertMultiTypeFilter([EventInterface::PROPERTY_REMOVED, EventInterface::PROPERTY_ADDED, EventInterface::PROPERTY_CHANGED]);
+        $this->assertMultiTypeFilter([EventInterface::NODE_REMOVED, EventInterface::NODE_ADDED, EventInterface::NODE_MOVED, EventInterface::PERSIST]);
     }
 
     /**

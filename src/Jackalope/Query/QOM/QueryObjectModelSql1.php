@@ -14,6 +14,7 @@ use Jackalope\ObjectManager;
 use Jackalope\Query\Sql1Query;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use PHPCR\Util\ValueConverter;
 
 /**
  * {@inheritDoc}
@@ -58,7 +59,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      * @param array $orderings
      * @param array $columns
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(
         FactoryInterface $factory,
@@ -142,7 +143,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      */
     public function getStatement()
     {
-        $valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $valueConverter = $this->factory->get(ValueConverter::class);
         $converter = new QomToSql1QueryConverter(new Sql1Generator($valueConverter));
 
         return $converter->convert($this);

@@ -2,6 +2,9 @@
 
 namespace Jackalope;
 
+use ArrayIterator;
+use Iterator;
+
 class NodeTest extends TestCase
 {
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
@@ -13,10 +16,10 @@ class NodeTest extends TestCase
         $objectManager = $this->getObjectManagerMock();
         $objectManager->expects($this->any())
             ->method('getNodesByPath')
-            ->will($this->returnValue(new \ArrayIterator(array(
-                "/jcr:root/tests_level1_access_base" => new Node($factory, json_decode($this->JSON), '/jcr:root/tests_level1_access_base', $session, $objectManager),
-                "/jcr:root/jcr:system" => new Node($factory, json_decode($this->JSON), '/jcr:root/jcr:system', $session, $objectManager),
-            ))))
+            ->will($this->returnValue(new ArrayIterator([
+                '/jcr:root/tests_level1_access_base' => new Node($factory, json_decode($this->JSON), '/jcr:root/tests_level1_access_base', $session, $objectManager),
+                '/jcr:root/jcr:system' => new Node($factory, json_decode($this->JSON), '/jcr:root/jcr:system', $session, $objectManager),
+            ])))
         ;
         $node = new Node($factory, json_decode($this->JSON), '/jcr:root', $session, $objectManager);
 
@@ -26,10 +29,10 @@ class NodeTest extends TestCase
     public function testConstructor()
     {
         $node = $this->createNode();
-        $this->assertInstanceOf('Jackalope\Session', $node->getSession());
-        $this->assertInstanceOf('Jackalope\Node', $node);
+        $this->assertInstanceOf(Session::class, $node->getSession());
+        $this->assertInstanceOf(Node::class, $node);
         $children = $node->getNodes();
-        $this->assertInstanceOf('Iterator', $children);
+        $this->assertInstanceOf(Iterator::class, $children);
         $this->assertCount(2, $children);
     }
 
@@ -44,7 +47,7 @@ class NodeTest extends TestCase
     public function testFilterNames()
     {
         $filter = 'test';
-        $names = array('test', 'toast');
+        $names = ['test', 'toast'];
         $filtered = NodeMock::filterNames($filter, $names);
         $this->assertInternalType('array', $filtered);
         $this->assertCount(1, $filtered);
@@ -76,7 +79,7 @@ class NodeTest extends TestCase
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
-        $filter = array('test ', 'toa*');
+        $filter = ['test ', 'toa*'];
         $filtered = NodeMock::filterNames($filter, $names);
         $this->assertInternalType('array', $filtered);
         $this->assertCount(2, $filtered);
@@ -97,7 +100,7 @@ class NodeTest extends TestCase
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
-        $filter = array('*');
+        $filter = ['*'];
         $filtered = NodeMock::filterNames($filter, $names);
         $this->assertInternalType('array', $filtered);
         $this->assertCount(2, $filtered);

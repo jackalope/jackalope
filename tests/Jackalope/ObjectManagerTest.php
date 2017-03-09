@@ -2,6 +2,9 @@
 
 namespace Jackalope;
 
+use DOMDocument;
+use Iterator;
+
 class ObjectManagerTest extends TestCase
 {
     /**
@@ -15,8 +18,8 @@ class ObjectManagerTest extends TestCase
         $session = $this->getSessionMock();
         $workspace = $session->getWorkspace();
 
-        $ntMock = $this->getNodeTypeMock(array('isNodeType' => true));
-        $ntmMock = $this->getNodeTypeManagerMock(array('getNodeType' => $ntMock));
+        $ntMock = $this->getNodeTypeMock(['isNodeType' => true]);
+        $ntmMock = $this->getNodeTypeManagerMock(['getNodeType' => $ntMock]);
 
         $workspace->expects($this->any())
             ->method('getNodeTypeManager')
@@ -29,9 +32,9 @@ class ObjectManagerTest extends TestCase
     {
         $path = '/jcr:root';
         $node = $this->om->getNodeByPath($path);
-        $this->assertInstanceOf('Jackalope\Node', $node);
+        $this->assertInstanceOf(Node::class, $node);
         $children = $node->getNodes();
-        $this->assertInstanceOf('Iterator', $children);
+        $this->assertInstanceOf(Iterator::class, $children);
         $this->assertCount(2, $children);
         $this->assertSame($node, $this->om->getNodeByPath($path));
     }
@@ -39,9 +42,9 @@ class ObjectManagerTest extends TestCase
     public function testGetNodeTypes()
     {
         $nodetypes = $this->om->getNodeTypes();
-        $this->assertInstanceOf('DOMDocument', $nodetypes);
-        $nodetypes = $this->om->getNodeTypes(array('nt:folder', 'nt:file'));
-        $this->assertInstanceOf('DOMDocument', $nodetypes);
+        $this->assertInstanceOf(DOMDocument::class, $nodetypes);
+        $nodetypes = $this->om->getNodeTypes(['nt:folder', 'nt:file']);
+        $this->assertInstanceOf(DOMDocument::class, $nodetypes);
     }
 
     public function testRegisterUuid()
@@ -49,7 +52,7 @@ class ObjectManagerTest extends TestCase
         $this->om->registerUuid('1234', '/jcr:root');
         $node = $this->om->getNodeByIdentifier('1234');
 
-        $this->assertInstanceOf('Jackalope\Node', $node);
+        $this->assertInstanceOf(Node::class, $node);
     }
 
     /**

@@ -24,24 +24,28 @@ abstract class Query implements QueryInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
 
     /**
      * The query statement
+     *
      * @var string
      */
     protected $statement;
 
     /**
      * Limit for the query
+     *
      * @var integer
      */
     protected $limit;
 
     /**
      * Offset to start results from
+     *
      * @var integer
      */
     protected $offset;
@@ -52,8 +56,10 @@ abstract class Query implements QueryInterface
      * @var ObjectManager
      */
     protected $objectManager;
+
     /**
      * If this is a stored query, the path to the node that stores this query.
+     *
      * @var string
      */
     protected $path;
@@ -99,13 +105,7 @@ abstract class Query implements QueryInterface
         }
         $transport = $this->objectManager->getTransport();
         $rawData = $transport->query($this);
-        $queryResult = $this->factory->get(
-            'Query\QueryResult',
-            array(
-                $rawData,
-                $this->objectManager,
-            )
-        );
+        $queryResult = $this->factory->get(QueryResult::class, [$rawData, $this->objectManager]);
 
         return $queryResult;
     }

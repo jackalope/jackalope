@@ -2,6 +2,10 @@
 
 namespace Jackalope;
 
+use PHPCR\ItemNotFoundException;
+use PHPCR\ItemVisitorInterface;
+use PHPCR\RepositoryException;
+
 class ItemTest extends TestCase
 {
     /**
@@ -10,7 +14,7 @@ class ItemTest extends TestCase
     protected function getItem($factory = null, $path = null, $session = null, $objectManager = null, $new = false)
     {
         if (! $factory) {
-            $factory = $this->getMockBuilder('Jackalope\FactoryInterface')->disableOriginalConstructor()->getMock();
+            $factory = $this->getMockBuilder(FactoryInterface::class)->disableOriginalConstructor()->getMock();
         }
         if (! $path) {
             $path = '/';
@@ -77,22 +81,20 @@ class ItemTest extends TestCase
         $this->assertSame('placeholder', $ancestor);
     }
 
-    /**
-     * @expectedException \PHPCR\ItemNotFoundException
-     */
     public function testGetAncestorTooDeep()
     {
+        $this->expectException(ItemNotFoundException::class);
+
         $item = $this->getItem(null, '/path/name');
-        $ancestor = $item->getAncestor(3);
+        $item->getAncestor(3);
     }
 
-    /**
-     * @expectedException \PHPCR\ItemNotFoundException
-     */
     public function testGetAncestorTooLow()
     {
+        $this->expectException(ItemNotFoundException::class);
+
         $item = $this->getItem(null, '/path/name');
-        $ancestor = $item->getAncestor(-1);
+        $item->getAncestor(-1);
     }
 
     public function testGetParent()
@@ -126,7 +128,7 @@ class ItemTest extends TestCase
     public function testAccept()
     {
         $item = $this->getItem();
-        $visitor = $this->getMock('\PHPCR\ItemVisitorInterface');
+        $visitor = $this->createMock(ItemVisitorInterface::class);
         $visitor->expects($this->once())
                 ->method('visit');
         $item->accept($visitor);
@@ -145,11 +147,10 @@ class ItemTest extends TestCase
         $this->assertTrue($item->isDeleted());
     }
 
-    /**
-     * @expectedException \PHPCR\RepositoryException
-     */
     public function testRemoveRoot()
     {
+        $this->expectException(RepositoryException::class);
+
         $item = $this->getItem(null, '/');
         $item->remove();
     }

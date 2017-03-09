@@ -65,7 +65,7 @@ class VersionManager implements VersionManagerInterface
 
          $version = $this->objectManager->checkin($absPath);
          $version->setCachedPredecessorsDirty();
-         if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), 'Version\\VersionHistory')) {
+         if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), VersionHistory::class)) {
              $history->notifyHistoryChanged();
          }
          if ($node) {
@@ -138,7 +138,7 @@ class VersionManager implements VersionManagerInterface
             throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
 
-        return $this->objectManager->getNodeByIdentifier($node->getProperty('jcr:versionHistory')->getString(), 'Version\\VersionHistory');
+        return $this->objectManager->getNodeByIdentifier($node->getProperty('jcr:versionHistory')->getString(), VersionHistory::class);
     }
 
     /**
@@ -171,7 +171,7 @@ class VersionManager implements VersionManagerInterface
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");
         }
 
-        return $this->objectManager->getNodeByIdentifier($uuid, 'Version\\Version');
+        return $this->objectManager->getNodeByIdentifier($uuid, Version::class);
     }
 
     /**
@@ -213,7 +213,7 @@ class VersionManager implements VersionManagerInterface
         $this->objectManager->restore($removeExisting, $versionPath, $nodePath);
 
         $version->setCachedPredecessorsDirty();
-        if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), 'Version\\VersionHistory')) {
+        if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), VersionHistory::class)) {
             $history->notifyHistoryChanged();
         }
     }

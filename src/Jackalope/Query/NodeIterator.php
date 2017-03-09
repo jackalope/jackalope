@@ -30,8 +30,14 @@ class NodeIterator implements SeekableIterator, Countable
      */
     protected $factory;
 
+    /**
+     * @var array
+     */
     protected $rows;
 
+    /**
+     * @var int
+     */
     protected $position = 0;
 
     /**
@@ -50,8 +56,8 @@ class NodeIterator implements SeekableIterator, Countable
     {
         foreach ($this->rows as $position => $columns) {
             foreach ($columns as $column) {
-                if ($column['dcr:name'] == 'jcr:path') {
-                    if ($column['dcr:value'] == $nodeName) {
+                if ($column['dcr:name'] === 'jcr:path') {
+                    if ($column['dcr:value'] === $nodeName) {
                         $this->position = $position;
 
                         return;
@@ -90,7 +96,7 @@ class NodeIterator implements SeekableIterator, Countable
         }
 
         foreach ($this->rows[$this->position] as $column) {
-            if ($column['dcr:name'] == 'jcr:path') {
+            if ($column['dcr:name'] === 'jcr:path') {
                 $path = $column['dcr:value'];
                 break;
             }

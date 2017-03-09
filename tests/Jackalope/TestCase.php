@@ -2,11 +2,20 @@
 
 namespace Jackalope;
 
+use DOMDocument;
+use Jackalope\NodeType\ItemDefinition;
+use Jackalope\NodeType\NodeDefinition;
+use Jackalope\NodeType\NodeType;
+use Jackalope\Transaction\UserTransaction;
+use Jackalope\Transport\TransportInterface;
+use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\SimpleCredentials;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\NodeTypeXmlConverter;
+use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends PHPUnit_Framework_TestCase
 {
     protected $config;
     protected $credentials;
@@ -43,11 +52,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for the read only transport.
      *
-     * @return \Jackalope\Transport\TransportInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return TransportInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function getTransportStub()
     {
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
+        $transport = $this->getMockBuilder(TransportInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -56,7 +65,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(json_decode($this->JSON)))
         ;
 
-        $dom = new \DOMDocument();
+        $dom = new DOMDocument();
         $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
         $transport->expects($this->any())
             ->method('getNodeTypes')
@@ -68,7 +77,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         $transport->expects($this->any())
             ->method('getNodes')
-            ->will($this->returnValue(array("/jcr:root/tests_level1_access_base" => array(), "/jcr:root/jcr:system" => array())));
+            ->will($this->returnValue(['/jcr:root/tests_level1_access_base' => [], '/jcr:root/jcr:system' => []]));
 
         return $transport;
     }
@@ -76,15 +85,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for a session.
      *
-     * @return \Jackalope\Session|\PHPUnit_Framework_MockObject_MockObject
+     * @return Session|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function getSessionMock()
     {
-        $mock = $this->getMockBuilder('Jackalope\Session')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(Session::class)->disableOriginalConstructor()->getMock();
+
         $mock->expects($this->any())
              ->method('getWorkspace')
              ->will($this->returnValue($this->getWorkspaceMock()))
         ;
+
         $mock->expects($this->any())
              ->method('getRepository')
              ->will($this->returnValue($this->getRepositoryMock()))
@@ -96,12 +107,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for a workspace.
      *
-     * @return \Jackalope\Workspace|\PHPUnit_Framework_MockObject_MockObject
+     * @return Workspace|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function getWorkspaceMock()
     {
-        $factory = new Factory;
-        $mock = $this->getMock('\Jackalope\Workspace', array('getTransactionManager', 'getNodeTypeManager'), array($factory), '', false);
+        $factory = new Factory();
+        $mock = $this->getMockBuilder(Workspace::class)
+            ->setMethods(['getTransactionManager', 'getNodeTypeManager'])
+            ->setConstructorArgs([$factory])
+            ->setMockClassName('')
+            ->disableOriginalConstructor()
+            ->getMock();
         $mock->expects($this->any())
              ->method('getTransactionManager')
              ->will($this->returnValue($this->getInactiveTransactionMock()));
@@ -112,11 +128,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for an inactive transaction.
      *
-     * @return \Jackalope\Transaction\UserTransaction|\PHPUnit_Framework_MockObject_MockObject
+     * @return UserTransaction|\PHPUnit_Framework_MockObject_MockObject
      */
     protected function getInactiveTransactionMock()
     {
-        $mock = $this->getMockBuilder('Jackalope\Transaction\UserTransaction')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(UserTransaction::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $mock->expects($this->any())
              ->method('inTransaction')
              ->will($this->returnValue(false))
@@ -128,11 +148,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for a repository.
      *
-     * @return \Jackalope\Repository|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Repository|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getRepositoryMock($methodValueMap = array())
+    protected function getRepositoryMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\Repository')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(Repository::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -141,9 +167,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for the ObjectManager.
      *
-     * @return \Jackalope\ObjectManager|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return ObjectManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    protected function getObjectManagerMock($methodValueMap = array())
+    protected function getObjectManagerMock($methodValueMap = [])
     {
         $mock = $this->getMockBuilder('Jackalope\ObjectManager')->disableOriginalConstructor()->getMock();
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
@@ -156,11 +184,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * NOTE: This and other mock methods are public because they need to be accessed from within callbacks sometimes.
      *
-     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeMock($methodValueMap = array())
+    public function getNodeMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\Node')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(Node::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -169,11 +201,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for a node type
      *
-     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeTypeMock($methodValueMap = array())
+    public function getNodeTypeMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeType')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(NodeType::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -182,11 +220,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for an item definition
      *
-     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getItemDefinitionMock($methodValueMap = array())
+    public function getItemDefinitionMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\NodeType\ItemDefinition')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(ItemDefinition::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -195,11 +239,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for an item definition
      *
-     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeDefinitionMock($methodValueMap = array())
+    public function getNodeDefinitionMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeDefinition')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(NodeDefinition::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -208,19 +258,29 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for an item definition
      *
-     * @return \Jackalope\Node|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return Node|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getPropertyDefinitionMock($methodValueMap = array())
+    public function getPropertyDefinitionMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('PHPCR\NodeType\PropertyDefinitionInterface')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(PropertyDefinitionInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
     }
 
-    public function getPropertyMock($methodValueMap = array())
+    public function getPropertyMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\Property')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(Property::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -229,11 +289,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Get a mock object for a node.
      *
-     * @return \Jackalope\NodeType\NodeTypeManager|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $methodValueMap
+     *
+     * @return NodeTypeManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getNodeTypeManagerMock($methodValueMap = array())
+    public function getNodeTypeManagerMock($methodValueMap = [])
     {
-        $mock = $this->getMockBuilder('Jackalope\NodeType\NodeTypeManager')->disableOriginalConstructor()->getMock();
+        $mock = $this->getMockBuilder(NodeTypeManager::class)
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
         return $mock;
@@ -247,8 +313,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getNodeTypeManager()
     {
-        $factory = new Factory;
-        $dom = new \DOMDocument();
+        $factory = new Factory();
+        $dom = new DOMDocument();
         $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
         $converter = new NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
@@ -256,7 +322,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             ->method('getNodeTypes')
             ->will($this->returnValue($converter->getNodeTypesFromXml($dom)))
         ;
-        $ns = $this->getMockBuilder('Jackalope\NamespaceRegistry')->disableOriginalConstructor()->getMock();
+        $ns = $this->getMockBuilder(NamespaceRegistry::class)->disableOriginalConstructor()->getMock();
 
         $ntm = new NodeTypeManager($factory, $om, $ns);
         // we need to initialize as getting a single node type calls a different method on the om.
@@ -274,9 +340,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed  The result of the method call
      */
-    protected function getAndCallMethod($instance, $method, $args = array())
+    protected function getAndCallMethod($instance, $method, $args = [])
     {
-        $class = new \ReflectionClass(get_class($instance));
+        $class = new ReflectionClass(get_class($instance));
         $method = $class->getMethod($method);
         $method->setAccessible(true);
 
@@ -293,7 +359,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getAttributeValue($instance, $attributeName)
     {
-        $class = new \ReflectionClass(get_class($instance));
+        $class = new ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -312,7 +378,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function myAssertAttributeEquals($expectedValue, $attributeName, $instance)
     {
-        $class = new \ReflectionClass(get_class($instance));
+        $class = new ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -321,7 +387,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function setAttributeValue($instance, $attributeName, $value)
     {
-        $class = new \ReflectionClass(get_class($instance));
+        $class = new ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -337,7 +403,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function getDomElement($xml)
     {
-        $doc = new \DOMDocument();
+        $doc = new DOMDocument();
         $doc->loadXML('<wrapper>' . $xml . '</wrapper>');
         $list = $doc->getElementsByTagName('wrapper');
 

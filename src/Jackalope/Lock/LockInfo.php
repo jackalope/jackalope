@@ -14,9 +14,24 @@ use PHPCR\Lock\LockInfoInterface;
  */
 class LockInfo implements LockInfoInterface
 {
+    /**
+     * @var bool
+     */
     private $isDeep = true;
+
+    /**
+     * @var bool
+     */
     private $isSessionScoped = false;
+
+    /**
+     * @var int
+     */
     private $timeoutHint = PHP_INT_MAX;
+
+    /**
+     * @var null|string
+     */
     private $ownerInfo = null;
 
     /**

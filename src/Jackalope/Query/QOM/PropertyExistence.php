@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use InvalidArgumentException;
 use PHPCR\Query\QOM\PropertyExistenceInterface;
 
 /**
@@ -30,12 +31,12 @@ class PropertyExistence implements PropertyExistenceInterface
      * @param string $selectorName
      * @param string $propertyName
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName)
     {
         if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new InvalidArgumentException('Required argument selectorName may not be null.');
         }
         $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
@@ -70,6 +71,6 @@ class PropertyExistence implements PropertyExistenceInterface
      */
     public function getConstraints()
     {
-        return array($this);
+        return [$this];
     }
 }

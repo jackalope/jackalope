@@ -46,7 +46,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * All binary stream wrapper instances
      * @var array
      */
-    protected $streams = array();
+    protected $streams = [];
 
     /**
      * The property value in suitable native format or object
@@ -55,8 +55,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     protected $value;
 
     /**
-     * length is only used for binary property, because binary loading is
-     * delayed until explicitly requested.
+     * length is only used for binary property, because binary loading is delayed until explicitly requested.
+     *
      * @var int
      */
     protected $length;
@@ -148,7 +148,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 $violation = true;
                 if ('jcr:mixinTypes' === $this->getDefinition()->getName()) {
                     // check that the jcr:mixinTypes are in sync with the mixin node types
-                    $mixins = array();
+                    $mixins = [];
                     foreach ($this->getParent()->getMixinNodeTypes() as $mixin) {
                         $mixins[] = $mixin->getName();
                     }
@@ -261,7 +261,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * {@inheritDoc}
      *
      * @throws InvalidItemStateException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */
@@ -272,6 +272,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type === PropertyType::BINARY && empty($this->value)) {
             return $this->valueConverter->convertType($this->getBinary(), PropertyType::STRING, $this->type);
         }
+
         if ($this->type !== PropertyType::STRING) {
             return $this->valueConverter->convertType($this->value, PropertyType::STRING, $this->type);
         }
@@ -294,16 +295,18 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if ($this->type !== PropertyType::BINARY) {
             return $this->valueConverter->convertType($this->value, PropertyType::BINARY, $this->type);
         }
+
         if (! $this->wrapBinaryStreams && null === $this->value) {
             // no caching the stream. we need to fetch the stream and then copy
             // it into a memory stream so it can be accessed more than once.
             $this->value = $this->objectManager->getBinaryStream($this->path);
         }
+
         if ($this->value !== null) {
             // we have the stream locally: no wrapping or new or updated property
             // copy the stream so the original stream stays usable for storing, fetching again...
-            $val = is_array($this->value) ? $this->value : array($this->value);
-            $ret = array();
+            $val = is_array($this->value) ? $this->value : [$this->value];
+            $ret = [];
             foreach ($val as $s) {
                 $stream = fopen('php://memory', 'rwb+');
                 $pos = ftell($s);
@@ -322,11 +325,11 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         // return wrapped stream
         if ($this->isMultiple()) {
-            $results = array();
+            $results = [];
             // identifies all streams loaded by one backend call
             $token = md5(uniqid(mt_rand(), true));
             // start with part = 1 since 0 will not be parsed properly by parse_url
-            for ($i = 1; $i <= count($this->length); $i++) {
+            for ($i = 1, $iMax = count($this->length); $i <= $iMax; $i++) {
                 $this->streams[] = $results[] = fopen('jackalope://' . $token. '@' . $this->session->getRegistryKey() . ':' . $i . $this->path, 'rwb+');
             }
 
@@ -444,9 +447,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     {
         $this->checkState();
 
-        $values = $this->isMultiple() ? $this->value : array($this->value);
+        $values = $this->isMultiple() ? $this->value : [$this->value];
 
-        $results = array();
+        $results = [];
         switch ($this->type) {
             case PropertyType::REFERENCE:
                 $results = $this->getReferencedNodes($values, false);
@@ -488,9 +491,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     {
         $this->checkState();
 
-        $values = $this->isMultiple() ? $this->value : array($this->value);
+        $values = $this->isMultiple() ? $this->value : [$this->value];
 
-        $results = array();
+        $results = [];
         switch ($this->type) {
             case PropertyType::PATH:
             case PropertyType::STRING:
@@ -519,8 +522,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             return $this->length;
         }
 
-        $vals = $this->isMultiple ? $this->value : array($this->value);
-        $ret = array();
+        $vals = $this->isMultiple ? $this->value : [$this->value];
+        $ret = [];
 
         foreach ($vals as $value) {
             try {
@@ -617,7 +620,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         $value = $this->getValue();
         if (!is_array($value)) {
-            $value = array($value);
+            $value = [$value];
         }
 
         return new ArrayIterator($value);
@@ -768,9 +771,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 return;
             }
             if (is_array($value)) {
-                $this->length = array();
+                $this->length = [];
                 foreach ($value as $v) {
-                    $stat = is_resource($v) ? fstat($v) : array( 'size' => -1 );
+                    $stat = is_resource($v) ? fstat($v) : ['size' => -1];
                     $this->length[] = $stat['size'];
                 }
             } elseif (is_resource($value)) {
@@ -826,9 +829,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      */
     private function getReferencedNodes($ids, $weak)
     {
-        $results = array();
+        $results = [];
         $nodes = $this->objectManager->getNodesByIdentifier($ids);
-        $missing = array();
+        $missing = [];
         foreach ($ids as $id) {
             if (isset($nodes[$id])) {
                 $results[] = $nodes[$id];

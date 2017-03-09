@@ -2,6 +2,9 @@
 
 namespace Jackalope;
 
+use InvalidArgumentException;
+use Other\TestDummy;
+
 class FactoryTest extends TestCase
 {
     /**
@@ -16,21 +19,20 @@ class FactoryTest extends TestCase
 
     public function testJackalope()
     {
-        $reg = $this->factory->get('NamespaceRegistry', array($this->getTransportStub()));
-        $this->assertInstanceOf('Jackalope\NamespaceRegistry', $reg);
+        $reg = $this->factory->get(NamespaceRegistry::class, [$this->getTransportStub()]);
+        $this->assertInstanceOf(NamespaceRegistry::class, $reg);
     }
 
     public function testOutside()
     {
-        $dummy = $this->factory->get('Other\TestDummy');
-        $this->assertInstanceOf('Other\TestDummy', $dummy);
+        $dummy = $this->factory->get(TestDummy::class);
+        $this->assertInstanceOf(TestDummy::class, $dummy);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testNotexisting()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $this->factory->get('ClassNotExisting');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query;
 
+use Iterator;
 use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 use PHPCR\Query\QueryResultInterface;
@@ -33,7 +34,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * @see QueryInterface::query()
      * @var array
      */
-    protected $rows = array();
+    protected $rows = [];
 
     /**
      * Create a new query result from raw data from transport.
@@ -55,7 +56,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * Implement the IteratorAggregate interface and returns exactly the same
      * iterator as QueryResult::getRows()
      *
-     * @return \Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
      *      Keys are the row position in this result set, Values are the
      *      RowInterface instances.
      *
@@ -77,7 +78,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getColumnNames()
     {
-        $columnNames = array();
+        $columnNames = [];
 
         foreach ($this->rows as $row) {
             foreach ($row as $columns) {
@@ -100,7 +101,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getRows()
     {
-        return $this->factory->get('Query\RowIterator', array($this->objectmanager, $this->rows));
+        return $this->factory->get(RowIterator::class, [$this->objectmanager, $this->rows]);
     }
 
     /**
@@ -111,10 +112,11 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     public function getNodes($prefetch = false)
     {
         if ($prefetch !== true) {
-            return $this->factory->get('Query\NodeIterator', array($this->objectmanager, $this->rows));
+            return $this->factory->get(NodeIterator::class, [$this->objectmanager, $this->rows]);
         }
 
-        $paths = array();
+        $paths = [];
+
         foreach ($this->getRows() as $row) {
             $paths[] = $row->getPath();
         }
@@ -129,7 +131,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getSelectorNames()
     {
-        $selectorNames = array();
+        $selectorNames = [];
 
         foreach ($this->rows as $row) {
             foreach ($row as $column) {

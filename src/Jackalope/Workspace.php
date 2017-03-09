@@ -1,6 +1,12 @@
 <?php
 namespace Jackalope;
 
+use Jackalope\Lock\LockManager;
+use Jackalope\Observation\ObservationManager;
+use Jackalope\Query\QueryManager;
+use Jackalope\Version\VersionManager;
+use PHPCR\Lock\LockManagerInterface;
+use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\WorkspaceInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Transaction\UserTransactionInterface;
@@ -26,26 +32,33 @@ class Workspace implements WorkspaceInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
+
     /**
      * @var Session
      */
     protected $session;
+
     /**
      * @var NodeTypeManager
      */
     protected $nodeTypeManager;
+
     /**
      * @var UserTransactionInterface
      */
-    protected $utx = null;
+    protected $userTransactionManager = null;
+
     /**
      * The name of the workspace this workspace represents
+     *
      * @var string
      */
     protected $name;
+
     /**
      * The namespace registry.
      *
@@ -54,12 +67,12 @@ class Workspace implements WorkspaceInterface
     protected $namespaceRegistry;
 
     /**
-     * @var \PHPCR\Lock\LockManagerInterface
+     * @var LockManagerInterface
      */
     protected $lockManager;
 
     /**
-     * @var \PHPCR\Observation\ObservationManagerInterface
+     * @var ObservationManagerInterface
      */
     protected $observationManager;
 
@@ -75,7 +88,7 @@ class Workspace implements WorkspaceInterface
     {
         $this->factory = $factory;
         $this->session = $session;
-        $this->nodeTypeManager = $this->factory->get('NodeType\\NodeTypeManager', array($objectManager, $this->getNamespaceRegistry()));
+        $this->nodeTypeManager = $this->factory->get(NodeTypeManager::class, [$objectManager, $this->getNamespaceRegistry()]);
         $this->name = $name;
     }
 
@@ -156,14 +169,14 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support locking');
         }
 
-        if (is_null($this->lockManager)) {
+        if (null === $this->lockManager) {
             $this->lockManager = $this->factory->get(
-                'Lock\\LockManager',
-                array(
+                LockManager::class,
+                [
                     $this->session->getObjectManager(),
                     $this->session,
                     $this->session->getTransport()
-                )
+                ]
             );
         }
 
@@ -181,7 +194,7 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support queries');
         }
 
-        return $this->factory->get('Query\\QueryManager', array($this->session->getObjectManager()));
+        return $this->factory->get(QueryManager::class, [$this->session->getObjectManager()]);
     }
 
     /**
@@ -190,18 +203,17 @@ class Workspace implements WorkspaceInterface
      * Called by the repository if transactions are enabled. Transactions are
      * enabled if this is called with a non-null argument, disabled otherwise.
      *
-     * @param UserTransactionInterface $utx A
-     *      UserTransaction object
+     * @param UserTransactionInterface $userTransactionManager A UserTransaction object
      *
      * @private
      */
-    public function setTransactionManager(UserTransactionInterface $utx)
+    public function setTransactionManager(UserTransactionInterface $userTransactionManager)
     {
         if (! $this->session->getTransport() instanceof TransactionInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
         }
 
-        $this->utx = $utx;
+        $this->userTransactionManager = $userTransactionManager;
     }
 
     /**
@@ -215,11 +227,11 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
         }
 
-        if (! $this->utx) {
+        if (! $this->userTransactionManager) {
             throw new UnsupportedRepositoryOperationException('Transactions are currently disabled');
         }
 
-        return $this->utx;
+        return $this->userTransactionManager;
     }
 
     /**
@@ -229,8 +241,8 @@ class Workspace implements WorkspaceInterface
      */
     public function getNamespaceRegistry()
     {
-        if ($this->namespaceRegistry == false) {
-            $this->namespaceRegistry = $this->factory->get('NamespaceRegistry', array($this->session->getTransport()));
+        if ($this->namespaceRegistry === null) {
+            $this->namespaceRegistry = $this->factory->get(NamespaceRegistry::class, [$this->session->getTransport()]);
         }
 
         return $this->namespaceRegistry;
@@ -259,11 +271,11 @@ class Workspace implements WorkspaceInterface
 
         if (is_null($this->observationManager)) {
             $this->observationManager = $this->factory->get(
-                'Observation\\ObservationManager',
-                array(
+                ObservationManager::class,
+                [
                     $this->session,
                     $this->session->getTransport()
-                )
+                ]
             );
         }
 
@@ -291,7 +303,7 @@ class Workspace implements WorkspaceInterface
             throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
         }
 
-        return $this->factory->get('Version\\VersionManager', array($this->session->getObjectManager()));
+        return $this->factory->get(VersionManager::class, [$this->session->getObjectManager()]);
     }
 
     /**
@@ -315,7 +327,8 @@ class Workspace implements WorkspaceInterface
             $this->getSession()->getNode($parentAbsPath),
             $this->getNamespaceRegistry(),
             $uri,
-            $uuidBehavior);
+            $uuidBehavior
+        );
     }
 
     /**

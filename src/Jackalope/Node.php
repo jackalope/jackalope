@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use ArrayIterator;
+use Iterator;
 use IteratorAggregate;
 use Exception;
 use InvalidArgumentException;
@@ -49,6 +50,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * The primary type name of this node
+     *
      * @var string
      */
     protected $primaryType;
@@ -62,7 +64,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @var Property[]
      */
-    protected $properties = array();
+    protected $properties = [];
 
     /**
      * keep track of properties to be deleted until the save operation was successful.
@@ -71,14 +73,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * keys are the property names, values the properties (in state deleted)
      */
-    protected $deletedProperties = array();
+    protected $deletedProperties = [];
 
     /**
      * ordered list of the child node names
      *
      * @var array
      */
-    protected $nodes = array();
+    protected $nodes = [];
 
     /**
      * ordered list of the child node names as known to be at the backend
@@ -91,6 +93,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * Cached instance of the node definition that defines this node
+     *
      * @var NodeDefinitionInterface
      * @see Node::getDefinition()
      */
@@ -157,7 +160,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
          *
          * properties are easy as they are not ordered.
          */
-        $nodesInBackend = array();
+        $nodesInBackend = [];
 
         foreach ($rawData as $key => $value) {
             $node = false; // reset to avoid trouble
@@ -416,9 +419,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             throw new ItemExistsException("The node '{$this->path}' already has a child named '$relPath''."); //TODO: same-name siblings if nodetype allows for them
         }
 
-        $data = array('jcr:primaryType' => $primaryNodeTypeName);
+        $data = ['jcr:primaryType' => $primaryNodeTypeName];
         $path = $this->getChildPath($relPath);
-        $node = $this->factory->get('Node', array($data, $path, $this->session, $this->objectManager, true));
+        $node = $this->factory->get(Node::class, [$data, $path, $this->session, $this->objectManager, true]);
 
         $this->addChildNode($node, false); // no need to check the state, we just checked when entering this method
         $this->objectManager->addNode($path, $node);
@@ -437,7 +440,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * {@inheritDoc}
      *
      * @api
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ItemExistsException
      * @throws PathNotFoundException
      * @throws RepositoryException
@@ -536,7 +539,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function getOrderCommands()
     {
         if (! $this->originalNodesOrder) {
-            return array();
+            return [];
         }
 
         $reorders = NodeHelper::calculateOrderBefore($this->originalNodesOrder, $this->nodes);
@@ -662,13 +665,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         $names = self::filterNames($nameFilter, $this->nodes);
-        $result = array();
+        $result = [];
+
         if (count($names)) {
-            $paths = array();
+            $paths = [];
             foreach ($names as $name) {
                 $paths[] = PathHelper::absolutizePath($name, $this->path);
             }
-            $nodes = $this->objectManager->getNodesByPath($paths, 'Node', $typeFilter);
+            $nodes = $this->objectManager->getNodesByPath($paths, Node::class, $typeFilter);
 
             // OPTIMIZE if we lazy-load in ObjectManager we should not do this loop
             foreach ($nodes as $node) {
@@ -745,15 +749,15 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $path = $this->getChildPath('jcr:primaryType');
         $property = $this->factory->get(
             'Property',
-            array(array('type' => $myProperty->getType(), 'value' => $myProperty->getValue()),
+            [['type' => $myProperty->getType(), 'value' => $myProperty->getValue()],
                 $path,
                 $this->session,
                 $this->objectManager
-            )
+            ]
         );
         $myProperty->setDeleted();
 
-        return array('jcr:primaryType' => $property);
+        return ['jcr:primaryType' => $property];
     }
 
     /**
@@ -807,7 +811,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         //OPTIMIZE: lazy iterator?
         $names = self::filterNames($nameFilter, array_keys($this->properties));
-        $result = array();
+        $result = [];
+
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
@@ -833,7 +838,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         // OPTIMIZE: do not create properties in constructor, go over array here
         $names = self::filterNames($nameFilter, array_keys($this->properties));
-        $result = array();
+        $result = [];
+
         foreach ($names as $name) {
             //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
@@ -1041,10 +1047,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         if (!isset($this->properties['jcr:mixinTypes'])) {
-            return array();
+            return [];
         }
-        $res = array();
+
+        $res = [];
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
+
         foreach ($this->properties['jcr:mixinTypes']->getValue() as $type) {
             $res[] = $ntm->getNodeType($type);
         }
@@ -1134,7 +1142,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $this->setModified();
             }
         } else {
-            $this->setProperty('jcr:mixinTypes', array($mixinName), PropertyType::NAME);
+            $this->setProperty('jcr:mixinTypes', [$mixinName], PropertyType::NAME);
             $this->setModified();
         }
     }
@@ -1187,7 +1195,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function setMixins(array $mixinNames)
     {
-        $toRemove = array();
+        $toRemove = [];
         if ($this->hasProperty('jcr:mixinTypes')) {
             foreach ($this->getPropertyValue('jcr:mixinTypes') as $mixin) {
                 if (false !== $key = array_search($mixin, $mixinNames)) {
@@ -1426,7 +1434,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
             // continue with empty data, parseData will notify all cached
             // children and all properties that we are removed
-            $json = array();
+            $json = [];
         }
 
         $this->parseData($json, true, $keepChanges);
@@ -1568,7 +1576,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $property->confirmSaved();
             }
         }
-        $this->deletedProperties = array();
+        $this->deletedProperties = [];
         parent::confirmSaved();
     }
 
@@ -1617,20 +1625,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected static function filterNames($filter, $names)
     {
         if ($filter !== null) {
-            $filtered = array();
+            $filtered = [];
             $filter = (array) $filter;
             foreach ($filter as $k => $f) {
                 $f = trim($f);
-                $filter[$k] = strtr($f, array('*'=>'.*', //wildcard
-                                             '.'  => '\\.', //escape regexp
-                                             '\\' => '\\\\',
-                                             '{'  => '\\{',
-                                             '}'  => '\\}',
-                                             '('  => '\\(',
-                                             ')'  => '\\)',
-                                             '+'  => '\\+',
-                                             '^'  => '\\^',
-                                             '$'  => '\\$'));
+                $filter[$k] = strtr($f, [
+                    '*'=>'.*', //wildcard
+                    '.'  => '\\.', //escape regexp
+                    '\\' => '\\\\',
+                    '{'  => '\\{',
+                    '}'  => '\\}',
+                    '('  => '\\(',
+                    ')'  => '\\)',
+                    '+'  => '\\+',
+                    '^'  => '\\^',
+                    '$'  => '\\$'
+                ]);
             }
             foreach ($names as $name) {
                 foreach ($filter as $f) {
@@ -1649,7 +1659,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Provide Traversable interface: redirect to getNodes with no filter
      *
-     * @return \Iterator over all child nodes
+     * @return Iterator over all child nodes
      * @throws RepositoryException
      */
     public function getIterator()
@@ -1672,7 +1682,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @return Property
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws LockException
      * @throws ConstraintViolationException
      * @throws RepositoryException
@@ -1693,14 +1703,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!isset($this->properties[$name])) {
             $path = $this->getChildPath($name);
             $property = $this->factory->get(
-                'Property',
-                array(
-                    array('type' => $type, 'value' => $value),
+                Property::class, [
+                    ['type' => $type, 'value' => $value],
                     $path,
                     $this->session,
                     $this->objectManager,
                     ! $internal
-                )
+                ]
             );
             $this->properties[$name] = $property;
             if (! $internal) {
@@ -1728,6 +1737,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function setDirty($keepChanges = false, $targetState = false)
     {
         parent::setDirty($keepChanges, $targetState);
+
         foreach ($this->properties as $property) {
             if ($keepChanges && self::STATE_NEW !== $property->getState()) {
                 // if we want to keep changes, we do not want to set new properties dirty.

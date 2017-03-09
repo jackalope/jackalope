@@ -20,14 +20,6 @@ class RemovePropertyOperation extends Operation
     public $property;
 
     /**
-     * Whether this remove operations was later determined to be skipped
-     * (i.e. a parent node is removed as well.)
-     *
-     * @var bool
-     */
-    public $skip = false;
-
-    /**
      * @param string   $srcPath  Absolute path of the property to remove.
      * @param Property $property Property object to be removed.
      */

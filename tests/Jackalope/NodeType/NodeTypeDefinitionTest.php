@@ -2,33 +2,36 @@
 
 namespace Jackalope\NodeType;
 
+use DOMDocument;
+use InvalidArgumentException;
+use Jackalope\Factory;
 use Jackalope\TestCase;
 use PHPCR\PropertyType;
+use stdClass;
 
 class NodeTypeDefinitionTest extends TestCase
 {
-    /**
-     * @expectedException   \InvalidArgumentException
-     */
     public function testInvalidNodeTypeDefinition()
     {
-        $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdclass);
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->getNodeTypeManager()->createNodeTypeTemplate(new stdClass());
     }
 
     public function testCreateFromArray()
     {
-        $factory = $this->getMock('Jackalope\Factory');
-        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), array(
-            'name'                      => 'test',
-            'isAbstract'                => true,
-            'isMixin'                   => true,
-            'isQueryable'               => true,
-            'hasOrderableChildNodes'    => true,
-            'primaryItemName'           => 'foo',
-            'supertypes'                => array(),
-            'declaredPropertyDefinitions' => array(),
-            'declaredNodeDefinitions'   => array(),
-        ));
+        $factory = $this->createMock(Factory::class);
+        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
+            'name'                        => 'test',
+            'isAbstract'                  => true,
+            'isMixin'                     => true,
+            'isQueryable'                 => true,
+            'hasOrderableChildNodes'      => true,
+            'primaryItemName'             => 'foo',
+            'supertypes'                  => [],
+            'declaredPropertyDefinitions' => [],
+            'declaredNodeDefinitions'     => [],
+        ]);
 
         $this->assertEquals('test', $typeDef->getName());
         $this->assertTrue($typeDef->isAbstract());
@@ -36,23 +39,23 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertTrue($typeDef->isQueryable());
         $this->assertTrue($typeDef->hasOrderableChildNodes());
         $this->assertEquals('foo', $typeDef->getPrimaryItemName());
-        $this->assertEquals(array(), $typeDef->getDeclaredSupertypeNames(), "Supertypes should be empty");
+        $this->assertEquals([], $typeDef->getDeclaredSupertypeNames(), 'Supertypes should be empty');
     }
 
     public function testCreateFromArrayFalse()
     {
-        $factory = $this->getMock('Jackalope\Factory');
-        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), array(
-            'name'                      => 'test',
-            'isAbstract'                => false,
-            'isMixin'                   => false,
-            'isQueryable'               => false,
-            'hasOrderableChildNodes'    => false,
-            'primaryItemName'           => 'foo',
-            'supertypes'                => array(),
-            'declaredPropertyDefinitions' => array(),
-            'declaredNodeDefinitions'   => array(),
-        ));
+        $factory = $this->createMock(Factory::class);
+        $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
+            'name'                        => 'test',
+            'isAbstract'                  => false,
+            'isMixin'                     => false,
+            'isQueryable'                 => false,
+            'hasOrderableChildNodes'      => false,
+            'primaryItemName'             => 'foo',
+            'supertypes'                  => [],
+            'declaredPropertyDefinitions' => [],
+            'declaredNodeDefinitions'     => [],
+        ]);
 
         $this->assertFalse($typeDef->isAbstract());
         $this->assertFalse($typeDef->isMixin());
@@ -62,8 +65,8 @@ class NodeTypeDefinitionTest extends TestCase
 
     public function testCreateFromXml()
     {
-        $factory = new \Jackalope\Factory();
-        $dom = new \DOMDocument();
+        $factory = new Factory();
+        $dom = new DOMDocument();
         $dom->loadXML('<?xml version="1.0" encoding="UTF-8"?>
     <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:created">
         <propertyDefinition autoCreated="true" declaringNodeType="mix:created" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:createdBy" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">
@@ -112,7 +115,7 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertFalse($propertyDefinitions[0]->isMultiple());
         $this->assertTrue($propertyDefinitions[0]->isFullTextSearchable());
         $this->assertTrue($propertyDefinitions[0]->isQueryOrderable());
-        $this->assertEquals(array(
+        $this->assertEquals([
                 'jcr.operator.equal.to',
                 'jcr.operator.not.equal.to',
                 'jcr.operator.greater.than',
@@ -120,7 +123,7 @@ class NodeTypeDefinitionTest extends TestCase
                 'jcr.operator.less.than',
                 'jcr.operator.less.than.or.equal.to',
                 'jcr.operator.like',
-        ), $propertyDefinitions[0]->getAvailableQueryOperators());
+        ], $propertyDefinitions[0]->getAvailableQueryOperators());
 
         $this->assertEquals('jcr:created', $propertyDefinitions[1]->getName());
         $this->assertEquals(PropertyType::DATE, $propertyDefinitions[1]->getRequiredType());
@@ -129,7 +132,7 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertFalse($propertyDefinitions[1]->isMultiple());
         $this->assertTrue($propertyDefinitions[1]->isFullTextSearchable());
         $this->assertTrue($propertyDefinitions[1]->isQueryOrderable());
-        $this->assertEquals(array(
+        $this->assertEquals([
             'jcr.operator.equal.to',
             'jcr.operator.not.equal.to',
             'jcr.operator.greater.than',
@@ -137,6 +140,6 @@ class NodeTypeDefinitionTest extends TestCase
             'jcr.operator.less.than',
             'jcr.operator.less.than.or.equal.to',
             'jcr.operator.like',
-        ), $propertyDefinitions[1]->getAvailableQueryOperators());
+        ], $propertyDefinitions[1]->getAvailableQueryOperators());
     }
 }

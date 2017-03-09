@@ -17,7 +17,7 @@ class SimplePathValidatorTest extends PathValidatorTestCase
 
     public function getPathAnswers()
     {
-        return array(
+        return [
             'absolute_1' => true,
             'absolute_2' => false,
             'absolute_3' => false,
@@ -35,12 +35,12 @@ class SimplePathValidatorTest extends PathValidatorTestCase
             'normal_12' => false,
             'normal_13' => false,
             'normal_14' => false,
-        );
+        ];
     }
 
     public function getNameAnswers()
     {
-        return array(
+        return [
             'normal_1' => false,
             'normal_2' => false,
             'normal_3' => true,
@@ -61,6 +61,6 @@ class SimplePathValidatorTest extends PathValidatorTestCase
             'localname_3' => false,
             'localname_4' => false,
             'localname_5' => false,
-        );
+        ];
     }
 }

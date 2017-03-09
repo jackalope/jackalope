@@ -2,9 +2,6 @@
 
 namespace Jackalope\NodeType\Path;
 
-use Jackalope\NodeType\NodeProcessor;
-use Jackalope\TestCase;
-use PHPCR\PropertyType;
 use Jackalope\Validation\PathValidatorTestCase;
 use Jackalope\Validation\Path\JackrabbitPathValidator;
 
@@ -17,7 +14,7 @@ class JackrabbitPathValidatorTest extends PathValidatorTestCase
 
     public function getPathAnswers()
     {
-        return array(
+        return [
             'absolute_1' => true,
             'absolute_2' => false,
             'absolute_3' => false,
@@ -35,12 +32,12 @@ class JackrabbitPathValidatorTest extends PathValidatorTestCase
             'normal_12' => false,
             'normal_13' => false,
             'normal_14' => false,
-        );
+        ];
     }
 
     public function getNameAnswers()
     {
-        return array(
+        return [
             'normal_1' => false,
             'normal_2' => false,
             'normal_3' => true,
@@ -61,6 +58,6 @@ class JackrabbitPathValidatorTest extends PathValidatorTestCase
             'localname_3' => true,
             'localname_4' => true,
             'localname_5' => true,
-        );
+        ];
     }
 }

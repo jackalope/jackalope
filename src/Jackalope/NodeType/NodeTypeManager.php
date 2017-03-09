@@ -2,6 +2,7 @@
 
 namespace Jackalope\NodeType;
 
+use Iterator;
 use IteratorAggregate;
 use ArrayIterator;
 use PHPCR\AccessDeniedException;
@@ -32,6 +33,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 {
     /**
      * The factory to instantiate objects.
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -48,12 +50,14 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * Cache of already fetched primary node type instances.
+     *
      * @var array
      */
     protected $primaryTypes;
 
     /**
      * Cache of already fetched mixin node type instances.
+     *
      * @var array
      */
     protected $mixinTypes;
@@ -62,7 +66,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Array of arrays with the super type as key and its sub types as values.
      * @var array
      */
-    protected $nodeTree = array();
+    protected $nodeTree = [];
 
     /**
      * Flag to only load all node types from the backend once.
@@ -125,7 +129,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         }
 
         foreach ($nodeTypes as $nodeType) {
-            $nodeType = $this->factory->get('NodeType\\NodeType', array($this, $nodeType));
+            /** @var NodeType $nodeType */
+            $nodeType = $this->factory->get(NodeType::class, [$this, $nodeType]);
             $name = $nodeType->getName();
             //do not overwrite existing types. maybe they where changed locally
             if (empty($this->primaryTypes[$name]) && empty($this->mixinTypes[$name])) {
@@ -167,7 +172,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         $this->fetchNodeTypes();
 
         if (empty($this->nodeTree[$nodeTypeName])) {
-            return array();
+            return [];
         }
 
         return $this->nodeTree[$nodeTypeName];
@@ -189,10 +194,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     {
         // OPTIMIZE: any way to avoid loading all nodes at this point?
         $this->fetchNodeTypes();
-        $ret = array();
+        $ret = [];
         if (isset($this->nodeTree[$nodeTypeName])) {
             foreach ($this->nodeTree[$nodeTypeName] as $name => $subnode) {
-                $ret = array_merge($ret, array($name => $subnode), $this->getSubtypes($name));
+                $ret = array_merge($ret, [$name => $subnode], $this->getSubtypes($name));
             }
         }
 
@@ -213,10 +218,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             if (isset($this->nodeTree[$declaredSupertypeName])) {
                 $this->nodeTree[$declaredSupertypeName] =
                     array_merge($this->nodeTree[$declaredSupertypeName],
-                                array($nodetype->getName() => $nodetype)
+                                [$nodetype->getName() => $nodetype]
                                );
             } else {
-                $this->nodeTree[$declaredSupertypeName] = array($nodetype->getName() => $nodetype);
+                $this->nodeTree[$declaredSupertypeName] = [$nodetype->getName() => $nodetype];
             }
         }
     }
@@ -316,7 +321,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createNodeTypeTemplate($ntd = null)
     {
-        return $this->factory->get('NodeType\\NodeTypeTemplate', array($this, $ntd));
+        return $this->factory->get(NodeTypeTemplate::class, [$this, $ntd]);
     }
 
     /**
@@ -326,7 +331,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createNodeDefinitionTemplate()
     {
-        return $this->factory->get('NodeType\\NodeDefinitionTemplate', array($this));
+        return $this->factory->get(NodeDefinitionTemplate::class, [$this]);
     }
 
     /**
@@ -336,7 +341,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function createPropertyDefinitionTemplate()
     {
-        return $this->factory->get('NodeType\\PropertyDefinitionTemplate', array($this));
+        return $this->factory->get(PropertyDefinitionTemplate::class, [$this]);
     }
 
     /**
@@ -346,7 +351,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
     {
-        $this->registerNodeTypes(array($ntd), $allowUpdate);
+        $this->registerNodeTypes([$ntd], $allowUpdate);
 
         return each($ntd);
     }
@@ -368,7 +373,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             throw new NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
 
-        return $this->factory->get('NodeType\\NodeType', array($this, $ntd));
+        return $this->factory->get(NodeType::class, [$this, $ntd]);
     }
 
     /**
@@ -378,7 +383,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function registerNodeTypes(array $definitions, $allowUpdate)
     {
-        $nts = array();
+        $nts = [];
+
         // prepare them first (all or nothing)
         foreach ($definitions as $definition) {
             $nts[$definition->getName()] = $this->createNodeType($definition, $allowUpdate);
@@ -412,7 +418,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
         //parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
-        $types = array();
+        $types = [];
         foreach ($names[1] as $name) {
             $types[$name] = $this->getNodeType($name);
         }
@@ -454,7 +460,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * Provide Traversable interface: redirect to getAllNodeTypes
      *
-     * @return \Iterator over all node types
+     * @return Iterator over all node types
      * @throws RepositoryException
      */
     public function getIterator()

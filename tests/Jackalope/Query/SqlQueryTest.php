@@ -4,6 +4,8 @@ namespace Jackalope\Query;
 
 use Jackalope\TestCase;
 use Jackalope\Factory;
+use Jackalope\Transport\QueryInterface;
+use PHPCR\ItemNotFoundException;
 
 class SqlQueryTest extends TestCase
 {
@@ -12,7 +14,7 @@ class SqlQueryTest extends TestCase
     protected function getQuery($factory = null, $statement = null, $objectManager = null, $path = null)
     {
         if (! $factory) {
-            $factory = new Factory;
+            $factory = new Factory();
         }
         if (! $statement) {
             $statement = $this->statement;
@@ -32,8 +34,9 @@ class SqlQueryTest extends TestCase
     public function testExecute()
     {
         $dummyData = 'x';
-        $factory = $this->getMock('\Jackalope\Factory');
-        $transport = $this->getMock('\Jackalope\Transport\QueryInterface');
+        $factory = $this->createMock(Factory::class);
+        $transport = $this->createMock(QueryInterface::class);
+
         $om = $this->getObjectManagerMock();
         $om->expects($this->any())
             ->method('getTransport')
@@ -45,11 +48,14 @@ class SqlQueryTest extends TestCase
         $transport->expects($this->once())
             ->method('query')
             ->with($query)
-            ->will($this->returnValue($dummyData));
+            ->will($this->returnValue($dummyData))
+        ;
+
         $factory->expects($this->once())
                 ->method('get')
-                ->with('Query\QueryResult', array($dummyData, $om))
-                ->will($this->returnValue('result'));
+                ->with(QueryResult::class, [$dummyData, $om])
+                ->will($this->returnValue('result'))
+        ;
 
         $result = $query->execute();
         $this->assertEquals('result', $result);
@@ -98,11 +104,10 @@ class SqlQueryTest extends TestCase
         $this->assertSame('/path/query', $query->getStoredQueryPath());
     }
 
-    /**
-     * @expectedException \PHPCR\ItemNotFoundException
-     */
     public function testGetStoredQueryPathNotStored()
     {
+        $this->expectException(ItemNotFoundException::class);
+
         $query = $this->getQuery();
         $query->getStoredQueryPath();
     }

@@ -4,6 +4,7 @@ namespace Jackalope\Observation;
 
 use Jackalope\Observation\Event;
 use Jackalope\Observation\EventFilter;
+use PHPCR\PathNotFoundException;
 
 /**
  * Unit tests for the EventFilter node type
@@ -26,7 +27,7 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
             ->will($this->returnValue($node))
         ;
 
-        $this->eventFilter->setNodeTypes(array('nt:unstructured'));
+        $this->eventFilter->setNodeTypes(['nt:unstructured']);
         $this->assertFilterMatch($this->eventFilter, true);
     }
 
@@ -46,7 +47,7 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
             ->will($this->returnValue($node))
         ;
 
-        $this->eventFilter->setNodeTypes(array('nt:unstructured'));
+        $this->eventFilter->setNodeTypes(['nt:unstructured']);
         $this->assertFilterMatch($this->eventFilter, false);
     }
 
@@ -56,9 +57,9 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
             ->expects($this->any())
             ->method('getItem')
             ->with('/some/path')
-            ->will($this->throwException(new \PHPCR\PathNotFoundException()))
+            ->will($this->throwException(new PathNotFoundException()))
         ;
-        $this->eventFilter->setNodeTypes(array('nt:unstructured'));
+        $this->eventFilter->setNodeTypes(['nt:unstructured']);
         $this->assertFilterMatch($this->eventFilter, false);
     }
 

@@ -2,10 +2,10 @@
 
 namespace Jackalope\Validation;
 
-use Jackalope\NodeType\NodeProcessor;
+use InvalidArgumentException;
 use Jackalope\TestCase;
-use PHPCR\PropertyType;
-use Jackalope\Validation\JackrabbitPathValidator;
+use Jackalope\Validation\Exception\InvalidPathException;
+use PHPCR\ValueFormatException;
 
 abstract class PathValidatorTestCase extends TestCase
 {
@@ -17,28 +17,28 @@ abstract class PathValidatorTestCase extends TestCase
 
     public function provideValidatePath()
     {
-        return array(
+        return [
             // absolute paths
-            array('absolute_1', '/foo/bar', true),
-            array('absolute_2', 'foo/bar', true),
-            array('absolute_3', 'foo', true),
+            ['absolute_1', '/foo/bar', true],
+            ['absolute_2', 'foo/bar', true],
+            ['absolute_3', 'foo', true],
 
             // valid normal paths
-            array('normal_1', '../foo/bar', false),
-            array('normal_2', '.../foo/bar', false),
-            array('normal_3', 'foo ', false),
-            array('normal_4', 'foo/', false),
-            array('normal_5', 'foo/bar[2]', false),
-            array('normal_6', 'foo[1]/bar[2]', false),
-            array('normal_7', '12345/6789', false),
-            array('normal_8', 'foo:bar/bar:foo', false),
-            array('normal_9', 'foo:!bar/bar:foo', false),
-            array('normal_10', ' /foo', false),
-            array('normal_11', '[]foo', false),
-            array('normal_12', '    ', false),
-            array('normal_13', '/', false),
-            array('normal_14', '!foo:!bar/bar:foo', false),
-        );
+            ['normal_1', '../foo/bar', false],
+            ['normal_2', '.../foo/bar', false],
+            ['normal_3', 'foo ', false],
+            ['normal_4', 'foo/', false],
+            ['normal_5', 'foo/bar[2]', false],
+            ['normal_6', 'foo[1]/bar[2]', false],
+            ['normal_7', '12345/6789', false],
+            ['normal_8', 'foo:bar/bar:foo', false],
+            ['normal_9', 'foo:!bar/bar:foo', false],
+            ['normal_10', ' /foo', false],
+            ['normal_11', '[]foo', false],
+            ['normal_12', '    ', false],
+            ['normal_13', '/', false],
+            ['normal_14', '!foo:!bar/bar:foo', false],
+        ];
     }
 
     /**
@@ -49,7 +49,7 @@ abstract class PathValidatorTestCase extends TestCase
         $pathAnswers = $this->getPathAnswers();
 
         if (!isset($pathAnswers[$key])) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Validator test class "%s" did not provide an answer for path "%s" with key "%s"',
                 get_class($this),
                 $path,
@@ -60,7 +60,7 @@ abstract class PathValidatorTestCase extends TestCase
         $isValid = $pathAnswers[$key];
 
         if (false === $isValid) {
-            $this->setExpectedException('PHPCR\ValueFormatException');
+            $this->expectException(ValueFormatException::class);
         }
 
         if ($absolute) {
@@ -72,32 +72,32 @@ abstract class PathValidatorTestCase extends TestCase
 
     public function provideValidateName()
     {
-        return array(
-            array('normal_1', 'this is invalid:foobar'),
-            array('normal_2', '/this/is/a/path'), // path charaters
-            array('normal_3', 'this:is valid'),
-            array('normal_4', 'Thisisvalidtoo!'),
-            array('normal_5', 'Thisisvalidtoo!:foobar'), // ! not allowed in namespace
-            array('normal_6', 'this is something'),
+        return [
+            ['normal_1', 'this is invalid:foobar'],
+            ['normal_2', '/this/is/a/path'], // path charaters
+            ['normal_3', 'this:is valid'],
+            ['normal_4', 'Thisisvalidtoo!'],
+            ['normal_5', 'Thisisvalidtoo!:foobar'], // ! not allowed in namespace
+            ['normal_6', 'this is something'],
 
             // strange characters in namespace
-            array('namespace_1', $this->translateCharFromCode('\uD7FF').':foo'),
-            array('namespace_2', $this->translateCharFromCode('\uFFFD').':foo'),
-            array('namespace_3', $this->translateCharFromCode('\u10000').':foo'),
-            array('namespace_4', $this->translateCharFromCode('\u10FFFF').':foo'),
-            array('namespace_5', $this->translateCharFromCode('\u0001').':foo'),
-            array('namespace_6', $this->translateCharFromCode('\u0002').':foo'),
-            array('namespace_7', $this->translateCharFromCode('\u0003').':foo'),
-            array('namespace_8', $this->translateCharFromCode('\u0008').':foo'),
-            array('namespace_9', $this->translateCharFromCode('\uFFFF').':foo'),
+            ['namespace_1', $this->translateCharFromCode('\uD7FF').':foo'],
+            ['namespace_2', $this->translateCharFromCode('\uFFFD').':foo'],
+            ['namespace_3', $this->translateCharFromCode('\u10000').':foo'],
+            ['namespace_4', $this->translateCharFromCode('\u10FFFF').':foo'],
+            ['namespace_5', $this->translateCharFromCode('\u0001').':foo'],
+            ['namespace_6', $this->translateCharFromCode('\u0002').':foo'],
+            ['namespace_7', $this->translateCharFromCode('\u0003').':foo'],
+            ['namespace_8', $this->translateCharFromCode('\u0008').':foo'],
+            ['namespace_9', $this->translateCharFromCode('\uFFFF').':foo'],
 
             // strange characters in name
-            array('localname_1', 'foo:' . $this->translateCharFromCode('\u0001')),
-            array('localname_2', 'foo:' . $this->translateCharFromCode('\u0002')),
-            array('localname_3', 'foo:' . $this->translateCharFromCode('\u0003')),
-            array('localname_4', 'foo:' . $this->translateCharFromCode('\u0008')),
-            array('localname_5', 'foo:' . $this->translateCharFromCode('\uFFFD')),
-        );
+            ['localname_1', 'foo:' . $this->translateCharFromCode('\u0001')],
+            ['localname_2', 'foo:' . $this->translateCharFromCode('\u0002')],
+            ['localname_3', 'foo:' . $this->translateCharFromCode('\u0003')],
+            ['localname_4', 'foo:' . $this->translateCharFromCode('\u0008')],
+            ['localname_5', 'foo:' . $this->translateCharFromCode('\uFFFD')],
+        ];
     }
 
     /**
@@ -108,7 +108,7 @@ abstract class PathValidatorTestCase extends TestCase
         $nameAnswers = $this->getNameAnswers();
 
         if (!isset($nameAnswers[$key])) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Validator test class "%s" did not provide an answer for name "%s" with key "%s"',
                 get_class($this),
                 $name,
@@ -119,7 +119,7 @@ abstract class PathValidatorTestCase extends TestCase
         $isValid = $nameAnswers[$key];
 
         if (false === $isValid) {
-            $this->setExpectedException('PHPCR\ValueFormatException');
+            $this->expectException(ValueFormatException::class);
         }
 
         $this->getValidator()->validateName($name);
@@ -132,21 +132,22 @@ abstract class PathValidatorTestCase extends TestCase
 
     public function provideDestPath()
     {
-        return array(
-            array('/path/to[0]', false),
-            array('path/to/something', false),
-            array('', false),
-            array('/path/to/this', true),
-        );
+        return [
+            ['/path/to[0]', false],
+            ['path/to/something', false],
+            ['', false],
+            ['/path/to/this', true],
+        ];
     }
 
     /**
      * @dataProvider provideDestPath
+     * @throws \PHPUnit_Framework_Exception
      */
     public function testDestPath($path, $isValid)
     {
         if (false === $isValid) {
-            $this->setExpectedException('Jackalope\Validation\Exception\InvalidPathException');
+            $this->expectException(InvalidPathException::class);
         }
 
         $this->getValidator()->validateDestPath($path);

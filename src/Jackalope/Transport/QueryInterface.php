@@ -23,19 +23,20 @@ interface QueryInterface extends TransportInterface
      * Implementors: Expose all information required by the transport layers to
      * execute the query with getters.
      *
-     * array(
+     * [
      *     //row 1
-     *     array(
+     *     [
      *         //column1
-     *         array('dcr:name' => 'value1',
-     *               'dcr:value' => 'value2',
-     *               'dcr:selectorName' => 'value3' //optional
-     *         ),
+     *         [
+     *              'dcr:name' => 'value1',
+     *              'dcr:value' => 'value2',
+     *              'dcr:selectorName' => 'value3' // optional
+     *         ],
      *         //column 2...
-     *     ),
+     *     ],
      *     //row 2
-     *     array(...
-     * )
+     *     [...]
+     * ]
      *
      * @param Query $query the query object
      *

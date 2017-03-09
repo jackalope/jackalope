@@ -22,7 +22,7 @@ class NodeTypeManagerTest extends TestCase
     public function testGetNodeType()
     {
         $nt = $this->ntm->getNodeType('nt:file');
-        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $nt);
+        $this->assertInstanceOf(NodeType::class, $nt);
         $this->assertSame('nt:file', $nt->getName());
         $this->assertFalse($nt->isAbstract());
         $this->assertFalse($nt->isMixin());
@@ -38,11 +38,11 @@ class NodeTypeManagerTest extends TestCase
     public function testTypeHierarchies()
     {
         $nt = $this->ntm->getNodeType('nt:file');
-        $this->assertSame(array('nt:hierarchyNode'), $nt->getDeclaredSupertypeNames());
-        $this->assertEquals(array(), $this->ntm->getDeclaredSubtypes('nt:file'));
-        $this->assertEquals(array(), $this->ntm->getSubtypes('nt:file'));
-        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'), array_keys($this->ntm->getDeclaredSubtypes('nt:hierarchyNode')));
-        $this->assertSame(array('nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'), array_keys($this->ntm->getSubtypes('nt:hierarchyNode')));
+        $this->assertSame(['nt:hierarchyNode'], $nt->getDeclaredSupertypeNames());
+        $this->assertEquals([], $this->ntm->getDeclaredSubtypes('nt:file'));
+        $this->assertEquals([], $this->ntm->getSubtypes('nt:file'));
+        $this->assertSame(['nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:AuthorizableFolder'], array_keys($this->ntm->getDeclaredSubtypes('nt:hierarchyNode')));
+        $this->assertSame(['nt:file', 'nt:folder', 'nt:linkedFile', 'rep:Authorizable', 'rep:Group', 'rep:User', 'rep:AuthorizableFolder'], array_keys($this->ntm->getSubtypes('nt:hierarchyNode')));
     }
 
     /**
@@ -59,14 +59,14 @@ class NodeTypeManagerTest extends TestCase
         $allNodes = $this->ntm->getAllNodeTypes();
         $this->assertInstanceOf('Iterator', $allNodes);
         $this->assertCount(52, $allNodes);
-        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $allNodes->current());
+        $this->assertInstanceOf(NodeType::class, $allNodes->current());
         $primaryNodes = $this->ntm->getPrimaryNodeTypes();
         $this->assertInstanceOf('Iterator', $primaryNodes);
         $this->assertCount(36, $primaryNodes);
-        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $primaryNodes->current());
+        $this->assertInstanceOf(NodeType::class, $primaryNodes->current());
         $mixinNodes = $this->ntm->getMixinNodeTypes();
         $this->assertInstanceOf('Iterator', $mixinNodes);
         $this->assertCount(16, $mixinNodes);
-        $this->assertInstanceOf('Jackalope\NodeType\NodeType', $mixinNodes->current());
+        $this->assertInstanceOf(NodeType::class, $mixinNodes->current());
     }
 }
