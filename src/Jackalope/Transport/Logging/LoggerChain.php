@@ -13,7 +13,7 @@ class LoggerChain implements LoggerInterface
     /**
      * @var LoggerInterface[]
      */
-    private $loggers = array();
+    private $loggers = [];
 
     /**
      * Adds a logger in the chain.

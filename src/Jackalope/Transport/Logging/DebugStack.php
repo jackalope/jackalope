@@ -18,7 +18,7 @@ class DebugStack implements LoggerInterface
      *
      * @var array
      */
-    public $calls = array();
+    public $calls = [];
 
     /**
      * If the logger is enabled (log calls) or not.
@@ -51,7 +51,7 @@ class DebugStack implements LoggerInterface
     {
         if ($this->enabled) {
             $this->start = microtime(true);
-            $call = array('method' => $method, 'params' => $params, 'env' => $env, 'executionMS' => 0);
+            $call = ['method' => $method, 'params' => $params, 'env' => $env, 'executionMS' => 0];
 
             if (true === $this->backtrace) {
                 $call['caller'] = $this->getBacktrace();
@@ -85,18 +85,21 @@ class DebugStack implements LoggerInterface
     {
         $fullBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-        $backtrace = array();
+        $backtrace = [];
         foreach ($fullBacktrace as $trace) {
             $string = '';
             if (isset($trace['class'])) {
                 $string .= $trace['class'];
             }
+
             if (isset($trace['function'])) {
                 $string .= '->' . $trace['function'];
             }
+
             if (isset($trace['line'])) {
                 $string .= '#' . $trace['line'];
             }
+
             $backtrace[] = $string;
         }
 

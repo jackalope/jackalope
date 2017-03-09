@@ -53,7 +53,7 @@ class RowIterator implements SeekableIterator, Countable
     /**
      * @param int $position
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     public function seek($position)
     {
@@ -83,7 +83,7 @@ class RowIterator implements SeekableIterator, Countable
             return null;
         }
 
-        return $this->factory->get('Query\Row', array($this->objectManager, $this->rows[$this->position]));
+        return $this->factory->get(Row::class, [$this->objectManager, $this->rows[$this->position]]);
     }
 
     public function key()

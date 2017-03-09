@@ -23,12 +23,14 @@ class UserTransaction implements UserTransactionInterface
 {
     /**
      * The factory to instantiate objects
+     *
      * @var FactoryInterface
      */
     protected $factory;
 
     /**
-     * Instance of an implementation of the \PHPCR\SessionInterface.
+     * Instance of an implementation of the PHPCR\SessionInterface.
+     *
      * @var SessionInterface
      */
     protected $session;
@@ -40,13 +42,14 @@ class UserTransaction implements UserTransactionInterface
 
     /**
      * Instance of an implementation of the TransactionInterface transport
+     *
      * @var TransactionInterface
      */
     protected $transport;
 
     /**
-     * Stores the current state of the application, whether it is inside a
-     * transaction or not
+     * Stores the current state of the application, whether it is inside a transaction or not
+     *
      * @var bool
      */
     protected $inTransaction = false;

@@ -5,6 +5,7 @@ namespace Jackalope\NodeType;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
+use InvalidArgumentException;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
 use PHPCR\Version\OnParentVersionAction;
@@ -41,7 +42,7 @@ class NodeTypeXmlConverter
      */
     public function getItemDefinitionFromXml(DOMElement $node)
     {
-        $data = array();
+        $data = [];
         $data['declaringNodeType'] = $node->getAttribute('declaringNodeType');
         $data['name'] = $node->getAttribute('name');
         $data['isAutoCreated'] = Helper::getBoolAttribute($node, 'autoCreated');
@@ -111,7 +112,7 @@ class NodeTypeXmlConverter
                 $data['requiredPrimaryTypeNames'][] = $requiredPrimaryType->nodeValue;
             }
         } else {
-            $data['requiredPrimaryTypeNames'] = array(self::DEFAULT_PRIMARY_NODE);
+            $data['requiredPrimaryTypeNames'] = [self::DEFAULT_PRIMARY_NODE];
         }
 
         return $data;
@@ -125,11 +126,11 @@ class NodeTypeXmlConverter
      * @return array
      *
      * @throws RepositoryException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getNodeTypeDefinitionFromXml(DOMElement $node)
     {
-        $data = array();
+        $data = [];
         // nodetype
         $data['name'] = $node->getAttribute('name');
         $data['isAbstract'] = Helper::getBoolAttribute($node, 'isAbstract');
@@ -139,20 +140,20 @@ class NodeTypeXmlConverter
 
         $data['primaryItemName'] = $node->getAttribute('primaryItemName') ?: null;
 
-        $data['declaredSuperTypeNames'] = array();
+        $data['declaredSuperTypeNames'] = [];
         $xp = new DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
             $data['declaredSuperTypeNames'][] = $supertype->nodeValue;
         }
 
-        $data['declaredPropertyDefinitions'] = array();
+        $data['declaredPropertyDefinitions'] = [];
         $properties = $xp->query('propertyDefinition', $node);
         foreach ($properties as $propertyDefinition) {
             $data['declaredPropertyDefinitions'][] = $this->getPropertyDefinitionFromXml($propertyDefinition);
         }
 
-        $data['declaredNodeDefinitions'] = array();
+        $data['declaredNodeDefinitions'] = [];
         $declaredNodeDefinitions = $xp->query('childNodeDefinition', $node);
         foreach ($declaredNodeDefinitions as $nodeDefinition) {
             $data['declaredNodeDefinitions'][] = $this->getNodeDefinitionFromXml($nodeDefinition);
@@ -165,7 +166,7 @@ class NodeTypeXmlConverter
     {
         $xp = new DOMXpath($dom);
         $nodeTypesElements = $xp->query('/nodeTypes/nodeType');
-        $nodeTypes = array();
+        $nodeTypes = [];
         foreach ($nodeTypesElements as $nodeTypeElement) {
             $nodeTypes[] = $this->getNodeTypeDefinitionFromXml($nodeTypeElement);
         }

@@ -3,6 +3,8 @@
 namespace Jackalope\NodeType;
 
 use Jackalope\TestCase;
+use PHPCR\PropertyType;
+use PHPCR\Version\OnParentVersionAction;
 
 class PropertyDefinitionTemplateTest extends TestCase
 {
@@ -19,9 +21,9 @@ class PropertyDefinitionTemplateTest extends TestCase
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
-        $this->assertSame(\PHPCR\PropertyType::STRING, $ndt->getRequiredType());
+        $this->assertSame(PropertyType::STRING, $ndt->getRequiredType());
         $this->assertNull($ndt->getValueConstraints());
         $this->assertNull($ndt->getDefaultValues());
         $this->assertFalse($ndt->isMultiple());

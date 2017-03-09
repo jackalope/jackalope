@@ -54,7 +54,7 @@ class ComparisonConstraint implements ComparisonInterface
      */
     public function getConstraints()
     {
-        return array($this);
+        return [$this];
     }
 
     /**

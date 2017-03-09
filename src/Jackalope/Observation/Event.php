@@ -44,7 +44,7 @@ class Event implements EventInterface
     /**
      * @var array
      */
-    protected $info = array();
+    protected $info = [];
 
     /**
      * @var string
@@ -64,7 +64,7 @@ class Event implements EventInterface
     /**
      * @var array
      */
-    protected $mixinNodeTypeNames = array();
+    protected $mixinNodeTypeNames = [];
 
     /**
      * @var NodeTypeManagerInterface
@@ -75,24 +75,24 @@ class Event implements EventInterface
      * Events that support getting the primary or mixin node types.
      * @var array
      */
-    protected static $NODE_TYPE_EVENT = array(
+    protected static $NODE_TYPE_EVENT = [
         self::NODE_ADDED,
         self::NODE_REMOVED,
         self::NODE_MOVED,
         self::PROPERTY_ADDED,
         self::PROPERTY_REMOVED,
         self::PROPERTY_CHANGED,
-    );
+    ];
 
     /**
      * Events that support getting the property type.
      * @var array
      */
-    protected static $PROPERTY_TYPE_EVENT = array(
+    protected static $PROPERTY_TYPE_EVENT = [
         self::PROPERTY_ADDED,
         self::PROPERTY_REMOVED,
         self::PROPERTY_CHANGED,
-    );
+    ];
 
     /**
      * @param FactoryInterface         $factory ignored but need by the factory
@@ -276,7 +276,7 @@ class Event implements EventInterface
     public function getMixinNodeTypes()
     {
         $this->checkNodeTypeEvent();
-        $nt = array();
+        $nt = [];
         foreach ($this->mixinNodeTypeNames as $name) {
             $nt[$name] = $this->ntm->getNodeType($name);
         }

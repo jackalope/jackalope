@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use InvalidArgumentException;
 use PHPCR\Query\QOM\ChildNodeInterface;
 
 /**
@@ -30,12 +31,12 @@ class ChildNodeConstraint implements ChildNodeInterface
      * @param string $selectorName
      * @param string $parentPath   parent path the node must be child of
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($selectorName, $parentPath)
     {
         if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new InvalidArgumentException('Required argument selectorName may not be null.');
         }
         $this->parentPath = $parentPath;
         $this->selectorName = $selectorName;
@@ -70,6 +71,6 @@ class ChildNodeConstraint implements ChildNodeInterface
      */
     public function getConstraints()
     {
-        return array($this);
+        return [$this];
     }
 }

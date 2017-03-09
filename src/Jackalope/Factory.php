@@ -16,19 +16,19 @@ class Factory implements FactoryInterface
     /**
      * @var array
      */
-    protected $classCache = array();
+    protected $classCache = [];
     
     /**
      * @var array
      */
-    protected $reflectionCache = array();
+    protected $reflectionCache = [];
 
     /**
      * {@inheritDoc}
      *
      * @throws InvalidArgumentException
      */
-    public function get($name, array $params = array())
+    public function get($name, array $params = [])
     {
         if (isset($this->classCache[$name])) {
             $name = $this->classCache[$name];

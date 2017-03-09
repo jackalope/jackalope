@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope;
 
 use RuntimeException;

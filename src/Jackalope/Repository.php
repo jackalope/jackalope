@@ -2,6 +2,7 @@
 
 namespace Jackalope;
 
+use Jackalope\Transaction\UserTransaction;
 use ReflectionClass;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
@@ -20,14 +21,14 @@ use PHPCR\RepositoryInterface;
 class Repository implements RepositoryInterface
 {
     /**
-     * The descriptor key for the version of the specification
-     * that this repository implements. For JCR 2.0
-     * the value of this descriptor is the string "2.0".
+     * The descriptor key for the version of the specification that this repository implements.
+     * For JCR 2.0 the value of this descriptor is the string "2.0".
+     *
      * @api
      */
     const JACKALOPE_OPTION_STREAM_WRAPPER = 'jackalope.option.stream_wrapper';
 
-    protected $jackalopeNotImplemented = array(
+    protected $jackalopeNotImplemented = [
         // https://github.com/jackalope/jackalope/issues/217
         'jackalope.not_implemented.node.definition' => true,
 
@@ -66,7 +67,7 @@ class Repository implements RepositoryInterface
 
         // https://github.com/jackalope/jackalope/issues/67
         'jackalope.not_implemented.non_session_scoped_lock' => true,
-    );
+    ];
 
     /**
      * flag to call stream_wrapper_register only once
@@ -82,21 +83,23 @@ class Repository implements RepositoryInterface
 
     /**
      * The transport to use
+     *
      * @var TransportInterface
      */
     protected $transport;
 
     /**
      * List of supported options
+     *
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         // this is OPTION_TRANSACTIONS_SUPPORTED
         'transactions' => true,
         // this is JACKALOPE_OPTION_STREAM_WRAPPER
         'stream_wrapper' => true,
         Session::OPTION_AUTO_LASTMODIFIED => true,
-    );
+    ];
 
     /**
      * Cached array of repository descriptors. Each is either a string or an
@@ -114,7 +117,7 @@ class Repository implements RepositoryInterface
      * instantiate this class.
      *
      * @param FactoryInterface $factory the object factory to use. If this is
-     *      null, the \Jackalope\Factory is instantiated. Note that the
+     *      null, the Jackalope\Factory is instantiated. Note that the
      *      repository is the only class accepting null as factory.
      * @param TransportInterface $transport transport implementation
      * @param array              $options   defines optional features to enable/disable (see
@@ -130,7 +133,7 @@ class Repository implements RepositoryInterface
         if (null === self::$binaryStreamWrapperRegistered) {
             self::$binaryStreamWrapperRegistered = $this->options['stream_wrapper'];
             if (self::$binaryStreamWrapperRegistered) {
-                stream_wrapper_register('jackalope', 'Jackalope\\BinaryStreamWrapper');
+                stream_wrapper_register('jackalope', BinaryStreamWrapper::class);
             }
         }
     }
@@ -145,14 +148,14 @@ class Repository implements RepositoryInterface
     public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
         if (! $workspaceName = $this->transport->login($credentials, $workspaceName)) {
-            throw new RepositoryException('transport failed to login without telling why');
+            throw new RepositoryException('Transport failed to login without telling why');
         }
 
         /** @var $session Session */
-        $session = $this->factory->get('Session', array($this, $workspaceName, $credentials, $this->transport));
+        $session = $this->factory->get(Session::class, [$this, $workspaceName, $credentials, $this->transport]);
         $session->setSessionOption(Session::OPTION_AUTO_LASTMODIFIED, $this->options[Session::OPTION_AUTO_LASTMODIFIED]);
         if ($this->options['transactions']) {
-            $utx = $this->factory->get('Transaction\\UserTransaction', array($this->transport, $session, $session->getObjectManager()));
+            $utx = $this->factory->get(UserTransaction::class, [$this->transport, $session, $session->getObjectManager()]);
             $session->getWorkspace()->setTransactionManager($utx);
         }
 
@@ -180,7 +183,7 @@ class Repository implements RepositoryInterface
      */
     public function isStandardDescriptor($key)
     {
-        $ref = new ReflectionClass('PHPCR\\RepositoryInterface');
+        $ref = new ReflectionClass(RepositoryInterface::class);
         $consts = $ref->getConstants();
 
         return in_array($key, $consts);
@@ -218,8 +221,6 @@ class Repository implements RepositoryInterface
      *
      * Most of them come from the transport to allow for non-feature complete
      * transports.
-     *
-     * @return array Hashmap of descriptor names to descriptor values
      *
      * @throws RepositoryException
      */

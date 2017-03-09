@@ -9,7 +9,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 {
     public function testFilter()
     {
-        $this->setFilters(array('1', '2', '3'));
+        $this->setFilters(['1', '2', '3']);
         $this->assertTrue($this->eventFilter->match($this->getEvent('/1/2', '1')));
         $this->assertTrue($this->eventFilter->match($this->getEvent('/2/2', '2')));
         $this->assertTrue($this->eventFilter->match($this->getEvent('/3/2', '3')));
@@ -19,9 +19,9 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 
     public function testNoMatchFilter()
     {
-        $this->eventFilter->setIdentifiers(array());
+        $this->eventFilter->setIdentifiers([]);
 
-        $nodes = array($this->getMyNodeMock('1'));
+        $nodes = [$this->getMyNodeMock('1')];
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
@@ -57,15 +57,18 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
      */
     protected function setFilters($identifiers)
     {
-        $nodes = array();
+        $nodes = [];
+
         foreach ($identifiers as $uuid) {
             $nodes[] = $this->getMyNodeMock($uuid);
         }
+
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
             ->will($this->returnValue($nodes)
         );
+
         $this->eventFilter->setIdentifiers($identifiers);
     }
 

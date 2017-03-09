@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use Jackalope\NodeType\NodeType;
 use LogicException;
 use PHPCR\NodeType\ItemDefinitionInterface;
 use PHPCR\NodeType\NodeTypeInterface;
@@ -58,8 +57,7 @@ abstract class Item implements ItemInterface
     const STATE_CLEAN = 2;
 
     /**
-     * The item has been modified locally and needs to be saved to the backend
-     * on Session::save()
+     * The item has been modified locally and needs to be saved to the backend on Session::save()
      */
     const STATE_MODIFIED = 3;
 
@@ -68,14 +66,18 @@ abstract class Item implements ItemInterface
      */
     const STATE_DELETED = 4;
 
-    /** @var int    The state of the item, one of the STATE_ constants */
+    /**
+     * @var int The state of the item, one of the STATE_ constants
+     */
     protected $state;
 
-    /** @var boolean To know whether to keep changes or not when reloading in dirty state */
+    /**
+     * @var bool To know whether to keep changes or not when reloading in dirty state
+     */
     protected $keepChanges = false;
 
     /**
-     * @var int    The state of the item saved when a transaction is started
+     * @var int The state of the item saved when a transaction is started
      *
      * @see Item::rollbackTransaction()
      */
@@ -89,13 +91,13 @@ abstract class Item implements ItemInterface
     /**
      * @var array The states an Item can take
      */
-    protected $available_states = array(
+    protected $available_states = [
         self::STATE_NEW,
         self::STATE_DIRTY,
         self::STATE_CLEAN,
         self::STATE_MODIFIED,
         self::STATE_DELETED,
-    );
+    ];
 
     /**
      * @var FactoryInterface The jackalope object factory for this object
@@ -172,7 +174,7 @@ abstract class Item implements ItemInterface
         $new = false)
     {
         $this->factory = $factory;
-        $this->valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $this->valueConverter = $this->factory->get(ValueConverter::class);
         $this->session = $session;
         $this->objectManager = $objectManager;
         $this->setState($new ? self::STATE_NEW : self::STATE_CLEAN);
@@ -210,7 +212,7 @@ abstract class Item implements ItemInterface
         $this->path = $path;
         $this->depth = ('/' === $path) ? 0 : substr_count($path, '/');
         $this->name = PathHelper::getNodeName($path);
-        $this->parentPath = (0 === $this->depth) ? null : PathHelper::getParentPath($path);
+        $this->parentPath = 0 === $this->depth ? null : PathHelper::getParentPath($path);
     }
 
     /**
@@ -266,6 +268,7 @@ abstract class Item implements ItemInterface
     public function getParent()
     {
         $this->checkState();
+
         if (is_null($this->parentPath)) {
             throw new ItemNotFoundException('The root node has no parent');
         }
@@ -397,14 +400,14 @@ abstract class Item implements ItemInterface
         }
         if ($this->session->getRepository() === $otherItem->getSession()->getRepository()
             && $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace()
-            && get_class($this) == get_class($otherItem)
+            && get_class($this) === get_class($otherItem)
         ) {
             if ($this instanceof Node) {
                 if ($this->uuid == $otherItem->getIdentifier()) {
                     return true;
                 }
                 // assert($this instanceof Property)
-            } elseif ($this->name == $otherItem->getName()
+            } elseif ($this->name === $otherItem->getName()
                 && $this->getParent()->isSame($otherItem->getParent())
             ) {
                 return true;
@@ -763,7 +766,7 @@ abstract class Item implements ItemInterface
      */
     public function rollbackTransaction()
     {
-        if (is_null($this->savedState)) {
+        if (null === $this->savedState) {
             $this->savedState = self::STATE_NEW;
         }
 

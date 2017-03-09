@@ -22,25 +22,39 @@ class Lock implements LockInterface
      */
     protected $lockManager;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $lockOwner;
 
-    /** @var boolean */
+    /**
+     * @var boolean
+     */
     protected $isDeep;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $path;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $lockToken;
 
-    /** @var boolean */
+    /**
+     * @var boolean
+     */
     protected $isLive = true;
 
-    /** @var boolean */
+    /**
+     * @var boolean
+     */
     protected $isSessionScoped;
 
-    /** @var boolean */
+    /**
+     * @var boolean
+     */
     protected $isLockOwningSession;
 
     /**

@@ -16,12 +16,12 @@ class NodePathIteratorTest extends TestCase
 
     public function provideIterator()
     {
-        return array(
-            array(array('/foo1'), 'Node', 'nt:foo', 2),
-            array(array('/foo1', '/foo2', '/foo3', '/foo4'), 'Node', 'nt:foo', 2),
-            array(array('/foo1', '/foo2', '/foo3', '/foo4', '/foo5'), 'Node', 'nt:foo', 2),
-            array(array('/foo1', '/foo2', '/foo3', '/foo4'), 'Node', 'nt:foo', 10),
-        );
+        return [
+            [['/foo1'], 'Node', 'nt:foo', 2],
+            [['/foo1', '/foo2', '/foo3', '/foo4'], 'Node', 'nt:foo', 2],
+            [['/foo1', '/foo2', '/foo3', '/foo4', '/foo5'], 'Node', 'nt:foo', 2],
+            [['/foo1', '/foo2', '/foo3', '/foo4'], 'Node', 'nt:foo', 10],
+        ];
     }
 
     /**
@@ -39,7 +39,7 @@ class NodePathIteratorTest extends TestCase
                 $me, $class, $filter, $batchSize
             ) {
                 $me->assertLessThanOrEqual($batchSize, count($cPaths));
-                $nodes = array();
+                $nodes = [];
                 $me->assertEquals($class, $cClass);
                 $me->assertEquals($filter, $cFilter);
                 foreach ($cPaths as $cPath) {
@@ -52,70 +52,70 @@ class NodePathIteratorTest extends TestCase
         $nodes = new NodePathIterator($this->objectManager, $paths, $class, $filter, $batchSize);
 
         foreach ($nodes as $node) {
-            $this->assertInstanceOf('Jackalope\Node', $node);
+            $this->assertInstanceOf(Node::class, $node);
         }
     }
 
     public function provideArrayAccess()
     {
-        return array(
+        return [
             // 1st target, batch size 2, 1 fetch
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 1, 'target' => 'p1'),
-            ),
+                ['nb_fetches' => 1, 'target' => 'p1'],
+            ],
 
             // 3rd target, batch size 2, 2 fetches
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 2, 'target' => 'p3'),
-            ),
+                ['nb_fetches' => 2, 'target' => 'p3'],
+            ],
 
             // 3rd target, batch size 1, 3 fetches
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 1,
-                array('nb_fetches' => 3, 'target' => 'p3'),
-            ),
+                ['nb_fetches' => 3, 'target' => 'p3'],
+            ],
 
             // test 0 paths
-            array(
-                array(),
+            [
+                [],
                 2,
-                array('nb_fetches' => 0),
-            ),
+                ['nb_fetches' => 0],
+            ],
 
             // test partial iteration
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3)
-            ),
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                ['nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3]
+            ],
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8)
-            ),
+                ['nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8]
+            ],
 
             // multiple targets
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 3, 'target' => array('p1', 'p2', 'p3', 'p4', 'p5'))
-            ),
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                ['nb_fetches' => 3, 'target' => ['p1', 'p2', 'p3', 'p4', 'p5']]
+            ],
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                array('nb_fetches' => 4, 'target' => array('p8', 'p1'))
-            ),
-            array(
-                array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'),
+                ['nb_fetches' => 4, 'target' => ['p8', 'p1']]
+            ],
+            [
+                ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 100,
-                array('nb_fetches' => 1, 'target' => array('p8', 'p1'))
-            ),
-        );
+                ['nb_fetches' => 1, 'target' => ['p8', 'p1']]
+            ],
+        ];
     }
 
     /**
@@ -123,7 +123,7 @@ class NodePathIteratorTest extends TestCase
      */
     public function testArrayAccess($paths, $batchSize, $options)
     {
-        $options = array_merge(array(
+        $options = array_merge([
             // number of times we expect to call the getNodesByArray method
             'nb_fetches' => null,
 
@@ -132,13 +132,13 @@ class NodePathIteratorTest extends TestCase
 
             // if specified, iterate the RS this many times
             'iterate_result' => null,
-        ), $options);
+        ], $options);
 
         $nbFetches = $options['nb_fetches'];
         $targets = (array) $options['target'];
         $iterateResult = $options['iterate_result'];
 
-        $nodes = array();
+        $nodes = [];
         foreach ($paths as $path) {
             $node = $this->getNodeMock();
             $nodes[$path] = $node;
@@ -147,7 +147,7 @@ class NodePathIteratorTest extends TestCase
         $this->objectManager->expects($this->exactly($nbFetches))
             ->method('getNodesByPathAsArray')
             ->will($this->returnCallback(function ($paths) use ($nodes) {
-                $ret = array();
+                $ret = [];
                 foreach ($paths as $path) {
                     $ret[$path] = $nodes[$path];
                 }
@@ -168,7 +168,7 @@ class NodePathIteratorTest extends TestCase
             }
         }
 
-        $res = array();
+        $res = [];
         foreach ($targets as $target) {
             $res[$target] = $nodes[$target];
         }
@@ -179,53 +179,53 @@ class NodePathIteratorTest extends TestCase
      */
     public function testCount()
     {
-        $nodes = array();
-        $nodes2 = array();
-        foreach (array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7') as $name) {
+        $nodes = [];
+        $nodes2 = [];
+        foreach (['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'] as $name) {
             $nodes[$name] = $this->getNodeMock();
         }
-        foreach (array('p8') as $name) {
+        foreach (['p8'] as $name) {
             $nodes2[$name] = $this->getNodeMock();
         }
 
         $this->objectManager->expects($this->at(0))
             ->method('getNodesByPathAsArray')
-            ->with(array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'))
+            ->with(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'])
             ->will($this->returnValue($nodes))
         ;
         $this->objectManager->expects($this->at(1))
             ->method('getNodesByPathAsArray')
-            ->with(array('p8'))
+            ->with(['p8'])
             ->will($this->returnValue($nodes2))
         ;
 
-        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'), null, null, 7);
+        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'], null, null, 7);
         $this->assertCount(8, $iterator);
     }
 
     public function testSeek()
     {
-        $nodes = array();
-        $nodes2 = array();
-        foreach (array('p1', 'p2', 'p3') as $name) {
+        $nodes = [];
+        $nodes2 = [];
+        foreach (['p1', 'p2', 'p3'] as $name) {
             $nodes[$name] = $this->getNodeMock();
         }
-        foreach (array('p8', 'p9') as $name) {
+        foreach (['p8', 'p9'] as $name) {
             $nodes2[$name] = $this->getNodeMock();
         }
 
         $this->objectManager->expects($this->at(0))
             ->method('getNodesByPathAsArray')
-            ->with(array('p1', 'p2', 'p3'))
+            ->with(['p1', 'p2', 'p3'])
             ->will($this->returnValue($nodes))
         ;
         $this->objectManager->expects($this->at(1))
             ->method('getNodesByPathAsArray')
-            ->with(array('p8', 'p9'))
+            ->with(['p8', 'p9'])
             ->will($this->returnValue($nodes2))
         ;
 
-        $iterator = new NodePathIterator($this->objectManager, array('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'), null, null, 3);
+        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'], null, null, 3);
         $iterator->seek(7);
         $iterator->valid();
 

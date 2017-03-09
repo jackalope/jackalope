@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\NodeDefinitionInterface;
@@ -21,13 +22,13 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      * Cached list of NodeType instances populated in first call to getRequiredPrimaryTypes
      * @var array
      */
-    protected $requiredPrimaryTypes = array();
+    protected $requiredPrimaryTypes = [];
 
     /**
      * List of required primary type names as string.
      * @var array
      */
-    protected $requiredPrimaryTypeNames = array();
+    protected $requiredPrimaryTypeNames = [];
 
     /**
      * @var string
@@ -52,7 +53,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
         $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
         $this->defaultPrimaryTypeName = isset($data['defaultPrimaryTypeName']) ? $data['defaultPrimaryTypeName'] : null;
         $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))
-                ? $data['requiredPrimaryTypeNames'] : array(self::DEFAULT_PRIMARY_NODE);
+                ? $data['requiredPrimaryTypeNames'] : [self::DEFAULT_PRIMARY_NODE];
     }
 
     /**

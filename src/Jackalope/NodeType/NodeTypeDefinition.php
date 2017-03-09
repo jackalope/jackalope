@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\NodeType;
 
 use DOMElement;
@@ -41,10 +42,12 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * @var string
      */
     protected $name = null;
+
     /**
      * @var boolean
      */
     protected $isAbstract = false;
+
     /**
      * Whether this is a mixin node type (otherwise it's a primary node type).
      * @var boolean
@@ -65,7 +68,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * Name of the primary item of this node type.
      * @var string
      */
-    protected $primaryItemName= null;
+    protected $primaryItemName = null;
 
     /**
      * @var array
@@ -100,7 +103,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
         $this->factory = $factory;
-        $this->valueConverter = $this->factory->get('PHPCR\Util\ValueConverter');
+        $this->valueConverter = $this->factory->get(ValueConverter::class);
         $this->nodeTypeManager = $nodeTypeManager;
 
         if ($nodetype instanceof DOMElement) {
@@ -129,8 +132,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
         $this->primaryItemName = $ntd->getPrimaryItemName();
         $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
-        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions() ?: array());
-        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: array());
+        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions() ?: []);
+        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: []);
     }
 
     /**
@@ -146,19 +149,20 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->isQueryable = $data['isQueryable'];
         $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
         $this->primaryItemName = $data['primaryItemName'] ?: null;
-        $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : array();
+        $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : [];
         $this->declaredPropertyDefinitions = new ArrayObject();
+
         foreach ($data['declaredPropertyDefinitions'] as $propertyDef) {
             $this->declaredPropertyDefinitions[] = $this->factory->get(
-                'NodeType\\PropertyDefinition',
-                array($propertyDef, $this->nodeTypeManager)
+                PropertyDefinition::class,
+                [$propertyDef, $this->nodeTypeManager]
             );
         }
         $this->declaredNodeDefinitions = new ArrayObject();
         foreach ($data['declaredNodeDefinitions'] as $nodeDef) {
             $this->declaredNodeDefinitions[] = $this->factory->get(
-                'NodeType\\NodeDefinition',
-                array($nodeDef, $this->nodeTypeManager)
+                NodeDefinition::class,
+                [$nodeDef, $this->nodeTypeManager]
             );
         }
     }
@@ -192,7 +196,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     public function getDeclaredSupertypeNames()
     {
         if (null === $this->declaredSuperTypeNames) {
-            return array(self::NAME_NT_BASE);
+            return [self::NAME_NT_BASE];
         }
 
         return $this->declaredSuperTypeNames;

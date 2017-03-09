@@ -18,14 +18,14 @@ class RepositoryTest extends TestCase
             ->will($this->returnValue(true));
         $transport->expects($this->once())
             ->method('getRepositoryDescriptors')
-            ->will($this->returnValue(array('bla'=>'bli')));
+            ->will($this->returnValue(['bla' => 'bli']));
         $transport->expects($this->any())
             ->method('getNamespaces')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue([]));
 
         $repo = new Repository($factory, $transport);
         $session = $repo->login($credentials, $workspaceName);
-        $this->assertInstanceOf('Jackalope\Session', $session);
+        $this->assertInstanceOf(Session::class, $session);
 
         $this->assertContains('bla', $repo->getDescriptorKeys());
         $this->assertSame('bli', $repo->getDescriptor('bla'));

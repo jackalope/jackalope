@@ -2,20 +2,39 @@
 
 namespace Jackalope;
 
+use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\Transport\TransportInterface;
+use PHPCR\SessionInterface;
+
 class WorkspaceTest extends TestCase
 {
+    /**
+     * @var string
+     */
     private $name = 'a3lkjas';
+
+    /**
+     * @var FactoryInterface
+     */
     private $factory;
+
+    /**
+     * @var SessionInterface
+     */
     private $session;
+
+    /**
+     * @var ObjectManager
+     */
     private $om;
 
     public function setUp()
     {
         $this->factory = new Factory;
 
-        $transport = $this->getMockBuilder('Jackalope\Transport\TransportInterface')
+        $transport = $this->getMockBuilder(TransportInterface::class)
             ->disableOriginalConstructor()
-            ->getMock(array())
+            ->getMock([])
         ;
 
         $this->session = $this->getSessionMock();
@@ -38,6 +57,6 @@ class WorkspaceTest extends TestCase
         $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
 
         $ntm = $w->getNodeTypeManager();
-        $this->assertInstanceOf('Jackalope\NodeType\NodeTypeManager', $ntm);
+        $this->assertInstanceOf(NodeTypeManager::class, $ntm);
     }
 }

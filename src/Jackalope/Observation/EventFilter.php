@@ -2,6 +2,7 @@
 
 namespace Jackalope\Observation;
 
+use Jackalope\NotImplementedException;
 use PHPCR\SessionInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\Observation\EventFilterInterface;
@@ -73,7 +74,7 @@ class EventFilter implements EventFilterInterface
         }
 
         if ($this->noLocal) {
-            throw new \Jackalope\NotImplementedException;
+            throw new NotImplementedException();
             if ($this->skipByNoLocal($event)) {
                 return false;
             }
@@ -277,7 +278,7 @@ class EventFilter implements EventFilterInterface
      */
     public function setNoLocal($noLocal)
     {
-        throw new \Jackalope\NotImplementedException('TODO: how can we figure out if an event was local?');
+        throw new NotImplementedException('TODO: how can we figure out if an event was local?');
         $this->noLocal = $noLocal;
 
         return $this;

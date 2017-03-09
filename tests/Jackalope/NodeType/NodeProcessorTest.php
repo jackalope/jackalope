@@ -4,7 +4,11 @@ namespace Jackalope\NodeType;
 
 use ArrayObject;
 use Jackalope\TestCase;
+use Jackalope\Transport\AddNodeOperation;
+use PHPCR\NamespaceException;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
+use PHPCR\ValueFormatException;
 
 class NodeProcessorTest extends TestCase
 {
@@ -15,37 +19,36 @@ class NodeProcessorTest extends TestCase
 
     public function setUp()
     {
-        $this->processor = new NodeProcessor('dtl', new ArrayObject(array(
+        $this->processor = new NodeProcessor('dtl', new ArrayObject([
             'ns' => 'Namespace',
             'dtl' => 'http://www.dantleech.com/ns',
-        )));
+        ]));
     }
 
-    /**
-     * @expectedException \PHPCR\RepositoryException
-     */
     public function testChildDefMandatoryNotPresent()
     {
-        $nodeDefinition = $this->getNodeDefinitionMock(array(
+        $this->expectException(RepositoryException::class);
+
+        $nodeDefinition = $this->getNodeDefinitionMock([
             'getName' => 'node-definition',
             'isMandatory' => true,
             'isAutoCreated' => false,
-        ));
+        ]);
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array($nodeDefinition),
-            'getDeclaredPropertyDefinitions' => array(),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [$nodeDefinition],
+            'getDeclaredPropertyDefinitions' => [],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }
@@ -53,26 +56,27 @@ class NodeProcessorTest extends TestCase
     public function testChildDefAutoCreated()
     {
         $newNode = $this->getNodeMock();
-        $nodeDefinition = $this->getNodeDefinitionMock(array(
+        $nodeDefinition = $this->getNodeDefinitionMock([
             'getName' => 'node-definition',
             'isAutoCreated' => true,
-            'getRequiredPrimaryTypeNames' => array('type1', 'type2'),
-        ));
+            'getRequiredPrimaryTypeNames' => ['type1', 'type2'],
+        ]);
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array($nodeDefinition),
-            'getDeclaredPropertyDefinitions' => array(),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [$nodeDefinition],
+            'getDeclaredPropertyDefinitions' => [],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
+
         $node->expects($this->once())
             ->method('addNode')
             ->with('node-definition', 'type1')
@@ -83,82 +87,87 @@ class NodeProcessorTest extends TestCase
         $this->assertInternalType('array', $res);
         $this->assertCount(1, $res);
         $operation = reset($res);
-        $this->assertInstanceOf('Jackalope\Transport\AddNodeOperation', $operation);
+        $this->assertInstanceOf(AddNodeOperation::class, $operation);
         $this->assertSame($newNode, $operation->node);
     }
 
-    /**
-     * @expectedException \PHPCR\RepositoryException
-     */
     public function testPropertyDefMandatoryNotPresent()
     {
-        $propertyDefinition = $this->getPropertyDefinitionMock(array(
+        $this->expectException(RepositoryException::class);
+
+        $propertyDefinition = $this->getPropertyDefinitionMock([
             'getName' => 'property-definition',
             'isMandatory' => true,
             'isAutoCreated' => false,
-        ));
+        ]);
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array($propertyDefinition),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [$propertyDefinition],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }
 
     public function testPropertyDefsAutoCreated()
     {
-        $jcrUuidProperty = $this->getPropertyDefinitionMock(array(
+        $jcrUuidProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:uuid',
             'isAutoCreated' => true,
             'getRequiredType' => 'String',
-        ));
-        $jcrCreatedByProperty = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrCreatedByProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:createdBy',
             'isAutoCreated' => true,
-        ));
-        $jcrModifiedByProperty = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrModifiedByProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:lastModifiedBy',
             'isAutoCreated' => true,
-        ));
-        $jcrCreatedProperty = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrCreatedProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:created',
             'isAutoCreated' => true,
-        ));
-        $jcrLastModifiedProperty = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrLastModifiedProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:lastModified',
             'isAutoCreated' => true,
-        ));
-        $jcrETagProperty = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrETagProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:etag',
             'isAutoCreated' => true,
-        ));
+        ]);
 
-        $userPropertySingle = $this->getPropertyDefinitionMock(array(
+        $userPropertySingle = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:single',
             'isAutoCreated' => true,
-            'getDefaultValues' => array('one', 'two')
-        ));
-        $userPropertyMultiple = $this->getPropertyDefinitionMock(array(
+            'getDefaultValues' => ['one', 'two']
+        ]);
+
+        $userPropertyMultiple = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:multiple',
             'isAutoCreated' => true,
             'isMultiple' => true,
-            'getDefaultValues' => array('one', 'two')
-        ));
+            'getDefaultValues' => ['one', 'two']
+        ]);
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array(
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [
                 $jcrUuidProperty,
                 $jcrCreatedByProperty,
                 $jcrModifiedByProperty,
@@ -167,99 +176,99 @@ class NodeProcessorTest extends TestCase
                 $jcrETagProperty,
                 $userPropertySingle,
                 $userPropertyMultiple,
-            ),
-            'getDeclaredSupertypes' => array(),
+            ],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
-        ));
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
+        ]);
 
         // expectations
         $node->expects($this->any())
             ->method('setProperty')
             ->withConsecutive(
-                array('jcr:uuid', $this->anything(), 'String'),
-                array('jcr:createdBy', 'dtl', null),
-                array('jcr:lastModifiedBy', 'dtl', null),
-                array('jcr:created', $this->anything(), null),
-                array('jcr:lastModified', $this->anything(), null),
-                array('jcr:etag', 'TODO: generate from binary properties of this node', null),
-                array('dtl:single', 'one', null),
-                array('dtl:multiple', array('one', 'two'), null)
+                ['jcr:uuid', $this->anything(), 'String'],
+                ['jcr:createdBy', 'dtl', null],
+                ['jcr:lastModifiedBy', 'dtl', null],
+                ['jcr:created', $this->anything(), null],
+                ['jcr:lastModified', $this->anything(), null],
+                ['jcr:etag', 'TODO: generate from binary properties of this node', null],
+                ['dtl:single', 'one', null],
+                ['dtl:multiple', ['one', 'two'], null]
             );
 
         $this->processor->process($node);
     }
 
-    /**
-     * @expectedException \PHPCR\RepositoryException
-     * @expectedExceptionMessage No default value for autocreated property
-     */
     public function testPropertyAutoCreatedNoDefaults()
     {
-        $userPropertySingle = $this->getPropertyDefinitionMock(array(
+        $this->expectException(RepositoryException::class);
+        $this->expectExceptionMessage('No default value for autocreated property');
+
+        $userPropertySingle = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:single',
             'isAutoCreated' => true,
-            'getDefaultValues' => array()
-        ));
+            'getDefaultValues' => []
+        ]);
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array($userPropertySingle),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [$userPropertySingle],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }
 
     public function testPropertyDefsAutoCreatedUpdate()
     {
-        $jcrModifiedByPropertyDefinition = $this->getPropertyDefinitionMock(array(
+        $jcrModifiedByPropertyDefinition = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:lastModifiedBy',
             'isAutoCreated' => true,
-        ));
-        $jcrLastModifiedPropertyDefinition = $this->getPropertyDefinitionMock(array(
+        ]);
+
+        $jcrLastModifiedPropertyDefinition = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:lastModified',
             'isAutoCreated' => true,
-        ));
-        $jcrETagPropertyDefinition = $this->getPropertyDefinitionMock(array(
+        ]);
+        $jcrETagPropertyDefinition = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:etag',
             'isAutoCreated' => true,
-        ));
+        ]);
 
         $jcrModifiedByProperty = $this->getPropertyMock();
         $jcrModifiedProperty = $this->getPropertyMock();
         $jcrETagProperty = $this->getPropertyMock();
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array(
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [
                 $jcrModifiedByPropertyDefinition,
                 $jcrLastModifiedPropertyDefinition,
                 $jcrETagPropertyDefinition,
-            ),
-            'getDeclaredSupertypes' => array(),
+            ],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
-        ));
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
+        ]);
 
         $node->expects($this->any())
             ->method('hasProperty')
@@ -275,9 +284,9 @@ class NodeProcessorTest extends TestCase
         $node->expects($this->any())
             ->method('getProperty')
             ->withConsecutive(
-                array('jcr:lastModifiedBy'),
-                array('jcr:lastModified'),
-                array('jcr:etag')
+                ['jcr:lastModifiedBy'],
+                ['jcr:lastModified'],
+                ['jcr:etag']
             )
             ->will($this->onConsecutiveCalls($jcrModifiedByProperty, $jcrModifiedProperty, $jcrETagProperty));
 
@@ -286,70 +295,70 @@ class NodeProcessorTest extends TestCase
 
     public function providePropertyValidation()
     {
-        return array(
-            array(
-                array(
+        return [
+            [
+                [
                     'getType' => PropertyType::NAME,
                     'isMultiple' => false,
                     'getValue' => 'hello',
-                ),
+                ],
                 null
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::NAME,
                     'isMultiple' => false,
                     'getValue' => 'foo:hello',
                     'getPath' => '/path/to',
-                ),
+                ],
                 'Invalid value for NAME property type at "/path/to", the namespace prefix "foo" does not exist'
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::PATH,
                     'isMultiple' => false,
                     'getValue' => '/path/to/something',
                     'getPath' => '/path/to',
-                ),
+                ],
                 null,
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::PATH,
                     'isMultiple' => false,
                     'getValue' => '  pathto££333+_123£³[]/something[&&"£$]/',
                     'getPath' => '/path/to',
-                ),
+                ],
                 'Value "  pathto££333+_123£³[]/something[&&"£$]/" for PATH property at "/path/to" is invalid',
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::URI,
                     'isMultiple' => false,
                     'getValue' => 'http://domain.dom',
                     'getPath' => '/path/to',
-                ),
+                ],
                 null,
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::URI,
                     'isMultiple' => false,
                     'getValue' => 'http://domain.dom  sd',
                     'getPath' => '/path/to',
-                ),
+                ],
                 'Invalid value "http://domain.dom  sd" for URI property at "/path/to". Value has to comply with RFC 3986',
-            ),
-            array(
-                array(
+            ],
+            [
+                [
                     'getType' => PropertyType::STRING,
                     'isMultiple' => false,
                     'getValue' => 'some string',
                     'getPath' => '/path/to',
-                ),
+                ],
                 null
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -360,35 +369,36 @@ class NodeProcessorTest extends TestCase
         $property = $this->getPropertyMock($propertyConfig);
 
         if ($exception) {
-            $this->setExpectedException('PHPCR\ValueFormatException', $exception);
+            $this->expectException(ValueFormatException::class);
+            $this->expectExceptionMessage($exception);
         }
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array(),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array($property),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [$property],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }
 
     public function provideNamespaceValidation()
     {
-        return array(
-            array('no-namespace', true),
-            array('ns:registered-namespace', true),
-            array('dtl:registered-namespace', true),
-            array('ltd:unkown-namespace', false),
-        );
+        return [
+            ['no-namespace', true],
+            ['ns:registered-namespace', true],
+            ['dtl:registered-namespace', true],
+            ['ltd:unkown-namespace', false],
+        ];
     }
 
     /**
@@ -397,41 +407,42 @@ class NodeProcessorTest extends TestCase
     public function testNamespaceValidation($nodeName, $isValid)
     {
         if (false === $isValid) {
-            $this->setExpectedException('PHPCR\NamespaceException', 'is not known');
+            $this->expectException(NamespaceException::class);
+            $this->expectExceptionMessage('is not known');
         }
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array(),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
-        $node = $this->getNodeMock(array(
+        ]);
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array(),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
             'getName' => $nodeName,
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }
 
     public function providePropertyValidationOutOfRangeCharacters()
     {
-        return array(
-            array('This is valid too!'.$this->translateCharFromCode('\u0009'), true),
-            array('This is valid', true),
-            array($this->translateCharFromCode('\uD7FF'), true),
-            array('This is on the edge, but valid too.'. $this->translateCharFromCode('\uFFFD'), true),
-            array($this->translateCharFromCode('\u10000'), true),
-            array($this->translateCharFromCode('\u10FFFF'), true),
-            array($this->translateCharFromCode('\u0001'), false),
-            array($this->translateCharFromCode('\u0002'), false),
-            array($this->translateCharFromCode('\u0003'), false),
-            array($this->translateCharFromCode('\u0008'), false),
-            array($this->translateCharFromCode('\uFFFF'), false),
-        );
+        return [
+            ['This is valid too!'.$this->translateCharFromCode('\u0009'), true],
+            ['This is valid', true],
+            [$this->translateCharFromCode('\uD7FF'), true],
+            ['This is on the edge, but valid too.'. $this->translateCharFromCode('\uFFFD'), true],
+            [$this->translateCharFromCode('\u10000'), true],
+            [$this->translateCharFromCode('\u10FFFF'), true],
+            [$this->translateCharFromCode('\u0001'), false],
+            [$this->translateCharFromCode('\u0002'), false],
+            [$this->translateCharFromCode('\u0003'), false],
+            [$this->translateCharFromCode('\u0008'), false],
+            [$this->translateCharFromCode('\uFFFF'), false],
+        ];
     }
 
     /**
@@ -439,31 +450,32 @@ class NodeProcessorTest extends TestCase
      */
     public function testPropertyValidationOutOfRangeCharacters($value, $isValid)
     {
-        $property = $this->getPropertyMock(array(
+        $property = $this->getPropertyMock([
             'getType' => PropertyType::STRING,
             'isMultiple' => false,
             'getValue' => $value,
             'getPath' => '/path/to',
-        ));
+        ]);
 
         if (false === $isValid) {
-            $this->setExpectedException('PHPCR\ValueFormatException', 'Invalid character detected in value');
+            $this->expectException(ValueFormatException::class);
+            $this->expectExceptionMessage('Invalid character detected in value');
         }
 
-        $nodeType = $this->getNodeTypeMock(array(
-            'getDeclaredChildNodeDefinitions' => array(),
-            'getDeclaredPropertyDefinitions' => array(),
-            'getDeclaredSupertypes' => array(),
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [],
+            'getDeclaredSupertypes' => [],
             'getName' => 'node-type-1',
-        ));
+        ]);
 
-        $node = $this->getNodeMock(array(
+        $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
-            'getMixinNodeTypes' => array(),
-            'getProperties' => array($property),
+            'getMixinNodeTypes' => [],
+            'getProperties' => [$property],
             'getName' => 'node1',
             'getPath' => 'path/to/node',
-        ));
+        ]);
 
         $this->processor->process($node);
     }

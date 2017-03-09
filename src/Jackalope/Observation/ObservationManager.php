@@ -11,6 +11,7 @@ use PHPCR\SessionInterface;
 use Jackalope\Transport\ObservationInterface;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use Traversable;
 
 /**
  * {@inheritDoc}
@@ -98,10 +99,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
      */
     public function getEventJournal(EventFilterInterface $filter)
     {
-        return $this->factory->get(
-            'Observation\\EventJournal',
-            array($filter, $this->session, $this->transport)
-        );
+        return $this->factory->get(EventJournal::class, [$filter, $this->session, $this->transport]);
     }
 
     /**
@@ -111,13 +109,10 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
      */
     public function createEventFilter()
     {
-        return $this->factory->get(
-            'Jackalope\\Observation\\EventFilter',
-            array($this->session)
-        );
+        return $this->factory->get(EventFilter::class, [$this->session]);
     }
     /**
-     * @return \Traversable The list of event listeners
+     * @return Traversable The list of event listeners
      *
      * @throws RepositoryException
      *

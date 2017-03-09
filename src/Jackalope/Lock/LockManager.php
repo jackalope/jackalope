@@ -3,6 +3,8 @@
 namespace Jackalope\Lock;
 
 use ArrayIterator;
+use Exception;
+use InvalidArgumentException;
 use IteratorAggregate;
 use PHPCR\SessionInterface;
 use PHPCR\PathNotFoundException;
@@ -31,10 +33,11 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * @var ObjectManager
      */
-    protected $objectmanager;
+    protected $objectManager;
 
     /**
      * The jackalope object factory for this object
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -54,7 +57,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
      *
      * @var Lock[] indexed by absPath
      */
-    protected $locks = array();
+    protected $locks = [];
 
     /**
      * Create the version manager - there should be only one per session.
@@ -67,12 +70,15 @@ class LockManager implements IteratorAggregate, LockManagerInterface
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, SessionInterface $session, LockingInterface $transport)
     {
-        $this->objectmanager = $objectManager;
+        $this->objectManager = $objectManager;
         $this->factory = $factory;
         $this->session = $session;
         $this->transport = $transport;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getIterator()
     {
         return new ArrayIterator($this->getLockTokens());
@@ -122,7 +128,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      *
      * @api
      */
@@ -264,7 +270,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
                 try {
                     $this->unlock($path); // will tell the lock its no longer live
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // ignore exceptions here, we don't care too much. would be nice to log though
                 }
             }

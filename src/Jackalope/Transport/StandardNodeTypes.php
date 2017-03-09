@@ -2,6 +2,10 @@
 
 namespace Jackalope\Transport;
 
+use PHPCR\PropertyType;
+use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as QOMConstantsInterface;
+use PHPCR\Version\OnParentVersionAction;
+
 /**
  * Utility class for transports that do not use jackrabbit to provide the
  * standard node type information.
@@ -26,3822 +30,3262 @@ class StandardNodeTypes
      */
     public static function getNodeTypeData()
     {
-        return array(
-            'mix:created' =>
-            array(
+        return [
+            'mix:created' => [
                 'name' => 'mix:created',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:created',
                         'name' => 'jcr:createdBy',
                         'isAutoCreated' => true,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:created',
                         'name' => 'jcr:created',
                         'isAutoCreated' => true,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 5,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::DATE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:etag' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:etag' => [
                 'name' => 'mix:etag',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:etag',
                         'name' => 'jcr:etag',
                         'isAutoCreated' => true,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:language' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:language' => [
                 'name' => 'mix:language',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:language',
                         'name' => 'jcr:language',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:lastModified' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:lastModified' => [
                 'name' => 'mix:lastModified',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:lastModified',
                         'name' => 'jcr:lastModifiedBy',
                         'isAutoCreated' => true,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:lastModified',
                         'name' => 'jcr:lastModified',
                         'isAutoCreated' => true,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 5,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::DATE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:lifecycle' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:lifecycle' => [
                 'name' => 'mix:lifecycle',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:lifecycle',
                         'name' => 'jcr:lifecyclePolicy',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 3,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::INITIALIZE,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:lifecycle',
                         'name' => 'jcr:currentLifecycleState',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 3,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::INITIALIZE,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:lockable' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:lockable' => [
                 'name' => 'mix:lockable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:lockable',
                         'name' => 'jcr:lockIsDeep',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:lockable',
                         'name' => 'jcr:lockOwner',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:mimeType' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:mimeType' => [
                 'name' => 'mix:mimeType',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:mimeType',
                         'name' => 'jcr:encoding',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:mimeType',
                         'name' => 'jcr:mimeType',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:referenceable' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:referenceable' => [
                 'name' => 'mix:referenceable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:referenceable',
                         'name' => 'jcr:uuid',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 3,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::INITIALIZE,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:shareable' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ]
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:shareable' => [
                 'name' => 'mix:shareable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:simpleVersionable' =>
-            array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:simpleVersionable' => [
                 'name' => 'mix:simpleVersionable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:simpleVersionable',
                         'name' => 'jcr:isCheckedOut',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                        'defaultValues' =>
-                        array(
-                            0 => 'true',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:title' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                        'defaultValues' => [
+                            'true',
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:title' => [
                 'name' => 'mix:title',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:title',
                         'name' => 'jcr:description',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:title',
                         'name' => 'jcr:title',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'mix:versionable' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'mix:versionable' => [
                 'name' => 'mix:versionable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'mix:simpleVersionable',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'mix:simpleVersionable',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:predecessors',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:mergeFailed',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:activity',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:activity',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:activity',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:configuration',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:configuration',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:configuration',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:versionHistory',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:versionHistory',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    5 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:versionHistory',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'mix:versionable',
                         'name' => 'jcr:baseVersion',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:activity' =>
-            array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:activity' => [
                 'name' => 'nt:activity',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:activity',
                         'name' => 'jcr:activityTitle',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:address' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:address' => [
                 'name' => 'nt:address',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:workspace',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:path',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 8,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::PATH,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:host',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:port',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:protocol',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    5 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:repository',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    6 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:address',
                         'name' => 'jcr:id',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 10,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::WEAKREFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:base' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:base' => [
                 'name' => 'nt:base',
                 'isAbstract' => true,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:base',
                         'name' => 'jcr:mixinTypes',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 4,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COMPUTE,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:base',
                         'name' => 'jcr:primaryType',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 4,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COMPUTE,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:childNodeDefinition' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:childNodeDefinition' => [
                 'name' => 'nt:childNodeDefinition',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:requiredPrimaryTypes',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                        'defaultValues' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                        'defaultValues' => [
+                            'nt:base',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:autoCreated',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:defaultPrimaryType',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:protected',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:name',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    5 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:mandatory',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    6 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:sameNameSiblings',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    7 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:childNodeDefinition',
                         'name' => 'jcr:onParentVersion',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'COPY',
-                            1 => 'VERSION',
-                            2 => 'INITIALIZE',
-                            3 => 'COMPUTE',
-                            4 => 'IGNORE',
-                            5 => 'ABORT',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:configuration' =>
-            array(
+                        'valueConstraints' => [
+                            OnParentVersionAction::ACTIONNAME_COPY,
+                            OnParentVersionAction::ACTIONNAME_VERSION,
+                            OnParentVersionAction::ACTIONNAME_INITIALIZE,
+                            OnParentVersionAction::ACTIONNAME_COMPUTE,
+                            OnParentVersionAction::ACTIONNAME_IGNORE,
+                            OnParentVersionAction::ACTIONNAME_ABORT,
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:configuration' => [
                 'name' => 'nt:configuration',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:versionable',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:versionable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:configuration',
                         'name' => 'jcr:root',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:file' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:file' => [
                 'name' => 'nt:file',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => 'jcr:content',
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:hierarchyNode',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:hierarchyNode',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:file',
                         'name' => 'jcr:content',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:folder' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:base',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:folder' => [
                 'name' => 'nt:folder',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:hierarchyNode',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:hierarchyNode',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:folder',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:hierarchyNode',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:frozenNode' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:hierarchyNode',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:frozenNode' => [
                 'name' => 'nt:frozenNode',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => 'jcr:frozenUuid',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => 'jcr:frozenPrimaryType',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => 'jcr:frozenMixinTypes',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:frozenNode',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:hierarchyNode' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:base',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:hierarchyNode' => [
                 'name' => 'nt:hierarchyNode',
                 'isAbstract' => true,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:created',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:linkedFile' =>
-            array(
+                'declaredSuperTypeNames' => [
+                    'mix:created',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:linkedFile' => [
                 'name' => 'nt:linkedFile',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => 'jcr:content',
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:hierarchyNode',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:hierarchyNode',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:linkedFile',
                         'name' => 'jcr:content',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:nodeType' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:nodeType' => [
                 'name' => 'nt:nodeType',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:hasOrderableChildNodes',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:isQueryable',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:isMixin',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:nodeTypeName',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:isAbstract',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    5 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:primaryItemName',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    6 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:supertypes',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:childNodeDefinition',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => 'nt:childNodeDefinition',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:childNodeDefinition',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:childNodeDefinition',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:nodeType',
                         'name' => 'jcr:propertyDefinition',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => 'nt:propertyDefinition',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:propertyDefinition',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:propertyDefinition' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:propertyDefinition',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:propertyDefinition' => [
                 'name' => 'nt:propertyDefinition',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:autoCreated',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:isQueryOrderable',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:protected',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:name',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:valueConstraints',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    5 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:isFullTextSearchable',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    6 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:onParentVersion',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'COPY',
-                            1 => 'VERSION',
-                            2 => 'INITIALIZE',
-                            3 => 'COMPUTE',
-                            4 => 'IGNORE',
-                            5 => 'ABORT',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    7 =>
-                    array(
+                        'valueConstraints' => [
+                            OnParentVersionAction::ACTIONNAME_COPY,
+                            OnParentVersionAction::ACTIONNAME_VERSION,
+                            OnParentVersionAction::ACTIONNAME_INITIALIZE,
+                            OnParentVersionAction::ACTIONNAME_COMPUTE,
+                            OnParentVersionAction::ACTIONNAME_IGNORE,
+                            OnParentVersionAction::ACTIONNAME_ABORT,
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:requiredType',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'STRING',
-                            1 => 'URI',
-                            2 => 'BINARY',
-                            3 => 'LONG',
-                            4 => 'DOUBLE',
-                            5 => 'DECIMAL',
-                            6 => 'BOOLEAN',
-                            7 => 'DATE',
-                            8 => 'NAME',
-                            9 => 'PATH',
-                            10 => 'REFERENCE',
-                            11 => 'WEAKREFERENCE',
-                            12 => 'UNDEFINED',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    8 =>
-                    array(
+                        'valueConstraints' => [
+                            'STRING',
+                            'URI',
+                            'BINARY',
+                            'LONG',
+                            'DOUBLE',
+                            'DECIMAL',
+                            'BOOLEAN',
+                            'DATE',
+                            'NAME',
+                            'PATH',
+                            'REFERENCE',
+                            'WEAKREFERENCE',
+                            'UNDEFINED',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:multiple',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    9 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:availableQueryOperators',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    10 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:defaultValues',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    11 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:propertyDefinition',
                         'name' => 'jcr:mandatory',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 6,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BOOLEAN,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:query' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:query' => [
                 'name' => 'nt:query',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:query',
                         'name' => 'jcr:statement',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:query',
                         'name' => 'jcr:language',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:resource'=>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:resource'=> [
                 'name' => 'nt:resource',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => 'jcr:data',
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:lastModified',
-                    1 => 'mix:mimeType',
-                    2 => 'mix:referenceable',
-                    3 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:lastModified',
+                    'mix:mimeType',
+                    'mix:referenceable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:resource',
                         'name' => 'jcr:data',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 2,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::BINARY,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:unstructured' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:unstructured' => [
                 'name' => 'nt:unstructured',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:unstructured',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:unstructured',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:unstructured',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => 'nt:unstructured',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:version' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:base',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:version' => [
                 'name' => 'nt:version',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:version',
                         'name' => 'jcr:predecessors',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:version',
                         'name' => 'jcr:activity',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:activity',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:activity',
+                        ],
+                        'availableQueryOperators' =>[
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:version',
                         'name' => 'jcr:created',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 5,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::DATE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:version',
                         'name' => 'jcr:successors',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:version',
                         'name' => 'jcr:frozenNode',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:frozenNode',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:versionHistory' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:frozenNode',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:versionHistory' => [
                 'name' => 'nt:versionHistory',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:versionHistory',
                         'name' => 'jcr:copiedFrom',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 10,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::WEAKREFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
+                        'valueConstraints' => [
                             0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:versionHistory',
                         'name' => 'jcr:versionableUuid',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:versionHistory',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:version',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:version',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:versionHistory',
                         'name' => 'jcr:versionLabels',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:versionLabels',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:versionLabels',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:versionLabels',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'nt:versionHistory',
                         'name' => 'jcr:rootVersion',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:version',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                    ),
-                ),
-            ),
-            'nt:versionLabels' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:version',
+                        ],
+                    ],
+                ],
+            ],
+            'nt:versionLabels' => [
                 'name' => 'nt:versionLabels',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:versionLabels',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:version',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'nt:versionedChild' =>
-            array(
+                        'valueConstraints' => [
+                            'nt:version',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'nt:versionedChild' => [
                 'name' => 'nt:versionedChild',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'nt:versionedChild',
                         'name' => 'jcr:childVersionHistory',
                         'isAutoCreated' => true,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'nt:versionHistory',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:ACE' =>
-            array(
+                        'valueConstraints' => [
+                            'nt:versionHistory',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:ACE' => [
                 'name' => 'rep:ACE',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:ACE',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:ACE',
                         'name' => 'rep:privileges',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 7,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::NAME,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:ACE',
                         'name' => 'rep:glob',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:ACE',
                         'name' => 'rep:nodePath',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 8,
+                        'onParentVersion' => PropertyType::STRING,
+                        'requiredType' => PropertyType::PATH,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:ACE',
                         'name' => 'rep:principalName',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:ACL' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:ACL' => [
                 'name' => 'rep:ACL',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:Policy',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'rep:Policy',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:ACL',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:GrantACE',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:ACE',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:AccessControl' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:ACE',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:AccessControl' => [
                 'name' => 'rep:AccessControl',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:AccessControl',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:AccessControl',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:AccessControl',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:AccessControl',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:PrincipalAccessControl',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:AccessControllable' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:PrincipalAccessControl',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:AccessControllable' => [
                 'name' => 'rep:AccessControllable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:AccessControllable',
                         'name' => 'rep:policy',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Policy',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:Activities' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Policy',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:Activities' => [
                 'name' => 'rep:Activities',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Activities',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:Activities',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Activities',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Activities',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:Activities',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:activity',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:activity',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:Authorizable' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:activity',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:Authorizable' => [
                 'name' => 'rep:Authorizable',
                 'isAbstract' => true,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'mix:referenceable',
-                    1 => 'nt:hierarchyNode',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'mix:referenceable',
+                    'nt:hierarchyNode',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Authorizable',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:Authorizable',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 1,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:Authorizable',
                         'name' => 'rep:principalName',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Authorizable',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:unstructured',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:AuthorizableFolder' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:base',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:AuthorizableFolder' => [
                 'name' => 'rep:AuthorizableFolder',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:hierarchyNode',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:hierarchyNode',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:AuthorizableFolder',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:AuthorizableFolder',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:AuthorizableFolder',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:AuthorizableFolder',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:AuthorizableFolder',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:User',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Authorizable',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:Configurations' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Authorizable',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:Configurations' => [
                 'name' => 'rep:Configurations',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Configurations',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:Configurations',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Configurations',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Configurations',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:Configurations',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:configuration',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:configuration',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:DenyACE' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:configuration',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:DenyACE' => [
                 'name' => 'rep:DenyACE',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:ACE',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:GrantACE' =>
-            array(
+                'declaredSuperTypeNames' => [
+                    'rep:ACE',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:GrantACE' => [
                 'name' => 'rep:GrantACE',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:ACE',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:Group' =>
-            array(
+                'declaredSuperTypeNames' => [
+                    'rep:ACE',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:Group' => [
                 'name' => 'rep:Group',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:Authorizable',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'rep:Authorizable',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Group',
                         'name' => 'rep:members',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 10,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::WEAKREFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
-                            0 => 'rep:Authorizable',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        'valueConstraints' => [
+                            'rep:Authorizable',
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Group',
                         'name' => 'rep:members',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 2,
+                        'onParentVersion' => OnParentVersionAction::VERSION,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => 'rep:Members',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Members',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:Impersonatable' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Members',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:Impersonatable' => [
                 'name' => 'rep:Impersonatable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Impersonatable',
                         'name' => 'rep:impersonators',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:Members' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:Members' => [
                 'name' => 'rep:Members',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Members',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 10,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::WEAKREFERENCE,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'valueConstraints' =>
-                        array(
+                        'valueConstraints' => [
                             0 => 'rep:Authorizable',
-                        ),
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                        ],
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:Members',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
                         'allowsSameNameSiblings' => true,
                         'defaultPrimaryTypeName' => 'rep:Members',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Members',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:Policy' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Members',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:Policy' => [
                 'name' => 'rep:Policy',
                 'isAbstract' => true,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:PrincipalAccessControl' =>
-            array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:PrincipalAccessControl' => [
                 'name' => 'rep:PrincipalAccessControl',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:AccessControl',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'rep:AccessControl',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:PrincipalAccessControl',
                         'name' => 'rep:policy',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Policy',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:RepoAccessControllable' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Policy',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:RepoAccessControllable' => [
                 'name' => 'rep:RepoAccessControllable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:RepoAccessControllable',
                         'name' => 'rep:repoPolicy',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => null,
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Policy',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:RetentionManageable' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Policy',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:RetentionManageable' => [
                 'name' => 'rep:RetentionManageable',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:RetentionManageable',
                         'name' => 'rep:retentionPolicy',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:RetentionManageable',
                         'name' => 'rep:hold',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 5,
-                        'requiredType' => 0,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
+                        'requiredType' => PropertyType::UNDEFINED,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:User' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:User' => [
                 'name' => 'rep:User',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'rep:Authorizable',
-                    1 => 'rep:Impersonatable',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'rep:Authorizable',
+                    'rep:Impersonatable',
+                ],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:User',
                         'name' => 'rep:password',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:User',
                         'name' => 'rep:disabled',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 1,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::STRING,
                         'multiple' => false,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:VersionReference' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:VersionReference' => [
                 'name' => 'rep:VersionReference',
                 'isAbstract' => false,
                 'isMixin' => true,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [],
+                'declaredPropertyDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:VersionReference',
                         'name' => 'rep:versions',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 1,
-                        'requiredType' => 9,
+                        'onParentVersion' => OnParentVersionAction::COPY,
+                        'requiredType' => PropertyType::REFERENCE,
                         'multiple' => true,
                         'fullTextSearchable' => true,
                         'queryOrderable' => true,
-                        'availableQueryOperators' =>
-                        array(
-                            0 => 'jcr.operator.equal.to',
-                            1 => 'jcr.operator.not.equal.to',
-                            2 => 'jcr.operator.greater.than',
-                            3 => 'jcr.operator.greater.than.or.equal.to',
-                            4 => 'jcr.operator.less.than',
-                            5 => 'jcr.operator.less.than.or.equal.to',
-                            6 => 'jcr.operator.like',
-                        ),
-                    ),
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                ),
-            ),
-            'rep:nodeTypes' =>
-            array(
+                        'availableQueryOperators' => [
+                            QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
+                            QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
+                            QOMConstantsInterface::JCR_OPERATOR_LIKE,
+                        ],
+                    ],
+                ],
+                'declaredNodeDefinitions' => [],
+            ],
+            'rep:nodeTypes' => [
                 'name' => 'rep:nodeTypes',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:nodeTypes',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:nodeType',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:nodeType',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:root' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:nodeType',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:root' => [
                 'name' => 'rep:root',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:unstructured',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:unstructured',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:root',
                         'name' => 'jcr:system',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => false,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:system',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:system',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:system' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:system',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:system' => [
                 'name' => 'rep:system',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => true,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:system',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => false,
-                        'onParentVersion' => 5,
+                        'onParentVersion' => OnParentVersionAction::IGNORE,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:base',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:base',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:base',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:system',
                         'name' => 'jcr:versionStorage',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:versionStorage',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:versionStorage',
-                        ),
-                    ),
-                    2 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:versionStorage',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:system',
                         'name' => 'jcr:activities',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:Activities',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Activities',
-                        ),
-                    ),
-                    3 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Activities',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:system',
                         'name' => 'jcr:configurations',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:Configurations',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:Configurations',
-                        ),
-                    ),
-                    4 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:Configurations',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:system',
                         'name' => 'jcr:nodeTypes',
                         'isAutoCreated' => false,
                         'isMandatory' => true,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:nodeTypes',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:nodeTypes',
-                        ),
-                    ),
-                ),
-            ),
-            'rep:versionStorage' =>
-            array(
+                        'requiredPrimaryTypeNames' => [
+                            'rep:nodeTypes',
+                        ],
+                    ],
+                ],
+            ],
+            'rep:versionStorage' => [
                 'name' => 'rep:versionStorage',
                 'isAbstract' => false,
                 'isMixin' => false,
                 'isQueryable' => true,
                 'hasOrderableChildNodes' => false,
                 'primaryItemName' => null,
-                'declaredSuperTypeNames' =>
-                array(
-                    0 => 'nt:base',
-                ),
-                'declaredPropertyDefinitions' =>
-                array(
-                ),
-                'declaredNodeDefinitions' =>
-                array(
-                    0 =>
-                    array(
+                'declaredSuperTypeNames' => [
+                    'nt:base',
+                ],
+                'declaredPropertyDefinitions' => [],
+                'declaredNodeDefinitions' => [
+                    [
                         'declaringNodeType' => 'rep:versionStorage',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'nt:versionHistory',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'nt:versionHistory',
-                        ),
-                    ),
-                    1 =>
-                    array(
+                        'requiredPrimaryTypeNames' => [
+                            'nt:versionHistory',
+                        ],
+                    ],
+                    [
                         'declaringNodeType' => 'rep:versionStorage',
                         'name' => '*',
                         'isAutoCreated' => false,
                         'isMandatory' => false,
                         'isProtected' => true,
-                        'onParentVersion' => 6,
+                        'onParentVersion' => OnParentVersionAction::ABORT,
                         'allowsSameNameSiblings' => false,
                         'defaultPrimaryTypeName' => 'rep:versionStorage',
-                        'requiredPrimaryTypeNames' =>
-                        array(
-                            0 => 'rep:versionStorage',
-                        ),
-                    ),
-                ),
-            ),
-        );
+                        'requiredPrimaryTypeNames' => [
+                            'rep:versionStorage',
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

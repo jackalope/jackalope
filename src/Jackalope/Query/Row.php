@@ -36,9 +36,10 @@ class Row implements Iterator, RowInterface
     /**
      * Columns of this result row: array of array with fields dcr:name and
      * dcr:value
+     *
      * @var array
      */
-    protected $columns = array();
+    protected $columns = [];
 
     /**
      * Which column we are on when iterating over the columns
@@ -51,21 +52,23 @@ class Row implements Iterator, RowInterface
      *
      * @var array of float
      */
-    protected $score = array();
+    protected $score = [];
 
     /**
      * The path to the node for each selector
      *
      * @var array of string
      */
-    protected $path = array();
+    protected $path = [];
 
     /**
      * Cached list of values extracted from columns to avoid double work.
+     *
      * @var array
+     *
      * @see Row::getValues()
      */
-    protected $values = array();
+    protected $values = [];
 
     /**
      * The default selector name
@@ -130,7 +133,7 @@ class Row implements Iterator, RowInterface
      */
     public function getValues()
     {
-        $values = array();
+        $values = [];
         foreach ($this->values as $selectorName => $columns) {
             foreach ($columns as $key => $value) {
                 $values[$selectorName.'.'.$key] = $value;

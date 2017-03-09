@@ -112,7 +112,7 @@ interface TransportInterface
      * Get the registered namespaces mappings from the backend.
      *
      * Returns all additional namespaces. Does not return the ones defined as
-     * constants in \PHPCR\NamespaceRegistryInterface
+     * constants in PHPCR\NamespaceRegistryInterface
      *
      * @return array Associative array of prefix => uri
      */
@@ -328,7 +328,7 @@ interface TransportInterface
      *
      * @see NodeTypeDefinition::fromArray
      */
-    public function getNodeTypes($nodeTypes = array());
+    public function getNodeTypes($nodeTypes = []);
 
     /**
      * Sets the depth with which a transport should fetch childnodes

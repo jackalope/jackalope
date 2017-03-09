@@ -3,6 +3,7 @@
 namespace Jackalope\NodeType;
 
 use Jackalope\TestCase;
+use PHPCR\Version\OnParentVersionAction;
 
 class NodeDefinitionTemplateTest extends TestCase
 {
@@ -19,7 +20,7 @@ class NodeDefinitionTemplateTest extends TestCase
         $this->assertNull($ndt->getName());
         $this->assertFalse($ndt->isAutoCreated());
         $this->assertFalse($ndt->isMandatory());
-        $this->assertSame(\PHPCR\Version\OnParentVersionAction::COPY, $ndt->getOnParentVersion());
+        $this->assertSame(OnParentVersionAction::COPY, $ndt->getOnParentVersion());
         $this->assertFalse($ndt->isProtected());
         $this->assertNull($ndt->getRequiredPrimaryTypeNames());
         $this->assertNull($ndt->getDefaultPrimaryTypeName());

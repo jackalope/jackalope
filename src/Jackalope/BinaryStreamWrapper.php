@@ -34,7 +34,7 @@ class BinaryStreamWrapper
      *
      * @var array
      */
-    private static $multiValueMap = array();
+    private static $multiValueMap = [];
 
     /**
      * The backend path this stream represents
@@ -45,12 +45,14 @@ class BinaryStreamWrapper
 
     /**
      * The stream once the wrapper has been accessed once.
+     *
      * @var resource
      */
     private $stream = null;
 
     /**
      * The PHPCR session to fetch data through it.
+     *
      * @var SessionInterface
      */
     private $session = null;

@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface as Psr3LoggerInterface;
 class Psr3Logger implements LoggerInterface
 {
     const MAX_STRING_LENGTH = 32;
+
     const BINARY_DATA_VALUE = '(binary value)';
 
     /**
@@ -69,7 +70,7 @@ class Psr3Logger implements LoggerInterface
                 }
             }
 
-            $this->logger->info($method, array('params' => $params, 'env' => $env));
+            $this->logger->info($method, ['params' => $params, 'env' => $env]);
         }
     }
 

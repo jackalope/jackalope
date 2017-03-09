@@ -2,25 +2,43 @@
 
 namespace Jackalope\Observation;
 
+use ArrayIterator;
+use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
 use Jackalope\Factory;
+use Jackalope\Transport\TransportInterface;
+use PHPCR\Observation\EventJournalInterface;
+use PHPCR\SessionInterface;
+use Jackalope\Transport\ObservationInterface;
 
 /**
  * Unit tests for the EventJournal
  */
 class EventJournalTest extends TestCase
 {
+    /**
+     * @var FactoryInterface
+     */
     protected $factory;
 
+    /**
+     * @var EventJournalInterface
+     */
     protected $journal;
 
+    /**
+     * @var SessionInterface
+     */
     protected $session;
 
+    /**
+     * @var TransportInterface
+     */
     protected $transport;
 
     public function setUp()
     {
-        $this->session = $this->getSessionMock(array('getNode', 'getNodesByIdentifier'));
+        $this->session = $this->getSessionMock(['getNode', 'getNodesByIdentifier']);
         $this->session
             ->expects($this->any())
             ->method('getNode')
@@ -28,10 +46,10 @@ class EventJournalTest extends TestCase
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue([]));
         $this->factory = new Factory();
 
-        $this->transport = $this->getMock('\Jackalope\Transport\ObservationInterface');
+        $this->transport = $this->createMock(ObservationInterface::class);
     }
 
     public function testConstructor()
@@ -59,7 +77,7 @@ class EventJournalTest extends TestCase
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
 
-        $this->getAndCallMethod($journal, 'fetchJournal', array());
+        $this->getAndCallMethod($journal, 'fetchJournal', []);
         $this->myAssertAttributeEquals('test', 'events', $journal);
     }
 
@@ -77,7 +95,7 @@ class EventJournalTest extends TestCase
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
         $journal->skipTo(2);
 
-        $this->getAndCallMethod($journal, 'fetchJournal', array());
+        $this->getAndCallMethod($journal, 'fetchJournal', []);
         $this->myAssertAttributeEquals('test-data', 'events', $journal);
     }
 
@@ -95,7 +113,7 @@ class EventJournalTest extends TestCase
             ->method('getEvents')
             ->with(2, $filter, $this->session)
             ->will($this->returnValue(
-                new \ArrayIterator(array($event1, $event2))
+                new ArrayIterator([$event1, $event2])
             ))
         ;
 

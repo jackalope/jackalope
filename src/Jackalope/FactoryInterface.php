@@ -16,8 +16,8 @@ namespace Jackalope;
  *
  * It should be used in the code like this:
  * <pre>
- * $this->factory->get('Node', array(...));
- * $this->factory->get('NodeType\PropertyDefinition', array(...));
+ * $this->factory->get('Node', [...]);
+ * $this->factory->get('NodeType\PropertyDefinition', [...]);
  * //note the \ for sub namespaces. the name is relative to the Jackalope namespace
  * </pre>
  *
@@ -42,5 +42,5 @@ interface FactoryInterface
      *
      * @return object
      */
-    public function get($name, array $params = array());
+    public function get($name, array $params = []);
 }

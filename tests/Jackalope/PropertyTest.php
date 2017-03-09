@@ -2,32 +2,34 @@
 
 namespace Jackalope;
 
+use ArrayObject;
 use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 
 class PropertyTest extends TestCase
 {
     public function provideGetNode()
     {
-        return array(
-            array(
-                array('1234-1234', '4321-4321'),
-                array(),
+        return [
+            [
+                ['1234-1234', '4321-4321'],
+                [],
                 'Internal Error: Could not find one or more referenced nodes: "1234-1234", "4321-4321". If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
-            ),
-            array(
-                array('1234-1234', '4321-4321'),
-                array('1234-1234'),
+            ],
+            [
+                ['1234-1234', '4321-4321'],
+                ['1234-1234'],
                 'Internal Error: Could not find one or more referenced nodes: "4321-4321". If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
-            ),
-            array(
-                array('1234-1234', '4321-4321'),
-                array('1234-1234', '4321-4321'),
-            ),
-            array(
-                array('1234-1234', '4321-4321'),
-                array('4321-4321', '1234-1234'),
-            ),
-        );
+            ],
+            [
+                ['1234-1234', '4321-4321'],
+                ['1234-1234', '4321-4321'],
+            ],
+            [
+                ['1234-1234', '4321-4321'],
+                ['4321-4321', '1234-1234'],
+            ],
+        ];
     }
 
     /**
@@ -36,10 +38,11 @@ class PropertyTest extends TestCase
     public function testGetNode($values, $nodeUuids, $exceptionMessage = null)
     {
         if ($exceptionMessage) {
-            $this->setExpectedException('PHPCR\RepositoryException', $exceptionMessage);
+            $this->expectException(RepositoryException::class);
+            $this->expectExceptionMessage($exceptionMessage);
         }
 
-        $nodes = new \ArrayObject();
+        $nodes = new ArrayObject();
 
         foreach ($nodeUuids as $nodeUuid) {
             $nodes[$nodeUuid] = $this->getNodeMock();
@@ -50,14 +53,14 @@ class PropertyTest extends TestCase
             ;
         }
 
-        $data = array(
-            'type' => PropertyType::REFERENCE, 'value' => $values,
-        );
+        $data = ['type' => PropertyType::REFERENCE, 'value' => $values];
+
         $factory = new Factory();
         $session = $this->getSessionMock();
-        $objectManager = $this->getObjectManagerMock(array(
+        $objectManager = $this->getObjectManagerMock([
             'getNodesByIdentifier' => $nodes
-        ));
+        ]);
+
         $property = new Property($factory, $data, '/path/to', $session, $objectManager);
         $property->getNode();
     }
