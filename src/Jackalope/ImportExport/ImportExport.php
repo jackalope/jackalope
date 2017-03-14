@@ -292,8 +292,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
             } elseif ('jcr:created' === $name || 'jcr:createdBy' === $name) {
                 // skip PROTECTED properties. TODO: get the names from node type instead of hardcode
             } elseif ('jcr:uuid' === $name) {
-                //avoid to throw an exception when trying to set a UUID when importing from XML
-                $node->setProperty($name, $info['values'], $info['type'], false);
+                // The root node is not removed and thus UUID needs not be updated
+                if (0 !== $node->getDepth()) {
+                    // Set the UUID on this node. Validate false to allow setting the UUID manually.
+                    $node->setProperty($name, $info['values'], $info['type'], false);
+                }
             } else {
                 $node->setProperty($name, $info['values'], $info['type']);
             }

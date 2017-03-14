@@ -1873,7 +1873,7 @@ class ObjectManager
      */
     public function registerUuid($uuid, $absPath)
     {
-        if (isset($this->objectsByUuid[$uuid])) {
+        if (array_key_exists($uuid, $this->objectsByUuid)) {
             throw new RuntimeException(sprintf(
                 'Object path for UUID "%s" has already been registered to "%s"',
                 $uuid, $this->objectsByUuid[$uuid]
