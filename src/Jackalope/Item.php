@@ -537,7 +537,7 @@ abstract class Item implements ItemInterface
                 if ($candidate->getName() === $this->name) {
                     return $candidate;
                 }
-                if ('*' == $candidate->getName()) {
+                if (!$fallbackDefinition && '*' === $candidate->getName()) {
                     // if we have multiple wildcard definitions, they are hopefully equivalent
                     $fallbackDefinition = $candidate;
                     // do not abort loop, in case we hit an exactly matching definition
