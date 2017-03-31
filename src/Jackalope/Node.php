@@ -551,8 +551,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
-     * @param boolean $validate does the NodeType control throw an exception if
-     *      the property can't be set? To use in case of UUID import
+     * @param boolean $validate When false, node types are not asked to validate
+     *                          whether operation is allowed
      *
      * @throws InvalidItemStateException
      * @throws NamespaceException
