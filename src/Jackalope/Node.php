@@ -566,6 +566,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
+        // abort early when the node value is not changed
+        // for multivalue, === is only true when array keys and values match. this is exactly what we need.
+        if (array_key_exists($name, $this->properties) && $this->properties[$name]->getValue() === $value) {
+            return $this->properties[$name];
+        }
+
         if ($validate && 'jcr:uuid' === $name && !$this->isNodeType('mix:referenceable')) {
             throw new ConstraintViolationException('You can only change the uuid of newly created nodes that have "referenceable" mixin.');
         }
@@ -630,7 +636,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         // if the property is the UUID, then register the UUID against the path
         // of this node.
-        if ($name === 'jcr:uuid') {
+        if ('jcr:uuid' === $name) {
             $this->objectManager->registerUuid($value, $this->getPath());
         }
 
