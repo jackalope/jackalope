@@ -18,6 +18,7 @@ matrix:
 
 before_script:
   - composer selfupdate
+  - composer remove jackalope/jackalope-transport --no-update
   - if [[ "$PACKAGE_VERSION" == "high" ]]; then composer update --prefer-source; fi
   - if [[ "$PACKAGE_VERSION" == "low" ]]; then composer update --prefer-lowest --prefer-source; fi
 
