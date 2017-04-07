@@ -14,11 +14,10 @@
             "homepage": "https://github.com/jackalope/jackalope/contributors"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "php": "^5.6|^7.0",
         "ext-xml": "*",
-        "phpcr/phpcr-utils": "~1.2,>=1.2.6",
+        "phpcr/phpcr-utils": "^1.2.6",
         "phpcr/phpcr": "~2.1.0,>=2.1.0-beta12"
     },
     "provide": {
