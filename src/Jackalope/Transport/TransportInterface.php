@@ -375,4 +375,13 @@ interface TransportInterface
      * @return boolean Whether to update the last modified information.
      */
     public function getAutoLastModified();
+
+
+    /**
+     * Return an array reperesenting the child nodes which
+     * should be automatically created.
+     *
+     * @return array(NodeInterface $parentNode, NodeDefinitionInterface $childRefinition)[]
+     */
+    public function getAutoCreateDefinitions() ;
 }
