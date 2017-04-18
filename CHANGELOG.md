@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.3.2
+-----
+
+* bufix #335 fix edge case of #332 when we can't get the property value.
+
 1.3.1
 -----
 

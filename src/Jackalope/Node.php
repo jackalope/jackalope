@@ -568,8 +568,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         // abort early when the node value is not changed
         // for multivalue, === is only true when array keys and values match. this is exactly what we need.
-        if (array_key_exists($name, $this->properties) && $this->properties[$name]->getValue() === $value) {
-            return $this->properties[$name];
+        try {
+            if (array_key_exists($name, $this->properties) && $this->properties[$name]->getValue() === $value) {
+                return $this->properties[$name];
+            }
+        } catch (RepositoryException $e) {
+            // if anything goes wrong trying to get the property value, move on and don't return early
         }
 
         if ($validate && 'jcr:uuid' === $name && !$this->isNodeType('mix:referenceable')) {
