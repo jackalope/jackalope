@@ -215,7 +215,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                     }
 
                     if (is_array($value)) {
-                        throw new ConstraintViolationException('The value '.var_export($value, true) .' is multivalued, but the property definition for ['.$this->getName()."]:$propertyName is not.");
+                        throw new ConstraintViolationException('The value '.$this->getValueAsString($value).' is multivalued, but the property definition for ['.$this->getName()."]:$propertyName is not.");
                     }
                 }
 
@@ -263,7 +263,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         if ($throw) {
-            $val = is_object($value) ? get_class($value) : (is_scalar($value) ? (string) $value : is_array($value) ? var_export($value, true) : gettype($value));
+            $val = $this->getValueAsString($value);
+
             throw new ConstraintViolationException("Node type definition ".$this->getName()." does not allow to set the property with name '$propertyName' and value '$val'");
         }
 
@@ -391,5 +392,29 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         }
 
         return true;
+    }
+
+    /**
+     * Get a string representation of the passed value for error reporting.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private function getValueAsString($value)
+    {
+        if (is_object($value)) {
+            return get_class($value);
+        }
+
+        if (is_scalar($value)) {
+            return (string) $value;
+        }
+
+        if (is_array($value)) {
+            return 'array of length ' . count($value);
+        }
+
+        return gettype($value);
     }
 }
