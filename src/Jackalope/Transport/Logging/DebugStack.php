@@ -79,7 +79,7 @@ class DebugStack implements LoggerInterface
     /**
      * Return a simple backtrace showing, for each caller, the class, function and line number.
      *
-     * @retrun array
+     * @return array
      */
     private function getBacktrace()
     {
