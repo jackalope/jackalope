@@ -525,17 +525,17 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         return (bool) $this->originalNodesOrder;
     }
 
-   /**
-    * Returns the orderBefore commands to be applied to the childnodes
-    * to get from the original order to the new one
-    *
-    * @return array of arrays with 2 fields: name of node to order before second name
-    *
-    * @throws AccessDeniedException
-    * @throws ItemNotFoundException
-    *
-    * @private
-    */
+    /**
+     * Returns the orderBefore commands to be applied to the childnodes
+     * to get from the original order to the new one
+     *
+     * @return array of arrays with 2 fields: name of node to order before second name
+     *
+     * @throws AccessDeniedException
+     * @throws ItemNotFoundException
+     *
+     * @private
+     */
     public function getOrderCommands()
     {
         if (! $this->originalNodesOrder) {
