@@ -55,40 +55,40 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-     public function checkin($absPath)
-     {
-         if ($node = $this->objectManager->getCachedNode($absPath)) {
-             if ($node->isModified()) {
-                 throw new InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
-             }
-         }
+    public function checkin($absPath)
+    {
+        if ($node = $this->objectManager->getCachedNode($absPath)) {
+            if ($node->isModified()) {
+                throw new InvalidItemStateException("You may not checkin node at $absPath with pending unsaved changes");
+            }
+        }
 
-         $version = $this->objectManager->checkin($absPath);
-         $version->setCachedPredecessorsDirty();
-         if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), VersionHistory::class)) {
-             $history->notifyHistoryChanged();
-         }
-         if ($node) {
-             // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
-             $node->setDirty();
-         }
+        $version = $this->objectManager->checkin($absPath);
+        $version->setCachedPredecessorsDirty();
+        if ($history = $this->objectManager->getCachedNode(PathHelper::getParentPath($version->getPath()), VersionHistory::class)) {
+            $history->notifyHistoryChanged();
+        }
+        if ($node) {
+            // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
+            $node->setDirty();
+        }
 
-         return $version;
-     }
+        return $version;
+    }
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-     public function checkout($absPath)
-     {
-         $this->objectManager->checkout($absPath);
-         if ($node = $this->objectManager->getCachedNode($absPath)) {
-             // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
-             $node->setDirty();
-         }
-     }
+    public function checkout($absPath)
+    {
+        $this->objectManager->checkout($absPath);
+        if ($node = $this->objectManager->getCachedNode($absPath)) {
+            // OPTIMIZE: set property jcr:isCheckedOut on node directly? but without triggering write on save()
+            $node->setDirty();
+        }
+    }
 
     /**
      * {@inheritDoc}
