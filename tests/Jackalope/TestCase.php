@@ -12,10 +12,10 @@ use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\SimpleCredentials;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\NodeTypeXmlConverter;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 use ReflectionClass;
 
-abstract class TestCase extends PHPUnit_Framework_TestCase
+abstract class TestCase extends BaseTestCase
 {
     protected $config;
     protected $credentials;

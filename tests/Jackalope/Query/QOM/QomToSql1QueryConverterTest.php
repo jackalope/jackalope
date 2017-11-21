@@ -8,9 +8,9 @@ use PHPCR\Util\QOM\QueryBuilder;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\SourceInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class QomToSql1QueryConverterTest extends PHPUnit_Framework_TestCase
+class QomToSql1QueryConverterTest extends TestCase
 {
     /**
      * @var QueryObjectModelFactoryInterface

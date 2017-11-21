@@ -73,14 +73,14 @@ class PropertyTest extends TestCase
         $this->assertSame(\PHPCR_PropertyType::UNDEFINED, $val->getType());
         $val = new Value('String', '');
         $this->assertSame(\PHPCR_PropertyType::STRING, $val->getType());
-        $this->setExpectedException('\Jackalope\NotImplementedException');
+        $this->expectException('\Jackalope\NotImplementedException');
         $val = new Value('Binary', '');
         // $this->assertSame(\PHPCR_PropertyType::BINARY, $val->getType());
         $val = new Value('Long', '');
         $this->assertSame(\PHPCR_PropertyType::LONG, $val->getType());
         $val = new Value('Double', '');
         $this->assertSame(\PHPCR_PropertyType::DOUBLE, $val->getType());
-        $this->setExpectedException('\Jackalope\NotImplementedException');
+        $this->expectException('\Jackalope\NotImplementedException');
         $val = new Value('Date', '');
         // $this->assertSame(\PHPCR_PropertyType::DATE, $val->getType());
         $val = new Value('Boolean', '');
@@ -97,7 +97,7 @@ class PropertyTest extends TestCase
         $this->assertSame(\PHPCR_PropertyType::URI, $val->getType());
         $val = new Value('Decimal', '');
         $this->assertSame(\PHPCR_PropertyType::DECIMAL, $val->getType());
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         new Value('InvalidArgument', '');
         */
     }
