@@ -64,7 +64,7 @@ class QomToSql1QueryConverterTest extends TestCase
             "SELECT s FROM nt:base WHERE foo = 'bar' AND foo IS NOT NULL",
             "SELECT s FROM nt:base WHERE (foo = 'bar' AND foo IS NOT NULL)",
         ];
-        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
+        $this->assertContains($statement, $variations, "The statement '$statement' does not match an expected variation");
     }
 
     public function testOrConstraint()
@@ -77,7 +77,7 @@ class QomToSql1QueryConverterTest extends TestCase
             "SELECT s FROM nt:base WHERE foo = 'bar' OR bar = 'foo'",
             "SELECT s FROM nt:base WHERE (foo = 'bar' OR bar = 'foo')",
         ];
-        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
+        $this->assertContains($statement, $variations, "The statement '$statement' does not match an expected variation");
     }
 
     public function testNotConstraint()
@@ -96,7 +96,7 @@ class QomToSql1QueryConverterTest extends TestCase
             "SELECT s FROM nt:base WHERE NOT bar = 'foo'",
             "SELECT s FROM nt:base WHERE (NOT bar = 'foo')",
         ];
-        $this->assertTrue(in_array($statement, $variations), "The statement '$statement' does not match an expected variation");
+        $this->assertContains($statement, $variations, "The statement '$statement' does not match an expected variation");
     }
 }
 
