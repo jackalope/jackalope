@@ -196,13 +196,9 @@ class VersionManager implements VersionManagerInterface
             $versionPath = $version->getPath();
             $nodePath = $absPath;
         } elseif (is_array($version)) {
-            // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: implement restoring a list of versions');
-            // @codeCoverageIgnoreEnd
         } elseif ($version instanceof VersionInterface && is_string($absPath)) {
-            // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: implement restoring a version to a specified path');
-            // @codeCoverageIgnoreEnd
         } elseif ($version instanceof VersionInterface) {
             $versionPath = $version->getPath();
             $nodePath = $this->objectManager->getNodeByIdentifier($version->getContainingHistory()->getVersionableIdentifier())->getPath();

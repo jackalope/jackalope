@@ -693,9 +693,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         if (is_string($type)) {
             $type = PropertyType::valueFromName($type);
         } elseif (!is_numeric($type)) {
-            // @codeCoverageIgnoreStart
             throw new RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
-            // @codeCoverageIgnoreEnd
         } else {
             //sanity check. this will throw InvalidArgumentException if $type is not a valid type
             PropertyType::nameFromValue($type);
