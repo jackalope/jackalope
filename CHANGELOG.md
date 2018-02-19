@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+1.3.5
+-----
+
+* bugfix #347 make version labels work.
+
+1.3.4
+-----
+
+* PHP 7.2 support.
+
+1.3.3
+-----
+
+* bugfix #333 avoid running out of memory in error report when using var_export.
+
 1.3.2
 -----
 
