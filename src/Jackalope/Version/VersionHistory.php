@@ -280,7 +280,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
         foreach ($node->getProperties() as $property) {
             /* @var Property $property */
 
-            if (NodeHelper::isSystemItem($node)) {
+            if ('jcr:primaryType' !== $property->getName()) {
                 $name = $property->getName();
                 $value = $this->objectManager->getNodeByIdentifier($property->getValue()->getIdentifier(), Version::class);
                 $this->versionLabels[$name] = $value;
