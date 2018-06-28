@@ -107,7 +107,7 @@ class Row implements Iterator, RowInterface
                 $this->path[$selectorName] = $column['dcr:value'];
             } else {
                 if ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
-                    $this->defaultSelectorName = $selectorName;
+                    $this->defaultSelectorName = $column['dcr:value'];
                 }
                 $this->columns[] = $column;
                 $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
