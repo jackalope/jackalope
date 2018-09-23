@@ -1,6 +1,7 @@
 CHANGELOG
 =========
 
+* bugfix #351 fix getting primary type from a query result row.
 * bugfix #351 fix handling of boolean in import/export.
 
 1.3.5
