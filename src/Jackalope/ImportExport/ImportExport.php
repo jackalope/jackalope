@@ -370,6 +370,8 @@ class ImportExport implements ImportUUIDBehaviorInterface
             foreach ($values as $value) {
                 if (PropertyType::BINARY === $property->getType()) {
                     $val = base64_encode($value);
+                } elseif (PropertyType::BOOLEAN === $property->getType()) {
+                    $val = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
                 } else {
                     $val = htmlspecialchars($value);
                     //TODO: can we still have invalid characters after this? if so base64 and property, xsi:type="xsd:base64Binary"
@@ -423,6 +425,8 @@ class ImportExport implements ImportUUIDBehaviorInterface
                     continue;
                 }
                 $value = base64_encode($property->getString());
+            } elseif (PropertyType::BOOLEAN === $property->getType()) {
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
             } else {
                 $value = htmlspecialchars($property->getString());
             }
@@ -561,7 +565,13 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         // this is an empty tag
                         $values[] = '';
                     } else {
-                        $values[] = (PropertyType::BINARY === $type) ? base64_decode($xml->value) : $xml->value;
+                        if (PropertyType::BINARY === $type) {
+                            $values[] = base64_decode($xml->value);
+                        } elseif (PropertyType::BOOLEAN === $type) {
+                            $values[] = filter_var($xml->value, FILTER_VALIDATE_BOOLEAN);
+                        } else {
+                            $values[] = $xml->value;
+                        }
                         $xml->read(); // consume the content
                     }
                 }
