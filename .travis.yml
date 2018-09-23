@@ -15,8 +15,6 @@ matrix:
   include:
     - php: 5.6
       env: PACKAGE_VERSION=low
-    - php: hhvm
-      dist: trusty
 
 before_script:
   - composer selfupdate

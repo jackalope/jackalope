@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.3.6
+-----
+
+* dropped HHVM support because it started failing
 * bugfix #351 fix getting primary type from a query result row.
 * bugfix #351 fix handling of boolean in import/export.
 
