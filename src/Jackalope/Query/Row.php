@@ -106,17 +106,12 @@ class Row implements Iterator, RowInterface
             } elseif ('jcr:path' === $column['dcr:name']) {
                 $this->path[$selectorName] = $column['dcr:value'];
             } else {
-                if ('jcr:primaryType' === substr($column['dcr:name'], -15)) {
-                    $this->defaultSelectorName = $column['dcr:value'];
-                }
                 $this->columns[] = $column;
                 $this->values[$selectorName][$column['dcr:name']] = $column['dcr:value'];
             }
         }
 
-        if (null === $this->defaultSelectorName && 1 === count($this->path)) {
-            $this->defaultSelectorName = key($this->path);
-        }
+        $this->defaultSelectorName = key($this->path);
 
         if (isset($this->values[''])) {
             foreach ($this->values[''] as $key => $value) {
