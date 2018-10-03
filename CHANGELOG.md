@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.3.7
+-----
+
+* bugfix #353 revert side effect from #351 with query result rows
+
 1.3.6
 -----
 
