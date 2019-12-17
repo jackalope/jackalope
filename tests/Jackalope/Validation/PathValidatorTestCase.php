@@ -9,6 +9,9 @@ use PHPCR\ValueFormatException;
 
 abstract class PathValidatorTestCase extends TestCase
 {
+    /**
+     * @return PathValidatorInterface
+     */
     abstract protected function getValidator();
 
     abstract protected function getPathAnswers();
@@ -68,6 +71,8 @@ abstract class PathValidatorTestCase extends TestCase
         } else {
             $this->getValidator()->validatePath($path);
         }
+
+        $this->addToAssertionCount(1);
     }
 
     public function provideValidateName()
@@ -123,6 +128,8 @@ abstract class PathValidatorTestCase extends TestCase
         }
 
         $this->getValidator()->validateName($name);
+
+        $this->addToAssertionCount(1);
     }
 
     private function translateCharFromCode($char)
@@ -151,5 +158,7 @@ abstract class PathValidatorTestCase extends TestCase
         }
 
         $this->getValidator()->validateDestPath($path);
+
+        $this->addToAssertionCount(1);
     }
 }

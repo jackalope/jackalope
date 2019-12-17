@@ -202,6 +202,8 @@ class NodeProcessorTest extends TestCase
             );
 
         $this->processor->process($node);
+
+        $this->addToAssertionCount(1);
     }
 
     public function testPropertyAutoCreatedNoDefaults()
@@ -389,6 +391,8 @@ class NodeProcessorTest extends TestCase
         ]);
 
         $this->processor->process($node);
+
+        $this->addToAssertionCount(1);
     }
 
     public function provideNamespaceValidation()
@@ -426,6 +430,8 @@ class NodeProcessorTest extends TestCase
         ]);
 
         $this->processor->process($node);
+
+        $this->addToAssertionCount(1);
     }
 
     public function providePropertyValidationOutOfRangeCharacters()
@@ -478,6 +484,8 @@ class NodeProcessorTest extends TestCase
         ]);
 
         $this->processor->process($node);
+
+        $this->addToAssertionCount(1);
     }
 
     private function translateCharFromCode($char)
