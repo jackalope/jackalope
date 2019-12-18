@@ -3,6 +3,7 @@
 namespace Jackalope;
 
 use ArrayObject;
+use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
 
@@ -62,7 +63,14 @@ class PropertyTest extends TestCase
         ]);
 
         $property = new Property($factory, $data, '/path/to', $session, $objectManager);
-        $property->getNode();
+
+        $actualNodes = $property->getNode();
+        $this->assertInternalType('array', $actualNodes);
+        $expectedNodes = iterator_to_array($nodes);
+        $intersect = array_uintersect($expectedNodes, $actualNodes, function ($node1, $node2) {
+            return $node1 === $node2;
+        });
+        $this->assertSame(count($expectedNodes), count($intersect));
     }
 
     public function testTypeInstances()
