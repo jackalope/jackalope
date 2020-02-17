@@ -94,7 +94,7 @@ class NodeTypeTest extends TestCase
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertInternalType('array', $nodes);
+        $this->assertIsArray($nodes);
         $this->assertCount(1, $nodes);
         $node = $nodes[0];
         $this->assertInstanceOf(NodeDefinition::class, $node);
@@ -107,7 +107,7 @@ class NodeTypeTest extends TestCase
 
         $nt = $ntm->getNodeType('nt:file');
         $nodes = $nt->getDeclaredChildNodeDefinitions();
-        $this->assertInternalType('array', $nodes);
+        $this->assertIsArray($nodes);
         $this->assertCount(1, $nodes);
         $node = $nodes[0];
         $this->assertInstanceOf(NodeDefinition::class, $node);
@@ -132,7 +132,7 @@ class NodeTypeTest extends TestCase
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertInternalType('array', $properties);
+        $this->assertIsArray($properties);
         $this->assertCount(0, $properties);
 
         $nt = $ntm->getNodeType('mix:created');
@@ -147,7 +147,7 @@ class NodeTypeTest extends TestCase
 
         // ItemDefinition
         $properties = $nt->getDeclaredPropertyDefinitions();
-        $this->assertInternalType('array', $properties);
+        $this->assertIsArray($properties);
         $this->assertCount(2, $properties);
         $property = $properties[0];
         $this->assertSame($nt, $property->getDeclaringNodeType());

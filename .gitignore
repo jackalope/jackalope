@@ -8,6 +8,7 @@ doc/config/phpdoc.ini
 doc/html
 
 tests/phpunit.xml
+.phpunit.result.cache
 
 composer.lock
 vendor/
