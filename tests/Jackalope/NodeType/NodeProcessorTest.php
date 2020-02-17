@@ -84,7 +84,7 @@ class NodeProcessorTest extends TestCase
 
         $res = $this->processor->process($node);
 
-        $this->assertInternalType('array', $res);
+        $this->assertIsArray($res);
         $this->assertCount(1, $res);
         $operation = reset($res);
         $this->assertInstanceOf(AddNodeOperation::class, $operation);

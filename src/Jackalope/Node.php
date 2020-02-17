@@ -658,6 +658,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
+        $relPath = (string) $relPath;
+
         if ('' === $relPath || '/' === $relPath[0]) {
             throw new PathNotFoundException("$relPath is not a relative path");
         }

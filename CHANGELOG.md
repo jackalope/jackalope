@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+1.4.0
+-----
+
+* PHP 7.4 support
+* dropped PHP 5 and 7.0 support
+
 1.3.7
 -----
 

@@ -29,7 +29,11 @@ abstract class TestCase extends BaseTestCase
                 $this->config[substr($cfgKey, 6)] = $value;
             }
         }
-        $this->credentials = new SimpleCredentials($this->config['user'], $this->config['pass']);
+
+        $user = isset($this->config['user']) ? $this->config['user'] : null;
+        $pass = isset($this->config['pass']) ? $this->config['pass'] : null;
+
+        $this->credentials = new SimpleCredentials($user, $pass);
     }
 
     /**

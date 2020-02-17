@@ -49,60 +49,60 @@ class NodeTest extends TestCase
         $filter = 'test';
         $names = ['test', 'toast'];
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(1, $filtered);
         $this->assertSame('test', $filtered[0]);
 
         $filter = 't*t';
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = 'te.t';
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(0, $filtered);
 
         $filter = 'test|toast';
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = 'test|toast ';
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = ['test ', 'toa*'];
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = null;
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = '*';
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
 
         $filter = ['*'];
         $filtered = NodeMock::filterNames($filter, $names);
-        $this->assertInternalType('array', $filtered);
+        $this->assertIsArray($filtered);
         $this->assertCount(2, $filtered);
         $this->assertSame('test', $filtered[0]);
         $this->assertSame('toast', $filtered[1]);
