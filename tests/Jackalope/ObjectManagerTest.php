@@ -57,10 +57,10 @@ class ObjectManagerTest extends TestCase
 
     public function testRegisterUuidAlreadyMapped()
     {
+        $this->om->registerUuid('1234', '/path/to/this');
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Object path for UUID "1234" has already been registered to "/path/to/this"');
-
-        $this->om->registerUuid('1234', '/path/to/this');
         $this->om->registerUuid('1234', '/path/to/that');
     }
 }
