@@ -1613,7 +1613,7 @@ class ObjectManager
      *
      * @throws RepositoryException if the transaction implementation
      *      encounters an unexpected error condition.
-     * @throws |InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function beginTransaction()
     {
