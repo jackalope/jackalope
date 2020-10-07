@@ -217,9 +217,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
                 $this->nodeTree[$declaredSupertypeName] =
-                    array_merge($this->nodeTree[$declaredSupertypeName],
-                                [$nodetype->getName() => $nodetype]
-                               );
+                    array_merge(
+                        $this->nodeTree[$declaredSupertypeName],
+                        [$nodetype->getName() => $nodetype]
+                    );
             } else {
                 $this->nodeTree[$declaredSupertypeName] = [$nodetype->getName() => $nodetype];
             }

@@ -48,8 +48,8 @@ class Join implements JoinInterface
         SourceInterface $left,
         SourceInterface $right,
         $joinType,
-        JoinConditionInterface $joinCondition)
-    {
+        JoinConditionInterface $joinCondition
+    ) {
         $this->left = $left;
         $this->right = $right;
         $this->joinType = $joinType;

@@ -85,7 +85,9 @@ class QomToSql1QueryConverterTest extends TestCase
         $this->qb->where(
             $this->qf->notConstraint(
                 $this->qf->comparison(
-                    $this->qf->propertyValue('base', 'bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')
+                    $this->qf->propertyValue('base', 'bar'),
+                    Constants::JCR_OPERATOR_EQUAL_TO,
+                    $this->qf->literal('foo')
                 )
             )
         );
@@ -107,13 +109,16 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
     *
     * @api
     */
-    public function createQuery(SourceInterface $source,
-                        ConstraintInterface $constraint = null,
-                        array $orderings = [],
-                        array $columns = [],
-                        $simpleQuery = false
-        ) {
-        return $this->factory->get(QueryObjectModelSql1::class,
-        [$this->objectManager, $source, $constraint, $orderings, $columns]);
+    public function createQuery(
+        SourceInterface $source,
+        ConstraintInterface $constraint = null,
+        array $orderings = [],
+        array $columns = [],
+        $simpleQuery = false
+    ) {
+        return $this->factory->get(
+            QueryObjectModelSql1::class,
+            [$this->objectManager, $source, $constraint, $orderings, $columns]
+        );
     }
 }

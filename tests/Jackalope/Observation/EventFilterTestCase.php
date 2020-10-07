@@ -34,14 +34,16 @@ abstract class EventFilterTestCase extends TestCase
         $this->session
             ->expects($this->any())
             ->method('getNodes')
-            ->will($this->returnValue([])
-        );
+            ->will(
+                $this->returnValue([])
+            );
 
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will($this->returnValue([])
-        );
+            ->will(
+                $this->returnValue([])
+            );
 
         $this->eventFilter = new EventFilter($this->factory, $this->session);
     }
