@@ -65,7 +65,7 @@ class PropertyTest extends TestCase
         $property = new Property($factory, $data, '/path/to', $session, $objectManager);
 
         $actualNodes = $property->getNode();
-        $this->assertInternalType('array', $actualNodes);
+        $this->assertIsArray($actualNodes);
         $expectedNodes = iterator_to_array($nodes);
         $intersect = array_uintersect($expectedNodes, $actualNodes, function ($node1, $node2) {
             return $node1 === $node2;

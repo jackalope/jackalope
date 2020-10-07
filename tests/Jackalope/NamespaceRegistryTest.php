@@ -58,13 +58,18 @@ class NamespaceRegistryTest extends TestCase
     public function testConstruct($expected, $namespaces)
     {
         $nsr = $this->getNamespaceRegistry($namespaces, false);
+        $reflection = new \ReflectionClass($nsr);
+        $transport = $reflection->getProperty('transport');
+        $transport->setAccessible(true);
+        $this->assertInstanceOf(TransportInterface::class, $transport->getValue($nsr));
 
-        $this->assertAttributeInstanceOf(TransportInterface::class, 'transport', $nsr);
+        $userNamespaces = $reflection->getProperty('userNamespaces');
+        $userNamespaces->setAccessible(true);
         //after construct, userNamespaces is supposed to be null due to lazyLoading
-        $this->assertAttributeEquals(null, 'userNamespaces', $nsr);
+        $this->assertNull($userNamespaces->getValue($nsr));
         //after we get the prefixes, userNamespaces is supposed to have the userNamespaces
         $nsr->getPrefixes();
-        $this->assertAttributeEquals($expected, 'userNamespaces', $nsr);
+        $this->assertSame($expected, $userNamespaces->getValue($nsr));
     }
 
     /**

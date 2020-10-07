@@ -25,8 +25,9 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will($this->returnValue($nodes)
-        );
+            ->will(
+                $this->returnValue($nodes)
+            );
 
         $this->assertFalse($this->eventFilter->match($this->getEvent('/1/2', '1')));
         $this->assertFalse($this->eventFilter->match($this->getEvent('/2/2', '2')));
@@ -66,8 +67,9 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         $this->session
             ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will($this->returnValue($nodes)
-        );
+            ->will(
+                $this->returnValue($nodes)
+            );
 
         $this->eventFilter->setIdentifiers($identifiers);
     }

@@ -34,7 +34,9 @@ class NodePathIteratorTest extends TestCase
         $this->objectManager->expects($this->exactly($nbBatches))
             ->method('getNodesByPathAsArray')
             ->will($this->returnCallback(function (
-                $cPaths, $cClass, $cFilter
+                $cPaths,
+                $cClass,
+                $cFilter
             ) use (
                 $me, $class, $filter, $batchSize
             ) {

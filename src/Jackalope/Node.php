@@ -1721,7 +1721,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (!isset($this->properties[$name])) {
             $path = $this->getChildPath($name);
             $property = $this->factory->get(
-                Property::class, [
+                Property::class,
+                [
                     ['type' => $type, 'value' => $value],
                     $path,
                     $this->session,

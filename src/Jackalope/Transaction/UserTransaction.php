@@ -66,8 +66,8 @@ class UserTransaction implements UserTransactionInterface
         FactoryInterface $factory,
         TransactionInterface $transport,
         SessionInterface $session,
-        ObjectManager $objectManager)
-    {
+        ObjectManager $objectManager
+    ) {
         $this->factory = $factory;
         $this->transport = $transport;
         $this->session = $session;

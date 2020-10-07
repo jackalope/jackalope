@@ -66,8 +66,9 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         ObjectManager $objectManager = null,
         SourceInterface $source,
         ConstraintInterface $constraint = null,
-        array $orderings, array $columns)
-    {
+        array $orderings,
+        array $columns
+    ) {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {
                 throw new InvalidArgumentException("Not a valid ordering: $o");

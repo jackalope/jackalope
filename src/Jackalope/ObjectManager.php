@@ -1876,7 +1876,8 @@ class ObjectManager
         if (array_key_exists($uuid, $this->objectsByUuid)) {
             throw new RuntimeException(sprintf(
                 'Object path for UUID "%s" has already been registered to "%s"',
-                $uuid, $this->objectsByUuid[$uuid]
+                $uuid,
+                $this->objectsByUuid[$uuid]
             ));
         }
 
