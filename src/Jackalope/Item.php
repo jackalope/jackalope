@@ -172,8 +172,7 @@ abstract class Item implements ItemInterface
         Session $session,
         ObjectManager $objectManager,
         $new = false
-    )
-    {
+    ) {
         $this->factory = $factory;
         $this->valueConverter = $this->factory->get(ValueConverter::class);
         $this->session = $session;
