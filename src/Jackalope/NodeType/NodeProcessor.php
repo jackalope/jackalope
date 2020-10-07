@@ -176,9 +176,9 @@ $/xi";
                 if ($propertyDef->isMandatory() && !$propertyDef->isAutoCreated()) {
                     throw new RepositoryException(sprintf(
                         'Property "%s" is mandatory, but is not present while saving "%s" at "%s"',
-                         $propertyDef->getName(),
-                         $nodeTypeDefinition->getName(),
-                         $node->getPath()
+                        $propertyDef->getName(),
+                        $nodeTypeDefinition->getName(),
+                        $node->getPath()
                     ));
                 }
 

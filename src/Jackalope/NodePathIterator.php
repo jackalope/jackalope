@@ -157,7 +157,9 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
         );
 
         $nodes = $this->objectManager->getNodesByPathAsArray(
-            $paths, $this->class, $this->typeFilter
+            $paths,
+            $this->class,
+            $this->typeFilter
         );
 
         foreach ($paths as $path) {

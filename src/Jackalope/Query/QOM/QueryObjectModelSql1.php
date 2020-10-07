@@ -66,7 +66,9 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
         ObjectManager $objectManager = null,
         SourceInterface $source,
         ConstraintInterface $constraint = null,
-        array $orderings, array $columns)
+        array $orderings,
+        array $columns
+    )
     {
         foreach ($orderings as $o) {
             if (! $o instanceof OrderingInterface) {
