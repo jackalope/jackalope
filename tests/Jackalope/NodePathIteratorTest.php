@@ -190,15 +190,10 @@ class NodePathIteratorTest extends TestCase
             $nodes2[$name] = $this->getNodeMock();
         }
 
-        $this->objectManager->expects($this->at(0))
+        $this->objectManager
             ->method('getNodesByPathAsArray')
-            ->with(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'])
-            ->will($this->returnValue($nodes))
-        ;
-        $this->objectManager->expects($this->at(1))
-            ->method('getNodesByPathAsArray')
-            ->with(['p8'])
-            ->will($this->returnValue($nodes2))
+            ->withConsecutive([['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']], [['p8']])
+            ->willReturnOnConsecutiveCalls($this->returnValue($nodes), $this->returnValue($nodes2))
         ;
 
         $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'], null, null, 7);
@@ -216,15 +211,10 @@ class NodePathIteratorTest extends TestCase
             $nodes2[$name] = $this->getNodeMock();
         }
 
-        $this->objectManager->expects($this->at(0))
+        $this->objectManager
             ->method('getNodesByPathAsArray')
-            ->with(['p1', 'p2', 'p3'])
-            ->will($this->returnValue($nodes))
-        ;
-        $this->objectManager->expects($this->at(1))
-            ->method('getNodesByPathAsArray')
-            ->with(['p8', 'p9'])
-            ->will($this->returnValue($nodes2))
+            ->withConsecutive([['p1', 'p2', 'p3']], [['p8', 'p9']])
+            ->willReturnOnConsecutiveCalls($this->returnValue($nodes), $this->returnValue($nodes2))
         ;
 
         $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'], null, null, 3);

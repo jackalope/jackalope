@@ -67,8 +67,8 @@ class PropertyTest extends TestCase
         $actualNodes = $property->getNode();
         $this->assertIsArray($actualNodes);
         $expectedNodes = iterator_to_array($nodes);
-        $intersect = array_uintersect($expectedNodes, $actualNodes, function ($node1, $node2) {
-            return $node1 === $node2;
+        $intersect = array_uintersect($expectedNodes, $actualNodes, function (NodeInterface $node1, NodeInterface $node2) {
+            return $node1 === $node2 ? 1 : 0;
         });
         $this->assertSame(count($expectedNodes), count($intersect));
     }
