@@ -79,8 +79,7 @@ class EventJournal implements EventJournalInterface
         EventFilter $filter,
         SessionInterface $session,
         ObservationInterface $transport
-    )
-    {
+    ) {
         $this->factory = $factory;
         $this->filter = $filter;
         $this->session = $session;

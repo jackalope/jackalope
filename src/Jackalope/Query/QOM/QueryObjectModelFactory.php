@@ -60,8 +60,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
         ConstraintInterface $constraint = null,
         array $orderings = [],
         array $columns = []
-    )
-    {
+    ) {
         return $this->factory->get(
             QueryObjectModel::class,
             [$this->objectManager, $source, $constraint, $orderings, $columns]
