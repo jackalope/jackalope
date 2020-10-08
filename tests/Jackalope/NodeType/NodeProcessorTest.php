@@ -17,7 +17,7 @@ class NodeProcessorTest extends TestCase
      */
     private $processor;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->processor = new NodeProcessor('dtl', new ArrayObject([
             'ns' => 'Namespace',

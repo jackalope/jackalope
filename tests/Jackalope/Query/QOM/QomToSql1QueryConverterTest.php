@@ -18,7 +18,7 @@ class QomToSql1QueryConverterTest extends TestCase
     protected $qf;
     protected $qb;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->qf = new QueryObjectModelFactorySql1(new Factory());
         $this->qb = new QueryBuilder($this->qf);

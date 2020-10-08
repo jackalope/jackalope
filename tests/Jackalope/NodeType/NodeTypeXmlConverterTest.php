@@ -11,7 +11,7 @@ class NodeTypeXmlConverterTest extends TestCase
 {
     private $converter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $factory = new Factory;
         $this->converter = new NodeTypeXmlConverter($factory);

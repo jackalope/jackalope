@@ -11,7 +11,7 @@ class NodeTypeTemplateTest extends TestCase
      */
     protected $ntm;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->ntm = $this->getNodeTypeManager();
     }
