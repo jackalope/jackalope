@@ -28,7 +28,7 @@ class WorkspaceTest extends TestCase
      */
     private $om;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->factory = new Factory;
 

@@ -36,7 +36,7 @@ class EventJournalTest extends TestCase
      */
     protected $transport;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->session = $this->getSessionMock(['getNode', 'getNodesByIdentifier']);
         $this->session

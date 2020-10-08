@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.4.2
+-----
+
+* Support PHPUnit 9
+
 1.4.1
 -----
 

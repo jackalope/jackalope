@@ -12,7 +12,7 @@ class ObjectManagerTest extends TestCase
      */
     private $om;
 
-    public function setUp()
+    public function setUp(): void
     {
         $factory = new Factory;
         $session = $this->getSessionMock();

@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
 
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         foreach ($GLOBALS as $cfgKey => $value) {
             if ('phpcr.' === substr($cfgKey, 0, 6)) {
