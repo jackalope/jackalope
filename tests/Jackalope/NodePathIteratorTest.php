@@ -32,7 +32,7 @@ class NodePathIteratorTest extends TestCase
     public function testIterator($paths, $class, $filter, $batchSize): void
     {
         $me = $this;
-        $nbBatches = (integer) ceil(count($paths) / $batchSize);
+        $nbBatches = (int) ceil(count($paths) / $batchSize);
         $this->objectManager->expects($this->exactly($nbBatches))
             ->method('getNodesByPathAsArray')
             ->willReturnCallback(function (
@@ -98,29 +98,29 @@ class NodePathIteratorTest extends TestCase
             [
                 ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                ['nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3]
+                ['nb_fetches' => 2, 'target' => 'p4', 'iterate_result' => 3],
             ],
             [
                 ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                ['nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8]
+                ['nb_fetches' => 4, 'target' => 'p4', 'iterate_result' => 8],
             ],
 
             // multiple targets
             [
                 ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                ['nb_fetches' => 3, 'target' => ['p1', 'p2', 'p3', 'p4', 'p5']]
+                ['nb_fetches' => 3, 'target' => ['p1', 'p2', 'p3', 'p4', 'p5']],
             ],
             [
                 ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 2,
-                ['nb_fetches' => 4, 'target' => ['p8', 'p1']]
+                ['nb_fetches' => 4, 'target' => ['p8', 'p1']],
             ],
             [
                 ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'],
                 100,
-                ['nb_fetches' => 1, 'target' => ['p8', 'p1']]
+                ['nb_fetches' => 1, 'target' => ['p8', 'p1']],
             ],
         ];
     }
@@ -165,7 +165,7 @@ class NodePathIteratorTest extends TestCase
         $nodes = new NodePathIterator($this->objectManager, $paths, null, null, $batchSize);
 
         if ($iterateResult) {
-            for ($i = 0; $i < $iterateResult; $i++) {
+            for ($i = 0; $i < $iterateResult; ++$i) {
                 // if its not valid its at the end of the stack ... probably
                 if (false === $nodes->valid()) {
                     continue;

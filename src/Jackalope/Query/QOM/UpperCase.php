@@ -2,8 +2,8 @@
 
 namespace Jackalope\Query\QOM;
 
-use PHPCR\Query\QOM\UpperCaseInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\UpperCaseInterface;
 
 /**
  * {@inheritDoc}

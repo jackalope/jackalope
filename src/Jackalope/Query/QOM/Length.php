@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\LengthInterface;
@@ -20,9 +21,7 @@ class Length implements LengthInterface
     protected $propertyValue;
 
     /**
-     * Create a new length information
-     *
-     * @param PropertyValueInterface $propertyValue
+     * Create a new length information.
      */
     public function __construct(PropertyValueInterface $propertyValue)
     {

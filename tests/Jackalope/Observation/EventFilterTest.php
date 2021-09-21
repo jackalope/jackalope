@@ -2,10 +2,8 @@
 
 namespace Jackalope\Observation;
 
-use Jackalope\Observation\EventFilter;
-
 /**
- * Unit tests for the EventFilter
+ * Unit tests for the EventFilter.
  */
 class EventFilterTest extends EventFilterTestCase
 {

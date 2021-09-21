@@ -2,15 +2,15 @@
 
 namespace Jackalope\NodeType;
 
-use Jackalope\TestCase;
 use Iterator;
+use Jackalope\TestCase;
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 
 /**
  * Test the Node Type.
  * TODO this needs some cleanup and we should verify if its complete
- * TODO: tests for ItemDefinition, PropertyDefinition and NodeDefinition probably missing or incomplete inside NodeType
+ * TODO: tests for ItemDefinition, PropertyDefinition and NodeDefinition probably missing or incomplete inside NodeType.
  */
 class NodeTypeTest extends TestCase
 {
@@ -37,7 +37,7 @@ class NodeTypeTest extends TestCase
                 $ntm->getNodeType('mix:versionable'),
                 $ntm->getNodeType('mix:referenceable'),
                 $ntm->getNodeType('mix:simpleVersionable'),
-                $ntm->getNodeType('nt:base')
+                $ntm->getNodeType('nt:base'),
             ],
             $superTypes
         );
@@ -59,7 +59,7 @@ class NodeTypeTest extends TestCase
         foreach ($nt->getPropertyDefinitions() as $propDef) {
             $this->assertInstanceOf(PropertyDefinition::class, $propDef);
             $this->assertSame($expectedProperties[$i], $propDef->getName());
-            $i++;
+            ++$i;
         }
         $this->assertSame([], $nt->getChildNodeDefinitions());
 
@@ -85,7 +85,7 @@ class NodeTypeTest extends TestCase
         foreach ($nt->getChildNodeDefinitions() as $childNode) {
             $this->assertInstanceOf(NodeDefinition::class, $childNode);
             $this->assertSame($expectedChildNodes[$i], $childNode->getName());
-            $i++;
+            ++$i;
         }
     }
 

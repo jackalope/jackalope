@@ -22,10 +22,10 @@ use Jackalope\NodeType\NodeTypeManager;
 interface NodeTypeCndManagementInterface extends TransportInterface
 {
     /**
-     * Register namespaces and new node types or update node types based on a jackrabbit CND string
+     * Register namespaces and new node types or update node types based on a jackrabbit CND string.
      *
-     * @param string  $cnd         The cnd definition as string
-     * @param boolean $allowUpdate whether to fail if node already exists or to update it
+     * @param string $cnd         The cnd definition as string
+     * @param bool   $allowUpdate whether to fail if node already exists or to update it
      *
      * @return bool true on success
      *

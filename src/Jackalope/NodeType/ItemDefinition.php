@@ -2,8 +2,8 @@
 
 namespace Jackalope\NodeType;
 
-use PHPCR\NodeType\ItemDefinitionInterface;
 use Jackalope\FactoryInterface;
+use PHPCR\NodeType\ItemDefinitionInterface;
 use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\RepositoryException;
 
@@ -18,7 +18,7 @@ use PHPCR\RepositoryException;
 class ItemDefinition implements ItemDefinitionInterface
 {
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
@@ -46,26 +46,26 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * Whether this item is autocreated.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isAutoCreated;
 
     /**
      * Whether this item is mandatory.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isMandatory;
 
     /**
      * Whether this item is protected.
      *
-     * @var boolean
+     * @var bool
      */
     protected $isProtected;
 
     /**
-     * On parent version constant
+     * On parent version constant.
      *
      * @var int
      */
@@ -76,9 +76,8 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * TODO: document this format. Property and Node add more to this.
      *
-     * @param FactoryInterface $factory         the object factory
-     * @param array            $definition      The property definition data as array
-     * @param NodeTypeManager  $nodeTypeManager
+     * @param FactoryInterface $factory    the object factory
+     * @param array            $definition The property definition data as array
      */
     public function __construct(FactoryInterface $factory, array $definition, NodeTypeManager $nodeTypeManager)
     {

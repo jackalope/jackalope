@@ -43,7 +43,7 @@ interface VersioningInterface extends TransportInterface
     public function checkoutItem($path);
 
     /**
-     * Restore the item at versionPath to the location path
+     * Restore the item at versionPath to the location path.
      *
      * TODO: This is incomplete. Needs batch processing to avoid chicken-and-egg problems
      *
@@ -67,20 +67,19 @@ interface VersioningInterface extends TransportInterface
      *
      * @param string $versionName the absolute path to the version
      * @param string $label
-     * @param boolean $moveLabel
+     * @param bool   $moveLabel
      *
      * @throws LabelExistsVersionException if, the label is set to another version and
-     * the parameter moveLabel is set to false.
-     *
-     * @throws RepositoryException in case of an other error.
+     *                                     the parameter moveLabel is set to false
+     * @throws RepositoryException         in case of an other error
      */
     public function addVersionLabel($versionName, $label, $moveLabel);
 
     /**
      * Removes a label from the specified version.
      *
-     * @param string $versionPath the absolute path to the version.
-     * @param string $label the label, that has to be removed.
+     * @param string $versionPath the absolute path to the version
+     * @param string $label       the label, that has to be removed
      */
     public function removeVersionLabel($versionPath, $label);
 }

@@ -3,7 +3,7 @@
 namespace Jackalope\Observation;
 
 /**
- * Unit tests for the EventJournal
+ * Unit tests for the EventJournal.
  */
 class EventFilterIdentifiersTest extends EventFilterTestCase
 {
@@ -35,8 +35,10 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
     }
 
     /**
-     * Get an Event with the given path
-     * @param  string $path
+     * Get an Event with the given path.
+     *
+     * @param string $path
+     *
      * @return Event
      */
     protected function getEvent($path, $id)
@@ -49,7 +51,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
     }
 
     /**
-     * Set eventFilter to the identifiers
+     * Set eventFilter to the identifiers.
      *
      * Additionally set the session getNodesByIdentifier to return an array of nodes
      * that will match the requirements of the filter
@@ -75,8 +77,10 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
     }
 
     /**
-     * Get a Jackalope\Node mock object that will return "/uuid" as path
-     * @param  string $uuid
+     * Get a Jackalope\Node mock object that will return "/uuid" as path.
+     *
+     * @param string $uuid
+     *
      * @return object
      */
     protected function getMyNodeMock($uuid)
@@ -85,7 +89,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         $node
             ->expects($this->any())
             ->method('getPath')
-            ->will($this->returnValue('/' . $uuid))
+            ->will($this->returnValue('/'.$uuid))
         ;
 
         return $node;

@@ -15,7 +15,6 @@ use PHPCR\RepositoryException;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  * @author David Buchmann <mail@davidbu.ch>
  */
@@ -73,6 +72,7 @@ class Event implements EventInterface
 
     /**
      * Events that support getting the primary or mixin node types.
+     *
      * @var array
      */
     protected static $NODE_TYPE_EVENT = [
@@ -86,6 +86,7 @@ class Event implements EventInterface
 
     /**
      * Events that support getting the property type.
+     *
      * @var array
      */
     protected static $PROPERTY_TYPE_EVENT = [
@@ -107,6 +108,7 @@ class Event implements EventInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function getType()
@@ -255,9 +257,6 @@ class Event implements EventInterface
         return $this->ntm->getNodeType($this->primaryNodeTypeName);
     }
 
-    /**
-     * @param array $mixinNodeTypeNames
-     */
     public function setMixinNodeTypeNames(array $mixinNodeTypeNames)
     {
         $this->mixinNodeTypeNames = $mixinNodeTypeNames;
@@ -291,8 +290,8 @@ class Event implements EventInterface
      */
     public function getPropertyType()
     {
-        if (! in_array($this->type, self::$PROPERTY_TYPE_EVENT)) {
-            throw new RepositoryException('Event of type ' . $this->type . ' does not have property type information');
+        if (!in_array($this->type, self::$PROPERTY_TYPE_EVENT)) {
+            throw new RepositoryException('Event of type '.$this->type.' does not have property type information');
         }
 
         /*
@@ -307,12 +306,12 @@ class Event implements EventInterface
      * Check if this event is a node type event. Throw exception otherwise.
      *
      * @throws RepositoryException if this event is not of a type that has node
-     *      type information.
+     *                             type information
      */
     private function checkNodeTypeEvent()
     {
-        if (! in_array($this->type, self::$NODE_TYPE_EVENT)) {
-            throw new RepositoryException('Event of type ' . $this->type . ' does not have node type information');
+        if (!in_array($this->type, self::$NODE_TYPE_EVENT)) {
+            throw new RepositoryException('Event of type '.$this->type.' does not have node type information');
         }
     }
 }

@@ -26,7 +26,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     protected $ancestorPath;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      * @param string $path
@@ -63,7 +63,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

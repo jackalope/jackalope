@@ -5,7 +5,7 @@ namespace Jackalope\Observation;
 use PHPCR\Observation\EventInterface;
 
 /**
- * Unit tests for the EventFilter
+ * Unit tests for the EventFilter.
  */
 class EventFilterEventTypeTest extends EventFilterTestCase
 {
@@ -16,7 +16,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
         EventInterface::PERSIST,
         EventInterface::PROPERTY_ADDED,
         EventInterface::PROPERTY_CHANGED,
-        EventInterface::PROPERTY_REMOVED
+        EventInterface::PROPERTY_REMOVED,
     ];
 
     public function testNoMatchFilter()
@@ -43,7 +43,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
     }
 
     /**
-     * Create a filter accepting all the given $eventTypes, then assert it matches only those event types
+     * Create a filter accepting all the given $eventTypes, then assert it matches only those event types.
      *
      * @param array $eventTypes The list of event types
      */
@@ -60,10 +60,9 @@ class EventFilterEventTypeTest extends EventFilterTestCase
     }
 
     /**
-     * Assert a filter only match the given event types
+     * Assert a filter only match the given event types.
      *
-     * @param EventFilter $filter
-     * @param array       $matchedTypes An array of matched event types
+     * @param array $matchedTypes An array of matched event types
      */
     protected function assertFilterMatch(EventFilter $filter, $matchedTypes)
     {

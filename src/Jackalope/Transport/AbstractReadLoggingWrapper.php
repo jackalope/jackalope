@@ -11,10 +11,8 @@ use PHPCR\CredentialsInterface;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
-
 abstract class AbstractReadLoggingWrapper implements TransportInterface
 {
     /**
@@ -30,8 +28,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
     /**
      * Constructor.
      *
-     * @param FactoryInterface   $factory
-     * @param TransportInterface $transport   A logger instance
+     * @param TransportInterface $transport A logger instance
      * @param LoggerInterface    $logger    A logger instance
      */
     public function __construct(FactoryInterface $factory, TransportInterface $transport, LoggerInterface $logger)
@@ -88,6 +85,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNode($path);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -99,6 +97,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodes($paths);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -110,6 +109,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodesByIdentifier($identifiers);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -121,6 +121,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getProperty($path);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -132,6 +133,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodeByIdentifier($uuid);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -143,6 +145,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getNodePathForIdentifier($uuid, $workspace);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -154,6 +157,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getBinaryStream($path);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -165,6 +169,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getReferences($path, $name);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -176,6 +181,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getWeakReferences($path, $name);
         $this->logger->stopCall();
+
         return $result;
     }
 
@@ -195,6 +201,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getNodeTypes($nodeTypes);
         $this->logger->stopCall();
+
         return $result;
     }
 

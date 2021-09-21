@@ -14,7 +14,7 @@ class FactoryTest extends TestCase
 
     public function setUp(): void
     {
-        $this->factory = new Factory;
+        $this->factory = new Factory();
     }
 
     public function testJackalope()

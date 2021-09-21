@@ -31,7 +31,7 @@ class Column implements ColumnInterface
     protected $selectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      * @param string $propertyName

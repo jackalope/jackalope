@@ -21,7 +21,7 @@ class NodeName implements NodeNameInterface
     protected $selectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      *

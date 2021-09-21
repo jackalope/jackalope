@@ -31,17 +31,17 @@ interface WorkspaceManagementInterface extends TransportInterface
      *
      * The new workspace can be accessed through a login specifying its name.
      *
-     * @param string $name         A String, the name of the new workspace.
-     * @param string $srcWorkspace The name of the workspace from which the new
-     *      workspace is to be cloned.
+     * @param string $name         a String, the name of the new workspace
+     * @param string $srcWorkspace the name of the workspace from which the new
+     *                             workspace is to be cloned
      *
-     * @throws AccessDeniedException if the session through which this
-     *      Workspace object was acquired does not have sufficient access to
-     *      create the new workspace.
+     * @throws AccessDeniedException                   if the session through which this
+     *                                                 Workspace object was acquired does not have sufficient access to
+     *                                                 create the new workspace
      * @throws UnsupportedRepositoryOperationException if the repository
-     *      does not support the creation of workspaces.
-     * @throws NoSuchWorkspaceException if $srcWorkspace does not exist.
-     * @throws RepositoryException      if another error occurs.
+     *                                                 does not support the creation of workspaces
+     * @throws NoSuchWorkspaceException                if $srcWorkspace does not exist
+     * @throws RepositoryException                     if another error occurs
      */
     public function createWorkspace($name, $srcWorkspace = null);
 
@@ -49,11 +49,11 @@ interface WorkspaceManagementInterface extends TransportInterface
      * Deletes the workspace with the specified name from the repository,
      * deleting all content within it.
      *
-     * @param string $name The name of the workspace.
+     * @param string $name the name of the workspace
      *
      * @throws UnsupportedRepositoryOperationException if the repository
-     *      does not support the deletion of workspaces.
-     * @throws RepositoryException if another error occurs.
+     *                                                 does not support the deletion of workspaces
+     * @throws RepositoryException                     if another error occurs
      */
     public function deleteWorkspace($name);
 }

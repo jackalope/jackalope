@@ -22,15 +22,15 @@ class NodeTypeDefinitionTest extends TestCase
     {
         $factory = $this->createMock(Factory::class);
         $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
-            'name'                        => 'test',
-            'isAbstract'                  => true,
-            'isMixin'                     => true,
-            'isQueryable'                 => true,
-            'hasOrderableChildNodes'      => true,
-            'primaryItemName'             => 'foo',
-            'supertypes'                  => [],
+            'name' => 'test',
+            'isAbstract' => true,
+            'isMixin' => true,
+            'isQueryable' => true,
+            'hasOrderableChildNodes' => true,
+            'primaryItemName' => 'foo',
+            'supertypes' => [],
             'declaredPropertyDefinitions' => [],
-            'declaredNodeDefinitions'     => [],
+            'declaredNodeDefinitions' => [],
         ]);
 
         $this->assertEquals('test', $typeDef->getName());
@@ -46,15 +46,15 @@ class NodeTypeDefinitionTest extends TestCase
     {
         $factory = $this->createMock(Factory::class);
         $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
-            'name'                        => 'test',
-            'isAbstract'                  => false,
-            'isMixin'                     => false,
-            'isQueryable'                 => false,
-            'hasOrderableChildNodes'      => false,
-            'primaryItemName'             => 'foo',
-            'supertypes'                  => [],
+            'name' => 'test',
+            'isAbstract' => false,
+            'isMixin' => false,
+            'isQueryable' => false,
+            'hasOrderableChildNodes' => false,
+            'primaryItemName' => 'foo',
+            'supertypes' => [],
             'declaredPropertyDefinitions' => [],
-            'declaredNodeDefinitions'     => [],
+            'declaredNodeDefinitions' => [],
         ]);
 
         $this->assertFalse($typeDef->isAbstract());

@@ -3,10 +3,10 @@
 namespace Jackalope\Query;
 
 use Iterator;
-use Jackalope\ObjectManager;
-use Jackalope\FactoryInterface;
-use PHPCR\Query\QueryResultInterface;
 use IteratorAggregate;
+use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
+use PHPCR\Query\QueryResultInterface;
 use PHPCR\RepositoryException;
 
 /**
@@ -30,8 +30,10 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     protected $factory;
 
     /**
-     * Storing the query result raw data
+     * Storing the query result raw data.
+     *
      * @see QueryInterface::query()
+     *
      * @var array
      */
     protected $rows = [];
@@ -41,9 +43,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      *
      * @see QueryInterface::query() The raw data format
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param array            $rawData       the data as returned by the transport
-     * @param ObjectManager    $objectManager
+     * @param FactoryInterface $factory the object factory
+     * @param array            $rawData the data as returned by the transport
      */
     public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectManager)
     {
@@ -54,15 +55,15 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
 
     /**
      * Implement the IteratorAggregate interface and returns exactly the same
-     * iterator as QueryResult::getRows()
+     * iterator as QueryResult::getRows().
      *
      * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *      Keys are the row position in this result set, Values are the
-     *      RowInterface instances.
+     *                  Keys are the row position in this result set, Values are the
+     *                  RowInterface instances.
      *
      * @throws RepositoryException if this call is the second time
-     *      getIterator(), getRows() or getNodes() has been called on the same
-     *      QueryResult object or if another error occurs.
+     *                             getIterator(), getRows() or getNodes() has been called on the same
+     *                             QueryResult object or if another error occurs
      *
      * @api
      */
@@ -111,7 +112,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      */
     public function getNodes($prefetch = false)
     {
-        if ($prefetch !== true) {
+        if (true !== $prefetch) {
             return $this->factory->get(NodeIterator::class, [$this->objectmanager, $this->rows]);
         }
 

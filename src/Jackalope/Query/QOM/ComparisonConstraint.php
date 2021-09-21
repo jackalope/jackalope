@@ -3,8 +3,8 @@
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ComparisonInterface;
-use PHPCR\Query\QOM\StaticOperandInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\StaticOperandInterface;
 
 /**
  * {@inheritDoc}
@@ -32,11 +32,9 @@ class ComparisonConstraint implements ComparisonInterface
     protected $operand2;
 
     /**
-     * Create a new comparison constraint
+     * Create a new comparison constraint.
      *
-     * @param DynamicOperandInterface $operand1
-     * @param string                  $operator
-     * @param StaticOperandInterface  $operand2
+     * @param string $operator
      */
     public function __construct(DynamicOperandInterface $operand1, $operator, StaticOperandInterface $operand2)
     {
@@ -46,7 +44,7 @@ class ComparisonConstraint implements ComparisonInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

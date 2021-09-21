@@ -26,7 +26,7 @@ class ChildNodeConstraint implements ChildNodeInterface
     protected $parentPath;
 
     /**
-     * Create a new child node constraint
+     * Create a new child node constraint.
      *
      * @param string $selectorName
      * @param string $parentPath   parent path the node must be child of
@@ -63,7 +63,7 @@ class ChildNodeConstraint implements ChildNodeInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

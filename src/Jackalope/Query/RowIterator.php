@@ -3,10 +3,10 @@
 namespace Jackalope\Query;
 
 use Countable;
-use SeekableIterator;
-use OutOfBoundsException;
-use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
+use OutOfBoundsException;
+use SeekableIterator;
 
 /**
  * Iterator to efficiently iterate over the raw query result.
@@ -32,16 +32,15 @@ class RowIterator implements SeekableIterator, Countable
     protected $rows;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $position = 0;
 
     /**
      * Create the iterator.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
-     * @param array            $rows          Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
+     * @param FactoryInterface $factory the object factory
+     * @param array            $rows    Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
     {
@@ -65,7 +64,7 @@ class RowIterator implements SeekableIterator, Countable
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -97,7 +96,7 @@ class RowIterator implements SeekableIterator, Countable
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {

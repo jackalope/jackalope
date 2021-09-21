@@ -2,12 +2,10 @@
 
 namespace Jackalope\Observation;
 
-use Jackalope\Observation\Event;
-use Jackalope\Observation\EventFilter;
 use PHPCR\PathNotFoundException;
 
 /**
- * Unit tests for the EventFilter node type
+ * Unit tests for the EventFilter node type.
  */
 class EventFilterNodeTypeTest extends EventFilterTestCase
 {

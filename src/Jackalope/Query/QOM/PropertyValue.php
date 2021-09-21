@@ -26,7 +26,7 @@ class PropertyValue implements PropertyValueInterface
     protected $propertyName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      * @param string $propertyName

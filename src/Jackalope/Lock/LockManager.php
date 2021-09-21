@@ -6,17 +6,17 @@ use ArrayIterator;
 use Exception;
 use InvalidArgumentException;
 use IteratorAggregate;
-use PHPCR\SessionInterface;
-use PHPCR\PathNotFoundException;
-use PHPCR\InvalidItemStateException;
-use PHPCR\Lock\LockManagerInterface;
-use PHPCR\Lock\LockInfoInterface;
-use PHPCR\Lock\LockException;
-use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
 use Jackalope\Item;
-use Jackalope\Transport\LockingInterface;
 use Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\Transport\LockingInterface;
+use PHPCR\InvalidItemStateException;
+use PHPCR\Lock\LockException;
+use PHPCR\Lock\LockInfoInterface;
+use PHPCR\Lock\LockManagerInterface;
+use PHPCR\PathNotFoundException;
+use PHPCR\SessionInterface;
 
 /**
  * {@inheritDoc}
@@ -36,7 +36,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     protected $objectManager;
 
     /**
-     * The jackalope object factory for this object
+     * The jackalope object factory for this object.
      *
      * @var FactoryInterface
      */
@@ -53,7 +53,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     protected $transport;
 
     /**
-     * Contains a list of nodes locks
+     * Contains a list of nodes locks.
      *
      * @var Lock[] indexed by absPath
      */
@@ -62,10 +62,8 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param  FactoryInterface $factory       An object factory implementing "get" as described in \Jackalope\FactoryInterface
-     * @param  ObjectManager    $objectManager
-     * @param  SessionInterface $session
-     * @param  LockingInterface $transport
+     * @param FactoryInterface $factory An object factory implementing "get" as described in \Jackalope\FactoryInterface
+     *
      * @return LockManager
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, SessionInterface $session, LockingInterface $transport)
@@ -153,7 +151,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null)
     {
         if (!$isSessionScoped) {
-            throw new NotImplementedException("Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.");
+            throw new NotImplementedException('Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.');
         }
 
         // If the node does not exist, Jackrabbit will return an HTTP 412 error which is
@@ -167,7 +165,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
         $node = $this->session->getNode($absPath);
 
         $state = $node->getState();
-        if ($state === Item::STATE_NEW || $state === Item::STATE_MODIFIED) {
+        if (Item::STATE_NEW === $state || Item::STATE_MODIFIED === $state) {
             throw new InvalidItemStateException("Cannot lock the non-clean node '$absPath': current state = $state");
         }
 
@@ -240,7 +238,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
         $node = $this->session->getNode($absPath);
 
         $state = $node->getState();
-        if ($state === Item::STATE_NEW || $state === Item::STATE_MODIFIED) {
+        if (Item::STATE_NEW === $state || Item::STATE_MODIFIED === $state) {
             throw new InvalidItemStateException("Cannot unlock the non-clean node '$absPath': current state = $state");
         }
 
@@ -255,7 +253,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
      */
     public function createLockInfo()
     {
-        return new LockInfo;
+        return new LockInfo();
     }
 
     /**
@@ -278,7 +276,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * for the locks to get the session to get their root node
+     * for the locks to get the session to get their root node.
      *
      * @return SessionInterface
      *

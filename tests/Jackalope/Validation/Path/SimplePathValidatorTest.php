@@ -2,11 +2,8 @@
 
 namespace Jackalope\NodeType;
 
-use Jackalope\NodeType\NodeProcessor;
-use Jackalope\TestCase;
-use PHPCR\PropertyType;
-use Jackalope\Validation\PathValidatorTestCase;
 use Jackalope\Validation\Path\SimplePathValidator;
+use Jackalope\Validation\PathValidatorTestCase;
 
 class SimplePathValidatorTest extends PathValidatorTestCase
 {

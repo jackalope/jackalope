@@ -23,14 +23,14 @@ class DebugStack implements LoggerInterface
     /**
      * If the logger is enabled (log calls) or not.
      *
-     * @var boolean
+     * @var bool
      */
     public $enabled = true;
 
     /**
-     * Show the debug backtrace for each call
+     * Show the debug backtrace for each call.
      *
-     * @var boolean
+     * @var bool
      */
     public $backtrace = false;
 
@@ -40,7 +40,7 @@ class DebugStack implements LoggerInterface
     public $start = null;
 
     /**
-     * @var integer
+     * @var int
      */
     public $currentQuery = 0;
 
@@ -93,11 +93,11 @@ class DebugStack implements LoggerInterface
             }
 
             if (isset($trace['function'])) {
-                $string .= '->' . $trace['function'];
+                $string .= '->'.$trace['function'];
             }
 
             if (isset($trace['line'])) {
-                $string .= '#' . $trace['line'];
+                $string .= '#'.$trace['line'];
             }
 
             $backtrace[] = $string;

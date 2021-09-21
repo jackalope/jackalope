@@ -7,24 +7,23 @@ use PHPCR\NamespaceException;
 
 class NamespaceRegistryTest extends TestCase
 {
-    /*************************************************************************/
     /* Fixtures
     /*************************************************************************/
 
     protected $defaultNamespaces = [
         'jcr' => 'http://www.jcp.org/jcr/1.0',
-        'sv'  => 'http://www.jcp.org/jcr/sv/1.0',
-        'nt'  => 'http://www.jcp.org/jcr/nt/1.0',
+        'sv' => 'http://www.jcp.org/jcr/sv/1.0',
+        'nt' => 'http://www.jcp.org/jcr/nt/1.0',
         'mix' => 'http://www.jcp.org/jcr/mix/1.0',
         'xml' => 'http://www.w3.org/XML/1998/namespace',
-        ''    => ''
+        '' => '',
     ];
 
     /**
-     * Create an object of the namespaceRegistry
+     * Create an object of the namespaceRegistry.
      *
      * @param array $namespaces
-     * @param bool $getNamespaceHasToBeCalled
+     * @param bool  $getNamespaceHasToBeCalled
      *
      * @return NamespaceRegistry
      */
@@ -36,7 +35,7 @@ class NamespaceRegistryTest extends TestCase
             $expects = $this->any();
         }
 
-        $factory = new Factory;
+        $factory = new Factory();
         $transport = $this->getTransportStub();
         $transport
             ->expects($expects)
@@ -47,7 +46,6 @@ class NamespaceRegistryTest extends TestCase
         return new NamespaceRegistry($factory, $transport);
     }
 
-    /*************************************************************************/
     /* Tests
     /*************************************************************************/
 
@@ -151,7 +149,7 @@ class NamespaceRegistryTest extends TestCase
             'http://www.jcp.org/jcr/mix/1.0',
             'http://www.w3.org/XML/1998/namespace',
             '',
-            'http://beastie.lo/beastie/1.0'
+            'http://beastie.lo/beastie/1.0',
         ];
 
         $this->assertEquals($expected, $nsr->getURIs());
@@ -211,7 +209,6 @@ class NamespaceRegistryTest extends TestCase
         $ns->checkPrefix($prefix);
     }
 
-    /*************************************************************************/
     /* Dataproivder
     /*************************************************************************/
 
@@ -224,7 +221,7 @@ class NamespaceRegistryTest extends TestCase
             ],
             'prefix in default namespaces' => [
                 [],
-                ['xml' => 'http://beastie.lo/xml/1.0']
+                ['xml' => 'http://beastie.lo/xml/1.0'],
             ],
         ];
     }

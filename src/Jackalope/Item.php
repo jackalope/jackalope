@@ -3,16 +3,16 @@
 namespace Jackalope;
 
 use LogicException;
+use PHPCR\InvalidItemStateException;
+use PHPCR\ItemInterface;
+use PHPCR\ItemNotFoundException;
+use PHPCR\ItemVisitorInterface;
 use PHPCR\NodeType\ItemDefinitionInterface;
 use PHPCR\NodeType\NodeTypeInterface;
-use PHPCR\Util\PathHelper;
 use PHPCR\PropertyInterface;
-use PHPCR\ItemInterface;
-use PHPCR\ItemVisitorInterface;
-use PHPCR\RepositoryInterface;
 use PHPCR\RepositoryException;
-use PHPCR\ItemNotFoundException;
-use PHPCR\InvalidItemStateException;
+use PHPCR\RepositoryInterface;
+use PHPCR\Util\PathHelper;
 use PHPCR\Util\ValueConverter;
 
 /**
@@ -39,32 +39,32 @@ use PHPCR\Util\ValueConverter;
 abstract class Item implements ItemInterface
 {
     /**
-     * The item needs to be created in the backend on Session::save()
+     * The item needs to be created in the backend on Session::save().
      *
      * Item::isNew() returns true.
      */
-    const STATE_NEW = 0;
+    public const STATE_NEW = 0;
 
     /**
      * The item needs to be refreshed before using it the next time.
      * Item::checkState will refresh it and set the state to clean.
      */
-    const STATE_DIRTY = 1;
+    public const STATE_DIRTY = 1;
 
     /**
      * The item is fully synchronized with the backend and usable.
      */
-    const STATE_CLEAN = 2;
+    public const STATE_CLEAN = 2;
 
     /**
-     * The item has been modified locally and needs to be saved to the backend on Session::save()
+     * The item has been modified locally and needs to be saved to the backend on Session::save().
      */
-    const STATE_MODIFIED = 3;
+    public const STATE_MODIFIED = 3;
 
     /**
-     * The item has been deleted and may not be accessed in any way anymore
+     * The item has been deleted and may not be accessed in any way anymore.
      */
-    const STATE_DELETED = 4;
+    public const STATE_DELETED = 4;
 
     /**
      * @var int The state of the item, one of the STATE_ constants
@@ -130,39 +130,37 @@ abstract class Item implements ItemInterface
     protected $name;
 
     /**
-     * @var string     Normalized and absolute path to this item.
+     * @var string normalized and absolute path to this item
      */
     protected $path;
 
     /**
-     * @var string     While this item is moved but unsaved, stores the old path for refresh.
+     * @var string while this item is moved but unsaved, stores the old path for refresh
      */
     protected $oldPath = null;
 
     /**
-     * @var string     Normalized and absolute path to the parent item for convenience.
+     * @var string normalized and absolute path to the parent item for convenience
      */
     protected $parentPath;
 
     /**
-     * @var int    Depth in the workspace graph
+     * @var int Depth in the workspace graph
      */
     protected $depth;
 
     /**
-     * @var bool   Whether this item is a node (otherwise it is a property)
+     * @var bool Whether this item is a node (otherwise it is a property)
      */
     protected $isNode = false;
 
     /**
-     * Initialize basic information common to nodes and properties
+     * Initialize basic information common to nodes and properties.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param string           $path          The normalized and absolute path to this item
-     * @param Session          $session
-     * @param ObjectManager    $objectManager
-     * @param boolean          $new           can be set to true to tell the object that it has
-     *      been created locally
+     * @param FactoryInterface $factory the object factory
+     * @param string           $path    The normalized and absolute path to this item
+     * @param bool             $new     can be set to true to tell the object that it has
+     *                                  been created locally
      *
      * @throws RepositoryException
      */
@@ -190,11 +188,11 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * Set or update the path, depth, name and parent reference
+     * Set or update the path, depth, name and parent reference.
      *
-     * @param string  $path the new path this item lives at
-     * @param boolean $move whether this item is being moved in session context
-     *      and should store the current path until the next save operation.
+     * @param string $path the new path this item lives at
+     * @param bool   $move whether this item is being moved in session context
+     *                     and should store the current path until the next save operation
      *
      * @private
      */
@@ -353,7 +351,7 @@ abstract class Item implements ItemInterface
      * current state in the backend (for instance if mix:referenceable mixin
      * type has been added to the item the backend creates a UUID on save).
      *
-     * @return boolean
+     * @return bool
      *
      * @private
      */
@@ -365,7 +363,7 @@ abstract class Item implements ItemInterface
     /**
      * Whether this item has been deleted and can not be used anymore.
      *
-     * @return boolean
+     * @return bool
      * @private
      */
     public function isDeleted()
@@ -375,9 +373,9 @@ abstract class Item implements ItemInterface
 
     /**
      * Whether this item is in STATE_CLEAN (meaning its data is fully
-     * synchronized with the backend)
+     * synchronized with the backend).
      *
-     * @return boolean
+     * @return bool
      * @private
      */
     public function isClean()
@@ -411,7 +409,7 @@ abstract class Item implements ItemInterface
                     && $this->getParent()->isSame($otherItem->getParent())
                 ;
             default:
-                throw new NotImplementedException('Item::isSame for Item of class ' . get_class($this) . ' is not implemented');
+                throw new NotImplementedException('Item::isSame for Item of class '.get_class($this).' is not implemented');
         }
     }
 
@@ -439,7 +437,7 @@ abstract class Item implements ItemInterface
         $this->checkState(); // To avoid the possibility to delete an already deleted node
 
         // sanity checks
-        if ($this->getDepth() === 0) {
+        if (0 === $this->getDepth()) {
             throw new RepositoryException('Cannot remove root node');
         }
 
@@ -465,15 +463,15 @@ abstract class Item implements ItemInterface
      */
     public function setModified()
     {
-        if (! $this->isNew()) {
+        if (!$this->isNew()) {
             $this->setState(self::STATE_MODIFIED);
         }
     }
 
     /**
-     * Tell this item that it is dirty and needs to be refreshed
+     * Tell this item that it is dirty and needs to be refreshed.
      *
-     * @param boolean $keepChanges whether to keep changes when reloading or not
+     * @param bool $keepChanges whether to keep changes when reloading or not
      *
      * @throws RepositoryException
      *
@@ -492,7 +490,7 @@ abstract class Item implements ItemInterface
                 $this->postDirtyState = $targetState;
                 break;
             default:
-                throw new RepositoryException('Setting item ' . $this->path . ' dirty in state ' . $this->getState() . ' is not expected');
+                throw new RepositoryException('Setting item '.$this->path.' dirty in state '.$this->getState().' is not expected');
         }
 
         $this->keepChanges = $keepChanges;
@@ -500,7 +498,7 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * Tell this item it has been deleted and cannot be used anymore
+     * Tell this item it has been deleted and cannot be used anymore.
      *
      * @throws RepositoryException
      *
@@ -512,7 +510,7 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * Tell this item it is clean (i.e. it has been refreshed after a modification)
+     * Tell this item it is clean (i.e. it has been refreshed after a modification).
      *
      * @throws RepositoryException
      *
@@ -525,7 +523,7 @@ abstract class Item implements ItemInterface
 
     /**
      * notify this item that it has been saved into the backend.
-     * allowing it to clear the modified / new flags
+     * allowing it to clear the modified / new flags.
      *
      * @throws RepositoryException
      *
@@ -538,7 +536,7 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * Get the state of the item
+     * Get the state of the item.
      *
      * @return int one of the state constants
      *
@@ -564,9 +562,9 @@ abstract class Item implements ItemInterface
      *
      * @param callable $definitions Function that extracts the ItemDefinitions from a NodeType
      *
-     * @return ItemDefinitionInterface The definition for this item.
+     * @return ItemDefinitionInterface the definition for this item
      *
-     * @throws RepositoryException If no definition can be found.
+     * @throws RepositoryException if no definition can be found
      */
     protected function findItemDefinition($definitions)
     {
@@ -618,17 +616,17 @@ abstract class Item implements ItemInterface
      * to reflect the current saved state, thus revealing changes made by
      * other sessions.
      *
-     * @param boolean $keepChanges a boolean
+     * @param bool $keepChanges a boolean
      *
      * @throws InvalidItemStateException if this Item object represents
-     *      a workspace item that has been removed (either by this session or
-     *      another).
-     * @throws RepositoryException if another error occurs.
+     *                                   a workspace item that has been removed (either by this session or
+     *                                   another)
+     * @throws RepositoryException       if another error occurs
      */
     abstract protected function refresh($keepChanges);
 
     /**
-     * Change the state of the item
+     * Change the state of the item.
      *
      * @param int $state The new item state, one of the state constants
      *
@@ -638,7 +636,7 @@ abstract class Item implements ItemInterface
      */
     private function setState($state)
     {
-        if (! in_array($state, $this->available_states)) {
+        if (!in_array($state, $this->available_states)) {
             throw new RepositoryException("Invalid state [$state]");
         }
         $this->state = $state;
@@ -653,7 +651,7 @@ abstract class Item implements ItemInterface
         // The following test covers that special case, if the item is modified during the TRX,
         // we set the saved state to MODIFIED so that it can be restored as it is when the TRX
         // is rolled back.
-        if (self::STATE_MODIFIED  === $state && self::STATE_CLEAN === $this->savedState) {
+        if (self::STATE_MODIFIED === $state && self::STATE_CLEAN === $this->savedState) {
             $this->savedState = self::STATE_MODIFIED;
         }
     }
@@ -679,7 +677,7 @@ abstract class Item implements ItemInterface
             $this->postDirtyState = -1;
         }
 
-        if ($this->state === self::STATE_DELETED) {
+        if (self::STATE_DELETED === $this->state) {
             throw new InvalidItemStateException('Item '.$this->path.' is deleted');
         }
 
@@ -769,35 +767,28 @@ abstract class Item implements ItemInterface
         }
 
         if (self::STATE_DELETED === $this->state || self::STATE_DELETED === $this->savedState) {
-
             // Case 1) and 2)
             $this->state = self::STATE_DELETED;
         } elseif (self::STATE_NEW === $this->savedState) {
-
             // Case 3)
             $this->state = self::STATE_NEW;
-        } elseif (self::STATE_MODIFIED  === $this->state || self::STATE_MODIFIED === $this->savedState) {
-
+        } elseif (self::STATE_MODIFIED === $this->state || self::STATE_MODIFIED === $this->savedState) {
             // Case 4) and 5)
             $this->state = self::STATE_MODIFIED;
         } elseif (self::STATE_CLEAN === $this->savedState) {
             if (self::STATE_CLEAN === $this->state) {
-
                 // Case 6) and 7), see the comment in the function setState()
                 $this->state = $this->savedState;
             } elseif (self::STATE_DIRTY === $this->state) {
-
                 // Case 8)
                 $this->state = self::STATE_DIRTY;
             }
         } elseif (self::STATE_DIRTY === $this->savedState) {
-
             // Case 9)
             $this->state = self::STATE_DIRTY;
         } else {
-
             // There might be some special case we do not handle. for the moment throw an exception
-            throw new LogicException('There was an unexpected state transition during the transaction: ' .
+            throw new LogicException('There was an unexpected state transition during the transaction: '.
                                       "old state = {$this->savedState}, new state = {$this->state}");
         }
 

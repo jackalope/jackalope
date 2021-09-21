@@ -7,7 +7,7 @@ use Jackalope\TestCase;
 use PHPCR\SessionInterface;
 
 /**
- * Unit tests for the EventFilter
+ * Unit tests for the EventFilter.
  */
 abstract class EventFilterTestCase extends TestCase
 {

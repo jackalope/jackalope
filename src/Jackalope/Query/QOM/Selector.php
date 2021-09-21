@@ -26,7 +26,7 @@ class Selector implements SelectorInterface
     protected $selectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $nodeTypeName
      * @param string $selectorName

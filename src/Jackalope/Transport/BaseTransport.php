@@ -4,7 +4,6 @@ namespace Jackalope\Transport;
 
 use PHPCR\RepositoryException;
 use PHPCR\Util\PathHelper;
-use Jackalope\NodeType\NodeProcessor;
 
 /**
  * Base class for transport implementation.
@@ -13,37 +12,30 @@ use Jackalope\NodeType\NodeProcessor;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author David Buchmann <david@liip.ch>
  */
-
 abstract class BaseTransport implements TransportInterface
 {
     /**
-     * @deprecated Will be removed in 2.0
+     * The current fetchDepth.
+     *
+     * @var int
+     *
+     * @see TransportInterface::setFetchDepth($depth)
      */
-    const VALIDATE_URI_RFC3986 = NodeProcessor::VALIDATE_URI_RFC3986;
-
-    /**
-    * The current fetchDepth
-    *
-    * @var int
-    *
-    * @see TransportInterface::setFetchDepth($depth)
-    */
     protected $fetchDepth = 0;
 
     /**
      * Flag to determine if mix:lastModified nodes should be updated
      * automatically.
      *
-     * @var boolean
+     * @var bool
      */
     private $autoLastModified = true;
 
     /**
      * Minimal check according to the jcr spec to see if this node name
-     * conforms to the specification
+     * conforms to the specification.
      *
      * If it can't be avoided, extending transports may overwrite this method to add
      * additional checks. But this will reduce interchangeability, thus it is better to
@@ -51,7 +43,7 @@ abstract class BaseTransport implements TransportInterface
      *
      * @param string $name The name to check
      *
-     * @return boolean always true, if the name is not valid a RepositoryException is thrown
+     * @return bool always true, if the name is not valid a RepositoryException is thrown
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      *

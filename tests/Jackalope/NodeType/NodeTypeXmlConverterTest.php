@@ -4,8 +4,8 @@ namespace Jackalope\NodeType;
 
 use DOMDocument;
 use DOMXPath;
-use Jackalope\TestCase;
 use Jackalope\Factory;
+use Jackalope\TestCase;
 
 class NodeTypeXmlConverterTest extends TestCase
 {
@@ -13,7 +13,7 @@ class NodeTypeXmlConverterTest extends TestCase
 
     public function setUp(): void
     {
-        $factory = new Factory;
+        $factory = new Factory();
         $this->converter = new NodeTypeXmlConverter($factory);
     }
 
@@ -97,7 +97,7 @@ class NodeTypeXmlConverterTest extends TestCase
                     'defaultPrimaryTypeName' => 'nt:unstructured',
                     'requiredPrimaryTypeNames' => ['nt:base'],
                 ],
-            ]
+            ],
         ], $data);
     }
 
@@ -165,7 +165,7 @@ XML;
 
         $xpath = new DOMXpath($dom);
         $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
-        if ($nodes->length != 1) {
+        if (1 != $nodes->length) {
             $this->fail("Should have found exactly one element <nodeType> with name $name");
         }
 

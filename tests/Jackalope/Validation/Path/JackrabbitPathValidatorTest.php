@@ -2,8 +2,8 @@
 
 namespace Jackalope\NodeType\Path;
 
-use Jackalope\Validation\PathValidatorTestCase;
 use Jackalope\Validation\Path\JackrabbitPathValidator;
+use Jackalope\Validation\PathValidatorTestCase;
 
 class JackrabbitPathValidatorTest extends PathValidatorTestCase
 {

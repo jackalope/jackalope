@@ -16,16 +16,18 @@ use PHPCR\NodeType\NodeDefinitionInterface;
  */
 class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
 {
-    const DEFAULT_PRIMARY_NODE = 'nt:base';
+    private const DEFAULT_PRIMARY_NODE = 'nt:base';
 
     /**
-     * Cached list of NodeType instances populated in first call to getRequiredPrimaryTypes
+     * Cached list of NodeType instances populated in first call to getRequiredPrimaryTypes.
+     *
      * @var array
      */
     protected $requiredPrimaryTypes = [];
 
     /**
      * List of required primary type names as string.
+     *
      * @var array
      */
     protected $requiredPrimaryTypeNames = [];
@@ -36,16 +38,16 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     protected $defaultPrimaryTypeName;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $allowsSameNameSiblings;
 
     /**
-     * Treat more information in addition to ItemDefinition::fromArray()
+     * Treat more information in addition to ItemDefinition::fromArray().
      *
      * See class documentation for the fields supported in the array.
      *
-     * @param array $data The node definition in array form.
+     * @param array $data the node definition in array form
      */
     protected function fromArray(array $data)
     {

@@ -20,8 +20,8 @@ class RemovePropertyOperation extends Operation
     public $property;
 
     /**
-     * @param string   $srcPath  Absolute path of the property to remove.
-     * @param Property $property Property object to be removed.
+     * @param string   $srcPath  absolute path of the property to remove
+     * @param Property $property property object to be removed
      */
     public function __construct($srcPath, Property $property)
     {

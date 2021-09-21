@@ -2,15 +2,15 @@
 
 namespace Jackalope;
 
-use Iterator;
 use ArrayIterator;
+use Iterator;
 use IteratorAggregate;
-use PHPCR\UnsupportedRepositoryOperationException;
-use PHPCR\ItemNotFoundException;
-use PHPCR\NamespaceRegistryInterface;
-use PHPCR\NamespaceException;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
+use PHPCR\ItemNotFoundException;
+use PHPCR\NamespaceException;
+use PHPCR\NamespaceRegistryInterface;
+use PHPCR\UnsupportedRepositoryOperationException;
 
 /**
  * {@inheritDoc}
@@ -21,13 +21,15 @@ use Jackalope\Transport\WritingInterface;
 class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 {
     /**
-     * Instance of an implementation of the TransportInterface
+     * Instance of an implementation of the TransportInterface.
+     *
      * @var WritingInterface
      */
     protected $transport;
 
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -38,11 +40,11 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      * @var array
      */
     protected $defaultNamespaces = [
-        self::PREFIX_JCR   => self::NAMESPACE_JCR,
-        self::PREFIX_SV    => self::NAMESPACE_SV,
-        self::PREFIX_NT    => self::NAMESPACE_NT,
-        self::PREFIX_MIX   => self::NAMESPACE_MIX,
-        self::PREFIX_XML   => self::NAMESPACE_XML,
+        self::PREFIX_JCR => self::NAMESPACE_JCR,
+        self::PREFIX_SV => self::NAMESPACE_SV,
+        self::PREFIX_NT => self::NAMESPACE_NT,
+        self::PREFIX_MIX => self::NAMESPACE_MIX,
+        self::PREFIX_XML => self::NAMESPACE_XML,
         self::PREFIX_EMPTY => self::NAMESPACE_EMPTY,
     ];
 
@@ -55,9 +57,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * Initializes the created object.
-     *
-     * @param FactoryInterface   $factory
-     * @param TransportInterface $transport
      *
      * @throws ItemNotFoundException If property not found
      */
@@ -76,11 +75,11 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     protected function lazyLoadNamespaces()
     {
-        if ($this->userNamespaces === null) {
+        if (null === $this->userNamespaces) {
             $namespaces = $this->transport->getNamespaces();
             $this->userNamespaces = [];
             foreach ($namespaces as $prefix => $uri) {
-                if (! array_key_exists($prefix, $this->defaultNamespaces)) {
+                if (!array_key_exists($prefix, $this->defaultNamespaces)) {
                     $this->userNamespaces[$prefix] = $uri;
                 }
             }
@@ -94,7 +93,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     public function registerNamespace($prefix, $uri)
     {
-        if (! $this->transport instanceof WritingInterface) {
+        if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
@@ -128,13 +127,13 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     public function unregisterNamespaceByURI($uri)
     {
-        if (! $this->transport instanceof WritingInterface) {
+        if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
         $this->lazyLoadNamespaces();
         $prefix = array_search($uri, $this->userNamespaces);
-        if ($prefix === false) {
+        if (false === $prefix) {
             throw new NamespaceException("Namespace '$uri' is not currently registered");
         }
         // now check whether this is a prefix out of the defaultNamespaces in checkPrefix
@@ -201,10 +200,10 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     public function getPrefix($uri)
     {
         $prefix = array_search($uri, $this->defaultNamespaces);
-        if ($prefix === false) {
+        if (false === $prefix) {
             $this->lazyLoadNamespaces();
             $prefix = array_search($uri, $this->userNamespaces);
-            if ($prefix === false) {
+            if (false === $prefix) {
                 throw new NamespaceException("URI '$uri' is not defined in registry");
             }
         }
@@ -213,7 +212,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     }
 
     /**
-     * Provide Traversable interface: iterator over all namespaces
+     * Provide Traversable interface: iterator over all namespaces.
      *
      * @return Iterator over all namespaces, with prefix as key and url as value
      */
@@ -225,7 +224,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     }
 
     /**
-     * Implement verification if this is a valid prefix
+     * Implement verification if this is a valid prefix.
      *
      * Throws the NamespaceException if trying to use one of the
      * built-in prefixes or a prefix that begins with the characters "xml"
@@ -240,7 +239,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      */
     public function checkPrefix($prefix)
     {
-        if (! strncasecmp('xml', $prefix, 3)) {
+        if (!strncasecmp('xml', $prefix, 3)) {
             throw new NamespaceException("Do not use xml in prefixes for namespace changes: '$prefix'");
         }
 
@@ -254,7 +253,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     }
 
     /**
-     * Get all defined namespaces
+     * Get all defined namespaces.
      *
      * @private
      */

@@ -45,7 +45,7 @@ class SessionTest extends TestCase
 
     public function testSessionRegistry()
     {
-        $factory = new Factory;
+        $factory = new Factory();
         $repository = $this->getRepositoryMock();
         $transport = $this->getTransportStub();
         $transport->expects($this->any())

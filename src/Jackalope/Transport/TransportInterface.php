@@ -32,7 +32,7 @@ use PHPCR\RepositoryInterface;
 interface TransportInterface
 {
     /**
-     * Get all repository descriptors
+     * Get all repository descriptors.
      *
      * This may be called before login or accessing any specific workspace.
      * With this, you can get some information without being logged in.
@@ -70,20 +70,20 @@ interface TransportInterface
      *
      * What implementation of credentials is supported is transport specific.
      *
-     * @param CredentialsInterface $credentials the credentials to connect with the
-     *      backend
-     * @param string $workspaceName The workspace name to connect to. Null
-     *      means to connect to the default workspace.
+     * @param CredentialsInterface $credentials   the credentials to connect with the
+     *                                            backend
+     * @param string               $workspaceName The workspace name to connect to. Null
+     *                                            means to connect to the default workspace.
      *
      * @return string The workspace name that we connected to. This must be
-     *      $workspaceName unless that was null, where it is the name of the
-     *      default workspace.
+     *                $workspaceName unless that was null, where it is the name of the
+     *                default workspace.
      *
-     * @throws LoginException if authentication or authorization (for
-     *      the specified workspace) fails
+     * @throws LoginException           if authentication or authorization (for
+     *                                  the specified workspace) fails
      * @throws NoSuchWorkspaceException if the specified workspaceName
-     *      is not recognized
-     * @throws RepositoryException if another error occurs
+     *                                  is not recognized
+     * @throws RepositoryException      if another error occurs
      */
     public function login(CredentialsInterface $credentials = null, $workspaceName = null);
 
@@ -119,7 +119,7 @@ interface TransportInterface
     public function getNamespaces();
 
     /**
-     * Get the node from an absolute path
+     * Get the node from an absolute path.
      *
      * Returns a json_decode stdClass structure that contains two fields for
      * each property and one field for each child.
@@ -175,10 +175,10 @@ interface TransportInterface
      *   ['foo', 'bar'] and {0: 'foo', 1: 'bar'}
      * The first are properties, but the later is a list of children nodes.
      *
-     * @param string $path Absolute path to the node.
+     * @param string $path absolute path to the node
      *
      * @return array associative array for the node (decoded from json with
-     *      associative = true)
+     *               associative = true)
      *
      * @throws ItemNotFoundException If the item at path was not found
      */
@@ -200,10 +200,10 @@ interface TransportInterface
      * array. Jackalope takes care of only returning nodes that where actually
      * requested by the client and caching the rest.
      *
-     * @param array $paths Absolute paths to the nodes.
+     * @param array $paths absolute paths to the nodes
      *
      * @return array keys are the absolute paths, values is the node data as
-     *      associative array (decoded from json with associative = true)
+     *               associative array (decoded from json with associative = true)
      */
     public function getNodes($paths);
 
@@ -217,8 +217,8 @@ interface TransportInterface
      * @param array $identifiers list of uuid to retrieve
      *
      * @return array keys are the absolute paths, values is the node data as
-     *      associative array (decoded from json with associative = true). they
-     *      will have the identifier value set.
+     *               associative array (decoded from json with associative = true). they
+     *               will have the identifier value set.
      */
     public function getNodesByIdentifier($identifiers);
 
@@ -231,7 +231,7 @@ interface TransportInterface
      * @param string $path absolute path to the property to get
      *
      * @return \stdClass a json struct with the property type and property
-     *      value(s)
+     *                   value(s)
      *
      * @see TransportInterface::getNode($path)
      */
@@ -244,9 +244,9 @@ interface TransportInterface
      * @param string $uuid the id in JCR format
      *
      * @return array associative array for the node (decoded from json with
-     *      associative = true)
+     *               associative = true)
      *
-     * @throws ItemNotFoundException if the backend does not know the uuid
+     * @throws ItemNotFoundException    if the backend does not know the uuid
      * @throws NoSuchWorkspaceException if workspace does not exist
      */
     public function getNodeByIdentifier($uuid);
@@ -265,7 +265,7 @@ interface TransportInterface
     public function getNodePathForIdentifier($uuid, $workspace = null);
 
     /**
-     * Retrieve a stream of a binary property value
+     * Retrieve a stream of a binary property value.
      *
      * @param string $path absolute path to the property containing binary data
      *
@@ -280,11 +280,11 @@ interface TransportInterface
 
     /**
      * Returns the path of all accessible REFERENCE properties in the workspace
-     * that point to the node
+     * that point to the node.
      *
      * @param string $path absolute path to the node we need the references to
      * @param string $name name of referring REFERENCE properties to be returned;
-     *       if null then all referring REFERENCEs are returned
+     *                     if null then all referring REFERENCEs are returned
      *
      * @return array
      */
@@ -292,11 +292,11 @@ interface TransportInterface
 
     /**
      * Returns the path of all accessible WEAKREFERENCE properties in the
-     * workspace that point to the node
+     * workspace that point to the node.
      *
      * @param string $path absolute path to the node we need the references to
      * @param string $name name of referring WEAKREFERENCE properties to be
-     *      returned; if null then all referring WEAKREFERENCEs are returned
+     *                     returned; if null then all referring WEAKREFERENCEs are returned
      *
      * @return array
      */
@@ -335,18 +335,18 @@ interface TransportInterface
      * If depth = 0 it only fetches the requested node
      * If depth = 1 it also fetches its children
      * If depth = 2 it also fetches its children and grandchildren
-     * and so on
+     * and so on.
      *
      * Be aware the the actual Session->getNode call does not return all
      * the children. This setting only tells the transport to preemptively
      * fetch all the children from the backend.
      *
-     * @param int $depth The depth with which the nodes should be fetched.
+     * @param int $depth the depth with which the nodes should be fetched
      */
     public function setFetchDepth($depth);
 
     /**
-     * Returns the current fetchDepth
+     * Returns the current fetchDepth.
      *
      * @return int with the current fetchDepth
      *
@@ -365,14 +365,14 @@ interface TransportInterface
      *
      * Note: On read only stores, this is never used.
      *
-     * @param boolean $autoLastModified
+     * @param bool $autoLastModified
      */
     public function setAutoLastModified($autoLastModified);
 
     /**
      * Get the auto last modified flag.
      *
-     * @return boolean Whether to update the last modified information.
+     * @return bool whether to update the last modified information
      */
     public function getAutoLastModified();
 }

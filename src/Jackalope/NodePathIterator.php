@@ -57,9 +57,9 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     }
 
     /**
-     * Return the batchSize
+     * Return the batchSize.
      *
-     * @return integer
+     * @return int
      */
     public function getBatchSize()
     {
@@ -67,7 +67,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     }
 
     /**
-     * Return the type filter
+     * Return the type filter.
      *
      * @return string
      */
@@ -89,7 +89,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
      */
     public function next()
     {
-        $this->position++;
+        ++$this->position;
     }
 
     /**
@@ -113,8 +113,8 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
 
         // skip any paths which have been filtered in userland
         // and move on
-        if ($path === null) {
-            $this->position++;
+        if (null === $path) {
+            ++$this->position;
 
             return $this->valid();
         }
@@ -124,7 +124,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
         }
 
         if (empty($this->nodes[$path])) {
-            $this->position++;
+            ++$this->position;
 
             return $this->valid();
         }
@@ -144,7 +144,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
      * Load a batch of records according to the
      * batch size.
      *
-     * @param integer $position - Optional position to start from
+     * @param int $position - Optional position to start from
      */
     protected function loadBatch($position = null)
     {
@@ -165,11 +165,11 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
         );
 
         foreach ($paths as $path) {
-            if (isset($nodes[$path]) && $nodes[$path] !== '') {
-                $this->nodes[$path] =  $nodes[$path];
-                $this->count++;
+            if (isset($nodes[$path]) && '' !== $nodes[$path]) {
+                $this->nodes[$path] = $nodes[$path];
+                ++$this->count;
             } else {
-                $this->nodes[$path] =  null;
+                $this->nodes[$path] = null;
             }
         }
     }
@@ -183,7 +183,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
      * which does not have a corresponding array key in the nodes array
      * - if the node is indeed not already loaded.
      *
-     * @param integer $offset
+     * @param int $offset
      */
     protected function ensurePathLoaded($offset)
     {
@@ -223,7 +223,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     {
         $this->ensurePathLoaded($offset);
 
-        return $this->nodes[$offset] === null ? false : true;
+        return null === $this->nodes[$offset] ? false : true;
     }
 
     /**
@@ -266,6 +266,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     public function count()
     {
         $this->ensurePathLoaded(count($this->paths));
+
         return $this->count;
     }
 }

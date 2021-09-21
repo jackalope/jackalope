@@ -13,7 +13,7 @@ use Jackalope\Node;
 class RemoveNodeOperation extends Operation
 {
     /**
-     * The node to remove
+     * The node to remove.
      *
      * @var Node
      */

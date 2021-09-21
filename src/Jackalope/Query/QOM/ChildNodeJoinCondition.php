@@ -25,7 +25,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
     protected $parentSelectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $childSelectorName
      * @param string $parentSelectorName

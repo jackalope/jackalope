@@ -2,9 +2,9 @@
 
 namespace Jackalope\NodeType;
 
+use Jackalope\FactoryInterface;
 use PHPCR\NodeType\NodeDefinitionTemplateInterface;
 use PHPCR\Version\OnParentVersionAction;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -19,8 +19,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     /**
      * Create a new node definition template instance.
      *
-     * @param FactoryInterface $factory         the object factory
-     * @param NodeTypeManager  $nodeTypeManager
+     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)
     {

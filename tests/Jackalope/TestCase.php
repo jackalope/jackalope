@@ -6,12 +6,12 @@ use DOMDocument;
 use Jackalope\NodeType\ItemDefinition;
 use Jackalope\NodeType\NodeDefinition;
 use Jackalope\NodeType\NodeType;
+use Jackalope\NodeType\NodeTypeManager;
+use Jackalope\NodeType\NodeTypeXmlConverter;
 use Jackalope\Transaction\UserTransaction;
 use Jackalope\Transport\TransportInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\SimpleCredentials;
-use Jackalope\NodeType\NodeTypeManager;
-use Jackalope\NodeType\NodeTypeXmlConverter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use ReflectionClass;
@@ -26,7 +26,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         foreach ($GLOBALS as $cfgKey => $value) {
-            if (strpos($cfgKey, 'phpcr.') === 0) {
+            if (0 === strpos($cfgKey, 'phpcr.')) {
                 $this->config[substr($cfgKey, 6)] = $value;
             }
         }
@@ -67,7 +67,7 @@ abstract class TestCase extends BaseTestCase
         ;
 
         $dom = new DOMDocument();
-        $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
+        $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
         $transport->expects($this->any())
             ->method('getNodeTypes')
             ->willReturn($dom)
@@ -278,14 +278,12 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the (real) node type manager with a mock object manager that returns
      * real node type data for getNodeTypes.
-     *
-     * @return NodeTypeManager
      */
     protected function getNodeTypeManager(): NodeTypeManager
     {
         $factory = new Factory();
         $dom = new DOMDocument();
-        $dom->load(__DIR__ . '/../fixtures/nodetypes.xml');
+        $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
         $converter = new NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
         $om
@@ -302,13 +300,13 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Call a protected or private method on an object instance
+     * Call a protected or private method on an object instance.
      *
      * @param object $instance The instance to call the method on
      * @param string $method   The protected or private method to call
      * @param array  $args     The arguments to the called method
      *
-     * @return mixed  The result of the method call
+     * @return mixed The result of the method call
      */
     protected function getAndCallMethod($instance, string $method, array $args = [])
     {
@@ -320,10 +318,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Get the value of a protected or private property of an object
+     * Get the value of a protected or private property of an object.
      *
-     * @param  object $instance
-     * @param  string $attributeName
+     * @param object $instance
      *
      * @return mixed
      */
@@ -367,7 +364,7 @@ abstract class TestCase extends BaseTestCase
     protected function getDomElement(string $xml): \DOMNode
     {
         $doc = new DOMDocument();
-        $doc->loadXML('<wrapper>' . $xml . '</wrapper>');
+        $doc->loadXML('<wrapper>'.$xml.'</wrapper>');
         $list = $doc->getElementsByTagName('wrapper');
 
         return $list->item(0);

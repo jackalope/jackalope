@@ -2,22 +2,22 @@
 
 namespace Jackalope;
 
-use PHPCR\Util\PathHelper;
 use Exception;
+use InvalidArgumentException;
+use Jackalope\ImportExport\ImportExport;
+use Jackalope\Transport\TransactionInterface;
+use Jackalope\Transport\TransportInterface;
+use PHPCR\CredentialsInterface;
+use PHPCR\ItemExistsException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\PathNotFoundException;
+use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
+use PHPCR\Security\AccessControlException;
 use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
-use PHPCR\CredentialsInterface;
-use PHPCR\PathNotFoundException;
-use PHPCR\ItemNotFoundException;
-use PHPCR\ItemExistsException;
-use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
-use InvalidArgumentException;
-use PHPCR\Security\AccessControlException;
-use Jackalope\ImportExport\ImportExport;
-use Jackalope\Transport\TransportInterface;
-use Jackalope\Transport\TransactionInterface;
+use PHPCR\Util\PathHelper;
 use Traversable;
 
 /**
@@ -41,14 +41,14 @@ class Session implements SessionInterface
      * This option is used to set the depth with which nodes should be fetched from the backend to optimize
      * performance when you know you will need the child nodes.
      */
-    const OPTION_FETCH_DEPTH = 'jackalope.fetch_depth';
+    public const OPTION_FETCH_DEPTH = 'jackalope.fetch_depth';
 
     /**
      * Constant for setSessionOption to manage whether nodes having mix:lastModified should automatically be updated.
      *
      * Disable if you want to manually control this information, e.g. in a PHPCR-ODM listener.
      */
-    const OPTION_AUTO_LASTMODIFIED = 'jackalope.auto_lastmodified';
+    public const OPTION_AUTO_LASTMODIFIED = 'jackalope.auto_lastmodified';
 
     /**
      * A registry for all created sessions to be able to reference them by id in
@@ -61,7 +61,7 @@ class Session implements SessionInterface
     protected static $sessionRegistry = [];
 
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
@@ -88,7 +88,7 @@ class Session implements SessionInterface
     protected $credentials;
 
     /**
-     * Whether this session is in logged out state and can not be used anymore
+     * Whether this session is in logged out state and can not be used anymore.
      *
      * @var bool
      */
@@ -104,7 +104,7 @@ class Session implements SessionInterface
     protected $namespaceRegistry;
 
     /**
-     * List of local namespaces
+     * List of local namespaces.
      *
      * TODO: implement local namespace rewriting
      * see jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/conversion/PathParser.java and friends
@@ -112,17 +112,16 @@ class Session implements SessionInterface
      */
     //protected $localNamespaces;
 
-    /** Creates a session
+    /** Creates a session.
      *
      * Builds the corresponding workspace instance
      *
-     * @param FactoryInterface  $factory       the object factory
-     * @param Repository        $repository
-     * @param string            $workspaceName the workspace name that is used
-     * @param SimpleCredentials $credentials   the credentials that where
-     *      used to log in, in order to implement Session::getUserID()
-     *      if they are null, getUserID returns null
-     * @param TransportInterface $transport the transport implementation
+     * @param FactoryInterface   $factory       the object factory
+     * @param string             $workspaceName the workspace name that is used
+     * @param SimpleCredentials  $credentials   the credentials that where
+     *                                          used to log in, in order to implement Session::getUserID()
+     *                                          if they are null, getUserID returns null
+     * @param TransportInterface $transport     the transport implementation
      */
     public function __construct(FactoryInterface $factory, Repository $repository, $workspaceName, SimpleCredentials $credentials = null, TransportInterface $transport)
     {
@@ -237,7 +236,7 @@ class Session implements SessionInterface
      */
     public function getNodesByIdentifier($ids)
     {
-        if (! is_array($ids) && ! $ids instanceof Traversable) {
+        if (!is_array($ids) && !$ids instanceof Traversable) {
             $hint = is_object($ids) ? get_class($ids) : gettype($ids);
             throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
@@ -252,7 +251,7 @@ class Session implements SessionInterface
      */
     public function getItem($absPath)
     {
-        if (! is_string($absPath) || strlen($absPath) === 0 || '/' !== $absPath[0]) {
+        if (!is_string($absPath) || 0 === strlen($absPath) || '/' !== $absPath[0]) {
             throw new PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
@@ -297,7 +296,7 @@ class Session implements SessionInterface
      */
     public function getNodes($absPaths)
     {
-        if (! is_array($absPaths) && ! $absPaths instanceof Traversable) {
+        if (!is_array($absPaths) && !$absPaths instanceof Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
             throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
@@ -321,7 +320,7 @@ class Session implements SessionInterface
 
     public function getProperties($absPaths)
     {
-        if (! is_array($absPaths) && ! $absPaths instanceof Traversable) {
+        if (!is_array($absPaths) && !$absPaths instanceof Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
             throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
@@ -336,7 +335,7 @@ class Session implements SessionInterface
      */
     public function itemExists($absPath)
     {
-        if ($absPath === '/') {
+        if ('/' === $absPath) {
             return true;
         }
 
@@ -350,7 +349,7 @@ class Session implements SessionInterface
      */
     public function nodeExists($absPath)
     {
-        if ($absPath === '/') {
+        if ('/' === $absPath) {
             return true;
         }
 
@@ -472,7 +471,7 @@ class Session implements SessionInterface
     }
 
     /**
-     * Jackalope specific hack to drop the state of the current session
+     * Jackalope specific hack to drop the state of the current session.
      *
      * Removes all cached objects, planned changes etc without making the
      * objects aware of it. Was done as a cheap replacement for refresh
@@ -507,7 +506,7 @@ class Session implements SessionInterface
         $requestedPermissions = explode(',', $actions);
 
         foreach ($requestedPermissions as $perm) {
-            if (! in_array(strtolower(trim($perm)), $actualPermissions)) {
+            if (!in_array(strtolower(trim($perm)), $actualPermissions)) {
                 return false;
             }
         }
@@ -522,7 +521,7 @@ class Session implements SessionInterface
      */
     public function checkPermission($absPath, $actions)
     {
-        if (! $this->hasPermission($absPath, $actions)) {
+        if (!$this->hasPermission($absPath, $actions)) {
             throw new AccessControlException($absPath);
         }
     }
@@ -572,7 +571,6 @@ class Session implements SessionInterface
         );
     }
 
-
     /**
      * {@inheritDoc}
      *
@@ -588,8 +586,6 @@ class Session implements SessionInterface
             $noRecurse
         );
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -661,7 +657,7 @@ class Session implements SessionInterface
      */
     public function isLive()
     {
-        return ! $this->logout;
+        return !$this->logout;
     }
 
     /**
@@ -698,10 +694,10 @@ class Session implements SessionInterface
 
     /**
      * Implementation specific: The transport implementation is also used by other components,
-     * i.e. the NamespaceRegistry
+     * i.e. the NamespaceRegistry.
      *
      * @return TransportInterface the transport implementation associated with
-     *      this session.
+     *                            this session
      *
      * @private
      */
@@ -774,11 +770,10 @@ class Session implements SessionInterface
      *
      * @throws InvalidArgumentException if the option is unknown
      * @throws RepositoryException      if this option is not supported and is
-     *      a behaviour relevant option
+     *                                  a behaviour relevant option
      *
      * @see BaseTransport::setFetchDepth($value);
      */
-
     public function setSessionOption($key, $value)
     {
         switch ($key) {

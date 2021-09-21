@@ -11,9 +11,8 @@ use Psr\Log\LoggerInterface as Psr3LoggerInterface;
  */
 class Psr3Logger implements LoggerInterface
 {
-    const MAX_STRING_LENGTH = 32;
-
-    const BINARY_DATA_VALUE = '(binary value)';
+    private const MAX_STRING_LENGTH = 32;
+    private const BINARY_DATA_VALUE = '(binary value)';
 
     /**
      * @var LoggerInterface
@@ -23,14 +22,14 @@ class Psr3Logger implements LoggerInterface
     /**
      * If the logger is enabled (log calls) or not.
      *
-     * @var boolean
+     * @var bool
      */
     public $enabled = true;
 
     /**
      * Constructor.
      *
-     * @param Psr3LoggerInterface $logger    A logger instance
+     * @param Psr3LoggerInterface $logger A logger instance
      */
     public function __construct(Psr3LoggerInterface $logger = null)
     {

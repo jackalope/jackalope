@@ -3,7 +3,7 @@
 namespace Jackalope\Observation;
 
 /**
- * Unit tests for the EventJournal
+ * Unit tests for the EventJournal.
  */
 class EventFilterAbsPathTest extends EventFilterTestCase
 {

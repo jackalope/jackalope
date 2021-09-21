@@ -19,12 +19,12 @@ interface NodeTypeFilterInterface extends TransportInterface
      * list of node type names of which the nodes must be to be included in
      * the result.
      *
-     * @param array        $paths       Absolute paths to the nodes.
-     * @param array|string $typeFilter List of node types to find, with
-     *      semantics as in Node::getNodes meaning a supertype must also match.
+     * @param array        $paths      absolute paths to the nodes
+     * @param array|string $typeFilter list of node types to find, with
+     *                                 semantics as in Node::getNodes meaning a supertype must also match
      *
      * @return array keys are the absolute paths, values is the node data as
-     *      associative array (decoded from json with associative = true)
+     *               associative array (decoded from json with associative = true)
      *
      * @see TransportInterface::getNodes
      */
@@ -33,10 +33,10 @@ interface NodeTypeFilterInterface extends TransportInterface
     /**
      * Get the names of child nodes of a node filtered by a type filter.
      *
-     * @param array        $parentPath Absolute path to the parent node.
+     * @param array        $parentPath absolute path to the parent node
      * @param array        $names      The child node names to filter by type
-     * @param array|string $typeFilter List of node types to find, with
-     *      semantics as in Node::getNodes meaning a supertype must also match.
+     * @param array|string $typeFilter list of node types to find, with
+     *                                 semantics as in Node::getNodes meaning a supertype must also match
      *
      * @return array list of relative node names at that parent that match the criteria
      *

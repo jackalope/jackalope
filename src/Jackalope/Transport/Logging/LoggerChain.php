@@ -18,8 +18,6 @@ class LoggerChain implements LoggerInterface
     /**
      * Adds a logger in the chain.
      *
-     * @param LoggerInterface $logger
-     *
      * @return void
      */
     public function addLogger(LoggerInterface $logger)

@@ -9,20 +9,20 @@ use PHPCR\RepositoryException;
 class ItemTest extends TestCase
 {
     /**
-     * create the item and mock any of the constructor parameters not specified explicitly
+     * create the item and mock any of the constructor parameters not specified explicitly.
      */
     protected function getItem($factory = null, $path = null, $session = null, $objectManager = null, $new = false)
     {
-        if (! $factory) {
+        if (!$factory) {
             $factory = $this->getMockBuilder(FactoryInterface::class)->disableOriginalConstructor()->getMock();
         }
-        if (! $path) {
+        if (!$path) {
             $path = '/';
         }
-        if (! $session) {
+        if (!$session) {
             $session = $this->getSessionMock();
         }
-        if (! $objectManager) {
+        if (!$objectManager) {
             $objectManager = $this->getObjectManagerMock();
         }
 
@@ -30,7 +30,7 @@ class ItemTest extends TestCase
     }
 
     /**
-     * a mock that will additionally expect getNodeByPath once with $path and return the string 'placeholder'
+     * a mock that will additionally expect getNodeByPath once with $path and return the string 'placeholder'.
      */
     protected function getObjectManagerMockWithPath($path)
     {

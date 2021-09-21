@@ -6,7 +6,7 @@ use Jackalope\Query\Query;
 use Jackalope\Query\QueryResult;
 
 /**
- * Defines the methods needed for Query support
+ * Defines the methods needed for Query support.
  *
  * @see <a href="http://www.day.com/specs/jcr/2.0/6_Query.html">JCR 2.0, chapter 6</a>
  *
@@ -52,7 +52,7 @@ interface QueryInterface extends TransportInterface
      * Note that QueryObjectModel::getStatement() returns the query as JCR_SQL2
      * so it costs you nothing to support JQOM.
      *
-     * @return array A list of query languages supported by this transport.
+     * @return array a list of query languages supported by this transport
      *
      * @see QueryManagerInterface::getSupportedQueryLanguages
      */

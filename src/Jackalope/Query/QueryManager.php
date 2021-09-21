@@ -1,13 +1,14 @@
 <?php
+
 namespace Jackalope\Query;
 
+use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
 use Jackalope\Query\QOM\QueryObjectModelFactory;
+use PHPCR\Query\InvalidQueryException;
 use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QueryManagerInterface;
-use PHPCR\Query\InvalidQueryException;
-use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -20,7 +21,7 @@ use Jackalope\FactoryInterface;
 class QueryManager implements QueryManagerInterface
 {
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
@@ -34,8 +35,7 @@ class QueryManager implements QueryManagerInterface
     /**
      * Create the query manager - acquire through the session.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
+     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {

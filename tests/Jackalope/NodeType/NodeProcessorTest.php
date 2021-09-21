@@ -155,14 +155,14 @@ class NodeProcessorTest extends TestCase
         $userPropertySingle = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:single',
             'isAutoCreated' => true,
-            'getDefaultValues' => ['one', 'two']
+            'getDefaultValues' => ['one', 'two'],
         ]);
 
         $userPropertyMultiple = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:multiple',
             'isAutoCreated' => true,
             'isMultiple' => true,
-            'getDefaultValues' => ['one', 'two']
+            'getDefaultValues' => ['one', 'two'],
         ]);
 
         $nodeType = $this->getNodeTypeMock([
@@ -214,7 +214,7 @@ class NodeProcessorTest extends TestCase
         $userPropertySingle = $this->getPropertyDefinitionMock([
             'getName' => 'dtl:single',
             'isAutoCreated' => true,
-            'getDefaultValues' => []
+            'getDefaultValues' => [],
         ]);
 
         $nodeType = $this->getNodeTypeMock([
@@ -304,7 +304,7 @@ class NodeProcessorTest extends TestCase
                     'isMultiple' => false,
                     'getValue' => 'hello',
                 ],
-                null
+                null,
             ],
             [
                 [
@@ -313,7 +313,7 @@ class NodeProcessorTest extends TestCase
                     'getValue' => 'foo:hello',
                     'getPath' => '/path/to',
                 ],
-                'Invalid value for NAME property type at "/path/to", the namespace prefix "foo" does not exist'
+                'Invalid value for NAME property type at "/path/to", the namespace prefix "foo" does not exist',
             ],
             [
                 [
@@ -358,7 +358,7 @@ class NodeProcessorTest extends TestCase
                     'getValue' => 'some string',
                     'getPath' => '/path/to',
                 ],
-                null
+                null,
             ],
         ];
     }
@@ -440,7 +440,7 @@ class NodeProcessorTest extends TestCase
             ['This is valid too!'.$this->translateCharFromCode('\u0009'), true],
             ['This is valid', true],
             [$this->translateCharFromCode('\uD7FF'), true],
-            ['This is on the edge, but valid too.'. $this->translateCharFromCode('\uFFFD'), true],
+            ['This is on the edge, but valid too.'.$this->translateCharFromCode('\uFFFD'), true],
             [$this->translateCharFromCode('\u10000'), true],
             [$this->translateCharFromCode('\u10FFFF'), true],
             [$this->translateCharFromCode('\u0001'), false],
