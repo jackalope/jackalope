@@ -2,8 +2,8 @@
 
 namespace Jackalope\Query\QOM;
 
-use PHPCR\Query\QOM\OrderingInterface;
 use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\OrderingInterface;
 
 /**
  * {@inheritDoc}
@@ -26,10 +26,9 @@ class Ordering implements OrderingInterface
     protected $order;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param DynamicOperandInterface $operand
-     * @param string                  $order
+     * @param string $order
      */
     public function __construct(DynamicOperandInterface $operand, $order = null)
     {

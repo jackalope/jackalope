@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\EquiJoinConditionInterface;
@@ -34,7 +35,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
     protected $property2Name;
 
     /**
-     * Create a new EquiJoinCondition
+     * Create a new EquiJoinCondition.
      *
      * @param string $selector1Name
      * @param string $property1Name

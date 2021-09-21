@@ -3,12 +3,12 @@
 namespace Jackalope;
 
 use Jackalope\Transaction\UserTransaction;
-use ReflectionClass;
-use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\TransactionInterface;
+use Jackalope\Transport\TransportInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
+use ReflectionClass;
 
 /**
  * {@inheritDoc}
@@ -26,7 +26,7 @@ class Repository implements RepositoryInterface
      *
      * @api
      */
-    const JACKALOPE_OPTION_STREAM_WRAPPER = 'jackalope.option.stream_wrapper';
+    public const JACKALOPE_OPTION_STREAM_WRAPPER = 'jackalope.option.stream_wrapper';
 
     protected $jackalopeNotImplemented = [
         // https://github.com/jackalope/jackalope/issues/217
@@ -70,26 +70,26 @@ class Repository implements RepositoryInterface
     ];
 
     /**
-     * flag to call stream_wrapper_register only once
+     * flag to call stream_wrapper_register only once.
      */
     protected static $binaryStreamWrapperRegistered;
 
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
     protected $factory;
 
     /**
-     * The transport to use
+     * The transport to use.
      *
      * @var TransportInterface
      */
     protected $transport;
 
     /**
-     * List of supported options
+     * List of supported options.
      *
      * @var array
      */
@@ -116,12 +116,12 @@ class Repository implements RepositoryInterface
      * Use RepositoryFactoryDoctrineDBAL or RepositoryFactoryJackrabbit to
      * instantiate this class.
      *
-     * @param FactoryInterface $factory the object factory to use. If this is
-     *      null, the Jackalope\Factory is instantiated. Note that the
-     *      repository is the only class accepting null as factory.
+     * @param FactoryInterface   $factory   the object factory to use. If this is
+     *                                      null, the Jackalope\Factory is instantiated. Note that the
+     *                                      repository is the only class accepting null as factory.
      * @param TransportInterface $transport transport implementation
      * @param array              $options   defines optional features to enable/disable (see
-     *      $options property)
+     *                                      $options property)
      */
     public function __construct(FactoryInterface $factory = null, TransportInterface $transport, array $options = null)
     {
@@ -147,7 +147,7 @@ class Repository implements RepositoryInterface
      */
     public function login(CredentialsInterface $credentials = null, $workspaceName = null)
     {
-        if (! $workspaceName = $this->transport->login($credentials, $workspaceName)) {
+        if (!$workspaceName = $this->transport->login($credentials, $workspaceName)) {
             throw new RepositoryException('Transport failed to login without telling why');
         }
 
@@ -213,11 +213,11 @@ class Repository implements RepositoryInterface
             $this->loadDescriptors();
         }
 
-        return (isset($this->descriptors[$key])) ?  $this->descriptors[$key] : null;
+        return (isset($this->descriptors[$key])) ? $this->descriptors[$key] : null;
     }
 
     /**
-     * Load the descriptors into $this->descriptors
+     * Load the descriptors into $this->descriptors.
      *
      * Most of them come from the transport to allow for non-feature complete
      * transports.

@@ -2,11 +2,11 @@
 
 namespace Jackalope\NodeType;
 
-use DOMElement;
 use ArrayObject;
+use DOMElement;
 use InvalidArgumentException;
-use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use Jackalope\FactoryInterface;
+use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\Util\ValueConverter;
 
 /**
@@ -19,10 +19,11 @@ use PHPCR\Util\ValueConverter;
  */
 class NodeTypeDefinition implements NodeTypeDefinitionInterface
 {
-    const NAME_NT_BASE = 'nt:base';
+    private const NAME_NT_BASE = 'nt:base';
 
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
+     *
      * @var FactoryInterface
      */
     protected $factory;
@@ -39,33 +40,36 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * The name of this node type definition.
+     *
      * @var string
      */
     protected $name = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isAbstract = false;
 
     /**
      * Whether this is a mixin node type (otherwise it's a primary node type).
-     * @var boolean
+     *
+     * @var bool
      */
     protected $isMixin = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isQueryable = true;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $hasOrderableChildNodes = false;
 
     /**
      * Name of the primary item of this node type.
+     *
      * @var string
      */
     protected $primaryItemName = null;
@@ -91,14 +95,13 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * Optionally initializes the data from XML, an array or another
      * NodeTypeDefinition.
      *
-     * @param FactoryInterface $factory         the object factory
-     * @param NodeTypeManager  $nodeTypeManager
+     * @param FactoryInterface $factory the object factory
      * @param DOMElement|NodeTypeDefinitionInterface|null
      *      $nodetype Either by XML or by NodeTypeDefinition or null for an
      *      empty definition
      *
      * @throws InvalidArgumentException If it is not possible to read data
-     *      from $nodetype
+     *                                  from $nodetype
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
@@ -118,10 +121,10 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * Read the node type definition from another NodeTypeDefinition
+     * Read the node type definition from another NodeTypeDefinition.
      *
      * @param NodeTypeDefinitionInterface $ntd The node type
-     *      definition to copy information from
+     *                                         definition to copy information from
      */
     protected function fromNodeTypeDefinition(NodeTypeDefinitionInterface $ntd)
     {
@@ -137,7 +140,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * Reads the node type definition from an array
+     * Reads the node type definition from an array.
      *
      * @param array $data an array with key-value information
      */
@@ -168,7 +171,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * Reads the node type definition from an xml element
+     * Reads the node type definition from an xml element.
      *
      * @param DOMElement $node The dom element to read information from
      */

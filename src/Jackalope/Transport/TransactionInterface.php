@@ -15,26 +15,26 @@ use PHPCR\RepositoryException;
 interface TransactionInterface extends TransportInterface
 {
     /**
-     * Initiates a "local transaction" on the root node
+     * Initiates a "local transaction" on the root node.
      *
      * @return string The received transaction token
      *
-     * @throws RepositoryException If no transaction token received.
+     * @throws RepositoryException if no transaction token received
      */
     public function beginTransaction();
 
     /**
-     * Commits a transaction started with {@link beginTransaction()}
+     * Commits a transaction started with {@link beginTransaction()}.
      */
     public function commitTransaction();
 
     /**
-     * Rolls back a transaction started with {@link beginTransaction()}
+     * Rolls back a transaction started with {@link beginTransaction()}.
      */
     public function rollbackTransaction();
 
     /**
-     * Sets the default transaction timeout
+     * Sets the default transaction timeout.
      *
      * @param int $seconds The value of the timeout in seconds
      */

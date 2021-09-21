@@ -2,8 +2,8 @@
 
 namespace Jackalope\Lock;
 
-use PHPCR\Lock\LockInterface;
 use Jackalope\NotImplementedException;
+use PHPCR\Lock\LockInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\RepositoryException;
 
@@ -28,7 +28,7 @@ class Lock implements LockInterface
     protected $lockOwner;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isDeep;
 
@@ -43,22 +43,22 @@ class Lock implements LockInterface
     protected $lockToken;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isLive = true;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isSessionScoped;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isLockOwningSession;
 
     /**
-     * The unix timestamp (seconds since 1970) at which this lock will expire
+     * The unix timestamp (seconds since 1970) at which this lock will expire.
      *
      * @var int
      */
@@ -94,9 +94,9 @@ class Lock implements LockInterface
     }
 
     /**
-    * @param boolean $isDeep
+     * @param bool $isDeep
      * @private
-    */
+     */
     public function setIsDeep($isDeep)
     {
         $this->isDeep = $isDeep;
@@ -113,7 +113,7 @@ class Lock implements LockInterface
     public function getNode()
     {
         if (null === $this->path) {
-            throw new NotImplementedException;
+            throw new NotImplementedException();
             // TODO either here or in transport figure out the owning node
             // we might want to delay this until actually requested, as we need to walk up the tree to find the owning node
         }
@@ -181,12 +181,12 @@ class Lock implements LockInterface
     }
 
     /**
-     * Can be used by the lock manager to tell the lock its no longer live
+     * Can be used by the lock manager to tell the lock its no longer live.
      *
-     * @param boolean $isLive
+     * @param bool $isLive
      *
      * @private
-    */
+     */
     public function setIsLive($isLive)
     {
         $this->isLive = $isLive;
@@ -203,7 +203,7 @@ class Lock implements LockInterface
     }
 
     /**
-     * @param boolean $isSessionScoped
+     * @param bool $isSessionScoped
      * @private
      */
     public function setIsSessionScoped($isSessionScoped)
@@ -222,7 +222,7 @@ class Lock implements LockInterface
     }
 
     /**
-     * @param boolean $isLockOwningSession
+     * @param bool $isLockOwningSession
      * @private
      */
     public function setIsLockOwningSession($isLockOwningSession)
@@ -231,7 +231,7 @@ class Lock implements LockInterface
     }
 
     /**
-     * Set the lock expire timestamp
+     * Set the lock expire timestamp.
      *
      * Set to null for unknown / infinite timeout
      *
@@ -247,19 +247,17 @@ class Lock implements LockInterface
     }
 
     /**
-    * {@inheritDoc}
-    *
-    * @api
-    */
+     * {@inheritDoc}
+     *
+     * @api
+     */
     public function refresh()
     {
         throw new NotImplementedException();
     }
 
     /**
-     * Set the lock manager to be used with isLive requests and such
-     *
-     * @param LockManager $lm
+     * Set the lock manager to be used with isLive requests and such.
      *
      * @private
      */

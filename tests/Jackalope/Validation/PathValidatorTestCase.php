@@ -97,11 +97,11 @@ abstract class PathValidatorTestCase extends TestCase
             ['namespace_9', $this->translateCharFromCode('\uFFFF').':foo'],
 
             // strange characters in name
-            ['localname_1', 'foo:' . $this->translateCharFromCode('\u0001')],
-            ['localname_2', 'foo:' . $this->translateCharFromCode('\u0002')],
-            ['localname_3', 'foo:' . $this->translateCharFromCode('\u0003')],
-            ['localname_4', 'foo:' . $this->translateCharFromCode('\u0008')],
-            ['localname_5', 'foo:' . $this->translateCharFromCode('\uFFFD')],
+            ['localname_1', 'foo:'.$this->translateCharFromCode('\u0001')],
+            ['localname_2', 'foo:'.$this->translateCharFromCode('\u0002')],
+            ['localname_3', 'foo:'.$this->translateCharFromCode('\u0003')],
+            ['localname_4', 'foo:'.$this->translateCharFromCode('\u0008')],
+            ['localname_5', 'foo:'.$this->translateCharFromCode('\uFFFD')],
         ];
     }
 
@@ -134,7 +134,7 @@ abstract class PathValidatorTestCase extends TestCase
 
     private function translateCharFromCode($char)
     {
-        return json_decode('"' . $char . '"');
+        return json_decode('"'.$char.'"');
     }
 
     public function provideDestPath()
@@ -149,6 +149,7 @@ abstract class PathValidatorTestCase extends TestCase
 
     /**
      * @dataProvider provideDestPath
+     *
      * @throws \PHPUnit_Framework_Exception
      */
     public function testDestPath($path, $isValid)

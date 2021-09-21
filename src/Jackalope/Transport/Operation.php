@@ -10,23 +10,23 @@ namespace Jackalope\Transport;
  */
 abstract class Operation
 {
-    const ADD_NODE = 'add-node';
+    public const ADD_NODE = 'add-node';
 
-    const MOVE_NODE = 'move-node';
+    public const MOVE_NODE = 'move-node';
 
-    const REMOVE_NODE = 'remove-node';
+    public const REMOVE_NODE = 'remove-node';
 
-    const REMOVE_PROPERTY = 'remove-property';
+    public const REMOVE_PROPERTY = 'remove-property';
 
     /**
-     * One of the type constants to know what kind of operation this is
+     * One of the type constants to know what kind of operation this is.
      *
      * @var string
      */
     public $type;
 
     /**
-     * The source path is the path of the node this operation applies to
+     * The source path is the path of the node this operation applies to.
      *
      * @var string
      */
@@ -34,7 +34,7 @@ abstract class Operation
 
     /**
      * Whether this operation was later determined to be skipped
-     * (i.e. a parent node is removed as well.)
+     * (i.e. a parent node is removed as well.).
      *
      * @var bool
      */

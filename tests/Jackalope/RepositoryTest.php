@@ -8,7 +8,7 @@ class RepositoryTest extends TestCase
 {
     public function testConstructor()
     {
-        $factory = new Factory;
+        $factory = new Factory();
         $credentials = new SimpleCredentials('test', 'cred');
         $workspaceName = 'sadf3sd';
         $transport = $this->getTransportStub();
@@ -30,5 +30,6 @@ class RepositoryTest extends TestCase
         $this->assertContains('bla', $repo->getDescriptorKeys());
         $this->assertSame('bli', $repo->getDescriptor('bla'));
     }
+
     //descriptors are tested by jackalope-api-tests Access/RepositoryDescriptorsTest.php
 }

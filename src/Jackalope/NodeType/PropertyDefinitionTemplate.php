@@ -1,10 +1,11 @@
 <?php
+
 namespace Jackalope\NodeType;
 
+use Jackalope\FactoryInterface;
+use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
-use PHPCR\NodeType\PropertyDefinitionTemplateInterface;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -19,8 +20,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     /**
      * Create a new property definition template.
      *
-     * @param FactoryInterface $factory         the object factory
-     * @param NodeTypeManager  $nodeTypeManager
+     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager)
     {

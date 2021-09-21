@@ -6,11 +6,11 @@ use DOMDocument;
 use DOMElement;
 use DOMXPath;
 use InvalidArgumentException;
+use Jackalope\FactoryInterface;
+use Jackalope\Helper;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
 use PHPCR\Version\OnParentVersionAction;
-use Jackalope\Helper;
-use Jackalope\FactoryInterface;
 
 /**
  * Converter to generate NodeType elements array from storage XML (jackrabbit
@@ -21,7 +21,7 @@ use Jackalope\FactoryInterface;
  */
 class NodeTypeXmlConverter
 {
-    const DEFAULT_PRIMARY_NODE = 'nt:base';
+    private const DEFAULT_PRIMARY_NODE = 'nt:base';
 
     /**
      * Empty constructor.
@@ -36,8 +36,6 @@ class NodeTypeXmlConverter
     }
 
     /**
-     * @param DOMElement $node
-     *
      * @return array
      */
     public function getItemDefinitionFromXml(DOMElement $node)
@@ -55,8 +53,6 @@ class NodeTypeXmlConverter
 
     /**
      * Convert property definition xml into array.
-     *
-     * @param DOMElement $node
      *
      * @return array
      *
@@ -93,8 +89,6 @@ class NodeTypeXmlConverter
     /**
      * Convert Node Definition XML into array.
      *
-     * @param DOMElement $node
-     *
      * @return array
      */
     public function getNodeDefinitionFromXml(DOMElement $node)
@@ -120,8 +114,6 @@ class NodeTypeXmlConverter
 
     /**
      * Convert NodeTypeDefinition XML into array.
-     *
-     * @param DOMElement $node
      *
      * @return array
      *

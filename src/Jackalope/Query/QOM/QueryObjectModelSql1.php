@@ -2,18 +2,18 @@
 
 namespace Jackalope\Query\QOM;
 
-use PHPCR\Query\QOM\QueryObjectModelInterface;
 use InvalidArgumentException;
-use PHPCR\Query\QOM\SourceInterface;
-use PHPCR\Query\QOM\ConstraintInterface;
-use PHPCR\Query\QOM\OrderingInterface;
-use PHPCR\Query\QOM\ColumnInterface;
-use PHPCR\Util\QOM\Sql1Generator;
-use PHPCR\Util\QOM\QomToSql1QueryConverter;
-use Jackalope\ObjectManager;
-use Jackalope\Query\Sql1Query;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use Jackalope\Query\Sql1Query;
+use PHPCR\Query\QOM\ColumnInterface;
+use PHPCR\Query\QOM\ConstraintInterface;
+use PHPCR\Query\QOM\OrderingInterface;
+use PHPCR\Query\QOM\QueryObjectModelInterface;
+use PHPCR\Query\QOM\SourceInterface;
+use PHPCR\Util\QOM\QomToSql1QueryConverter;
+use PHPCR\Util\QOM\Sql1Generator;
 use PHPCR\Util\ValueConverter;
 
 /**
@@ -49,15 +49,12 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     protected $columns;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param ObjectManager $objectManager (can be omitted if you do not want
-     *      to execute the query but just use it with a parser)
-     * @param SourceInterface $source
+     * @param FactoryInterface    $factory       the object factory
+     * @param ObjectManager       $objectManager (can be omitted if you do not want
+     *                                           to execute the query but just use it with a parser)
      * @param ConstraintInterface $constraint
-     * @param array $orderings
-     * @param array $columns
      *
      * @throws InvalidArgumentException
      */
@@ -70,12 +67,12 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
         array $columns
     ) {
         foreach ($orderings as $o) {
-            if (! $o instanceof OrderingInterface) {
+            if (!$o instanceof OrderingInterface) {
                 throw new InvalidArgumentException('Not a valid ordering: '.$o);
             }
         }
         foreach ($columns as $c) {
-            if (! $c instanceof ColumnInterface) {
+            if (!$c instanceof ColumnInterface) {
                 throw new InvalidArgumentException('Not a valid column: '.$c);
             }
         }

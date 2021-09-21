@@ -3,9 +3,9 @@
 namespace Jackalope\Transport;
 
 use Iterator;
-use PHPCR\SessionInterface;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\RepositoryException;
+use PHPCR\SessionInterface;
 
 /**
  * Defines the methods needed for observation.

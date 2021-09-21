@@ -3,13 +3,13 @@
 namespace Jackalope\Version;
 
 use InvalidArgumentException;
+use Jackalope\Node;
+use Jackalope\NotImplementedException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\NoSuchWorkspaceException;
 use PHPCR\PathNotFoundException;
 use PHPCR\RepositoryException;
 use PHPCR\Version\VersionInterface;
-use Jackalope\NotImplementedException;
-use Jackalope\Node;
 
 /**
  * {@inheritDoc}
@@ -60,7 +60,7 @@ class Version extends Node implements VersionInterface
             throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
             // @codeCoverageIgnoreEnd
         }
-        if (count($successors) === 0) {
+        if (0 === count($successors)) {
             return null; // no successor
         }
         $uuid = reset($successors);
@@ -82,7 +82,7 @@ class Version extends Node implements VersionInterface
          * get it as string so we can create the Version instances from uuid
          * with the objectManager
          */
-        $successors = $this->getProperty("jcr:successors")->getString();
+        $successors = $this->getProperty('jcr:successors')->getString();
         $results = [];
         foreach ($successors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
@@ -104,13 +104,13 @@ class Version extends Node implements VersionInterface
      */
     public function getLinearPredecessor()
     {
-        $predecessor = $this->getProperty("jcr:predecessors")->getString();
+        $predecessor = $this->getProperty('jcr:predecessors')->getString();
         if (count($predecessor) > 1) {
             // @codeCoverageIgnoreStart
             throw new NotImplementedException('TODO: handle non-trivial case when there is a choice of successors to find the linear from');
             // @codeCoverageIgnoreEnd
         }
-        if (count($predecessor) === 0) {
+        if (0 === count($predecessor)) {
             return null; // no successor
         }
         $uuid = reset($predecessor);
@@ -133,7 +133,7 @@ class Version extends Node implements VersionInterface
          * get it as string so we can create the Version instances from uuid
          * with the objectManager. see 3.13.2.6
          */
-        $predecessors = $this->getProperty("jcr:predecessors")->getString();
+        $predecessors = $this->getProperty('jcr:predecessors')->getString();
         $results = [];
         foreach ($predecessors as $uuid) {
             // OPTIMIZE: use objectManager->getNodes instead of looping
@@ -165,7 +165,7 @@ class Version extends Node implements VersionInterface
     }
 
     /**
-     * Set all cached predecessors of this version dirty
+     * Set all cached predecessors of this version dirty.
      *
      * @private
      */
@@ -181,7 +181,7 @@ class Version extends Node implements VersionInterface
     }
 
     /**
-     * Set all cached successors of this version dirty
+     * Set all cached successors of this version dirty.
      *
      * @private
      */

@@ -59,7 +59,7 @@ class PropertyTest extends TestCase
         $factory = new Factory();
         $session = $this->getSessionMock();
         $objectManager = $this->getObjectManagerMock([
-            'getNodesByIdentifier' => $nodes
+            'getNodesByIdentifier' => $nodes,
         ]);
 
         $property = new Property($factory, $data, '/path/to', $session, $objectManager);

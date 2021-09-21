@@ -3,7 +3,7 @@
 namespace Jackalope\Query;
 
 /**
- * Query implementation for the XPATH language
+ * Query implementation for the XPATH language.
  *
  * This can never be legally created if the transport does not implement
  * QueryInterface
@@ -14,7 +14,7 @@ namespace Jackalope\Query;
 class XpathQuery extends Query
 {
     /**
-     * Access the query statement from the transport layer
+     * Access the query statement from the transport layer.
      *
      * @return string the xpath query statement
      *
@@ -27,9 +27,9 @@ class XpathQuery extends Query
     }
 
     /**
-     * Returns the constant QueryInterface::XPATH
+     * Returns the constant QueryInterface::XPATH.
      *
-     * @return string the query language.
+     * @return string the query language
      */
     public function getLanguage()
     {

@@ -3,16 +3,16 @@
 namespace Jackalope\Query\QOM;
 
 use InvalidArgumentException;
-use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
+use PHPCR\Query\QOM\ConstraintInterface;
+use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\JoinConditionInterface;
+use PHPCR\Query\QOM\PropertyValueInterface;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface;
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 use PHPCR\Query\QOM\SourceInterface;
-use PHPCR\Query\QOM\ConstraintInterface;
-use PHPCR\Query\QOM\JoinConditionInterface;
-use PHPCR\Query\QOM\DynamicOperandInterface;
 use PHPCR\Query\QOM\StaticOperandInterface;
-use PHPCR\Query\QOM\PropertyValueInterface;
 
 /**
  * {@inheritDoc}
@@ -25,7 +25,7 @@ use PHPCR\Query\QOM\PropertyValueInterface;
 class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 {
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
@@ -37,12 +37,12 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     protected $objectManager;
 
     /**
-     * Create the query object model factory - get this from the QueryManager
+     * Create the query object model factory - get this from the QueryManager.
      *
      * @param FactoryInterface $factory       the object factory
      * @param ObjectManager    $objectManager only used to create the query (can
-     *      be omitted if you do not want to execute the query but just use it
-     *      with a parser)
+     *                                        be omitted if you do not want to execute the query but just use it
+     *                                        with a parser)
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null)
     {

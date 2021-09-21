@@ -11,7 +11,7 @@ namespace Jackalope\Transport;
 class MoveNodeOperation extends Operation
 {
     /**
-     * The destination path where this node is to be moved to
+     * The destination path where this node is to be moved to.
      *
      * @var string
      */

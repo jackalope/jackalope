@@ -3,29 +3,29 @@
 namespace Jackalope;
 
 use ArrayIterator;
-use Iterator;
-use IteratorAggregate;
 use Exception;
 use InvalidArgumentException;
+use Iterator;
+use IteratorAggregate;
 use Jackalope\NodeType\NodeType;
 use LogicException;
 use PHPCR\AccessDeniedException;
-use PHPCR\Lock\LockException;
-use PHPCR\NamespaceException;
-use PHPCR\NodeType\NodeDefinitionInterface;
-use PHPCR\NodeType\NodeTypeInterface;
-use PHPCR\PropertyType;
-use PHPCR\NodeInterface;
-use PHPCR\NodeType\ConstraintViolationException;
-use PHPCR\NodeType\NoSuchNodeTypeException;
-use PHPCR\RepositoryException;
-use PHPCR\PathNotFoundException;
-use PHPCR\ItemNotFoundException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
+use PHPCR\ItemNotFoundException;
+use PHPCR\Lock\LockException;
+use PHPCR\NamespaceException;
+use PHPCR\NodeInterface;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NodeDefinitionInterface;
+use PHPCR\NodeType\NodeTypeInterface;
+use PHPCR\NodeType\NoSuchNodeTypeException;
+use PHPCR\PathNotFoundException;
+use PHPCR\PropertyType;
+use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
-use PHPCR\Util\PathHelper;
 use PHPCR\Util\NodeHelper;
+use PHPCR\Util\PathHelper;
 use PHPCR\Util\UUIDHelper;
 use PHPCR\ValueFormatException;
 use PHPCR\Version\VersionException;
@@ -44,12 +44,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * The index if this is a same-name sibling.
      *
      * TODO: fully implement same-name siblings
+     *
      * @var int
      */
     protected $index = 1;
 
     /**
-     * The primary type name of this node
+     * The primary type name of this node.
      *
      * @var string
      */
@@ -76,14 +77,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $deletedProperties = [];
 
     /**
-     * ordered list of the child node names
+     * ordered list of the child node names.
      *
      * @var array
      */
     protected $nodes = [];
 
     /**
-     * ordered list of the child node names as known to be at the backend
+     * ordered list of the child node names as known to be at the backend.
      *
      * used to calculate reordering operations if orderBefore() was used
      *
@@ -92,26 +93,25 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected $originalNodesOrder = null;
 
     /**
-     * Cached instance of the node definition that defines this node
+     * Cached instance of the node definition that defines this node.
      *
      * @var NodeDefinitionInterface
+     *
      * @see Node::getDefinition()
      */
     protected $definition;
 
     /**
-     * Create a new node instance with data from the storage layer
+     * Create a new node instance with data from the storage layer.
      *
      * This is only to be called by the Factory::get() method even inside the
      * Jackalope implementation to allow for custom implementations of Nodes.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param array            $rawData       in the format as returned from TransportInterface::getNode
-     * @param string           $path          the absolute path of this node
-     * @param Session          $session
-     * @param ObjectManager    $objectManager
-     * @param boolean          $new           set to true if this is a new node being created.
-     *      Defaults to false which means the node is loaded from storage.
+     * @param FactoryInterface $factory the object factory
+     * @param array            $rawData in the format as returned from TransportInterface::getNode
+     * @param string           $path    the absolute path of this node
+     * @param bool             $new     set to true if this is a new node being created.
+     *                                  Defaults to false which means the node is loaded from storage.
      *
      * @see TransportInterface::getNode()
      *
@@ -130,9 +130,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Initialize or update this object with raw data from backend.
      *
-     * @param array $rawData in the format as returned from Jackalope\Transport\TransportInterface
-     * @param boolean $update whether to initialize this object or update
-     * @param boolean $keepChanges only used if $update is true, same as $keepChanges in refresh()
+     * @param array $rawData     in the format as returned from Jackalope\Transport\TransportInterface
+     * @param bool  $update      whether to initialize this object or update
+     * @param bool  $keepChanges only used if $update is true, same as $keepChanges in refresh()
      *
      * @see Node::__construct()
      * @see Node::refresh()
@@ -168,14 +168,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $node = false; // reset to avoid trouble
             if (is_object($value)) {
                 // this is a node. add it if
-                if (! $update // init new node
-                    || ! $keepChanges // want to discard changes
+                if (!$update // init new node
+                    || !$keepChanges // want to discard changes
                     || isset($oldNodes[$key]) // it was already existing before reloading
-                    || ! ($node = $this->objectManager->getCachedNode($this->path . '/' . $key)) // we know nothing about it
+                    || !($node = $this->objectManager->getCachedNode($this->path.'/'.$key)) // we know nothing about it
                 ) {
                     // for all those cases, if the node was moved away or is deleted in current session, we do not add it
-                    if (! $this->objectManager->isNodeMoved($this->path . '/' . $key)
-                        && ! $this->objectManager->isNodeDeleted($this->path . '/' . $key)
+                    if (!$this->objectManager->isNodeMoved($this->path.'/'.$key)
+                        && !$this->objectManager->isNodeDeleted($this->path.'/'.$key)
                     ) {
                         // otherwise we (re)load a node from backend but a child has been moved away already
                         $nodesInBackend[] = $key;
@@ -202,7 +202,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                  */
                 if (0 === strpos($key, ':')) {
                     if ((is_int($value) || is_array($value))
-                         && $key != '::NodeIteratorSize'
+                         && '::NodeIteratorSize' != $key
                     ) {
                         // This is a binary property and we just got its length with no data
                         $key = substr($key, 1);
@@ -214,7 +214,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                             if (isset($this->properties[$key])) {
                                 // refresh existing binary, this will only happen in update
                                 // only update length
-                                if (! ($keepChanges && $this->properties[$key]->isModified())) {
+                                if (!($keepChanges && $this->properties[$key]->isModified())) {
                                     $this->properties[$key]->_setLength($value);
                                     if ($this->properties[$key]->isDirty()) {
                                         $this->properties[$key]->setClean();
@@ -268,7 +268,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
                     // OPTIMIZE: do not instantiate properties until needed
                     default:
-                        if (isset($rawData->{':' . $key})) {
+                        if (isset($rawData->{':'.$key})) {
                             /*
                              * this is an inconsistency between jackrabbit and
                              * dbal transport: jackrabbit has type name, dbal
@@ -278,9 +278,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                              * do the conversion or let dbal store a string
                              * value instead of numerical.
                              */
-                            $type = is_numeric($rawData->{':' . $key})
-                                    ? $rawData->{':' . $key}
-                                    : PropertyType::valueFromName($rawData->{':' . $key});
+                            $type = is_numeric($rawData->{':'.$key})
+                                    ? $rawData->{':'.$key}
+                                    : PropertyType::valueFromName($rawData->{':'.$key});
                         } else {
                             $type = $this->valueConverter->determineType($value);
                         }
@@ -302,11 +302,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                         // update original order to send the correct reorderings
                         array_splice($this->originalNodesOrder, $pos, 0, $name);
                     }
-                    if ($pos === 0) {
+                    if (0 === $pos) {
                         array_unshift($this->nodes, $name);
                     } else {
                         // do we find the predecessor of the new node in the list?
-                        $insert = array_search($nodesInBackend[$pos-1], $this->nodes);
+                        $insert = array_search($nodesInBackend[$pos - 1], $this->nodes);
                         if (false !== $insert) {
                             array_splice($this->nodes, $insert + 1, 0, $name);
                         } else {
@@ -321,7 +321,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $this->originalNodesOrder = null;
             }
             foreach ($oldProperties as $name => $property) {
-                if (! ($keepChanges && ($property->isNew()))) {
+                if (!($keepChanges && ($property->isNew()))) {
                     // may not call remove(), we don't want another delete with
                     // the backend to be attempted
                     $this->properties[$name]->setDeleted();
@@ -331,7 +331,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
             // notify nodes that where not received again that they disappeared
             foreach ($oldNodes as $name => $index) {
-                if ($this->objectManager->purgeDisappearedNode($this->path . '/' . $name, $keepChanges)) {
+                if ($this->objectManager->purgeDisappearedNode($this->path.'/'.$name, $keepChanges)) {
                     // drop, it was not a new child
                     if ($keepChanges) { // otherwise we overwrote $this->nodes with the backend
                         $id = array_search($name, $this->nodes);
@@ -348,7 +348,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Creates a new node at the specified $relPath
+     * Creates a new node at the specified $relPath.
      *
      * {@inheritDoc}
      *
@@ -363,14 +363,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function addNode($relPath, $primaryNodeTypeName = null)
     {
-        $relPath = (string)$relPath;
+        $relPath = (string) $relPath;
 
         $this->checkState();
 
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
 
         // are we not the immediate parent?
-        if (strpos($relPath, '/') !== false) {
+        if (false !== strpos($relPath, '/')) {
             // forward to real parent
 
             $relPath = PathHelper::absolutizePath($relPath, $this->getPath(), true);
@@ -394,7 +394,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if (null === $primaryNodeTypeName) {
-            if ($this->primaryType === 'rep:root') {
+            if ('rep:root' === $this->primaryType) {
                 $primaryNodeTypeName = 'nt:unstructured';
             } else {
                 $type = $ntm->getNodeType($this->primaryType);
@@ -442,6 +442,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * {@inheritDoc}
      *
      * @api
+     *
      * @throws InvalidArgumentException
      * @throws ItemExistsException
      * @throws PathNotFoundException
@@ -493,6 +494,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @throws PathNotFoundException
      *
      * @api
+     *
      * @throws AccessDeniedException
      * @throws ItemNotFoundException
      * @throws \InvalidArgumentException
@@ -503,9 +505,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $pos = array_search($this->name, $names);
         $next = isset($names[$pos + 1]) ? $names[$pos + 1] : null;
 
-        $newPath = $this->parentPath . '/' . $newName;
+        $newPath = $this->parentPath.'/'.$newName;
 
-        if (substr($newPath, 0, 2) === '//') {
+        if ('//' === substr($newPath, 0, 2)) {
             $newPath = substr($newPath, 1);
         }
 
@@ -516,9 +518,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Determine whether the children of this node need to be reordered
+     * Determine whether the children of this node need to be reordered.
      *
-     * @return boolean
+     * @return bool
      *
      * @private
      */
@@ -529,7 +531,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * Returns the orderBefore commands to be applied to the childnodes
-     * to get from the original order to the new one
+     * to get from the original order to the new one.
      *
      * @return array of arrays with 2 fields: name of node to order before second name
      *
@@ -540,7 +542,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function getOrderCommands()
     {
-        if (! $this->originalNodesOrder) {
+        if (!$this->originalNodesOrder) {
             return [];
         }
 
@@ -553,8 +555,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
-     * @param boolean $validate When false, node types are not asked to validate
-     *                          whether operation is allowed
+     * @param bool $validate When false, node types are not asked to validate
+     *                       whether operation is allowed
      *
      * @throws InvalidItemStateException
      * @throws NamespaceException
@@ -595,7 +597,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             if (null !== $value) {
                 $exception = null;
                 foreach ($types as $nt) {
-                    /** @var $nt NodeType */
+                    /* @var $nt NodeType */
                     try {
                         $nt->canSetProperty($name, $value, true);
                         $exception = null;
@@ -619,14 +621,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 // $value is null for property removal
                 // if any type forbids, throw exception
                 foreach ($types as $nt) {
-                    /** @var $nt \Jackalope\NodeType\NodeType */
+                    /* @var $nt \Jackalope\NodeType\NodeType */
                     $nt->canRemoveProperty($name, true);
                 }
             }
         }
 
         //try to get a namespace for the set property
-        if (strpos($name, ':') !== false) {
+        if (false !== strpos($name, ':')) {
             list($prefix) = explode(':', $name);
             //Check if the namespace exists. If not, throw an NamespaceException
             $this->session->getNamespaceURI($prefix);
@@ -737,7 +739,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 throw new PathNotFoundException("Property $relPath in ".$this->path);
             }
             if ($this->properties[$relPath]->isDeleted()) {
-                throw new PathNotFoundException("Property '$relPath' of " . $this->path . ' is deleted');
+                throw new PathNotFoundException("Property '$relPath' of ".$this->path.' is deleted');
             }
 
             return $this->properties[$relPath];
@@ -761,7 +763,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     public function getPropertiesForStoreDeletedNode()
     {
-        if (! $this->isDeleted()) {
+        if (!$this->isDeleted()) {
             throw new InvalidItemStateException('You are not supposed to call this on a not deleted node');
         }
         $myProperty = $this->properties['jcr:primaryType'];
@@ -772,7 +774,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             [['type' => $myProperty->getType(), 'value' => $myProperty->getValue()],
                 $path,
                 $this->session,
-                $this->objectManager
+                $this->objectManager,
             ]
         );
         $myProperty->setDeleted();
@@ -804,7 +806,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * {@inheritDoc}
      *
      * @throws \InvalidArgumentException
-     *
      * @throws InvalidItemStateException
      * @throws PathNotFoundException
      * @throws ValueFormatException
@@ -864,7 +865,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             //we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
             $type = $this->properties[$name]->getType();
-            if (! $dereference &&
+            if (!$dereference &&
                     (PropertyType::REFERENCE === $type
                     || PropertyType::WEAKREFERENCE === $type
                     || PropertyType::PATH === $type)
@@ -890,14 +891,14 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $primary_item = null;
             $item_name = $this->getPrimaryNodeType()->getPrimaryItemName();
 
-            if ($item_name !== null) {
-                $primary_item = $this->session->getItem($this->path . '/' . $item_name);
+            if (null !== $item_name) {
+                $primary_item = $this->session->getItem($this->path.'/'.$item_name);
             }
         } catch (Exception $ex) {
-            throw new RepositoryException("An error occured while reading the primary item of the node '{$this->path}': " . $ex->getMessage());
+            throw new RepositoryException("An error occured while reading the primary item of the node '{$this->path}': ".$ex->getMessage());
         }
 
-        if ($primary_item === null) {
+        if (null === $primary_item) {
             throw new ItemNotFoundException("No primary item found for node '{$this->path}'");
         }
 
@@ -905,7 +906,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * @return string a universally unique id.
+     * @return string a universally unique id
      */
     protected function generateUuid()
     {
@@ -916,7 +917,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * {@inheritDoc}
      *
      * @throws \InvalidArgumentException
-     *
      * @throws AccessDeniedException
      * @throws InvalidItemStateException
      * @throws ItemNotFoundException
@@ -990,10 +990,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         if (false === strpos($relPath, '/')) {
-            return array_search($relPath, $this->nodes) !== false;
+            return false !== array_search($relPath, $this->nodes);
         }
 
-        if (! strlen($relPath) || $relPath[0] === '/') {
+        if (!strlen($relPath) || '/' === $relPath[0]) {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
@@ -1012,7 +1012,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if (false === strpos($relPath, '/')) {
             return isset($this->properties[$relPath]);
         }
-        if (! strlen($relPath) || $relPath[0] === '/') {
+        if (!strlen($relPath) || '/' === $relPath[0]) {
             throw new InvalidArgumentException("'$relPath' is not a relative path");
         }
 
@@ -1028,7 +1028,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        return count($this->nodes) !== 0;
+        return 0 !== count($this->nodes);
     }
 
     /**
@@ -1040,7 +1040,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        return count($this->properties) !== 0;
+        return 0 !== count($this->properties);
     }
 
     /**
@@ -1095,7 +1095,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
         // is it one of the mixin types?
         if (isset($this->properties['jcr:mixinTypes'])) {
-            if (in_array($nodeTypeName, $this->properties["jcr:mixinTypes"]->getValue())) {
+            if (in_array($nodeTypeName, $this->properties['jcr:mixinTypes']->getValue())) {
                 return true;
             }
         }
@@ -1105,7 +1105,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return true;
         }
         // if there are no mixin types, then we now know this node is not of that type
-        if (! isset($this->properties["jcr:mixinTypes"])) {
+        if (!isset($this->properties['jcr:mixinTypes'])) {
             return false;
         }
         // is it an ancestor of any of the mixin types?
@@ -1149,7 +1149,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         // Check if mixinName exists as a mixin type
         $typemgr = $this->session->getWorkspace()->getNodeTypeManager();
         $nodeType = $typemgr->getNodeType($mixinName);
-        if (! $nodeType->isMixin()) {
+        if (!$nodeType->isMixin()) {
             throw new ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
         }
 
@@ -1171,7 +1171,6 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * {@inheritDoc}
      *
      * @throws InvalidItemStateException
-     *
      * @throws \InvalidArgumentException
      * @throws AccessDeniedException
      * @throws ItemNotFoundException
@@ -1186,7 +1185,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         // check if node type is assigned
-        if (! $this->hasProperty('jcr:mixinTypes')) {
+        if (!$this->hasProperty('jcr:mixinTypes')) {
             throw new NoSuchNodeTypeException("Node does not have type $mixinName");
         }
 
@@ -1225,7 +1224,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 }
             }
         }
-        if (! (count($toRemove) || count($mixinNames))) {
+        if (!(count($toRemove) || count($mixinNames))) {
             return; // nothing to do
         }
 
@@ -1233,7 +1232,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $ntm = $this->session->getWorkspace()->getNodeTypeManager();
         foreach ($mixinNames as $mixinName) {
             $nodeType = $ntm->getNodeType($mixinName);
-            if (! $nodeType->isMixin()) {
+            if (!$nodeType->isMixin()) {
                 throw new ConstraintViolationException("Trying to add a mixin '$mixinName' that is a primary type");
             }
         }
@@ -1417,7 +1416,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Refresh this node
+     * Refresh this node.
      *
      * {@inheritDoc}
      *
@@ -1428,7 +1427,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function refresh($keepChanges, $internal = false)
     {
-        if (! $internal && $this->isDeleted()) {
+        if (!$internal && $this->isDeleted()) {
             throw new InvalidItemStateException('This item has been removed and can not be refreshed');
         }
         $deleted = false;
@@ -1441,13 +1440,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     : $this->oldPath
             );
         } catch (ItemNotFoundException $ex) {
-
             // The node was deleted in another session
-            if (! $this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
-                throw new LogicException($this->path . " should be purged and not kept");
+            if (!$this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
+                throw new LogicException($this->path.' should be purged and not kept');
             }
             $keepChanges = false; // delete never keeps changes
-            if (! $internal) {
+            if (!$internal) {
                 // this is not an internal update
                 $deleted = true;
             }
@@ -1465,7 +1463,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Remove this node
+     * Remove this node.
      *
      * {@inheritDoc}
      *
@@ -1493,13 +1491,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Removes the reference in the internal node storage
+     * Removes the reference in the internal node storage.
      *
      * @param string $name  the name of the child node to unset
      * @param bool   $check whether a state check should be done - set to false
-     *      during internal update operations
+     *                      during internal update operations
      *
-     * @throws ItemNotFoundException If there is no child with $name
+     * @throws ItemNotFoundException     If there is no child with $name
      * @throws InvalidItemStateException
      *
      * @private
@@ -1511,8 +1509,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $key = array_search($name, $this->nodes);
-        if ($key === false) {
-            if (! $check) {
+        if (false === $key) {
+            if (!$check) {
                 // inside a refresh operation
                 return;
             }
@@ -1529,11 +1527,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Adds child node to this node for internal reference
+     * Adds child node to this node for internal reference.
      *
      * @param NodeInterface $node  The name of the child node
-     * @param boolean $check whether to check state
-     * @param string  $name  is used in cases where $node->getName would not return the correct name (during move operation)
+     * @param bool          $check whether to check state
+     * @param string        $name  is used in cases where $node->getName would not return the correct name (during move operation)
      *
      * @throws InvalidItemStateException
      * @throws RepositoryException
@@ -1564,11 +1562,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Removes the reference in the internal node storage
+     * Removes the reference in the internal node storage.
      *
-     * @param string $name the name of the property to unset.
+     * @param string $name the name of the property to unset
      *
-     * @throws ItemNotFoundException If this node has no property with name $name
+     * @throws ItemNotFoundException     If this node has no property with name $name
      * @throws InvalidItemStateException
      * @throws RepositoryException
      *
@@ -1587,7 +1585,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * In addition to calling parent method, tell all properties and clean deletedProperties
+     * In addition to calling parent method, tell all properties and clean deletedProperties.
      */
     public function confirmSaved()
     {
@@ -1601,7 +1599,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * In addition to calling parent method, tell all properties
+     * In addition to calling parent method, tell all properties.
      */
     public function setPath($path, $move = false)
     {
@@ -1612,7 +1610,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Make sure $p is an absolute path
+     * Make sure $p is an absolute path.
      *
      * If its a relative path, prepend the path to this node, otherwise return as is
      *
@@ -1623,19 +1621,19 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected function getChildPath($p)
     {
         if ('' == $p) {
-            throw new InvalidArgumentException("Name can not be empty");
+            throw new InvalidArgumentException('Name can not be empty');
         }
-        if ($p[0] == '/') {
+        if ('/' == $p[0]) {
             return $p;
         }
         //relative path, combine with base path for this node
-        $path = $this->path === '/' ? '/' : $this->path.'/';
+        $path = '/' === $this->path ? '/' : $this->path.'/';
 
-        return $path . $p;
+        return $path.$p;
     }
 
     /**
-     * Filter the list of names according to the filter expression / array
+     * Filter the list of names according to the filter expression / array.
      *
      * @param string|array $filter according to getNodes|getProperties
      * @param array        $names  list of names to filter
@@ -1644,22 +1642,22 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected static function filterNames($filter, $names)
     {
-        if ($filter !== null) {
+        if (null !== $filter) {
             $filtered = [];
             $filter = (array) $filter;
             foreach ($filter as $k => $f) {
                 $f = trim($f);
                 $filter[$k] = strtr($f, [
-                    '*'=>'.*', //wildcard
-                    '.'  => '\\.', //escape regexp
+                    '*' => '.*', //wildcard
+                    '.' => '\\.', //escape regexp
                     '\\' => '\\\\',
-                    '{'  => '\\{',
-                    '}'  => '\\}',
-                    '('  => '\\(',
-                    ')'  => '\\)',
-                    '+'  => '\\+',
-                    '^'  => '\\^',
-                    '$'  => '\\$'
+                    '{' => '\\{',
+                    '}' => '\\}',
+                    '(' => '\\(',
+                    ')' => '\\)',
+                    '+' => '\\+',
+                    '^' => '\\^',
+                    '$' => '\\$',
                 ]);
             }
             foreach ($names as $name) {
@@ -1677,9 +1675,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     }
 
     /**
-     * Provide Traversable interface: redirect to getNodes with no filter
+     * Provide Traversable interface: redirect to getNodes with no filter.
      *
      * @return Iterator over all child nodes
+     *
      * @throws RepositoryException
      */
     public function getIterator()
@@ -1695,10 +1694,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * Implement the setProperty, but also used from constructor or in refresh,
      * when the backend has a new property that is not yet loaded in memory.
      *
-     * @param string  $name
-     * @param mixed   $value
-     * @param string  $type
-     * @param boolean $internal whether we are setting this node through api or internally
+     * @param string $name
+     * @param mixed  $value
+     * @param string $type
+     * @param bool   $internal whether we are setting this node through api or internally
      *
      * @return Property
      *
@@ -1716,7 +1715,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     protected function _setProperty($name, $value, $type, $internal)
     {
-        if ($name === '' || false !== strpos($name, '/')) {
+        if ('' === $name || false !== strpos($name, '/')) {
             throw new InvalidArgumentException("The name '$name' is no valid property name");
         }
 
@@ -1729,11 +1728,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     $path,
                     $this->session,
                     $this->objectManager,
-                    ! $internal
+                    !$internal,
                 ]
             );
             $this->properties[$name] = $property;
-            if (! $internal) {
+            if (!$internal) {
                 $this->setModified();
             }
         } else {

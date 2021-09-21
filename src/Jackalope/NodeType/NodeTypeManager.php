@@ -2,20 +2,20 @@
 
 namespace Jackalope\NodeType;
 
+use ArrayIterator;
 use Iterator;
 use IteratorAggregate;
-use ArrayIterator;
+use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
 use PHPCR\AccessDeniedException;
 use PHPCR\NamespaceException;
 use PHPCR\NamespaceRegistryInterface;
-use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
+use PHPCR\NodeType\NodeTypeExistsException;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\NodeType\NoSuchNodeTypeException;
-use PHPCR\NodeType\NodeTypeExistsException;
-use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
-use Jackalope\FactoryInterface;
 use PHPCR\RepositoryException;
 
 /**
@@ -64,6 +64,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * Array of arrays with the super type as key and its sub types as values.
+     *
      * @var array
      */
     protected $nodeTree = [];
@@ -75,7 +76,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * getNodeType() do not need all, but just the requested one. Unless we
      * need all, we only load specific ones and cache them.
      *
-     * @var boolean
+     * @var bool
      */
     protected $fetchedAllFromBackend = false;
 
@@ -83,9 +84,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * Create the node type manager for a session.
      *
      * There may be only one instance per session
-     * @param FactoryInterface  $factory
-     * @param ObjectManager     $objectManager
-     * @param NamespaceRegistryInterface $namespaceRegistry
      */
     public function __construct(
         FactoryInterface $factory,
@@ -108,7 +106,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * On fetch all, already cached node types are kept.
      *
      * @param string $name type name to fetch. defaults to null which will
-     *      fetch all nodes.
+     *                     fetch all nodes.
      */
     protected function fetchNodeTypes($name = null)
     {
@@ -140,7 +138,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * Stores the node type in our internal structures (flat && tree)
+     * Stores the node type in our internal structures (flat && tree).
      *
      * @param NodeTypeInterface $nodeType The nodetype to add
      */
@@ -210,7 +208,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      *
      * Part of addNodeType.
      *
-     * @param NodeTypeInterface $nodetype the node type to add.
+     * @param NodeTypeInterface $nodetype the node type to add
      */
     private function addToNodeTree($nodetype)
     {
@@ -242,7 +240,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             throw new NoSuchNodeTypeException('nodeTypeName is empty string');
         }
 
-        if ($nodeTypeName[0] === '{') {
+        if ('{' === $nodeTypeName[0]) {
             list($uri, $name) = explode('}', substr($nodeTypeName, 1));
             $prefix = $this->namespaceRegistry->getPrefix($uri);
             $nodeTypeName = "$prefix:$name";
@@ -358,10 +356,9 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * Internally create a node type object
+     * Internally create a node type object.
      *
-     * @param NodeTypeDefinitionInterface $ntd
-     * @param bool                        $allowUpdate whether updating the definition is to be allowed or not
+     * @param bool $allowUpdate whether updating the definition is to be allowed or not
      *
      * @return NodeType the new node type
      *
@@ -459,9 +456,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * Provide Traversable interface: redirect to getAllNodeTypes
+     * Provide Traversable interface: redirect to getAllNodeTypes.
      *
      * @return Iterator over all node types
+     *
      * @throws RepositoryException
      */
     public function getIterator()

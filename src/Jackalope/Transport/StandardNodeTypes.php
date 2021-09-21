@@ -12,7 +12,6 @@ use PHPCR\Version\OnParentVersionAction;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
@@ -395,7 +394,7 @@ class StandardNodeTypes
                             QOMConstantsInterface::JCR_OPERATOR_LESS_THAN,
                             QOMConstantsInterface::JCR_OPERATOR_LESS_THAN_OR_EQUAL_TO,
                             QOMConstantsInterface::JCR_OPERATOR_LIKE,
-                        ]
+                        ],
                     ],
                 ],
                 'declaredNodeDefinitions' => [],
@@ -1912,7 +1911,7 @@ class StandardNodeTypes
                 ],
                 'declaredNodeDefinitions' => [],
             ],
-            'nt:resource'=> [
+            'nt:resource' => [
                 'name' => 'nt:resource',
                 'isAbstract' => false,
                 'isMixin' => false,
@@ -2070,7 +2069,7 @@ class StandardNodeTypes
                         'valueConstraints' => [
                             'nt:activity',
                         ],
-                        'availableQueryOperators' =>[
+                        'availableQueryOperators' => [
                             QOMConstantsInterface::JCR_OPERATOR_EQUAL_TO,
                             QOMConstantsInterface::JCR_OPERATOR_NOT_EQUAL_TO,
                             QOMConstantsInterface::JCR_OPERATOR_GREATER_THAN,

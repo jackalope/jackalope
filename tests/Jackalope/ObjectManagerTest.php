@@ -14,7 +14,7 @@ class ObjectManagerTest extends TestCase
 
     public function setUp(): void
     {
-        $factory = new Factory;
+        $factory = new Factory();
         $session = $this->getSessionMock();
         $workspace = $session->getWorkspace();
 

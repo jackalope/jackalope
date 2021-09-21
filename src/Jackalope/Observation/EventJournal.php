@@ -3,10 +3,10 @@
 namespace Jackalope\Observation;
 
 use ArrayIterator;
+use Jackalope\FactoryInterface;
 use Jackalope\Transport\ObservationInterface;
 use PHPCR\Observation\EventJournalInterface;
 use PHPCR\SessionInterface;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -15,7 +15,6 @@ use Jackalope\FactoryInterface;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author David Buchmann <mail@davidbu.ch>
  * @author Daniel Barsotti <daniel.barsotti@liip.ch>
  */
@@ -37,7 +36,7 @@ class EventJournal implements EventJournalInterface
     protected $filter;
 
     /**
-     * Buffered events
+     * Buffered events.
      *
      * @var ArrayIterator
      */
@@ -56,7 +55,7 @@ class EventJournal implements EventJournalInterface
     protected $currentMillis;
 
     /**
-     * The prefix to extract the path from the event href attribute
+     * The prefix to extract the path from the event href attribute.
      *
      * @var string
      */
@@ -67,12 +66,10 @@ class EventJournal implements EventJournalInterface
      *
      * Actual data loading is deferred to when it is first requested.
      *
-     * @param FactoryInterface     $factory
      * @param EventFilter          $filter    filter to give the transport and
-     *                                        apply locally.
-     * @param SessionInterface     $session
+     *                                        apply locally
      * @param ObservationInterface $transport a transport implementing the
-     *                                        observation methods.
+     *                                        observation methods
      */
     public function __construct(
         FactoryInterface $factory,
@@ -89,6 +86,7 @@ class EventJournal implements EventJournalInterface
 
     /**
      * {@inheritDoc}
+     *
      * @api
      */
     public function skipTo($date)

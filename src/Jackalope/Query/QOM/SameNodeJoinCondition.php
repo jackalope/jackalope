@@ -30,7 +30,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     protected $selector2Path;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selector1Name
      * @param string $selector2Name

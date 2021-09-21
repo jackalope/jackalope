@@ -2,13 +2,13 @@
 
 namespace Jackalope\Observation;
 
+use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
-use PHPCR\SessionInterface;
-use PHPCR\PropertyInterface;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\Observation\EventInterface;
 use PHPCR\PathNotFoundException;
-use Jackalope\FactoryInterface;
+use PHPCR\PropertyInterface;
+use PHPCR\SessionInterface;
 
 /**
  * In addition to being a container, this filter implements the match method
@@ -16,7 +16,6 @@ use Jackalope\FactoryInterface;
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
- *
  * @author Daniel Barsotti
  * @author David Buchmann
  */
@@ -84,26 +83,22 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * Bitwise and on the event type
-     *
-     * @param EventInterface $event
+     * Bitwise and on the event type.
      *
      * @return bool
      */
     private function skipByType(EventInterface $event)
     {
-        return ! ($event->getType() & $this->eventTypes);
+        return !($event->getType() & $this->eventTypes);
     }
 
     /**
-     * @param EventInterface $event
-     *
      * @return bool
      */
     private function skipByPath(EventInterface $event)
     {
         $eventPath = $event->getPath();
-        if (! $this->isDeep && $eventPath !== $this->absPath) {
+        if (!$this->isDeep && $eventPath !== $this->absPath) {
             // isDeep is false and the path is not the searched path
             return true;
         }
@@ -119,28 +114,24 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * @param EventInterface $event
-     *
      * @return bool
      */
     private function skipByIdentifiers(EventInterface $event)
     {
-        if (! $identifier = $event->getIdentifier()) {
+        if (!$identifier = $event->getIdentifier()) {
             // Some events (like PERSIST) do not provide an identifier
             return true;
         }
 
-        return ! in_array($identifier, $this->identifiers);
+        return !in_array($identifier, $this->identifiers);
     }
 
     /**
-     * @param EventInterface $event
-     *
      * @return bool
      */
     private function skipByNodeTypes(EventInterface $event)
     {
-        if (! $path = $event->getPath()) {
+        if (!$path = $event->getPath()) {
             // Some events (like PERSIST) do not provide an identifier
             return true;
         }

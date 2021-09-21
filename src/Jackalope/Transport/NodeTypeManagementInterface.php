@@ -25,21 +25,21 @@ use PHPCR\RepositoryException;
 interface NodeTypeManagementInterface extends TransportInterface
 {
     /**
-     * Register a list of node types with the storage backend
+     * Register a list of node types with the storage backend.
      *
-     * @param array $types a list of
-     *      \PHPCR\NodeType\NodeTypeDefinitionInterface objects
-     * @param boolean $allowUpdate whether to fail if node already exists or to
-     *      update it
+     * @param array $types       a list of
+     *                           \PHPCR\NodeType\NodeTypeDefinitionInterface objects
+     * @param bool  $allowUpdate whether to fail if node already exists or to
+     *                           update it
      *
      * @return bool true on success
      *
      * @throws InvalidNodeTypeDefinitionException if the
-     *      NodeTypeDefinitionInterface is invalid.
-     * @throws NodeTypeExistsException if allowUpdate is false
-     *      and the NodeTypeDefinition specifies a node type name that is
-     *      already registered.
-     * @throws RepositoryException if another error occurs.
+     *                                            NodeTypeDefinitionInterface is invalid
+     * @throws NodeTypeExistsException            if allowUpdate is false
+     *                                            and the NodeTypeDefinition specifies a node type name that is
+     *                                            already registered
+     * @throws RepositoryException                if another error occurs
      */
     public function registerNodeTypes($types, $allowUpdate);
 }

@@ -17,13 +17,15 @@ use PHPCR\NodeType\PropertyDefinitionInterface;
 class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInterface
 {
     /**
-     * One of the PropertyType type constants
+     * One of the PropertyType type constants.
+     *
      * @var int
      */
     protected $requiredType;
 
     /**
-     * The constraint information array (array of strings)
+     * The constraint information array (array of strings).
+     *
      * @var array
      */
     protected $valueConstraints = [];
@@ -34,33 +36,33 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     protected $defaultValues = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isMultiple;
 
     /**
-     * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface
+     * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface.
      *
      * @var array
      */
     protected $availableQueryOperators = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isFullTextSearchable;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $isQueryOrderable;
 
     /**
-     * Treat more information in addition to ItemDefinition::fromArray()
+     * Treat more information in addition to ItemDefinition::fromArray().
      *
      * See class documentation for the fields supported in the array.
      *
-     * @param array $data The property definition in array form.
+     * @param array $data the property definition in array form
      */
     protected function fromArray(array $data)
     {

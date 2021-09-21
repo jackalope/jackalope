@@ -26,7 +26,7 @@ class PropertyExistence implements PropertyExistenceInterface
     protected $propertyName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      * @param string $propertyName
@@ -63,7 +63,7 @@ class PropertyExistence implements PropertyExistenceInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

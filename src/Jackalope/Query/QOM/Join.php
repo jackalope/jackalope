@@ -2,9 +2,9 @@
 
 namespace Jackalope\Query\QOM;
 
+use PHPCR\Query\QOM\JoinConditionInterface;
 use PHPCR\Query\QOM\JoinInterface;
 use PHPCR\Query\QOM\SourceInterface;
-use PHPCR\Query\QOM\JoinConditionInterface;
 
 /**
  * {@inheritDoc}
@@ -37,12 +37,9 @@ class Join implements JoinInterface
     protected $joinCondition;
 
     /**
-     * Create a new join instance
+     * Create a new join instance.
      *
-     * @param SourceInterface        $left
-     * @param SourceInterface        $right
-     * @param string                 $joinType
-     * @param JoinConditionInterface $joinCondition
+     * @param string $joinType
      */
     public function __construct(
         SourceInterface $left,

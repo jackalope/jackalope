@@ -17,7 +17,7 @@ class Factory implements FactoryInterface
      * @var array
      */
     protected $classCache = [];
-    
+
     /**
      * @var array
      */
@@ -35,12 +35,12 @@ class Factory implements FactoryInterface
         } else {
             $originalName = $name;
 
-            if (class_exists('Jackalope\\' . $name)) {
-                $name = 'Jackalope\\' . $name;
-            } elseif (! class_exists($name)) {
+            if (class_exists('Jackalope\\'.$name)) {
+                $name = 'Jackalope\\'.$name;
+            } elseif (!class_exists($name)) {
                 throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
             }
-            
+
             $this->classCache[$originalName] = $name;
         }
 
@@ -48,8 +48,8 @@ class Factory implements FactoryInterface
             array_unshift($params, $this);
         }
 
-        if (! count($params)) {
-            return new $name;
+        if (!count($params)) {
+            return new $name();
         }
 
         if (isset($this->reflectionCache[$name])) {

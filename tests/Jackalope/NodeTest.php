@@ -11,7 +11,7 @@ class NodeTest extends TestCase
 
     protected function createNode()
     {
-        $factory = new Factory;
+        $factory = new Factory();
         $session = $this->getSessionMock();
         $objectManager = $this->getObjectManagerMock();
         $objectManager->expects($this->any())

@@ -3,10 +3,10 @@
 namespace Jackalope\Query;
 
 use Countable;
-use SeekableIterator;
-use OutOfBoundsException;
-use Jackalope\ObjectManager;
 use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
+use OutOfBoundsException;
+use SeekableIterator;
 
 /**
  * Lazy loading iterator for QueryResult->getNodes() that delays fetching the
@@ -41,8 +41,7 @@ class NodeIterator implements SeekableIterator, Countable
     protected $position = 0;
 
     /**
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
+     * @param FactoryInterface $factory the object factory
      * @param array            $rows
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
@@ -56,7 +55,7 @@ class NodeIterator implements SeekableIterator, Countable
     {
         foreach ($this->rows as $position => $columns) {
             foreach ($columns as $column) {
-                if ($column['dcr:name'] === 'jcr:path') {
+                if ('jcr:path' === $column['dcr:name']) {
                     if ($column['dcr:value'] === $nodeName) {
                         $this->position = $position;
 
@@ -96,7 +95,7 @@ class NodeIterator implements SeekableIterator, Countable
         }
 
         foreach ($this->rows[$this->position] as $column) {
-            if ($column['dcr:name'] === 'jcr:path') {
+            if ('jcr:path' === $column['dcr:name']) {
                 $path = $column['dcr:value'];
                 break;
             }

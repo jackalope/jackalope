@@ -32,11 +32,12 @@ class FullTextSearchConstraint implements FullTextSearchInterface
     protected $searchExpression;
 
     /**
-     * Create a new full text search constraint
+     * Create a new full text search constraint.
      *
      * @param string $selectorName
      * @param string $propertyName
      * @param string $fullTextSearchExpression
+     *
      * @throws InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName, $fullTextSearchExpression)
@@ -81,7 +82,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

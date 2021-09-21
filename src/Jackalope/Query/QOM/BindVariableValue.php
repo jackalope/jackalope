@@ -20,7 +20,7 @@ class BindVariableValue implements BindVariableValueInterface
     protected $bindVariableName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $bindVariableName
      */

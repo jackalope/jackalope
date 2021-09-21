@@ -3,13 +3,12 @@
 namespace Jackalope\Version;
 
 use ArrayIterator;
+use Jackalope\Node;
 use Jackalope\Property;
 use PHPCR\RepositoryException;
-use PHPCR\Util\NodeHelper;
+use PHPCR\Version\VersionException;
 use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
-use PHPCR\Version\VersionException;
-use Jackalope\Node;
 
 /**
  * {@inheritDoc}
@@ -24,19 +23,22 @@ use Jackalope\Node;
 class VersionHistory extends Node implements VersionHistoryInterface
 {
     /**
-     * Cache of all versions to only build the list once
+     * Cache of all versions to only build the list once.
+     *
      * @var array
      */
     protected $versions = null;
 
     /**
-     * Cache of the linear versions to only build the list once
+     * Cache of the linear versions to only build the list once.
+     *
      * @var array
      */
     protected $linearVersions = null;
 
     /**
      * Cache of the version labels.
+     *
      * @var array
      */
     protected $versionLabels = null;
@@ -97,12 +99,12 @@ class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * Walk along the successors line to get all versions of this node
+     * Walk along the successors line to get all versions of this node.
      *
      * According to spec, 3.13.1.4, these are called eventual successors
      *
      * @param VersionInterface $node the node to get successors
-     *      from
+     *                               from
      *
      * @return array list of VersionInterface
      *
@@ -233,7 +235,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     public function getVersionLabels($version = null)
     {
         $this->initVersionLabels();
-        if ($version === null) {
+        if (null === $version) {
             return array_keys($this->versionLabels);
         }
 
@@ -308,7 +310,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * Tell the version history that it needs to reload, i.e. after a checkin operation
+     * Tell the version history that it needs to reload, i.e. after a checkin operation.
      *
      * @private
      */

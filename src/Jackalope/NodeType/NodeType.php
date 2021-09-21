@@ -4,12 +4,12 @@ namespace Jackalope\NodeType;
 
 use ArrayIterator;
 use Exception;
+use PHPCR\NodeType\ConstraintViolationException;
+use PHPCR\NodeType\NodeTypeInterface;
+use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
 use PHPCR\ValueFormatException;
-use PHPCR\NodeType\NodeTypeInterface;
-use PHPCR\NodeType\ConstraintViolationException;
-use PHPCR\NodeType\NoSuchNodeTypeException;
 
 /**
  * {@inheritDoc}
@@ -37,6 +37,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * Cache of the aggregated super node type names so they need to be
      * aggregated only once.
+     *
      * @var array
      */
     protected $superTypeNames = null;
@@ -52,6 +53,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * Cache of the collected property definitions so they need to be
      * instantiated only once.
+     *
      * @var array
      */
     protected $propertyDefinitions = null;
@@ -59,6 +61,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * Cache of the aggregated child node definitions from this type and all
      * its super type so they need to be gathered and instantiated only once.
+     *
      * @var array
      */
     protected $childNodeDefinitions = null;
@@ -265,7 +268,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         if ($throw) {
             $val = $this->getValueAsString($value);
 
-            throw new ConstraintViolationException("Node type definition ".$this->getName()." does not allow to set the property with name '$propertyName' and value '$val'");
+            throw new ConstraintViolationException('Node type definition '.$this->getName()." does not allow to set the property with name '$propertyName' and value '$val'");
         }
 
         return false;
@@ -304,7 +307,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 return false;
             } catch (Exception $e) {
                 if ($throw) {
-                    $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: " . $e->getMessage();
+                    $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: ".$e->getMessage();
                     throw new ConstraintViolationException($errorMsg, null, $e);
                 }
 
@@ -313,8 +316,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         }
         foreach ($childDefs as $child) {
             if ('*' === $child->getName() || $childNodeName === $child->getName()) {
-                if ($nodeTypeName === null) {
-                    if ($child->getDefaultPrimaryTypeName() !== null) {
+                if (null === $nodeTypeName) {
+                    if (null !== $child->getDefaultPrimaryTypeName()) {
                         return true;
                     }
                 } else {
@@ -351,9 +354,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             ) {
                 if ($throw) {
                     if ($child->isMandatory()) {
-                        $errorMsg = "Can't remove the mandatory childnode: " . $child->getName();
+                        $errorMsg = "Can't remove the mandatory childnode: ".$child->getName();
                     } else {
-                        $errorMsg = "Can't remove the protected childnode: " . $child->getName();
+                        $errorMsg = "Can't remove the protected childnode: ".$child->getName();
                     }
                     throw new ConstraintViolationException($errorMsg);
                 }
@@ -381,9 +384,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             ) {
                 if ($throw) {
                     if ($prop->isMandatory()) {
-                        $errorMsg = "Can't remove the mandatory property: " . $prop->getName();
+                        $errorMsg = "Can't remove the mandatory property: ".$prop->getName();
                     } else {
-                        $errorMsg = "Can't remove the protected property: " . $prop->getName();
+                        $errorMsg = "Can't remove the protected property: ".$prop->getName();
                     }
                     throw new ConstraintViolationException($errorMsg);
                 }
@@ -413,7 +416,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
         }
 
         if (is_array($value)) {
-            return 'array of length ' . count($value);
+            return 'array of length '.count($value);
         }
 
         return gettype($value);

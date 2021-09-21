@@ -37,7 +37,7 @@ class BinaryStreamWrapper
     private static $multiValueMap = [];
 
     /**
-     * The backend path this stream represents
+     * The backend path this stream represents.
      *
      * @var string
      */
@@ -77,9 +77,9 @@ class BinaryStreamWrapper
     /**
      * Make sure the stream is ready and read from the underlying stream.
      *
-     * @param int $count How many bytes to read from the stream.
+     * @param int $count how many bytes to read from the stream
      *
-     * @return string data from the stream in utf-8 format.
+     * @return string data from the stream in utf-8 format
      *
      * @throws LogicException
      */
@@ -121,7 +121,7 @@ class BinaryStreamWrapper
     /**
      * Make sure the stream is ready and check whether the stream is at its end.
      *
-     * @return bool true if the stream has ended.
+     * @return bool true if the stream has ended
      *
      * @throws LogicException
      */
@@ -136,6 +136,7 @@ class BinaryStreamWrapper
      * Make sure the stream is ready and get information about the stream.
      *
      * @return array
+     *
      * @throws LogicException
      */
     public function stream_stat()
@@ -146,7 +147,7 @@ class BinaryStreamWrapper
     }
 
     /**
-     * Retrieve information about a file
+     * Retrieve information about a file.
      *
      * @param string $path  The backend path for this stream, e.g.
      *                      jackalope://abc0123/content/node/binary
@@ -186,7 +187,7 @@ class BinaryStreamWrapper
     }
 
     /**
-     * Close this stream if it was initialized
+     * Close this stream if it was initialized.
      */
     public function stream_close()
     {
@@ -217,7 +218,7 @@ class BinaryStreamWrapper
      * Always checks if the current session is still alive.
      *
      * @throws LogicException when trying to use a stream from a closed session
-     *      and on trying to access a nonexisting multivalue id.
+     *                        and on trying to access a nonexisting multivalue id
      */
     private function init_stream()
     {
@@ -228,12 +229,12 @@ class BinaryStreamWrapper
 
             $url = parse_url($this->path);
             $this->session = Session::getSessionFromRegistry($url['host']);
-            if (! $this->session) {
+            if (!$this->session) {
                 throw new LogicException('Trying to read a stream from a closed transport');
             }
             $property_path = $url['path'];
             if (!empty($url['query'])) {
-                $property_path .= '?' . $url['query'];
+                $property_path .= '?'.$url['query'];
             } elseif ('?' === $this->path[strlen($this->path) - 1]) {
                 $property_path .= '?';
             }

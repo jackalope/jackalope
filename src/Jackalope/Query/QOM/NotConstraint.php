@@ -2,8 +2,8 @@
 
 namespace Jackalope\Query\QOM;
 
-use PHPCR\Query\QOM\NotInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
+use PHPCR\Query\QOM\NotInterface;
 
 /**
  * {@inheritDoc}
@@ -21,9 +21,7 @@ class NotConstraint implements NotInterface
     protected $constraint;
 
     /**
-     * Create a new not constraint
-     *
-     * @param ConstraintInterface $constraint
+     * Create a new not constraint.
      */
     public function __construct(ConstraintInterface $constraint)
     {
@@ -41,7 +39,7 @@ class NotConstraint implements NotInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

@@ -21,7 +21,7 @@ class FullTextSearchScore implements FullTextSearchScoreInterface
     protected $selectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      *

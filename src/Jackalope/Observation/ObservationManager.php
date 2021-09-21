@@ -3,14 +3,14 @@
 namespace Jackalope\Observation;
 
 use IteratorAggregate;
-use PHPCR\Observation\ObservationManagerInterface;
-use PHPCR\Observation\EventListenerInterface;
-use PHPCR\Observation\EventFilterInterface;
-use PHPCR\RepositoryException;
-use PHPCR\SessionInterface;
-use Jackalope\Transport\ObservationInterface;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use Jackalope\Transport\ObservationInterface;
+use PHPCR\Observation\EventFilterInterface;
+use PHPCR\Observation\EventListenerInterface;
+use PHPCR\Observation\ObservationManagerInterface;
+use PHPCR\RepositoryException;
+use PHPCR\SessionInterface;
 use Traversable;
 
 /**
@@ -111,6 +111,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
     {
         return $this->factory->get(EventFilter::class, [$this->session]);
     }
+
     /**
      * @return Traversable The list of event listeners
      *

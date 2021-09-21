@@ -3,20 +3,20 @@
 namespace Jackalope\Version;
 
 use InvalidArgumentException;
+use Jackalope\FactoryInterface;
+use Jackalope\NotImplementedException;
+use Jackalope\ObjectManager;
+use PHPCR\InvalidItemStateException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\NodeInterface;
 use PHPCR\NoSuchWorkspaceException;
-use PHPCR\Util\PathHelper;
 use PHPCR\PathNotFoundException;
 use PHPCR\UnsupportedRepositoryOperationException;
-use PHPCR\InvalidItemStateException;
+use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
 use PHPCR\Version\ActivityViolationException;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
-use Jackalope\ObjectManager;
-use Jackalope\NotImplementedException;
-use Jackalope\FactoryInterface;
 
 /**
  * {@inheritDoc}
@@ -34,15 +34,14 @@ class VersionManager implements VersionManagerInterface
     protected $objectManager;
 
     /**
-     * @var FactoryInterface  The jackalope object factory for this object
+     * @var FactoryInterface The jackalope object factory for this object
      */
     protected $factory;
 
     /**
      * Create the version manager - there should be only one per session.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
+     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
@@ -113,7 +112,7 @@ class VersionManager implements VersionManagerInterface
     public function isCheckedOut($absPath)
     {
         $node = $this->objectManager->getNodeByPath($absPath);
-        if (! $node->isNodeType('mix:simpleVersionable')) {
+        if (!$node->isNodeType('mix:simpleVersionable')) {
             throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
 
@@ -134,7 +133,7 @@ class VersionManager implements VersionManagerInterface
     public function getVersionHistory($absPath)
     {
         $node = $this->objectManager->getNodeByPath($absPath);
-        if (! $node->isNodeType('mix:simpleVersionable')) {
+        if (!$node->isNodeType('mix:simpleVersionable')) {
             throw new UnsupportedRepositoryOperationException("Node at $absPath is not versionable");
         }
 
@@ -188,7 +187,7 @@ class VersionManager implements VersionManagerInterface
         }
 
         if (is_string($version)) {
-            if (! is_string($absPath)) {
+            if (!is_string($absPath)) {
                 throw new InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
             }
             $vh = $this->getVersionHistory($absPath);

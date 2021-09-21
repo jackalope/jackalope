@@ -1,4 +1,5 @@
 <?php
+
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\LiteralInterface;
@@ -19,7 +20,7 @@ class Literal implements LiteralInterface
     protected $literalValue;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $literalValue
      */

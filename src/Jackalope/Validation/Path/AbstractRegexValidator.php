@@ -2,12 +2,11 @@
 
 namespace Jackalope\Validation\Path;
 
-use DOMElement;
 use Jackalope\Validation\Exception\InvalidPathException;
 use Jackalope\Validation\PathValidatorInterface;
 
 /**
- * Abstract class for regex based validators
+ * Abstract class for regex based validators.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
@@ -17,14 +16,14 @@ use Jackalope\Validation\PathValidatorInterface;
 abstract class AbstractRegexValidator implements PathValidatorInterface
 {
     /**
-     * Return a regular expression for a valid path
+     * Return a regular expression for a valid path.
      *
      * @return string
      */
     abstract protected function getPathPattern();
 
     /**
-     * Return a regular expression for a valid name
+     * Return a regular expression for a valid name.
      *
      * @return string
      */
@@ -45,7 +44,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
      */
     public function validateAbsPath($path)
     {
-        if (substr($path, 0, 1) !== '/') {
+        if ('/' !== substr($path, 0, 1)) {
             throw new InvalidPathException(sprintf('Path "%s" is not absolute', $path));
         }
 
@@ -81,7 +80,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
      */
     private function validate($path, $pattern)
     {
-        $pattern = '{' . $pattern . '}u';
+        $pattern = '{'.$pattern.'}u';
         $isMatch = 1 === preg_match($pattern, $path);
 
         if (false === $isMatch) {

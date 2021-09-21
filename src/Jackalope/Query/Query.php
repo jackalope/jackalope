@@ -2,15 +2,15 @@
 
 namespace Jackalope\Query;
 
-use PHPCR\UnsupportedRepositoryOperationException;
-use PHPCR\RepositoryException;
+use Jackalope\FactoryInterface;
+use Jackalope\ObjectManager;
 use PHPCR\ItemNotFoundException;
 use PHPCR\Query\QueryInterface;
-use Jackalope\ObjectManager;
-use Jackalope\FactoryInterface;
+use PHPCR\RepositoryException;
+use PHPCR\UnsupportedRepositoryOperationException;
 
 /**
- * Abstract Query implementation for the different Query-languages
+ * Abstract Query implementation for the different Query-languages.
  *
  * This can never be legally created if the transport does not implement
  * QueryInterface.
@@ -23,30 +23,30 @@ use Jackalope\FactoryInterface;
 abstract class Query implements QueryInterface
 {
     /**
-     * The factory to instantiate objects
+     * The factory to instantiate objects.
      *
      * @var FactoryInterface
      */
     protected $factory;
 
     /**
-     * The query statement
+     * The query statement.
      *
      * @var string
      */
     protected $statement;
 
     /**
-     * Limit for the query
+     * Limit for the query.
      *
-     * @var integer
+     * @var int
      */
     protected $limit;
 
     /**
-     * Offset to start results from
+     * Offset to start results from.
      *
-     * @var integer
+     * @var int
      */
     protected $offset;
 
@@ -65,14 +65,14 @@ abstract class Query implements QueryInterface
     protected $path;
 
     /**
-     * Create a new query instance
+     * Create a new query instance.
      *
      * @param FactoryInterface $factory       the object factory
      * @param string           $statement     The statement for this query
      * @param ObjectManager    $objectManager (can be omitted if you do not want
-     *      to execute the query but just use it with a parser)
-     * @param string $path If this query is loaded from workspace with
-     *      QueryManager::getQuery(), path has to be provided here
+     *                                        to execute the query but just use it with a parser)
+     * @param string           $path          If this query is loaded from workspace with
+     *                                        QueryManager::getQuery(), path has to be provided here
      */
     public function __construct(FactoryInterface $factory, $statement, ObjectManager $objectManager = null, $path = null)
     {
@@ -141,7 +141,7 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * Access the limit from the transport layer
+     * Access the limit from the transport layer.
      *
      * @return int the limit set with setLimit
      */
@@ -161,7 +161,7 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * Access the offset from the transport layer
+     * Access the offset from the transport layer.
      *
      * @return int the offset set with setOffset
      */
@@ -187,7 +187,7 @@ abstract class Query implements QueryInterface
      */
     public function getStoredQueryPath()
     {
-        if ($this->path === null) {
+        if (null === $this->path) {
             throw new ItemNotFoundException('Not a stored query');
         }
 

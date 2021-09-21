@@ -14,7 +14,7 @@ namespace Jackalope\Query;
 class Sql1Query extends Query
 {
     /**
-     * Access the query statement from the transport layer
+     * Access the query statement from the transport layer.
      *
      * @return string the sql1 query statement
      *
@@ -27,9 +27,9 @@ class Sql1Query extends Query
     }
 
     /**
-     * Returns the constant QueryInterface::JCR-SQL
+     * Returns the constant QueryInterface::JCR-SQL.
      *
-     * @return string the query language.
+     * @return string the query language
      */
     public function getLanguage()
     {

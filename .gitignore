@@ -2,15 +2,14 @@ test-reports
 .buildpath
 .project
 .settings/
-.idea/
 cscope.out
 doc/config/phpdoc.ini
 doc/html
 
 tests/phpunit.xml
 .phpunit.result.cache
+.php-cs-fixer.cache
 
 composer.lock
 vendor/
 tests/jackalope-testing-composer.lock
-composer.phar

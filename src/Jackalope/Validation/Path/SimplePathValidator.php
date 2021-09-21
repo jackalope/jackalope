@@ -3,7 +3,7 @@
 namespace Jackalope\Validation\Path;
 
 /**
- * Simple path validator
+ * Simple path validator.
  *
  * - Namespace: -, _ and alpha-numeric.
  * - Localname: -, _, alpha-numeric, space. Cannot begin or end with space.
@@ -26,18 +26,18 @@ class SimplePathValidator extends AbstractRegexValidator
     {
         $this->NAMESPACE = '[-a-zA-Z0-9_]+';
         $this->LOCALNAME_CHAR_NO_SPACES = '-a-zA-Z0-9_';
-        $this->LOCALNAME = '([' . $this->LOCALNAME_CHAR_NO_SPACES . '\s]+)?([' . $this->LOCALNAME_CHAR_NO_SPACES .'])';
-        $this->NAME = '((' . $this->NAMESPACE .'):)?' . $this->LOCALNAME;
-        $this->PATH = '((/|\.\./)?' . $this->NAME . ')+';
+        $this->LOCALNAME = '(['.$this->LOCALNAME_CHAR_NO_SPACES.'\s]+)?(['.$this->LOCALNAME_CHAR_NO_SPACES.'])';
+        $this->NAME = '(('.$this->NAMESPACE.'):)?'.$this->LOCALNAME;
+        $this->PATH = '((/|\.\./)?'.$this->NAME.')+';
     }
 
     protected function getPathPattern()
     {
-        return '^' . $this->PATH . '$';
+        return '^'.$this->PATH.'$';
     }
 
     protected function getNamePattern()
     {
-        return '^' . $this->NAME . '$';
+        return '^'.$this->NAME.'$';
     }
 }

@@ -21,7 +21,7 @@ class NodeLocalName implements NodeLocalNameInterface
     protected $selectorName;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      *

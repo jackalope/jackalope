@@ -5,7 +5,7 @@ namespace Jackalope\Transport;
 use Jackalope\Node;
 
 /**
- * Representing a node add operation
+ * Representing a node add operation.
  *
  * Note that the srcPath might differ from the current path the node has (if
  * the node is moved later in the transaction. It still must be added at the
@@ -17,7 +17,7 @@ use Jackalope\Node;
 class AddNodeOperation extends Operation
 {
     /**
-     * The node to add
+     * The node to add.
      *
      * @var Node
      */

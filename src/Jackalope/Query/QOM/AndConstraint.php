@@ -26,10 +26,7 @@ class AndConstraint implements AndInterface
     protected $constraint2;
 
     /**
-     * Create an and constraint
-     *
-     * @param ConstraintInterface $constraint1
-     * @param ConstraintInterface $constraint2
+     * Create an and constraint.
      */
     public function __construct(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
@@ -58,7 +55,7 @@ class AndConstraint implements AndInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

@@ -3,11 +3,11 @@
 namespace Jackalope\Query;
 
 use Iterator;
-use PHPCR\Query\RowInterface;
-use PHPCR\RepositoryException;
-use PHPCR\ItemNotFoundException;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
+use PHPCR\ItemNotFoundException;
+use PHPCR\Query\RowInterface;
+use PHPCR\RepositoryException;
 
 /**
  * {@inheritDoc}
@@ -35,27 +35,28 @@ class Row implements Iterator, RowInterface
 
     /**
      * Columns of this result row: array of array with fields dcr:name and
-     * dcr:value
+     * dcr:value.
      *
      * @var array
      */
     protected $columns = [];
 
     /**
-     * Which column we are on when iterating over the columns
-     * @var integer
+     * Which column we are on when iterating over the columns.
+     *
+     * @var int
      */
     protected $position = 0;
 
     /**
-     * The score this row has for each selector
+     * The score this row has for each selector.
      *
      * @var array of float
      */
     protected $score = [];
 
     /**
-     * The path to the node for each selector
+     * The path to the node for each selector.
      *
      * @var array of string
      */
@@ -71,7 +72,8 @@ class Row implements Iterator, RowInterface
     protected $values = [];
 
     /**
-     * The default selector name
+     * The default selector name.
+     *
      * @var string
      */
     protected $defaultSelectorName;
@@ -79,9 +81,8 @@ class Row implements Iterator, RowInterface
     /**
      * Create new Row instance.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param ObjectManager    $objectManager
-     * @param array            $columns       array of array with fields dcr:name and dcr:value
+     * @param FactoryInterface $factory the object factory
+     * @param array            $columns array of array with fields dcr:name and dcr:value
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $columns)
     {
@@ -225,7 +226,7 @@ class Row implements Iterator, RowInterface
     }
 
     /**
-     * Implement Iterator
+     * Implement Iterator.
      */
     public function rewind()
     {
@@ -233,7 +234,7 @@ class Row implements Iterator, RowInterface
     }
 
     /**
-     * Implement Iterator
+     * Implement Iterator.
      */
     public function current()
     {
@@ -241,7 +242,7 @@ class Row implements Iterator, RowInterface
     }
 
     /**
-     * Implement Iterator
+     * Implement Iterator.
      */
     public function key()
     {
@@ -249,7 +250,7 @@ class Row implements Iterator, RowInterface
     }
 
     /**
-     * Implement Iterator
+     * Implement Iterator.
      */
     public function next()
     {
@@ -257,9 +258,9 @@ class Row implements Iterator, RowInterface
     }
 
     /**
-     * Implement Iterator
+     * Implement Iterator.
      *
-     * @return boolean whether the current position is valid
+     * @return bool whether the current position is valid
      */
     public function valid()
     {

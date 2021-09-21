@@ -26,7 +26,7 @@ class SameNode implements SameNodeInterface
     protected $path;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $selectorName
      * @param string $path
@@ -63,7 +63,7 @@ class SameNode implements SameNodeInterface
     }
 
     /**
-     * Gets all constraints including itself
+     * Gets all constraints including itself.
      *
      * @return array the constraints
      *

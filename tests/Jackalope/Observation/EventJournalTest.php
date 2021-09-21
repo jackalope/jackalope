@@ -3,16 +3,16 @@
 namespace Jackalope\Observation;
 
 use ArrayIterator;
+use Jackalope\Factory;
 use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
-use Jackalope\Factory;
+use Jackalope\Transport\ObservationInterface;
 use Jackalope\Transport\TransportInterface;
 use PHPCR\Observation\EventJournalInterface;
 use PHPCR\SessionInterface;
-use Jackalope\Transport\ObservationInterface;
 
 /**
- * Unit tests for the EventJournal
+ * Unit tests for the EventJournal.
  */
 class EventJournalTest extends TestCase
 {

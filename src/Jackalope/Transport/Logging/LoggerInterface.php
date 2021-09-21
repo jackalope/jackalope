@@ -16,9 +16,9 @@ interface LoggerInterface
     /**
      * Logs a call statement somewhere.
      *
-     * @param string     $method The call to be executed.
-     * @param array|null $params The call parameters.
-     * @param array|null $env    Associative array with environment information.
+     * @param string     $method the call to be executed
+     * @param array|null $params the call parameters
+     * @param array|null $env    associative array with environment information
      *
      * @return void
      */

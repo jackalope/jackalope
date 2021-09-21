@@ -9,7 +9,7 @@ use PHPCR\RepositoryException;
 use PHPCR\WorkspaceInterface;
 
 /**
- * Defines the methods needed for Writing support
+ * Defines the methods needed for Writing support.
  *
  * Notes:
  *
@@ -26,13 +26,13 @@ use PHPCR\WorkspaceInterface;
 interface WritingInterface extends TransportInterface
 {
     /**
-     * Whether this node name conforms to the specification
+     * Whether this node name conforms to the specification.
      *
      * Note: There is a minimal implementation in BaseTransport
      *
      * @param string $name The name to check
      *
-     * @return boolean always true, if the name is not valid a RepositoryException is thrown
+     * @return bool always true, if the name is not valid a RepositoryException is thrown
      *
      * @throws RepositoryException if the name contains invalid characters
      *
@@ -52,12 +52,11 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $srcAbsPath   Absolute source path to the node
      * @param string $destAbsPath  Absolute destination path including the new
-     *      node name
+     *                             node name
      * @param string $srcWorkspace The workspace where the source node can be
-     *      found or null for current workspace
+     *                             found or null for current workspace
      *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
+     * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see WorkspaceInterface::copy
      */
     public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null);
@@ -70,21 +69,20 @@ interface WritingInterface extends TransportInterface
      * This method does not need to load the node but can execute the clone
      * directly in the storage.
      *
-     * @param string $srcWorkspace The workspace where the source node can be found
-     * @param string $srcAbsPath   Absolute source path to the node
-     * @param string $destAbsPath  Absolute destination path including the new
-     *      node name
-     * @param bool $removeExisting whether to remove a node with the same identifier
-     *      if there exists one
+     * @param string $srcWorkspace   The workspace where the source node can be found
+     * @param string $srcAbsPath     Absolute source path to the node
+     * @param string $destAbsPath    Absolute destination path including the new
+     *                               node name
+     * @param bool   $removeExisting whether to remove a node with the same identifier
+     *                               if there exists one
      *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
+     * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see WorkspaceInterface::cloneFrom
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
 
     /**
-     * Update a node and its children to match its corresponding node in the specified workspace
+     * Update a node and its children to match its corresponding node in the specified workspace.
      *
      * @param Node   $node         the node to update
      * @param string $srcWorkspace The workspace where the corresponding source node can be found
@@ -92,21 +90,20 @@ interface WritingInterface extends TransportInterface
     public function updateNode(Node $node, $srcWorkspace);
 
     /**
-     * Perform a batch of move operations in the order of the passed array
+     * Perform a batch of move operations in the order of the passed array.
      *
      * @param MoveNodeOperation[] $operations
      */
     public function moveNodes(array $operations);
 
     /**
-     * Moves a node from src to dst outside of a transaction
+     * Moves a node from src to dst outside of a transaction.
      *
      * @param string $srcAbsPath Absolute source path to the node
      * @param string $dstAbsPath Absolute destination path (must NOT include
-     *      the new node name)
+     *                           the new node name)
      *
-     * @link http://www.ietf.org/rfc/rfc2518.txt
-     *
+     * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see Workspace::moveNode
      */
     public function moveNodeImmediately($srcAbsPath, $dstAbsPath);
@@ -139,35 +136,35 @@ interface WritingInterface extends TransportInterface
     public function deleteProperties(array $operations);
 
     /**
-     * Deletes a node and the whole subtree under it outside of a transaction
+     * Deletes a node and the whole subtree under it outside of a transaction.
      *
      * @param string $path Absolute path to the node
      *
      * @see Workspace::removeItem
      *
      * @throws PathNotFoundException if the item is already deleted on
-     *      the server. This should not happen if ObjectManager is correctly
-     *      checking.
-     * @throws RepositoryException if error occurs
+     *                               the server. This should not happen if ObjectManager is correctly
+     *                               checking.
+     * @throws RepositoryException   if error occurs
      */
     public function deleteNodeImmediately($path);
 
     /**
-     * Deletes a property outside of a transaction
+     * Deletes a property outside of a transaction.
      *
      * @param string $path Absolute path to the property
      *
      * @see Workspace::removeItem
      *
      * @throws PathNotFoundException if the item is already deleted on
-     *      the server. This should not happen if ObjectManager is correctly
-     *      checking.
-     * @throws RepositoryException if error occurs
+     *                               the server. This should not happen if ObjectManager is correctly
+     *                               checking.
+     * @throws RepositoryException   if error occurs
      */
     public function deletePropertyImmediately($path);
 
     /**
-     * Store all nodes in the AddNodeOperations
+     * Store all nodes in the AddNodeOperations.
      *
      * Transport stores the node at its path, with all properties (but do not
      * store children).
@@ -190,7 +187,7 @@ interface WritingInterface extends TransportInterface
     public function storeNodes(array $operations);
 
     /**
-     * Update the properties of a node
+     * Update the properties of a node.
      *
      * @param Node $node the node to update
      */
@@ -206,8 +203,8 @@ interface WritingInterface extends TransportInterface
      * that uri, if one exists. As well as removing the current uri mapped to
      * this prefix if this prefix is already existing.
      *
-     * @param string $prefix The prefix to be mapped.
-     * @param string $uri    The URI to be mapped.
+     * @param string $prefix the prefix to be mapped
+     * @param string $uri    the URI to be mapped
      */
     public function registerNamespace($prefix, $uri);
 
@@ -217,7 +214,7 @@ interface WritingInterface extends TransportInterface
      * Validation based on what was returned from getNamespaces has already
      * happened in the NamespaceRegistry.
      *
-     * @param string $prefix The prefix to unregister.
+     * @param string $prefix the prefix to unregister
      */
     public function unregisterNamespace($prefix);
 

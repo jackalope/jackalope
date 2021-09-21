@@ -2,8 +2,8 @@
 
 namespace Jackalope\Query;
 
-use Jackalope\TestCase;
 use Jackalope\Factory;
+use Jackalope\TestCase;
 use Jackalope\Transport\QueryInterface;
 use PHPCR\ItemNotFoundException;
 
@@ -13,13 +13,13 @@ class SqlQueryTest extends TestCase
 
     protected function getQuery($factory = null, $statement = null, $objectManager = null, $path = null)
     {
-        if (! $factory) {
+        if (!$factory) {
             $factory = new Factory();
         }
-        if (! $statement) {
+        if (!$statement) {
             $statement = $this->statement;
         }
-        if (! $objectManager) {
+        if (!$objectManager) {
             $objectManager = $this->getObjectManagerMock();
         }
 

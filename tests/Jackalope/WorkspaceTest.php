@@ -30,7 +30,7 @@ class WorkspaceTest extends TestCase
 
     public function setUp(): void
     {
-        $this->factory = new Factory;
+        $this->factory = new Factory();
 
         $transport = $this->getMockBuilder(TransportInterface::class)
             ->disableOriginalConstructor()
@@ -45,6 +45,7 @@ class WorkspaceTest extends TestCase
         ;
         $this->om = $this->getObjectManagerMock();
     }
+
     public function testConstructor()
     {
         $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
