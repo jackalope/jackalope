@@ -13,6 +13,8 @@ use SeekableIterator;
  */
 class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
 {
+    private ObjectManager $objectManager;
+
     /**
      * @var int
      */

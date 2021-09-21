@@ -38,21 +38,19 @@ class EventJournalTest extends TestCase
 
     public function setUp(): void
     {
-        $this->session = $this->getSessionMock(['getNode', 'getNodesByIdentifier']);
+        $this->session = $this->getSessionMock();
         $this->session
-            ->expects($this->any())
             ->method('getNode')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $this->session
-            ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $this->factory = new Factory();
 
         $this->transport = $this->createMock(ObservationInterface::class);
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $this->transport
             ->expects($this->never())
@@ -64,7 +62,7 @@ class EventJournalTest extends TestCase
         $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
     }
 
-    public function testFetchBuffer()
+    public function testFetchBuffer(): void
     {
         $filter = new EventFilter($this->factory, $this->session);
 
@@ -72,7 +70,7 @@ class EventJournalTest extends TestCase
             ->expects($this->once())
             ->method('getEvents')
             ->with(0, $filter, $this->session)
-            ->will($this->returnValue('test'))
+            ->willReturn('test')
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
@@ -81,7 +79,7 @@ class EventJournalTest extends TestCase
         $this->myAssertAttributeEquals('test', 'events', $journal);
     }
 
-    public function testSkipTo()
+    public function testSkipTo(): void
     {
         $filter = new EventFilter($this->factory, $this->session);
 
@@ -89,7 +87,7 @@ class EventJournalTest extends TestCase
             ->expects($this->once())
             ->method('getEvents')
             ->with(2, $filter, $this->session)
-            ->will($this->returnValue('test-data'))
+            ->willReturn('test-data')
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
@@ -99,7 +97,7 @@ class EventJournalTest extends TestCase
         $this->myAssertAttributeEquals('test-data', 'events', $journal);
     }
 
-    public function testIterator()
+    public function testIterator(): void
     {
         $filter = new EventFilter($this->factory, $this->session);
 
@@ -112,9 +110,7 @@ class EventJournalTest extends TestCase
             ->expects($this->once())
             ->method('getEvents')
             ->with(2, $filter, $this->session)
-            ->will($this->returnValue(
-                new ArrayIterator([$event1, $event2])
-            ))
+            ->willReturn(new ArrayIterator([$event1, $event2]))
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);

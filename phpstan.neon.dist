@@ -1,0 +1,6 @@
+parameters:
+    level: 1
+    paths:
+        - src
+    ignoreErrors:
+        - '#Constructor of class Jackalope\\.* has an unused parameter \$factory.#'
