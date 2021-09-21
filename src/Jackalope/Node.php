@@ -148,6 +148,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         //TODO: refactor to use hash array instead of stdClass struct
 
+        $oldNodes = [];
+        $oldProperties = [];
         if ($update) {
             // keep backup of old state so we can remove what needs to be removed
             $oldNodes = array_flip(array_values($this->nodes));

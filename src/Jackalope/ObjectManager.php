@@ -527,7 +527,7 @@ class ObjectManager
         $absPath = PathHelper::normalizePath($absPath);
 
         $name = PathHelper::getNodeName($absPath); //the property name
-        $nodep = PathHelper::getParentPath($absPath, 0, strrpos($absPath, '/') + 1); //the node this property should be in
+        $nodep = PathHelper::getParentPath($absPath); //the node this property should be in
 
         return [$name, $nodep];
     }
@@ -1399,7 +1399,7 @@ class ObjectManager
         $srcAbsPath = PathHelper::normalizePath($srcAbsPath);
         $destAbsPath = PathHelper::normalizePath($destAbsPath, true);
 
-        $this->rewriteItemPaths($srcAbsPath, $destAbsPath, true);
+        $this->rewriteItemPaths($srcAbsPath, $destAbsPath);
         // record every single move in case we have intermediary operations
         $operation = new MoveNodeOperation($srcAbsPath, $destAbsPath);
         $this->operationsLog[] = $operation;

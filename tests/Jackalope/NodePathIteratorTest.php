@@ -2,10 +2,12 @@
 
 namespace Jackalope;
 
+use PHPUnit\Framework\MockObject\MockObject;
+
 class NodePathIteratorTest extends TestCase
 {
     /**
-     * @var ObjectManager|\PHPUnit_Framework_MockObject_MockObject
+     * @var ObjectManager|MockObject
      */
     private $objectManager;
 
@@ -27,18 +29,21 @@ class NodePathIteratorTest extends TestCase
     /**
      * @dataProvider provideIterator
      */
-    public function testIterator($paths, $class, $filter, $batchSize)
+    public function testIterator($paths, $class, $filter, $batchSize): void
     {
         $me = $this;
         $nbBatches = (integer) ceil(count($paths) / $batchSize);
         $this->objectManager->expects($this->exactly($nbBatches))
             ->method('getNodesByPathAsArray')
-            ->will($this->returnCallback(function (
+            ->willReturnCallback(function (
                 $cPaths,
                 $cClass,
                 $cFilter
             ) use (
-                $me, $class, $filter, $batchSize
+                $me,
+                $class,
+                $filter,
+                $batchSize
             ) {
                 $me->assertLessThanOrEqual($batchSize, count($cPaths));
                 $nodes = [];
@@ -49,7 +54,7 @@ class NodePathIteratorTest extends TestCase
                 }
 
                 return $nodes;
-            }));
+            });
 
         $nodes = new NodePathIterator($this->objectManager, $paths, $class, $filter, $batchSize);
 
@@ -58,7 +63,7 @@ class NodePathIteratorTest extends TestCase
         }
     }
 
-    public function provideArrayAccess()
+    public function provideArrayAccess(): array
     {
         return [
             // 1st target, batch size 2, 1 fetch
@@ -123,7 +128,7 @@ class NodePathIteratorTest extends TestCase
     /**
      * @dataProvider provideArrayAccess
      */
-    public function testArrayAccess($paths, $batchSize, $options)
+    public function testArrayAccess($paths, $batchSize, $options): void
     {
         $options = array_merge([
             // number of times we expect to call the getNodesByArray method
@@ -148,14 +153,14 @@ class NodePathIteratorTest extends TestCase
 
         $this->objectManager->expects($this->exactly($nbFetches))
             ->method('getNodesByPathAsArray')
-            ->will($this->returnCallback(function ($paths) use ($nodes) {
+            ->willReturnCallback(function ($paths) use ($nodes) {
                 $ret = [];
                 foreach ($paths as $path) {
                     $ret[$path] = $nodes[$path];
                 }
 
                 return $ret;
-            }));
+            });
 
         $nodes = new NodePathIterator($this->objectManager, $paths, null, null, $batchSize);
 
@@ -179,7 +184,7 @@ class NodePathIteratorTest extends TestCase
     /**
      * Count should not need any interaction with the object manager.
      */
-    public function testCount()
+    public function testCount(): void
     {
         $nodes = [];
         $nodes2 = [];
@@ -200,7 +205,7 @@ class NodePathIteratorTest extends TestCase
         $this->assertCount(8, $iterator);
     }
 
-    public function testSeek()
+    public function testSeek(): void
     {
         $nodes = [];
         $nodes2 = [];

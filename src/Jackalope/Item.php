@@ -395,26 +395,24 @@ abstract class Item implements ItemInterface
         $this->checkState();
 
         if ($this === $otherItem) { // trivial case
-
             return true;
         }
-        if ($this->session->getRepository() === $otherItem->getSession()->getRepository()
-            && $this->session->getWorkspace() === $otherItem->getSession()->getWorkspace()
-            && get_class($this) === get_class($otherItem)
+        if ($this->session->getRepository() !== $otherItem->getSession()->getRepository()
+            || $this->session->getWorkspace() !== $otherItem->getSession()->getWorkspace()
+            || get_class($this) !== get_class($otherItem)
         ) {
-            if ($this instanceof Node) {
-                if ($this->uuid == $otherItem->getIdentifier()) {
-                    return true;
-                }
-                // assert($this instanceof Property)
-            } elseif ($this->name === $otherItem->getName()
-                && $this->getParent()->isSame($otherItem->getParent())
-            ) {
-                return true;
-            }
+            return false;
         }
-
-        return false;
+        switch ($this) {
+            case $this instanceof Node:
+                return $this->getIdentifier() === $otherItem->getIdentifier();
+            case $this instanceof Property:
+                return $this->name === $otherItem->getName()
+                    && $this->getParent()->isSame($otherItem->getParent())
+                ;
+            default:
+                throw new NotImplementedException('Item::isSame for Item of class ' . get_class($this) . ' is not implemented');
+        }
     }
 
     /**

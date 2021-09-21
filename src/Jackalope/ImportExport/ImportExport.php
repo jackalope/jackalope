@@ -426,7 +426,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                 }
                 $value = base64_encode($property->getString());
             } elseif (PropertyType::BOOLEAN === $property->getType()) {
-                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
+                $value = filter_var($property->getValue(), FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
             } else {
                 $value = htmlspecialchars($property->getString());
             }

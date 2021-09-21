@@ -318,6 +318,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                         return true;
                     }
                 } else {
+                    \assert(isset($nodeType));
                     foreach ($child->getRequiredPrimaryTypeNames() as $type) {
                         if ($nodeType->isNodeType($type)) {
                             return true;

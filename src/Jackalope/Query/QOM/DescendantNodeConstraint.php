@@ -39,7 +39,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
             throw new InvalidArgumentException('Required argument selectorName may not be null.');
         }
         $this->selectorName = $selectorName;
-        $this->path = $path;
+        $this->ancestorPath = $path;
     }
 
     /**
@@ -59,7 +59,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      */
     public function getAncestorPath()
     {
-        return $this->path;
+        return $this->ancestorPath;
     }
 
     /**
