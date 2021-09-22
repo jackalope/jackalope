@@ -7,7 +7,7 @@ namespace Jackalope\Observation;
  */
 class EventFilterIdentifiersTest extends EventFilterTestCase
 {
-    public function testFilter()
+    public function testFilter(): void
     {
         $this->setFilters(['1', '2', '3']);
         $this->assertTrue($this->eventFilter->match($this->getEvent('/1/2', '1')));
@@ -17,16 +17,15 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         $this->assertFalse($this->eventFilter->match($this->getEvent('/4/1', null)));
     }
 
-    public function testNoMatchFilter()
+    public function testNoMatchFilter(): void
     {
         $this->eventFilter->setIdentifiers([]);
 
         $nodes = [$this->getMyNodeMock('1')];
         $this->session
-            ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will(
-                $this->returnValue($nodes)
+            ->willReturn(
+                $nodes
             );
 
         $this->assertFalse($this->eventFilter->match($this->getEvent('/1/2', '1')));
@@ -36,12 +35,8 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 
     /**
      * Get an Event with the given path.
-     *
-     * @param string $path
-     *
-     * @return Event
      */
-    protected function getEvent($path, $id)
+    protected function getEvent(string $path, ?string $id): Event
     {
         $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath($path);
@@ -58,7 +53,7 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
      *
      * @param string[] $identifiers
      */
-    protected function setFilters($identifiers)
+    protected function setFilters(array $identifiers): void
     {
         $nodes = [];
 
@@ -67,10 +62,9 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
         }
 
         $this->session
-            ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will(
-                $this->returnValue($nodes)
+            ->willReturn(
+                $nodes
             );
 
         $this->eventFilter->setIdentifiers($identifiers);
@@ -78,18 +72,13 @@ class EventFilterIdentifiersTest extends EventFilterTestCase
 
     /**
      * Get a Jackalope\Node mock object that will return "/uuid" as path.
-     *
-     * @param string $uuid
-     *
-     * @return object
      */
-    protected function getMyNodeMock($uuid)
+    protected function getMyNodeMock(string $uuid): object
     {
         $node = $this->getNodeMock();
         $node
-            ->expects($this->any())
             ->method('getPath')
-            ->will($this->returnValue('/'.$uuid))
+            ->willReturn('/'.$uuid)
         ;
 
         return $node;

@@ -2,20 +2,21 @@
 
 namespace Jackalope\NodeType;
 
-use Jackalope\Factory;
+use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
+use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 
 class PropertyDefinitionTest extends TestCase
 {
-    private $defaultData = [
+    private array $defaultData = [
         'declaringNodeType' => 'nt:unstructured',
         'name' => 'foo',
         'isAutoCreated' => false,
         'isMandatory' => false,
         'isProtected' => false,
         'onParentVersion' => OnParentVersionAction::COPY,
-        'requiredType' => 'binary',
+        'requiredType' => PropertyType::BINARY,
         'multiple' => false,
         'fullTextSearchable' => false,
         'queryOrderable' => false,
@@ -24,9 +25,9 @@ class PropertyDefinitionTest extends TestCase
         'defaultValues' => '',
     ];
 
-    public function testCreateFromArray()
+    public function testCreateFromArray(): void
     {
-        $factory = $this->createMock(Factory::class);
+        $factory = $this->createMock(FactoryInterface::class);
         $nodeTypeManager = $this->getNodeTypeManagerMock();
         $propType = new PropertyDefinition($factory, $this->defaultData, $nodeTypeManager);
 
@@ -35,28 +36,23 @@ class PropertyDefinitionTest extends TestCase
         $this->assertFalse($propType->isMandatory());
         $this->assertFalse($propType->isProtected());
         $this->assertEquals(OnParentVersionAction::COPY, $propType->getOnParentVersion());
-        $this->assertEquals('binary', $propType->getRequiredType());
+        $this->assertEquals(2, $propType->getRequiredType());
         $this->assertFalse($propType->isMultiple());
         $this->assertFalse($propType->isQueryOrderable());
         $this->assertFalse($propType->isFullTextSearchable());
     }
 
-    public function testGetDeclaringNodeType()
+    public function testGetDeclaringNodeType(): void
     {
-        $nodeType = $this->getMockBuilder(NodeTypeDefinition::class)
-            ->setMethods([])
-            ->setConstructorArgs([])
-            ->setMockClassName('')
-            ->disableOriginalConstructor()
-        ;
+        $nodeType = $this->createMock(NodeTypeDefinition::class);
 
-        $factory = $this->createMock(Factory::class);
+        $factory = $this->createMock(FactoryInterface::class);
         $nodeTypeManager = $this->getNodeTypeManagerMock();
         $nodeTypeManager
             ->expects($this->once())
             ->method('getNodeType')
             ->with($this->equalTo('nt:unstructured'))
-            ->will($this->returnValue($nodeType))
+            ->willReturn($nodeType)
         ;
         $propType = new PropertyDefinition($factory, $this->defaultData, $nodeTypeManager);
 

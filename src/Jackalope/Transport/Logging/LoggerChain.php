@@ -8,37 +8,26 @@ namespace Jackalope\Transport\Logging;
  * @author Christophe Coevoet <stof@notk.org>
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
-class LoggerChain implements LoggerInterface
+final class LoggerChain implements LoggerInterface
 {
     /**
      * @var LoggerInterface[]
      */
-    private $loggers = [];
+    private array $loggers = [];
 
-    /**
-     * Adds a logger in the chain.
-     *
-     * @return void
-     */
-    public function addLogger(LoggerInterface $logger)
+    public function addLogger(LoggerInterface $logger): void
     {
         $this->loggers[] = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startCall($method, array $params = null, array $env = null)
+    public function startCall(string $method, array $params = null, array $env = null): void
     {
         foreach ($this->loggers as $logger) {
             $logger->startCall($method, $params, $env);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function stopCall()
+    public function stopCall(): void
     {
         foreach ($this->loggers as $logger) {
             $logger->stopCall();

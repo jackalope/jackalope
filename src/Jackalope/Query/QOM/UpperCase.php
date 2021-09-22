@@ -2,7 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
-use PHPCR\Query\QOM\DynamicOperandInterface;
+use PHPCR\Query\QOM\DynamicOperandInterface as DynamicOperandInterfaceAlias;
 use PHPCR\Query\QOM\UpperCaseInterface;
 
 /**
@@ -13,14 +13,11 @@ use PHPCR\Query\QOM\UpperCaseInterface;
  *
  * @api
  */
-class UpperCase implements UpperCaseInterface
+final class UpperCase implements UpperCaseInterface
 {
-    /**
-     * @var DynamicOperandInterface
-     */
-    protected $operand;
+    private DynamicOperandInterfaceAlias $operand;
 
-    public function __construct(DynamicOperandInterface $operand)
+    public function __construct(DynamicOperandInterfaceAlias $operand)
     {
         $this->operand = $operand;
     }
@@ -30,7 +27,7 @@ class UpperCase implements UpperCaseInterface
      *
      * @api
      */
-    public function getOperand()
+    public function getOperand(): DynamicOperandInterfaceAlias
     {
         return $this->operand;
     }

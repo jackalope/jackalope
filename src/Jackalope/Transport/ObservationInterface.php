@@ -3,6 +3,7 @@
 namespace Jackalope\Transport;
 
 use PHPCR\Observation\EventFilterInterface;
+use PHPCR\Observation\EventInterface;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 
@@ -30,17 +31,15 @@ interface ObservationInterface extends TransportInterface
      * @param SessionInterface     $session in case the transport needs this
      *                                      for filtering
      *
-     * @return \Iterator
+     * @return \Iterator<EventInterface>
      *
      * @throws RepositoryException if an error occurs
      */
-    public function getEvents($date, EventFilterInterface $filter, SessionInterface $session);
+    public function getEvents(int $date, EventFilterInterface $filter, SessionInterface $session);
 
     /**
      * Set user data to be included with subsequent requests.
      * Setting userData to null (which it is by default) will result in no user data header being sent.
-     *
-     * @param mixed $userData null or string
      */
-    public function setUserData($userData);
+    public function setUserData(?string $userData): void;
 }

@@ -4,6 +4,7 @@ namespace Jackalope\Query;
 
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
+use PHPCR\Query\RowInterface;
 
 /**
  * Iterator to efficiently iterate over the raw query result.
@@ -11,27 +12,12 @@ use Jackalope\ObjectManager;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class RowIterator implements \SeekableIterator, \Countable
+final class RowIterator implements \SeekableIterator, \Countable
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var array
-     */
-    protected $rows;
-
-    /**
-     * @var int
-     */
-    protected $position = 0;
+    private ObjectManager $objectManager;
+    private FactoryInterface $factory;
+    private array $rows;
+    private int $offset = 0;
 
     /**
      * Create the iterator.
@@ -51,52 +37,46 @@ class RowIterator implements \SeekableIterator, \Countable
      *
      * @throws \OutOfBoundsException
      */
-    public function seek($position)
+    public function seek($offset): void
     {
-        $this->position = $position;
+        $this->offset = $offset;
 
         if (!$this->valid()) {
-            throw new \OutOfBoundsException("invalid seek position ($position)");
+            throw new \OutOfBoundsException("invalid seek position ($offset)");
         }
     }
 
-    /**
-     * @return int
-     */
-    public function count()
+    public function count(): int
     {
         return count($this->rows);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
-        $this->position = 0;
+        $this->offset = 0;
     }
 
-    public function current()
+    public function current(): ?RowInterface
     {
         if (!$this->valid()) {
             return null;
         }
 
-        return $this->factory->get(Row::class, [$this->objectManager, $this->rows[$this->position]]);
+        return $this->factory->get(Row::class, [$this->objectManager, $this->rows[$this->offset]]);
     }
 
-    public function key()
+    public function key(): int
     {
-        return $this->position;
+        return $this->offset;
     }
 
-    public function next()
+    public function next(): void
     {
-        ++$this->position;
+        ++$this->offset;
     }
 
-    /**
-     * @return bool
-     */
-    public function valid()
+    public function valid(): bool
     {
-        return isset($this->rows[$this->position]);
+        return isset($this->rows[$this->offset]);
     }
 }

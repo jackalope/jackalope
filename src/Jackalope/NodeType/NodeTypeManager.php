@@ -28,43 +28,26 @@ use PHPCR\RepositoryException;
  */
 class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private FactoryInterface $factory;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var NamespaceRegistryInterface
-     */
-    protected $namespaceRegistry;
+    private NamespaceRegistryInterface $namespaceRegistry;
 
     /**
      * Cache of already fetched primary node type instances.
-     *
-     * @var array
      */
-    protected $primaryTypes;
+    private array $primaryTypes;
 
     /**
      * Cache of already fetched mixin node type instances.
-     *
-     * @var array
      */
-    protected $mixinTypes;
+    private array $mixinTypes;
 
     /**
      * Array of arrays with the super type as key and its sub types as values.
-     *
-     * @var array
      */
-    protected $nodeTree = [];
+    private array $nodeTree = [];
 
     /**
      * Flag to only load all node types from the backend once.
@@ -72,10 +55,8 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * Methods like hasNodeType() need to fetch all node types. Others like
      * getNodeType() do not need all, but just the requested one. Unless we
      * need all, we only load specific ones and cache them.
-     *
-     * @var bool
      */
-    protected $fetchedAllFromBackend = false;
+    private bool $fetchedAllFromBackend = false;
 
     /**
      * Create the node type manager for a session.
@@ -102,10 +83,10 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * On fetch all, already cached node types are kept.
      *
-     * @param string $name type name to fetch. defaults to null which will
-     *                     fetch all nodes.
+     * @param string|null $name type name to fetch. defaults to null which will
+     *                          fetch all nodes.
      */
-    protected function fetchNodeTypes($name = null)
+    private function fetchNodeTypes(string $name = null): void
     {
         if ($this->fetchedAllFromBackend) {
             return;
@@ -139,7 +120,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @param NodeTypeInterface $nodeType The nodetype to add
      */
-    protected function addNodeType(NodeTypeInterface $nodeType)
+    private function addNodeType(NodeTypeInterface $nodeType): void
     {
         if ($nodeType->isMixin()) {
             $this->mixinTypes[$nodeType->getName()] = $nodeType;
@@ -153,15 +134,13 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * Helper method for node types: Returns the declared subtypes of a given
      * nodename.
      *
-     * @param string $nodeTypeName
-     *
      * @return array with the names of the subnode types pointing to the node type instances
      *
      * @see NodeType::getDeclaredSubtypes
      *
      * @private
      */
-    public function getDeclaredSubtypes($nodeTypeName)
+    public function getDeclaredSubtypes(string $nodeTypeName): array
     {
         // OPTIMIZE: any way to avoid loading all nodes at this point?
         $this->fetchNodeTypes();
@@ -177,15 +156,13 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * Helper method for NodeType: Returns all sub types of a node and their
      * sub types.
      *
-     * @param string $nodeTypeName
-     *
      * @return array with the names of the subnode types pointing to the node type instances
      *
      * @see NodeType::getSubtypes
      *
      * @private
      */
-    public function getSubtypes($nodeTypeName)
+    public function getSubtypes(string $nodeTypeName): array
     {
         // OPTIMIZE: any way to avoid loading all nodes at this point?
         $this->fetchNodeTypes();
@@ -279,7 +256,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function getAllNodeTypes()
+    public function getAllNodeTypes(): \Iterator
     {
         $this->fetchNodeTypes();
 
@@ -291,7 +268,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function getPrimaryNodeTypes()
+    public function getPrimaryNodeTypes(): \Iterator
     {
         $this->fetchNodeTypes();
 
@@ -303,7 +280,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function getMixinNodeTypes()
+    public function getMixinNodeTypes(): \Iterator
     {
         $this->fetchNodeTypes();
 
@@ -315,7 +292,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function createNodeTypeTemplate($ntd = null)
+    public function createNodeTypeTemplate($ntd = null): NodeTypeTemplate
     {
         return $this->factory->get(NodeTypeTemplate::class, [$this, $ntd]);
     }
@@ -325,7 +302,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function createNodeDefinitionTemplate()
+    public function createNodeDefinitionTemplate(): NodeDefinitionTemplate
     {
         return $this->factory->get(NodeDefinitionTemplate::class, [$this]);
     }
@@ -335,7 +312,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function createPropertyDefinitionTemplate()
+    public function createPropertyDefinitionTemplate(): PropertyDefinitionTemplate
     {
         return $this->factory->get(PropertyDefinitionTemplate::class, [$this]);
     }
@@ -345,7 +322,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate): NodeTypeDefinitionInterface
     {
         $this->registerNodeTypes([$ntd], $allowUpdate);
 
@@ -362,9 +339,9 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * @throws RepositoryException
      * @throws NodeTypeExistsException
      */
-    protected function createNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate)
+    private function createNodeType(NodeTypeDefinitionInterface $ntd, bool $allowUpdate): NodeType
     {
-        if ($this->hasNodeType($ntd->getName()) && !$allowUpdate) {
+        if (!$allowUpdate && $this->hasNodeType($ntd->getName())) {
             throw new NodeTypeExistsException('NodeType already existing: '.$ntd->getName());
         }
 
@@ -376,7 +353,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function registerNodeTypes(array $definitions, $allowUpdate)
+    public function registerNodeTypes(array $definitions, $allowUpdate): \Iterator
     {
         $nts = [];
 
@@ -404,7 +381,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function registerNodeTypesCnd($cnd, $allowUpdate)
+    public function registerNodeTypesCnd($cnd, $allowUpdate): array
     {
         // set fetched from backend to false to allow to load the new types from backend
         $fetched = $this->fetchedAllFromBackend;
@@ -427,7 +404,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function unregisterNodeType($name)
+    public function unregisterNodeType($name): void
     {
         if (!empty($this->primaryTypes[$name])) {
             unset($this->primaryTypes[$name]);
@@ -445,7 +422,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @api
      */
-    public function unregisterNodeTypes(array $names)
+    public function unregisterNodeTypes(array $names): void
     {
         foreach ($names as $name) {
             $this->unregisterNodeType($name);
@@ -459,7 +436,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * @throws RepositoryException
      */
-    #[\ReturnTypeWillChange]
     public function getIterator(): \Traversable
     {
         return $this->getAllNodeTypes();

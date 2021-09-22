@@ -14,37 +14,17 @@ use PHPCR\Query\QOM\SourceInterface;
  *
  * @api
  */
-class Join implements JoinInterface
+final class Join implements JoinInterface
 {
-    /**
-     * @var SourceInterface
-     */
-    protected $left;
+    private SourceInterface $left;
+    private SourceInterface $right;
+    private string $joinType;
+    private JoinConditionInterface $joinCondition;
 
-    /**
-     * @var SourceInterface
-     */
-    protected $right;
-
-    /**
-     * @var string
-     */
-    protected $joinType;
-
-    /**
-     * @var JoinConditionInterface
-     */
-    protected $joinCondition;
-
-    /**
-     * Create a new join instance.
-     *
-     * @param string $joinType
-     */
     public function __construct(
         SourceInterface $left,
         SourceInterface $right,
-        $joinType,
+        string $joinType,
         JoinConditionInterface $joinCondition
     ) {
         $this->left = $left;
@@ -58,7 +38,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    public function getLeft()
+    public function getLeft(): SourceInterface
     {
         return $this->left;
     }
@@ -68,7 +48,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    public function getRight()
+    public function getRight(): SourceInterface
     {
         return $this->right;
     }
@@ -78,7 +58,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    public function getJoinType()
+    public function getJoinType(): string
     {
         return $this->joinType;
     }
@@ -88,7 +68,7 @@ class Join implements JoinInterface
      *
      * @api
      */
-    public function getJoinCondition()
+    public function getJoinCondition(): JoinConditionInterface
     {
         return $this->joinCondition;
     }

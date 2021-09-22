@@ -17,59 +17,23 @@ use PHPCR\RepositoryException;
  */
 class ItemDefinition implements ItemDefinitionInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
+    protected FactoryInterface $factory;
+    protected NodeTypeManager $nodeTypeManager;
 
     /**
      * Name of the declaring node type.
-     *
-     * @var string
      */
-    protected $declaringNodeType;
+    protected string $declaringNodeType;
 
     /**
      * Name of this node type.
-     *
-     * @var string
      */
-    protected $name;
+    protected ?string $name;
 
-    /**
-     * Whether this item is autocreated.
-     *
-     * @var bool
-     */
-    protected $isAutoCreated;
-
-    /**
-     * Whether this item is mandatory.
-     *
-     * @var bool
-     */
-    protected $isMandatory;
-
-    /**
-     * Whether this item is protected.
-     *
-     * @var bool
-     */
-    protected $isProtected;
-
-    /**
-     * On parent version constant.
-     *
-     * @var int
-     */
-    protected $onParentVersion;
+    protected bool $isAutoCreated;
+    protected bool $isMandatory;
+    protected bool $isProtected;
+    protected int $onParentVersion;
 
     /**
      * Create a new item definition.
@@ -94,7 +58,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @param array $data An array with the fields required by ItemDefinition
      */
-    protected function fromArray(array $data)
+    protected function fromArray(array $data): void
     {
         $this->declaringNodeType = $data['declaringNodeType'];
         $this->name = $data['name'];
@@ -122,7 +86,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -132,7 +96,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function isAutoCreated()
+    public function isAutoCreated(): bool
     {
         return $this->isAutoCreated;
     }
@@ -142,7 +106,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function isMandatory()
+    public function isMandatory(): bool
     {
         return $this->isMandatory;
     }
@@ -152,7 +116,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function getOnParentVersion()
+    public function getOnParentVersion(): int
     {
         return $this->onParentVersion;
     }
@@ -162,7 +126,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function isProtected()
+    public function isProtected(): bool
     {
         return $this->isProtected;
     }

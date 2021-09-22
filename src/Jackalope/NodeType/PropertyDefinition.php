@@ -3,6 +3,7 @@
 namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\PropertyDefinitionInterface;
+use PHPCR\PropertyType;
 
 /**
  * {@inheritDoc}
@@ -19,43 +20,32 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * One of the PropertyType type constants.
      *
-     * @var int
+     * @see PropertyType
      */
-    protected $requiredType;
+    protected int $requiredType;
 
     /**
      * The constraint information array (array of strings).
-     *
-     * @var array
      */
-    protected $valueConstraints = [];
+    protected array $valueConstraints;
 
     /**
      * @var mixed
      */
-    protected $defaultValues = [];
+    protected $defaultValues;
+
+    protected bool $isMultiple = false;
 
     /**
-     * @var bool
-     */
-    protected $isMultiple;
-
-    /**
-     * List of constants from \PHPCR\Query\QueryObjectModelConstantsInterface.
+     * List of constants.
      *
-     * @var array
+     * @see QueryObjectModelConstantsInterface
      */
-    protected $availableQueryOperators = [];
+    protected array $availableQueryOperators = [];
 
-    /**
-     * @var bool
-     */
-    protected $isFullTextSearchable;
+    protected bool $isFullTextSearchable = false;
 
-    /**
-     * @var bool
-     */
-    protected $isQueryOrderable;
+    protected bool $isQueryOrderable = false;
 
     /**
      * Treat more information in addition to ItemDefinition::fromArray().
@@ -64,16 +54,16 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @param array $data the property definition in array form
      */
-    protected function fromArray(array $data)
+    protected function fromArray(array $data): void
     {
         parent::fromArray($data);
         $this->requiredType = $data['requiredType'];
-        $this->isMultiple = isset($data['multiple']) ? $data['multiple'] : false;
-        $this->isFullTextSearchable = isset($data['fullTextSearchable']) ? $data['fullTextSearchable'] : false;
-        $this->isQueryOrderable = isset($data['queryOrderable']) ? $data['queryOrderable'] : false;
-        $this->valueConstraints = isset($data['valueConstraints']) ? $data['valueConstraints'] : [];
-        $this->availableQueryOperators = isset($data['availableQueryOperators']) ? $data['availableQueryOperators'] : [];
-        $this->defaultValues = isset($data['defaultValues']) ? $data['defaultValues'] : [];
+        $this->isMultiple = $data['multiple'] ?? false;
+        $this->isFullTextSearchable = $data['fullTextSearchable'] ?? false;
+        $this->isQueryOrderable = $data['queryOrderable'] ?? false;
+        $this->valueConstraints = $data['valueConstraints'] ?? [];
+        $this->availableQueryOperators = $data['availableQueryOperators'] ?? [];
+        $this->defaultValues = $data['defaultValues'] ?? [];
     }
 
     /**
@@ -81,7 +71,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function getRequiredType()
+    public function getRequiredType(): int
     {
         return $this->requiredType;
     }
@@ -91,7 +81,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function getValueConstraints()
+    public function getValueConstraints(): array
     {
         return $this->valueConstraints;
     }
@@ -111,7 +101,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function isMultiple()
+    public function isMultiple(): bool
     {
         return $this->isMultiple;
     }
@@ -121,7 +111,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function getAvailableQueryOperators()
+    public function getAvailableQueryOperators(): array
     {
         return $this->availableQueryOperators;
     }
@@ -131,7 +121,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function isFullTextSearchable()
+    public function isFullTextSearchable(): bool
     {
         return $this->isFullTextSearchable;
     }
@@ -141,7 +131,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * @api
      */
-    public function isQueryOrderable()
+    public function isQueryOrderable(): bool
     {
         return $this->isQueryOrderable;
     }

@@ -7,6 +7,7 @@ use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
 use Jackalope\Query\QOM\QueryObjectModelFactory;
 use PHPCR\Query\InvalidQueryException;
+use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
 use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QueryManagerInterface;
 
@@ -18,25 +19,12 @@ use PHPCR\Query\QueryManagerInterface;
  *
  * @api
  */
-class QueryManager implements QueryManagerInterface
+final class QueryManager implements QueryManagerInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private FactoryInterface $factory;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * Create the query manager - acquire through the session.
-     *
-     * @param FactoryInterface $factory the object factory
-     */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
         $this->factory = $factory;
@@ -73,7 +61,7 @@ class QueryManager implements QueryManagerInterface
      *
      * @api
      */
-    public function getQOMFactory()
+    public function getQOMFactory(): QueryObjectModelFactoryInterface
     {
         return $this->factory->get(QueryObjectModelFactory::class, [$this->objectManager]);
     }
@@ -83,7 +71,7 @@ class QueryManager implements QueryManagerInterface
      *
      * @api
      */
-    public function getQuery($node)
+    public function getQuery($node): QueryInterface
     {
         throw new NotImplementedException();
     }
@@ -93,7 +81,7 @@ class QueryManager implements QueryManagerInterface
      *
      * @api
      */
-    public function getSupportedQueryLanguages()
+    public function getSupportedQueryLanguages(): array
     {
         // Workspace checks if transport implements QueryInterface
         return $this->objectManager->getTransport()->getSupportedQueryLanguages();

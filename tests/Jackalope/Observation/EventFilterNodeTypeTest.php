@@ -7,52 +7,47 @@ use PHPCR\PathNotFoundException;
 /**
  * Unit tests for the EventFilter node type.
  */
-class EventFilterNodeTypeTest extends EventFilterTestCase
+final class EventFilterNodeTypeTest extends EventFilterTestCase
 {
-    public function testFilterFind()
+    public function testFilterFind(): void
     {
         $node = $this->getNodeMock();
         $node
-            ->expects($this->any())
             ->method('isNodeType')
             ->with('nt:unstructured')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->session
-            ->expects($this->any())
             ->method('getItem')
             ->with('/some/path')
-            ->will($this->returnValue($node))
+            ->willReturn($node)
         ;
 
         $this->eventFilter->setNodeTypes(['nt:unstructured']);
         $this->assertFilterMatch($this->eventFilter, true);
     }
 
-    public function testFilterFindNotType()
+    public function testFilterFindNotType(): void
     {
         $node = $this->getNodeMock();
         $node
-            ->expects($this->any())
             ->method('isNodeType')
             ->with('nt:unstructured')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $this->session
-            ->expects($this->any())
             ->method('getItem')
             ->with('/some/path')
-            ->will($this->returnValue($node))
+            ->willReturn($node)
         ;
 
         $this->eventFilter->setNodeTypes(['nt:unstructured']);
         $this->assertFilterMatch($this->eventFilter, false);
     }
 
-    public function testFilterNofind()
+    public function testFilterNofind(): void
     {
         $this->session
-            ->expects($this->any())
             ->method('getItem')
             ->with('/some/path')
             ->will($this->throwException(new PathNotFoundException()))
@@ -61,7 +56,7 @@ class EventFilterNodeTypeTest extends EventFilterTestCase
         $this->assertFilterMatch($this->eventFilter, false);
     }
 
-    protected function assertFilterMatch(EventFilter $filter, $expectedResult)
+    protected function assertFilterMatch(EventFilter $filter, $expectedResult): void
     {
         $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath('/some/path');

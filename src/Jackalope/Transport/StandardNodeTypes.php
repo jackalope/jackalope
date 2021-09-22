@@ -15,7 +15,7 @@ use PHPCR\Version\OnParentVersionAction;
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class StandardNodeTypes
+final class StandardNodeTypes
 {
     /**
      * Returns all the default nodes provided by the JCR 2.0 as well as the PHPCR
@@ -27,7 +27,7 @@ class StandardNodeTypes
      *
      * @return array list of node type arrays to create node type objects from
      */
-    public static function getNodeTypeData()
+    public static function getNodeTypeData(): array
     {
         return [
             'mix:created' => [

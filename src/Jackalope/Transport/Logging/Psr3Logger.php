@@ -9,37 +9,20 @@ use Psr\Log\LoggerInterface as Psr3LoggerInterface;
  *
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
-class Psr3Logger implements LoggerInterface
+final class Psr3Logger implements LoggerInterface
 {
     private const MAX_STRING_LENGTH = 32;
     private const BINARY_DATA_VALUE = '(binary value)';
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    private Psr3LoggerInterface $logger;
+    private bool $enabled = true;
 
-    /**
-     * If the logger is enabled (log calls) or not.
-     *
-     * @var bool
-     */
-    public $enabled = true;
-
-    /**
-     * Constructor.
-     *
-     * @param Psr3LoggerInterface $logger A logger instance
-     */
     public function __construct(Psr3LoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startCall($method, array $params = null, array $env = null)
+    public function startCall(string $method, array $params = null, array $env = null): void
     {
         if ($this->enabled && $this->logger) {
             if (is_array($params)) {
@@ -73,10 +56,7 @@ class Psr3Logger implements LoggerInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function stopCall()
+    public function stopCall(): void
     {
     }
 }

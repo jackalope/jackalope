@@ -12,31 +12,13 @@ use PHPCR\Query\QOM\SameNodeJoinConditionInterface;
  *
  * @api
  */
-class SameNodeJoinCondition implements SameNodeJoinConditionInterface
+final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
 {
-    /**
-     * @var string
-     */
-    protected $selector1Name;
+    private string $selector1Name;
+    private string $selector2Name;
+    private ?string $selector2Path;
 
-    /**
-     * @var string
-     */
-    protected $selector2Name;
-
-    /**
-     * @var string
-     */
-    protected $selector2Path;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selector1Name
-     * @param string $selector2Name
-     * @param string $selector2Path
-     */
-    public function __construct($selector1Name, $selector2Name, $selector2Path = null)
+    public function __construct(string $selector1Name, string $selector2Name, ?string $selector2Path = null)
     {
         $this->selector1Name = (string) $selector1Name;
         $this->selector2Name = (string) $selector2Name;
@@ -48,7 +30,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    public function getSelector1Name()
+    public function getSelector1Name(): string
     {
         return $this->selector1Name;
     }
@@ -58,7 +40,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    public function getSelector2Name()
+    public function getSelector2Name(): string
     {
         return $this->selector2Name;
     }
@@ -68,7 +50,7 @@ class SameNodeJoinCondition implements SameNodeJoinConditionInterface
      *
      * @api
      */
-    public function getSelector2Path()
+    public function getSelector2Path(): ?string
     {
         return $this->selector2Path;
     }

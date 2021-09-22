@@ -3,6 +3,7 @@
 namespace Jackalope\Query\QOM;
 
 use PHPCR\Query\QOM\ChildNodeInterface;
+use PHPCR\Query\QOM\ConstraintInterface;
 
 /**
  * {@inheritDoc}
@@ -12,31 +13,13 @@ use PHPCR\Query\QOM\ChildNodeInterface;
  *
  * @api
  */
-class ChildNodeConstraint implements ChildNodeInterface
+final class ChildNodeConstraint implements ChildNodeInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private string $parentPath;
 
-    /**
-     * @var string
-     */
-    protected $parentPath;
-
-    /**
-     * Create a new child node constraint.
-     *
-     * @param string $selectorName
-     * @param string $parentPath   parent path the node must be child of
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $parentPath)
+    public function __construct(string $selectorName, string $parentPath)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
         $this->parentPath = $parentPath;
         $this->selectorName = $selectorName;
     }
@@ -46,7 +29,7 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -56,7 +39,7 @@ class ChildNodeConstraint implements ChildNodeInterface
      *
      * @api
      */
-    public function getParentPath()
+    public function getParentPath(): string
     {
         return $this->parentPath;
     }
@@ -64,11 +47,11 @@ class ChildNodeConstraint implements ChildNodeInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return [$this];
     }

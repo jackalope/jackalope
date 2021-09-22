@@ -7,9 +7,9 @@ use Jackalope\TestCase;
 /**
  * TODO: this is more of a jackrabbit specific functional test than a real unit test. Mock more.
  */
-class NodeTypeManagerTest extends TestCase
+final class NodeTypeManagerTest extends TestCase
 {
-    protected $ntm;
+    private NodeTypeManager $ntm;
 
     public function setUp(): void
     {
@@ -19,7 +19,7 @@ class NodeTypeManagerTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeTypeManager::getNodeType
      */
-    public function testGetNodeType()
+    public function testGetNodeType(): void
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertInstanceOf(NodeType::class, $nt);
@@ -35,7 +35,7 @@ class NodeTypeManagerTest extends TestCase
      * @covers \Jackalope\NodeType\NodeTypeManager::getDeclaredSubtypes
      * @covers \Jackalope\NodeType\NodeTypeManager::getSubtypes
      */
-    public function testTypeHierarchies()
+    public function testTypeHierarchies(): void
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $this->assertSame(['nt:hierarchyNode'], $nt->getDeclaredSupertypeNames());
@@ -48,13 +48,13 @@ class NodeTypeManagerTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeTypeManager::hasNodeType
      */
-    public function testHasNodeType()
+    public function testHasNodeType(): void
     {
         $this->assertTrue($this->ntm->hasNodeType('nt:folder'), 'manager claimed to not know about nt:folder');
         $this->assertFalse($this->ntm->hasNodeType('nonode'), 'manager claimed to know about nonode');
     }
 
-    public function testCountTypeClasses()
+    public function testCountTypeClasses(): void
     {
         $allNodes = $this->ntm->getAllNodeTypes();
         $this->assertInstanceOf('Iterator', $allNodes);

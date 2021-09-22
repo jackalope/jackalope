@@ -19,7 +19,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -29,7 +29,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setDeclaredSuperTypeNames(array $names)
+    public function setDeclaredSuperTypeNames(array $names): void
     {
         $this->declaredSuperTypeNames = $names;
     }
@@ -39,7 +39,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setAbstract($abstractStatus)
+    public function setAbstract($abstractStatus): void
     {
         $this->isAbstract = $abstractStatus;
     }
@@ -49,7 +49,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setMixin($mixin)
+    public function setMixin($mixin): void
     {
         $this->isMixin = $mixin;
     }
@@ -59,7 +59,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setOrderableChildNodes($orderable)
+    public function setOrderableChildNodes($orderable): void
     {
         $this->hasOrderableChildNodes = $orderable;
     }
@@ -69,7 +69,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setPrimaryItemName($name)
+    public function setPrimaryItemName($name): void
     {
         $this->primaryItemName = $name;
     }
@@ -79,7 +79,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function setQueryable($queryable)
+    public function setQueryable($queryable): void
     {
         $this->isQueryable = $queryable;
     }
@@ -89,9 +89,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function getPropertyDefinitionTemplates()
+    public function getPropertyDefinitionTemplates(): \ArrayObject
     {
-        if (null === $this->declaredPropertyDefinitions) {
+        if (!isset($this->declaredPropertyDefinitions)) {
             $this->declaredPropertyDefinitions = new \ArrayObject();
         }
 
@@ -103,9 +103,9 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
      *
      * @api
      */
-    public function getNodeDefinitionTemplates()
+    public function getNodeDefinitionTemplates(): \ArrayObject
     {
-        if (null === $this->declaredNodeDefinitions) {
+        if (!isset($this->declaredNodeDefinitions)) {
             $this->declaredNodeDefinitions = new \ArrayObject();
         }
 

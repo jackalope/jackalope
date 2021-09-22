@@ -13,32 +13,18 @@ use PHPCR\Lock\LockInterface;
 interface LockingInterface extends TransportInterface
 {
     /**
-     * Lock a node.
-     *
      * @param string $absPath         The absolute path of the node
      * @param bool   $isDeep          whether this is to be a deep lock or not
      * @param bool   $isSessionScoped whether this is to be a session scoped lock
      * @param int    $timeoutHint     the optional timeout value, PHP_INT_MAX for no timeout
      * @param string $ownerInfo       optional string to identify the owner
-     *
-     * @return LockInterface the lock that was created
      */
-    public function lockNode($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null);
+    public function lockNode(string $absPath, bool $isDeep, bool $isSessionScoped, int $timeoutHint = PHP_INT_MAX, string $ownerInfo = null): LockInterface;
 
     /**
      * Return true if the node is locked and false otherwise.
-     *
-     * @param string $absPath The absolute path of the node
-     *
-     * @return bool whether the node at that path is locked
      */
-    public function isLocked($absPath);
+    public function isLocked(string $absPath): bool;
 
-    /**
-     * Unlock a node.
-     *
-     * @param string $absPath   The absolute path of the node
-     * @param string $lockToken The lock token of the lock to remove
-     */
-    public function unlock($absPath, $lockToken);
+    public function unlock(string $absPath, string $lockToken): void;
 }

@@ -27,9 +27,7 @@ interface NodeTypeCndManagementInterface extends TransportInterface
      * @param string $cnd         The cnd definition as string
      * @param bool   $allowUpdate whether to fail if node already exists or to update it
      *
-     * @return bool true on success
-     *
      * @see NodeTypeManager::registerNodeTypesCnd
      */
-    public function registerNodeTypesCnd($cnd, $allowUpdate);
+    public function registerNodeTypesCnd(string $cnd, bool $allowUpdate): void;
 }

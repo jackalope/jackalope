@@ -14,12 +14,10 @@ class RemoveNodeOperation extends Operation
 {
     /**
      * The node to remove.
-     *
-     * @var Node
      */
-    public $node;
+    public Node $node;
 
-    public function __construct($srcPath, Node $node)
+    public function __construct(string $srcPath, Node $node)
     {
         parent::__construct($srcPath, self::REMOVE_NODE);
         $this->node = $node;

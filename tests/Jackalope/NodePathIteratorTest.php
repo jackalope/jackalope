@@ -7,16 +7,16 @@ use PHPUnit\Framework\MockObject\MockObject;
 class NodePathIteratorTest extends TestCase
 {
     /**
-     * @var ObjectManager|MockObject
+     * @var ObjectManager&MockObject
      */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
     public function setUp(): void
     {
-        $this->objectManager = $this->getObjectManagerMock();
+        $this->objectManager = $this->createMock(ObjectManager::class);
     }
 
-    public function provideIterator()
+    public function provideIterator(): array
     {
         return [
             [['/foo1'], 'Node', 'nt:foo', 2],
@@ -162,7 +162,7 @@ class NodePathIteratorTest extends TestCase
                 return $ret;
             });
 
-        $nodes = new NodePathIterator($this->objectManager, $paths, null, null, $batchSize);
+        $nodes = new NodePathIterator($this->objectManager, $paths, Node::class, null, $batchSize);
 
         if ($iterateResult) {
             for ($i = 0; $i < $iterateResult; ++$i) {
@@ -175,9 +175,8 @@ class NodePathIteratorTest extends TestCase
             }
         }
 
-        $res = [];
         foreach ($targets as $target) {
-            $res[$target] = $nodes[$target];
+            $nodes[$target];
         }
     }
 
@@ -201,7 +200,7 @@ class NodePathIteratorTest extends TestCase
             ->willReturnOnConsecutiveCalls($this->returnValue($nodes), $this->returnValue($nodes2))
         ;
 
-        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'], null, null, 7);
+        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'], Node::class, null, 7);
         $this->assertCount(8, $iterator);
     }
 
@@ -222,7 +221,7 @@ class NodePathIteratorTest extends TestCase
             ->willReturnOnConsecutiveCalls($this->returnValue($nodes), $this->returnValue($nodes2))
         ;
 
-        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'], null, null, 3);
+        $iterator = new NodePathIterator($this->objectManager, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'], Node::class, null, 3);
         $iterator->seek(7);
         $iterator->valid();
 

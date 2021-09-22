@@ -18,73 +18,38 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 {
     private const NAME_NT_BASE = 'nt:base';
 
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    protected FactoryInterface $factory;
 
-    /**
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
+    protected NodeTypeManager $nodeTypeManager;
 
-    /**
-     * @var ValueConverter
-     */
-    protected $valueConverter;
+    protected ValueConverter $valueConverter;
 
     /**
      * The name of this node type definition.
-     *
-     * @var string
      */
-    protected $name = null;
+    protected ?string $name = null;
 
-    /**
-     * @var bool
-     */
-    protected $isAbstract = false;
+    protected bool $isAbstract = false;
 
     /**
      * Whether this is a mixin node type (otherwise it's a primary node type).
-     *
-     * @var bool
      */
-    protected $isMixin = false;
+    protected bool $isMixin = false;
 
-    /**
-     * @var bool
-     */
-    protected $isQueryable = true;
+    protected bool $isQueryable = true;
 
-    /**
-     * @var bool
-     */
-    protected $hasOrderableChildNodes = false;
+    protected bool $hasOrderableChildNodes = false;
 
     /**
      * Name of the primary item of this node type.
-     *
-     * @var string
      */
-    protected $primaryItemName = null;
+    protected ?string $primaryItemName = null;
 
-    /**
-     * @var array
-     */
-    protected $declaredSuperTypeNames = null;
+    protected ?array $declaredSuperTypeNames = null;
 
-    /**
-     * @var \ArrayObject
-     */
-    protected $declaredPropertyDefinitions = null;
+    protected \ArrayObject $declaredPropertyDefinitions;
 
-    /**
-     * @var \ArrayObject
-     */
-    protected $declaredNodeDefinitions = null;
+    protected \ArrayObject $declaredNodeDefinitions;
 
     /**
      * Create a new node type definition.
@@ -123,7 +88,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * @param NodeTypeDefinitionInterface $ntd The node type
      *                                         definition to copy information from
      */
-    protected function fromNodeTypeDefinition(NodeTypeDefinitionInterface $ntd)
+    protected function fromNodeTypeDefinition(NodeTypeDefinitionInterface $ntd): void
     {
         $this->name = $ntd->getName();
         $this->isAbstract = $ntd->isAbstract();
@@ -141,7 +106,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @param array $data an array with key-value information
      */
-    protected function fromArray(array $data)
+    protected function fromArray(array $data): void
     {
         $this->name = $data['name'];
         $this->isAbstract = $data['isAbstract'];
@@ -172,7 +137,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @param \DOMElement $node The dom element to read information from
      */
-    protected function fromXml(\DOMElement $node)
+    protected function fromXml(\DOMElement $node): void
     {
         $nodeTypeXmlConverter = new NodeTypeXmlConverter($this->factory);
         $this->fromArray($nodeTypeXmlConverter->getNodeTypeDefinitionFromXml($node));
@@ -183,7 +148,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -207,7 +172,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function isAbstract()
+    public function isAbstract(): bool
     {
         return $this->isAbstract;
     }
@@ -217,7 +182,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function isMixin()
+    public function isMixin(): bool
     {
         return $this->isMixin;
     }
@@ -227,7 +192,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function hasOrderableChildNodes()
+    public function hasOrderableChildNodes(): bool
     {
         return $this->hasOrderableChildNodes;
     }
@@ -237,7 +202,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function isQueryable()
+    public function isQueryable(): bool
     {
         return $this->isQueryable;
     }
@@ -247,7 +212,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function getPrimaryItemName()
+    public function getPrimaryItemName(): ?string
     {
         return $this->primaryItemName;
     }
@@ -257,10 +222,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function getDeclaredPropertyDefinitions()
+    public function getDeclaredPropertyDefinitions(): ?array
     {
-        return null === $this->declaredPropertyDefinitions
-            ? null : $this->declaredPropertyDefinitions->getArrayCopy();
+        return isset($this->declaredPropertyDefinitions) ? $this->declaredPropertyDefinitions->getArrayCopy() : null;
     }
 
     /**
@@ -268,9 +232,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      *
      * @api
      */
-    public function getDeclaredChildNodeDefinitions()
+    public function getDeclaredChildNodeDefinitions(): ?array
     {
-        return null === $this->declaredNodeDefinitions
-            ? null : $this->declaredNodeDefinitions->getArrayCopy();
+        return isset($this->declaredNodeDefinitions) ? $this->declaredNodeDefinitions->getArrayCopy() : null;
     }
 }

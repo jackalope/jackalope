@@ -4,26 +4,28 @@ namespace Jackalope;
 
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemVisitorInterface;
+use PHPCR\NodeInterface;
 use PHPCR\RepositoryException;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class ItemTest extends TestCase
 {
     /**
      * create the item and mock any of the constructor parameters not specified explicitly.
      */
-    protected function getItem($factory = null, $path = null, $session = null, $objectManager = null, $new = false)
+    protected function getItem($factory = null, $path = null, $session = null, $objectManager = null, $new = false): TestItem
     {
         if (!$factory) {
-            $factory = $this->getMockBuilder(FactoryInterface::class)->disableOriginalConstructor()->getMock();
+            $factory = new Factory();
         }
         if (!$path) {
             $path = '/';
         }
         if (!$session) {
-            $session = $this->getSessionMock();
+            $session = $this->createMock(Session::class);
         }
         if (!$objectManager) {
-            $objectManager = $this->getObjectManagerMock();
+            $objectManager = $this->createMock(ObjectManager::class);
         }
 
         return new TestItem($factory, $path, $session, $objectManager, $new);
@@ -31,27 +33,29 @@ class ItemTest extends TestCase
 
     /**
      * a mock that will additionally expect getNodeByPath once with $path and return the string 'placeholder'.
+     *
+     * @return ObjectManager&MockObject
      */
-    protected function getObjectManagerMockWithPath($path)
+    protected function getObjectManagerMockWithPath($path, NodeInterface $node)
     {
-        $om = $this->getObjectManagerMock();
+        $om = $this->createMock(ObjectManager::class);
         $om->expects($this->once())
             ->method('getNodeByPath')
             ->with($this->equalTo($path))
-            ->will($this->returnValue('placeholder'))
+            ->willReturn($node)
         ;
 
         return $om;
     }
 
-    public function testPath()
+    public function testPath(): void
     {
         $item = $this->getItem();
         $item->setPath('/b');
         $this->assertEquals('/b', $item->getPath());
     }
 
-    public function testName()
+    public function testName(): void
     {
         $item = $this->getItem(null, '/path/itemname');
         $this->assertEquals('itemname', $item->getName());
@@ -59,29 +63,31 @@ class ItemTest extends TestCase
         $this->assertEquals('name', $item->getName());
     }
 
-    public function testGetAncestor()
+    public function testGetAncestor(): void
     {
-        $om = $this->getObjectManagerMockWithPath('/path');
+        $node = $this->createMock(NodeInterface::class);
+        $om = $this->getObjectManagerMockWithPath('/path', $node);
         $item = $this->getItem(null, '/path/name', null, $om);
 
         $self = $item->getAncestor(2);
         $this->assertSame($item, $self);
 
         $ancestor = $item->getAncestor(1);
-        $this->assertSame('placeholder', $ancestor);
+        $this->assertSame($node, $ancestor);
     }
 
-    public function testGetAncestorRoot()
+    public function testGetAncestorRoot(): void
     {
-        $om = $this->getObjectManagerMockWithPath('/');
+        $node = $this->createMock(NodeInterface::class);
+        $om = $this->getObjectManagerMockWithPath('/', $node);
 
         $item = $this->getItem(null, '/path/name', null, $om);
 
         $ancestor = $item->getAncestor(0);
-        $this->assertSame('placeholder', $ancestor);
+        $this->assertSame($node, $ancestor);
     }
 
-    public function testGetAncestorTooDeep()
+    public function testGetAncestorTooDeep(): void
     {
         $this->expectException(ItemNotFoundException::class);
 
@@ -89,7 +95,7 @@ class ItemTest extends TestCase
         $item->getAncestor(3);
     }
 
-    public function testGetAncestorTooLow()
+    public function testGetAncestorTooLow(): void
     {
         $this->expectException(ItemNotFoundException::class);
 
@@ -97,15 +103,16 @@ class ItemTest extends TestCase
         $item->getAncestor(-1);
     }
 
-    public function testGetParent()
+    public function testGetParent(): void
     {
-        $om = $this->getObjectManagerMockWithPath('/path');
+        $node = $this->createMock(NodeInterface::class);
+        $om = $this->getObjectManagerMockWithPath('/path', $node);
         $item = $this->getItem(null, '/path/name', null, $om);
         $parent = $item->getParent();
-        $this->assertSame('placeholder', $parent);
+        $this->assertSame($node, $parent);
     }
 
-    public function testGetDepth()
+    public function testGetDepth(): void
     {
         $item = $this->getItem(null, '/path/name');
         $this->assertEquals(2, $item->getDepth());
@@ -113,19 +120,19 @@ class ItemTest extends TestCase
         $this->assertEquals(0, $item->getDepth());
     }
 
-    public function testGetSession()
+    public function testGetSession(): void
     {
         $session = $this->getSessionMock();
         $item = $this->getItem(null, null, $session);
         $this->assertEquals($session, $item->getSession());
     }
 
-    public function testIsSame()
+    public function testIsSame(): void
     {
         $this->markTestSkipped('TODO: do some mean stuff');
     }
 
-    public function testAccept()
+    public function testAccept(): void
     {
         $item = $this->getItem();
         $visitor = $this->createMock(ItemVisitorInterface::class);
@@ -134,9 +141,9 @@ class ItemTest extends TestCase
         $item->accept($visitor);
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
-        $om = $this->getObjectManagerMock();
+        $om = $this->createMock(ObjectManager::class);
         $om->expects($this->once())
             ->method('removeItem')
             ->with($this->equalTo('/path'))
@@ -147,7 +154,7 @@ class ItemTest extends TestCase
         $this->assertTrue($item->isDeleted());
     }
 
-    public function testRemoveRoot()
+    public function testRemoveRoot(): void
     {
         $this->expectException(RepositoryException::class);
 
@@ -165,7 +172,7 @@ class TestItem extends Item
         parent::__construct($factory, $path, $session, $objectManager, $new);
     }
 
-    public function refresh($keep)
+    public function refresh(bool $keepChanges, bool $internal = false): void
     {
         // tested in extending classes
     }

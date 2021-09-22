@@ -13,24 +13,12 @@ use PHPCR\Query\QOM\OrderingInterface;
  *
  * @api
  */
-class Ordering implements OrderingInterface
+final class Ordering implements OrderingInterface
 {
-    /**
-     * @var DynamicOperandInterface
-     */
-    protected $operand;
+    private DynamicOperandInterface $operand;
+    private ?string $order;
 
-    /**
-     * @var string
-     */
-    protected $order;
-
-    /**
-     * Constructor.
-     *
-     * @param string $order
-     */
-    public function __construct(DynamicOperandInterface $operand, $order = null)
+    public function __construct(DynamicOperandInterface $operand, ?string $order = null)
     {
         $this->operand = $operand;
         $this->order = $order;
@@ -41,7 +29,7 @@ class Ordering implements OrderingInterface
      *
      * @api
      */
-    public function getOperand()
+    public function getOperand(): DynamicOperandInterface
     {
         return $this->operand;
     }
@@ -51,7 +39,7 @@ class Ordering implements OrderingInterface
      *
      * @api
      */
-    public function getOrder()
+    public function getOrder(): ?string
     {
         return $this->order;
     }

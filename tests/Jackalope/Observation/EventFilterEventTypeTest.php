@@ -7,9 +7,9 @@ use PHPCR\Observation\EventInterface;
 /**
  * Unit tests for the EventFilter.
  */
-class EventFilterEventTypeTest extends EventFilterTestCase
+final class EventFilterEventTypeTest extends EventFilterTestCase
 {
-    protected $allEventTypes = [
+    private array $allEventTypes = [
         EventInterface::NODE_ADDED,
         EventInterface::NODE_MOVED,
         EventInterface::NODE_REMOVED,
@@ -19,7 +19,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
         EventInterface::PROPERTY_REMOVED,
     ];
 
-    public function testNoMatchFilter()
+    public function testNoMatchFilter(): void
     {
         foreach ($this->allEventTypes as $type) {
             $this->eventFilter->setEventTypes(0);
@@ -27,7 +27,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
         }
     }
 
-    public function testSingleTypeFilter()
+    public function testSingleTypeFilter(): void
     {
         foreach ($this->allEventTypes as $type) {
             $this->eventFilter->setEventTypes($type);
@@ -35,7 +35,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
         }
     }
 
-    public function testMultipleTypeFilter()
+    public function testMultipleTypeFilter(): void
     {
         $this->assertMultiTypeFilter([EventInterface::NODE_REMOVED, EventInterface::PROPERTY_REMOVED]);
         $this->assertMultiTypeFilter([EventInterface::PROPERTY_REMOVED, EventInterface::PROPERTY_ADDED, EventInterface::PROPERTY_CHANGED]);
@@ -47,11 +47,11 @@ class EventFilterEventTypeTest extends EventFilterTestCase
      *
      * @param array $eventTypes The list of event types
      */
-    protected function assertMultiTypeFilter($eventTypes)
+    protected function assertMultiTypeFilter($eventTypes): void
     {
         $matchedTypes = 0;
         foreach ($eventTypes as $type) {
-            $matchedTypes = $matchedTypes | $type;
+            $matchedTypes |= $type;
         }
 
         $this->eventFilter->setEventTypes($matchedTypes);
@@ -64,7 +64,7 @@ class EventFilterEventTypeTest extends EventFilterTestCase
      *
      * @param array $matchedTypes An array of matched event types
      */
-    protected function assertFilterMatch(EventFilter $filter, $matchedTypes)
+    protected function assertFilterMatch(EventFilter $filter, $matchedTypes): void
     {
         foreach ($this->allEventTypes as $type) {
             $event = new Event($this->factory, $this->getNodeTypeManager());

@@ -6,17 +6,15 @@ use Jackalope\Factory;
 use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\QueryObjectModelConstantsInterface as Constants;
 use PHPCR\Query\QOM\QueryObjectModelFactoryInterface;
+use PHPCR\Query\QOM\QueryObjectModelInterface;
 use PHPCR\Query\QOM\SourceInterface;
 use PHPCR\Util\QOM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
-class QomToSql1QueryConverterTest extends TestCase
+final class QomToSql1QueryConverterTest extends TestCase
 {
-    /**
-     * @var QueryObjectModelFactoryInterface
-     */
-    protected $qf;
-    protected $qb;
+    private QueryObjectModelFactoryInterface $qf;
+    private QueryBuilder $qb;
 
     public function setUp(): void
     {
@@ -24,7 +22,7 @@ class QomToSql1QueryConverterTest extends TestCase
         $this->qb = new QueryBuilder($this->qf);
     }
 
-    public function doQuery($constraint)
+    public function doQuery($constraint): string
     {
         $this->qb->andWhere($constraint);
 
@@ -33,31 +31,31 @@ class QomToSql1QueryConverterTest extends TestCase
         return $this->qb->getQuery()->getStatement();
     }
 
-    public function testFullText()
+    public function testFullText(): void
     {
         $statement = $this->doQuery($this->qf->fullTextSearch('base', 'foo', 'bar'));
         $this->assertSame("SELECT s FROM nt:base WHERE CONTAINS(foo, 'bar')", $statement);
     }
 
-    public function testDescendantNode()
+    public function testDescendantNode(): void
     {
         $statement = $this->doQuery($this->qf->descendantNode('base', '/foo/bar'));
         $this->assertSame("SELECT s FROM nt:base WHERE jcr:path LIKE '/foo[%]/bar[%]/%'", $statement);
     }
 
-    public function testPpropertyExistence()
+    public function testPropertyExistence(): void
     {
         $statement = $this->doQuery($this->qf->propertyExistence('base', 'foo'));
         $this->assertSame('SELECT s FROM nt:base WHERE foo IS NOT NULL', $statement);
     }
 
-    public function testChildNode()
+    public function testChildNode(): void
     {
         $statement = $this->doQuery($this->qf->childNode('base', '/foo/bar'));
         $this->assertSame("SELECT s FROM nt:base WHERE jcr:path LIKE '/foo[%]/bar[%]/%' AND NOT jcr:path LIKE '/foo[%]/bar[%]/%/%'", $statement);
     }
 
-    public function testAndConstraint()
+    public function testAndConstraint(): void
     {
         $this->qb->andWhere($this->qf->comparison($this->qf->propertyValue('base', 'foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
         $statement = $this->doQuery($this->qf->propertyExistence('base', 'foo'));
@@ -68,7 +66,7 @@ class QomToSql1QueryConverterTest extends TestCase
         $this->assertContains($statement, $variations, "The statement '$statement' does not match an expected variation");
     }
 
-    public function testOrConstraint()
+    public function testOrConstraint(): void
     {
         $this->qb->where($this->qf->comparison($this->qf->propertyValue('base', 'foo'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('bar')));
         $this->qb->orWhere($this->qf->comparison($this->qf->propertyValue('base', 'bar'), Constants::JCR_OPERATOR_EQUAL_TO, $this->qf->literal('foo')));
@@ -81,7 +79,7 @@ class QomToSql1QueryConverterTest extends TestCase
         $this->assertContains($statement, $variations, "The statement '$statement' does not match an expected variation");
     }
 
-    public function testNotConstraint()
+    public function testNotConstraint(): void
     {
         $this->qb->where(
             $this->qf->notConstraint(
@@ -116,7 +114,7 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
         array $orderings = [],
         array $columns = [],
         $simpleQuery = false
-    ) {
+    ): QueryObjectModelInterface {
         return $this->factory->get(
             QueryObjectModelSql1::class,
             [$this->objectManager, $source, $constraint, $orderings, $columns]

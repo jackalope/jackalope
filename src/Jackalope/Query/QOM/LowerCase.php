@@ -13,16 +13,10 @@ use PHPCR\Query\QOM\LowerCaseInterface;
  *
  * @api
  */
-class LowerCase implements LowerCaseInterface
+final class LowerCase implements LowerCaseInterface
 {
-    /**
-     * @var DynamicOperandInterface
-     */
-    protected $operand;
+    private DynamicOperandInterface $operand;
 
-    /**
-     * Create a new lower case value.
-     */
     public function __construct(DynamicOperandInterface $operand)
     {
         $this->operand = $operand;
@@ -33,7 +27,7 @@ class LowerCase implements LowerCaseInterface
      *
      * @api
      */
-    public function getOperand()
+    public function getOperand(): DynamicOperandInterface
     {
         return $this->operand;
     }

@@ -4,6 +4,7 @@ namespace Jackalope\Lock;
 
 use Jackalope\NotImplementedException;
 use PHPCR\Lock\LockInterface;
+use PHPCR\NodeInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\RepositoryException;
 
@@ -15,71 +16,43 @@ use PHPCR\RepositoryException;
  *
  * @api
  */
-class Lock implements LockInterface
+final class Lock implements LockInterface
 {
-    /**
-     * @var LockManager
-     */
-    protected $lockManager;
+    private LockManager $lockManager;
+
+    private string $lockOwner;
+
+    private bool $isDeep;
+
+    private string $path;
+
+    private string $lockToken;
+
+    private bool $isLive = true;
+
+    private bool $isSessionScoped;
+
+    private bool $isLockOwningSession;
 
     /**
-     * @var string
+     * The unix timestamp (seconds since 1970) at which this lock will expire or null to never expire.
      */
-    protected $lockOwner;
-
-    /**
-     * @var bool
-     */
-    protected $isDeep;
-
-    /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * @var string
-     */
-    protected $lockToken;
-
-    /**
-     * @var bool
-     */
-    protected $isLive = true;
-
-    /**
-     * @var bool
-     */
-    protected $isSessionScoped;
-
-    /**
-     * @var bool
-     */
-    protected $isLockOwningSession;
-
-    /**
-     * The unix timestamp (seconds since 1970) at which this lock will expire.
-     *
-     * @var int
-     */
-    protected $expire;
+    private ?int $expire;
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    public function getLockOwner()
+    public function getLockOwner(): string
     {
         return $this->lockOwner;
     }
 
     /**
-     * @param string $owner
-     *
      * @private
      */
-    public function setLockOwner($owner)
+    public function setLockOwner(string $owner): void
     {
         $this->lockOwner = $owner;
     }
@@ -89,17 +62,15 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function isDeep()
+    public function isDeep(): bool
     {
         return $this->isDeep;
     }
 
     /**
-     * @param bool $isDeep
-     *
      * @private
      */
-    public function setIsDeep($isDeep)
+    public function setIsDeep(bool $isDeep): void
     {
         $this->isDeep = $isDeep;
     }
@@ -112,7 +83,7 @@ class Lock implements LockInterface
      * @throws PathNotFoundException
      * @throws RepositoryException
      */
-    public function getNode()
+    public function getNode(): NodeInterface
     {
         if (null === $this->path) {
             throw new NotImplementedException();
@@ -128,7 +99,7 @@ class Lock implements LockInterface
      *
      * @private
      */
-    public function setNodePath($path)
+    public function setNodePath(string $path): void
     {
         $this->path = $path;
     }
@@ -138,17 +109,15 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function getLockToken()
+    public function getLockToken(): string
     {
         return $this->lockToken;
     }
 
     /**
-     * @param string $token
-     *
      * @private
      */
-    public function setLockToken($token)
+    public function setLockToken(string $token): void
     {
         $this->lockToken = $token;
     }
@@ -158,7 +127,7 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function getSecondsRemaining()
+    public function getSecondsRemaining(): int
     {
         // The timeout does not seem to be correctly implemented in Jackrabbit. Thus we
         // always return the max timeout value
@@ -174,7 +143,7 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function isLive()
+    public function isLive(): bool
     {
         if ($this->isLive) {
             $this->isLive = $this->lockManager->isLocked($this->path);
@@ -186,11 +155,9 @@ class Lock implements LockInterface
     /**
      * Can be used by the lock manager to tell the lock its no longer live.
      *
-     * @param bool $isLive
-     *
      * @private
      */
-    public function setIsLive($isLive)
+    public function setIsLive(bool $isLive): void
     {
         $this->isLive = $isLive;
     }
@@ -200,17 +167,15 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function isSessionScoped()
+    public function isSessionScoped(): bool
     {
         return $this->isSessionScoped;
     }
 
     /**
-     * @param bool $isSessionScoped
-     *
      * @private
      */
-    public function setIsSessionScoped($isSessionScoped)
+    public function setIsSessionScoped(bool $isSessionScoped): void
     {
         $this->isSessionScoped = $isSessionScoped;
     }
@@ -220,17 +185,15 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function isLockOwningSession()
+    public function isLockOwningSession(): bool
     {
         return $this->isLockOwningSession;
     }
 
     /**
-     * @param bool $isLockOwningSession
-     *
      * @private
      */
-    public function setIsLockOwningSession($isLockOwningSession)
+    public function setIsLockOwningSession(bool $isLockOwningSession): void
     {
         $this->isLockOwningSession = $isLockOwningSession;
     }
@@ -246,7 +209,7 @@ class Lock implements LockInterface
      *
      * @see http://ch.php.net/manual/en/function.time.php
      */
-    public function setExpireTime($expire)
+    public function setExpireTime(?int $expire): void
     {
         $this->expire = $expire;
     }
@@ -256,7 +219,7 @@ class Lock implements LockInterface
      *
      * @api
      */
-    public function refresh()
+    public function refresh(): void
     {
         throw new NotImplementedException();
     }
@@ -266,7 +229,7 @@ class Lock implements LockInterface
      *
      * @private
      */
-    public function setLockManager(LockManager $lm)
+    public function setLockManager(LockManager $lm): void
     {
         $this->lockManager = $lm;
     }

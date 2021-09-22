@@ -2,30 +2,30 @@
 
 namespace Jackalope;
 
+use PHPUnit\Framework\MockObject\MockObject;
+
 class ObjectManagerTest extends TestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private ObjectManager $om;
 
     public function setUp(): void
     {
         $factory = new Factory();
         $session = $this->getSessionMock();
         $workspace = $session->getWorkspace();
+        \assert($workspace instanceof MockObject);
 
         $ntMock = $this->getNodeTypeMock(['isNodeType' => true]);
         $ntmMock = $this->getNodeTypeManagerMock(['getNodeType' => $ntMock]);
 
-        $workspace->expects($this->any())
+        $workspace
             ->method('getNodeTypeManager')
-            ->will($this->returnValue($ntmMock));
+            ->willReturn($ntmMock);
 
         $this->om = new ObjectManager($factory, $this->getTransportStub(), $session);
     }
 
-    public function testGetNodeByPath()
+    public function testGetNodeByPath(): void
     {
         $path = '/jcr:root';
         $node = $this->om->getNodeByPath($path);
@@ -36,15 +36,15 @@ class ObjectManagerTest extends TestCase
         $this->assertSame($node, $this->om->getNodeByPath($path));
     }
 
-    public function testGetNodeTypes()
+    public function testGetNodeTypes(): void
     {
         $nodetypes = $this->om->getNodeTypes();
-        $this->assertInstanceOf(\DOMDocument::class, $nodetypes);
+        $this->assertIsArray($nodetypes);
         $nodetypes = $this->om->getNodeTypes(['nt:folder', 'nt:file']);
-        $this->assertInstanceOf(\DOMDocument::class, $nodetypes);
+        $this->assertIsArray($nodetypes);
     }
 
-    public function testRegisterUuid()
+    public function testRegisterUuid(): void
     {
         $this->om->registerUuid('1234', '/jcr:root');
         $node = $this->om->getNodeByIdentifier('1234');
@@ -52,7 +52,7 @@ class ObjectManagerTest extends TestCase
         $this->assertInstanceOf(Node::class, $node);
     }
 
-    public function testRegisterUuidAlreadyMapped()
+    public function testRegisterUuidAlreadyMapped(): void
     {
         $this->om->registerUuid('1234', '/path/to/this');
 

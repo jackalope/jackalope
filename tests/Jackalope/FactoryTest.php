@@ -6,29 +6,26 @@ use Other\TestDummy;
 
 class FactoryTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    protected $factory;
+    protected Factory $factory;
 
     public function setUp(): void
     {
         $this->factory = new Factory();
     }
 
-    public function testJackalope()
+    public function testJackalope(): void
     {
         $reg = $this->factory->get(NamespaceRegistry::class, [$this->getTransportStub()]);
         $this->assertInstanceOf(NamespaceRegistry::class, $reg);
     }
 
-    public function testOutside()
+    public function testOutside(): void
     {
         $dummy = $this->factory->get(TestDummy::class);
         $this->assertInstanceOf(TestDummy::class, $dummy);
     }
 
-    public function testNotexisting()
+    public function testNotexisting(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

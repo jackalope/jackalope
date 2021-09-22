@@ -8,6 +8,7 @@ use Jackalope\Transport\TransportInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
+use PHPCR\SessionInterface;
 
 /**
  * {@inheritDoc}
@@ -17,7 +18,7 @@ use PHPCR\RepositoryInterface;
  *
  * @api
  */
-class Repository implements RepositoryInterface
+final class Repository implements RepositoryInterface
 {
     /**
      * The descriptor key for the version of the specification that this repository implements.
@@ -27,7 +28,7 @@ class Repository implements RepositoryInterface
      */
     public const JACKALOPE_OPTION_STREAM_WRAPPER = 'jackalope.option.stream_wrapper';
 
-    protected $jackalopeNotImplemented = [
+    private array $jackalopeNotImplemented = [
         // https://github.com/jackalope/jackalope/issues/217
         'jackalope.not_implemented.node.definition' => true,
 
@@ -71,28 +72,14 @@ class Repository implements RepositoryInterface
     /**
      * flag to call stream_wrapper_register only once.
      */
-    protected static $binaryStreamWrapperRegistered;
-
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * The transport to use.
-     *
-     * @var TransportInterface
-     */
-    protected $transport;
+    private static $binaryStreamWrapperRegistered;
+    private FactoryInterface $factory;
+    private TransportInterface $transport;
 
     /**
      * List of supported options.
-     *
-     * @var array
      */
-    protected $options = [
+    private array $options = [
         // this is OPTION_TRANSACTIONS_SUPPORTED
         'transactions' => true,
         // this is JACKALOPE_OPTION_STREAM_WRAPPER
@@ -103,10 +90,8 @@ class Repository implements RepositoryInterface
     /**
      * Cached array of repository descriptors. Each is either a string or an
      * array of strings.
-     *
-     * @var array
      */
-    protected $descriptors;
+    private array $descriptors;
 
     /**
      * Create repository with the option to overwrite the factory and bound to
@@ -115,16 +100,16 @@ class Repository implements RepositoryInterface
      * Use RepositoryFactoryDoctrineDBAL or RepositoryFactoryJackrabbit to
      * instantiate this class.
      *
-     * @param FactoryInterface   $factory   the object factory to use. If this is
-     *                                      null, the Jackalope\Factory is instantiated. Note that the
-     *                                      repository is the only class accepting null as factory.
-     * @param TransportInterface $transport transport implementation
-     * @param array              $options   defines optional features to enable/disable (see
-     *                                      $options property)
+     * @param FactoryInterface|null $factory   the object factory to use. If this is
+     *                                         null, the Jackalope\Factory is instantiated. Note that the
+     *                                         repository is the only class accepting null as factory.
+     * @param TransportInterface    $transport transport implementation
+     * @param array|null            $options   defines optional features to enable/disable (see
+     *                                         $options property)
      */
-    public function __construct(FactoryInterface $factory = null, TransportInterface $transport, array $options = null)
+    public function __construct(?FactoryInterface $factory, TransportInterface $transport, array $options = null)
     {
-        $this->factory = null === $factory ? new Factory() : $factory;
+        $this->factory = $factory ?? new Factory();
         $this->transport = $transport;
         $this->options = array_merge($this->options, (array) $options);
         $this->options['transactions'] = $this->options['transactions'] && $transport instanceof TransactionInterface;
@@ -144,7 +129,7 @@ class Repository implements RepositoryInterface
      *
      * @api
      */
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null)
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null): SessionInterface
     {
         if (!$workspaceName = $this->transport->login($credentials, $workspaceName)) {
             throw new RepositoryException('Transport failed to login without telling why');
@@ -154,7 +139,7 @@ class Repository implements RepositoryInterface
         $session = $this->factory->get(Session::class, [$this, $workspaceName, $credentials, $this->transport]);
         $session->setSessionOption(Session::OPTION_AUTO_LASTMODIFIED, $this->options[Session::OPTION_AUTO_LASTMODIFIED]);
         if ($this->options['transactions']) {
-            $utx = $this->factory->get(UserTransaction::class, [$this->transport, $session, $session->getObjectManager()]);
+            $utx = $this->factory->get(UserTransaction::class, [$this->transport, $session->getObjectManager()]);
             $session->getWorkspace()->setTransactionManager($utx);
         }
 
@@ -166,9 +151,9 @@ class Repository implements RepositoryInterface
      *
      * @api
      */
-    public function getDescriptorKeys()
+    public function getDescriptorKeys(): array
     {
-        if (null === $this->descriptors) {
+        if (!isset($this->descriptors)) {
             $this->loadDescriptors();
         }
 
@@ -180,12 +165,12 @@ class Repository implements RepositoryInterface
      *
      * @api
      */
-    public function isStandardDescriptor($key)
+    public function isStandardDescriptor($key): bool
     {
         $ref = new \ReflectionClass(RepositoryInterface::class);
         $consts = $ref->getConstants();
 
-        return in_array($key, $consts);
+        return in_array($key, $consts, true);
     }
 
     /**
@@ -208,11 +193,11 @@ class Repository implements RepositoryInterface
                 return false;
         }
 
-        if (null === $this->descriptors) {
+        if (!isset($this->descriptors)) {
             $this->loadDescriptors();
         }
 
-        return (isset($this->descriptors[$key])) ? $this->descriptors[$key] : null;
+        return array_key_exists($key, $this->descriptors) ? $this->descriptors[$key] : null;
     }
 
     /**
@@ -223,7 +208,7 @@ class Repository implements RepositoryInterface
      *
      * @throws RepositoryException
      */
-    protected function loadDescriptors()
+    private function loadDescriptors(): void
     {
         $this->descriptors = array_merge(
             $this->jackalopeNotImplemented,

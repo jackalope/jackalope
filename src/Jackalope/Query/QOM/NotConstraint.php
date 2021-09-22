@@ -13,16 +13,10 @@ use PHPCR\Query\QOM\NotInterface;
  *
  * @api
  */
-class NotConstraint implements NotInterface
+final class NotConstraint implements NotInterface
 {
-    /**
-     * @var ConstraintInterface
-     */
-    protected $constraint;
+    private ConstraintInterface $constraint;
 
-    /**
-     * Create a new not constraint.
-     */
     public function __construct(ConstraintInterface $constraint)
     {
         $this->constraint = $constraint;
@@ -33,7 +27,7 @@ class NotConstraint implements NotInterface
      *
      * @api
      */
-    public function getConstraint()
+    public function getConstraint(): ConstraintInterface
     {
         return $this->constraint;
     }
@@ -41,11 +35,11 @@ class NotConstraint implements NotInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         $constraints = $this->getConstraint()->getConstraints();
         $constraints[] = $this;

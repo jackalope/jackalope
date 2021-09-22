@@ -5,11 +5,11 @@ namespace Jackalope\Lock;
 use Jackalope\FactoryInterface;
 use Jackalope\Item;
 use Jackalope\NotImplementedException;
-use Jackalope\ObjectManager;
 use Jackalope\Transport\LockingInterface;
 use PHPCR\InvalidItemStateException;
 use PHPCR\Lock\LockException;
 use PHPCR\Lock\LockInfoInterface;
+use PHPCR\Lock\LockInterface;
 use PHPCR\Lock\LockManagerInterface;
 use PHPCR\PathNotFoundException;
 use PHPCR\SessionInterface;
@@ -24,48 +24,19 @@ use PHPCR\SessionInterface;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class LockManager implements \IteratorAggregate, LockManagerInterface
+final class LockManager implements \IteratorAggregate, LockManagerInterface
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private SessionInterface $session;
+
+    private LockingInterface $transport;
 
     /**
-     * The jackalope object factory for this object.
-     *
-     * @var FactoryInterface
+     * @var Lock[] node locks indexed by absPath
      */
-    protected $factory;
+    private array $locks = [];
 
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
-     * @var LockingInterface
-     */
-    protected $transport;
-
-    /**
-     * Contains a list of nodes locks.
-     *
-     * @var Lock[] indexed by absPath
-     */
-    protected $locks = [];
-
-    /**
-     * Create the version manager - there should be only one per session.
-     *
-     * @param FactoryInterface $factory An object factory implementing "get" as described in \Jackalope\FactoryInterface
-     *
-     * @return LockManager
-     */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, SessionInterface $session, LockingInterface $transport)
+    public function __construct(FactoryInterface $factory, SessionInterface $session, LockingInterface $transport)
     {
-        $this->objectManager = $objectManager;
-        $this->factory = $factory;
         $this->session = $session;
         $this->transport = $transport;
     }
@@ -73,8 +44,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * {@inheritDoc}
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->getLockTokens());
     }
@@ -84,7 +54,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function addLockToken($lockToken)
+    public function addLockToken($lockToken): void
     {
         throw new NotImplementedException();
     }
@@ -94,7 +64,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function getLock($absPath)
+    public function getLock($absPath): LockInterface
     {
         // The locks are only cached in the LockManager if the lock was created
         // by him. Otherwise we don't have the Lock cached.
@@ -127,7 +97,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function holdsLock($absPath)
+    public function holdsLock($absPath): bool
     {
         if (!$this->session->nodeExists($absPath)) {
             throw new PathNotFoundException("The node '$absPath' does not exist");
@@ -145,7 +115,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null)
+    public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null): LockInterface
     {
         if (!$isSessionScoped) {
             throw new NotImplementedException('Global scoped locks are not yet implemented in Jackalope. If you create such a lock you might not be able to remove it afterward. For now we deactivated this feature.');
@@ -182,7 +152,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function lockWithInfo($absPath, LockInfoInterface $lockInfo)
+    public function lockWithInfo($absPath, LockInfoInterface $lockInfo): LockInterface
     {
         return $this->lock(
             $absPath,
@@ -198,7 +168,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function isLocked($absPath)
+    public function isLocked($absPath): bool
     {
         if (!$this->session->nodeExists($absPath)) {
             throw new PathNotFoundException("There is no node at '$absPath'");
@@ -212,7 +182,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function removeLockToken($lockToken)
+    public function removeLockToken($lockToken): void
     {
         throw new NotImplementedException();
     }
@@ -222,7 +192,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function unlock($absPath)
+    public function unlock($absPath): void
     {
         if (!$this->session->nodeExists($absPath)) {
             throw new PathNotFoundException("Unable to unlock unexisting node '$absPath'");
@@ -248,7 +218,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @api
      */
-    public function createLockInfo()
+    public function createLockInfo(): LockInfoInterface
     {
         return new LockInfo();
     }
@@ -259,7 +229,7 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
      *
      * @private
      */
-    public function logout()
+    public function logout(): void
     {
         foreach ($this->locks as $path => $lock) {
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
@@ -275,11 +245,9 @@ class LockManager implements \IteratorAggregate, LockManagerInterface
     /**
      * for the locks to get the session to get their root node.
      *
-     * @return SessionInterface
-     *
      * @private
      */
-    public function getSession()
+    public function getSession(): SessionInterface
     {
         return $this->session;
     }

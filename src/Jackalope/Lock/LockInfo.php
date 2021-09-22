@@ -11,34 +11,22 @@ use PHPCR\Lock\LockInfoInterface;
  * @license http://opensource.org/licenses/MIT MIT License
  * @author David Buchmann <david@liip.ch>
  */
-class LockInfo implements LockInfoInterface
+final class LockInfo implements LockInfoInterface
 {
-    /**
-     * @var bool
-     */
-    private $isDeep = true;
+    private bool $isDeep = true;
 
-    /**
-     * @var bool
-     */
-    private $isSessionScoped = false;
+    private bool $isSessionScoped = false;
 
-    /**
-     * @var int
-     */
-    private $timeoutHint = PHP_INT_MAX;
+    private int $timeoutHint = PHP_INT_MAX;
 
-    /**
-     * @var string|null
-     */
-    private $ownerInfo = null;
+    private ?string $ownerInfo = null;
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    public function setIsDeep($isDeep)
+    public function setIsDeep($isDeep): self
     {
         $this->isDeep = $isDeep;
 
@@ -50,7 +38,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function getIsDeep()
+    public function getIsDeep(): bool
     {
         return $this->isDeep;
     }
@@ -60,7 +48,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function setIsSessionScoped($isSessionScoped)
+    public function setIsSessionScoped($isSessionScoped): self
     {
         $this->isSessionScoped = $isSessionScoped;
 
@@ -72,7 +60,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function getIsSessionScoped()
+    public function getIsSessionScoped(): bool
     {
         return $this->isSessionScoped;
     }
@@ -82,7 +70,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function setTimeoutHint($timeoutHint)
+    public function setTimeoutHint($timeoutHint): self
     {
         $this->timeoutHint = $timeoutHint;
 
@@ -94,7 +82,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function getTimeoutHint()
+    public function getTimeoutHint(): int
     {
         return $this->timeoutHint;
     }
@@ -104,7 +92,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function setOwnerInfo($ownerInfo)
+    public function setOwnerInfo($ownerInfo): self
     {
         $this->ownerInfo = $ownerInfo;
 
@@ -116,7 +104,7 @@ class LockInfo implements LockInfoInterface
      *
      * @api
      */
-    public function getOwnerInfo()
+    public function getOwnerInfo(): ?string
     {
         return $this->ownerInfo;
     }

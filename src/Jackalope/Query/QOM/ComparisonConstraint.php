@@ -14,29 +14,13 @@ use PHPCR\Query\QOM\StaticOperandInterface;
  *
  * @api
  */
-class ComparisonConstraint implements ComparisonInterface
+final class ComparisonConstraint implements ComparisonInterface
 {
-    /**
-     * @var DynamicOperandInterface
-     */
-    protected $operand1;
+    private DynamicOperandInterface $operand1;
+    private string $operator;
+    private StaticOperandInterface $operand2;
 
-    /**
-     * @var string
-     */
-    protected $operator;
-
-    /**
-     * @var StaticOperandInterface
-     */
-    protected $operand2;
-
-    /**
-     * Create a new comparison constraint.
-     *
-     * @param string $operator
-     */
-    public function __construct(DynamicOperandInterface $operand1, $operator, StaticOperandInterface $operand2)
+    public function __construct(DynamicOperandInterface $operand1, string $operator, StaticOperandInterface $operand2)
     {
         $this->operand1 = $operand1;
         $this->operator = $operator;
@@ -50,7 +34,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return [$this];
     }
@@ -60,7 +44,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    public function getOperand1()
+    public function getOperand1(): DynamicOperandInterface
     {
         return $this->operand1;
     }
@@ -70,7 +54,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -80,7 +64,7 @@ class ComparisonConstraint implements ComparisonInterface
      *
      * @api
      */
-    public function getOperand2()
+    public function getOperand2(): StaticOperandInterface
     {
         return $this->operand2;
     }

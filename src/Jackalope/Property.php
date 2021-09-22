@@ -26,61 +26,51 @@ use PHPCR\Version\VersionException;
  *
  * @api
  */
-class Property extends Item implements \IteratorAggregate, PropertyInterface
+final class Property extends Item implements \IteratorAggregate, PropertyInterface
 {
     /**
      * flag to know if binary streams should be wrapped or retrieved
      * immediately. this is a per session setting.
      *
-     * @var bool
-     *
      * @see Property::__construct()
      */
-    protected $wrapBinaryStreams;
+    private bool $wrapBinaryStreams;
 
     /**
      * All binary stream wrapper instances.
-     *
-     * @var array
      */
-    protected $streams = [];
+    private array $streams = [];
 
     /**
      * The property value in suitable native format or object.
      *
-     * @var mixed
+     * @var mixed|mixed[]
      */
-    protected $value;
+    private $value;
 
     /**
      * length is only used for binary property, because binary loading is delayed until explicitly requested.
      *
-     * @var int
+     * @var int|int[]
      */
-    protected $length;
+    private $length;
 
     /**
      * whether this is a multivalue property.
-     *
-     * @var bool
      */
-    protected $isMultiple = false;
+    private bool $isMultiple = false;
 
     /**
      * the type constant from PropertyType.
-     *
-     * @var int
      */
-    protected $type = PropertyType::UNDEFINED;
+    private int $type = PropertyType::UNDEFINED;
 
     /**
      * cached instance of the property definition that defines this property.
      *
-     * @var PropertyDefinitionInterface
-     *
      * @see Property::getDefinition()
      */
-    protected $definition;
+    private PropertyDefinitionInterface $definition;
 
     /**
      * Create a property, either from server data or locally.
@@ -94,7 +84,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      * data itself.
      *
      * @param FactoryInterface $factory       the object factory
-     * @param array            $data          array with fields <tt>type</tt>
+     * @param array|null       $data          array with fields <tt>type</tt>
      *                                        (integer or string from PropertyType) and <tt>value</tt> (data for
      *                                        creating the property value - array for multivalue property)
      * @param string           $path          the absolute path of this item
@@ -108,7 +98,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      * @throws RepositoryException
      * @throws \InvalidArgumentException
      */
-    public function __construct(FactoryInterface $factory, array $data, $path, Session $session, ObjectManager $objectManager, $new = false)
+    public function __construct(FactoryInterface $factory, ?array $data, $path, Session $session, ObjectManager $objectManager, bool $new = false)
     {
         parent::__construct($factory, $path, $session, $objectManager, $new);
 
@@ -134,7 +124,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function setValue($value, $type = PropertyType::UNDEFINED)
+    public function setValue($value, $type = PropertyType::UNDEFINED): void
     {
         $this->checkState();
 
@@ -177,7 +167,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function addValue($value)
+    public function addValue($value): void
     {
         $this->checkState();
 
@@ -199,7 +189,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @private
      */
-    public function setModified()
+    public function setModified(): void
     {
         parent::setModified();
         $parent = $this->getParent();
@@ -545,11 +535,11 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function getDefinition()
+    public function getDefinition(): PropertyDefinitionInterface
     {
         $this->checkState();
 
-        if (empty($this->definition)) {
+        if (!isset($this->definition)) {
             $this->definition = $this->findItemDefinition(function (NodeTypeInterface $nt) {
                 return $nt->getPropertyDefinitions();
             });
@@ -563,7 +553,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function getType()
+    public function getType(): int
     {
         $this->checkState();
 
@@ -575,7 +565,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function isMultiple()
+    public function isMultiple(): bool
     {
         $this->checkState();
 
@@ -593,7 +583,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @api
      */
-    public function remove()
+    public function remove(): void
     {
         $this->checkState();
 
@@ -616,8 +606,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      * @throws RepositoryException
      * @throws ValueFormatException
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         $this->checkState();
 
@@ -644,7 +633,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @see Item::checkState
      */
-    protected function refresh($keepChanges, $internal = false)
+    protected function refresh(bool $keepChanges, bool $internal = false): void
     {
         if ($this->isDeleted()) {
             if ($internal) {
@@ -685,7 +674,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @private
      */
-    public function _setValue($value, $type = PropertyType::UNDEFINED, $constructor = false)
+    public function _setValue($value, $type = PropertyType::UNDEFINED, bool $constructor = false): void
     {
         if (null === $value) {
             $this->remove();
@@ -796,7 +785,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      *
      * @private
      */
-    public function _setLength($length)
+    public function _setLength(int $length): void
     {
         $this->length = $length;
         $this->value = null;
@@ -828,7 +817,7 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
      * @throws ItemNotFoundException if not all $ids are found and weak is true
      * @throws RepositoryException   if not all $ids are found and weak is false
      */
-    private function getReferencedNodes($ids, $weak)
+    private function getReferencedNodes(array $ids, bool $weak): array
     {
         $results = [];
         $nodes = $this->objectManager->getNodesByIdentifier($ids);
@@ -846,13 +835,12 @@ class Property extends Item implements \IteratorAggregate, PropertyInterface
                     'One or more weak reference targets have not been found: "%s".',
                     implode('", "', $missing)
                 ));
-            } else {
-                throw new RepositoryException(sprintf(
-                    'Internal Error: Could not find one or more referenced nodes: "%s". '.
-                    'If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
-                    implode('", "', $missing)
-                ));
             }
+            throw new RepositoryException(sprintf(
+                'Internal Error: Could not find one or more referenced nodes: "%s". '.
+                'If the referencing node is a frozen version, this can happen, otherwise it would be a bug.',
+                implode('", "', $missing)
+            ));
         }
 
         return $results;

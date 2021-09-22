@@ -12,39 +12,15 @@ use PHPCR\Query\QOM\ColumnInterface;
  *
  * @api
  */
-class Column implements ColumnInterface
+final class Column implements ColumnInterface
 {
-    /**
-     * @var string
-     */
-    protected $propertyName;
+    private string $selectorName;
+    private ?string $propertyName;
+    private ?string $columnName;
 
-    /**
-     * @var string
-     */
-    protected $columnName;
-
-    /**
-     * @var string
-     */
-    protected $selectorName;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     * @param string $propertyName
-     * @param string $columnName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $propertyName, $columnName = null)
+    public function __construct(string $selectorName, ?string $propertyName, ?string $columnName = null)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
-
-        if ((null === $propertyName) != (null === $columnName)) {
+        if ((null === $propertyName) !== (null === $columnName)) {
             throw new \InvalidArgumentException('Either both propertyName and columnName must be both null, or both non-null.');
         }
 
@@ -58,7 +34,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -68,7 +44,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    public function getPropertyName()
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
@@ -78,7 +54,7 @@ class Column implements ColumnInterface
      *
      * @api
      */
-    public function getColumnName()
+    public function getColumnName(): ?string
     {
         return $this->columnName;
     }

@@ -28,7 +28,7 @@ interface VersioningInterface extends TransportInterface
      * @throws UnsupportedRepositoryOperationException
      * @throws RepositoryException
      */
-    public function checkinItem($path);
+    public function checkinItem(string $path): string;
 
     /**
      * Check-out item at path.
@@ -40,7 +40,7 @@ interface VersioningInterface extends TransportInterface
      * @throws UnsupportedRepositoryOperationException
      * @throws RepositoryException
      */
-    public function checkoutItem($path);
+    public function checkoutItem(string $path): void;
 
     /**
      * Restore the item at versionPath to the location path.
@@ -49,7 +49,7 @@ interface VersioningInterface extends TransportInterface
      *
      * @see VersionManager::restoreItem
      */
-    public function restoreItem($removeExisting, $versionPath, $path);
+    public function restoreItem(bool $removeExisting, string $versionPath, string $path): void;
 
     /**
      * Remove a version given the path to the version node and the name of the version.
@@ -60,20 +60,18 @@ interface VersioningInterface extends TransportInterface
      * @throws ReferentialIntegrityException
      * @throws VersionException
      */
-    public function removeVersion($versionPath, $versionName);
+    public function removeVersion(string $versionPath, string $versionName): void;
 
     /**
      * Adds the label <code>label</code> to the specified version.
      *
      * @param string $versionName the absolute path to the version
-     * @param string $label
-     * @param bool   $moveLabel
      *
      * @throws LabelExistsVersionException if, the label is set to another version and
      *                                     the parameter moveLabel is set to false
      * @throws RepositoryException         in case of an other error
      */
-    public function addVersionLabel($versionName, $label, $moveLabel);
+    public function addVersionLabel(string $versionName, string $label, bool $moveLabel): void;
 
     /**
      * Removes a label from the specified version.
@@ -81,5 +79,5 @@ interface VersioningInterface extends TransportInterface
      * @param string $versionPath the absolute path to the version
      * @param string $label       the label, that has to be removed
      */
-    public function removeVersionLabel($versionPath, $label);
+    public function removeVersionLabel(string $versionPath, string $label): void;
 }

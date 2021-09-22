@@ -17,26 +17,24 @@ interface TransactionInterface extends TransportInterface
     /**
      * Initiates a "local transaction" on the root node.
      *
-     * @return string The received transaction token
+     * @return string A transaction token that can be used for debugging
      *
      * @throws RepositoryException if no transaction token received
      */
-    public function beginTransaction();
+    public function beginTransaction(): ?string;
 
     /**
      * Commits a transaction started with {@link beginTransaction()}.
      */
-    public function commitTransaction();
+    public function commitTransaction(): void;
 
     /**
      * Rolls back a transaction started with {@link beginTransaction()}.
      */
-    public function rollbackTransaction();
+    public function rollbackTransaction(): void;
 
     /**
      * Sets the default transaction timeout.
-     *
-     * @param int $seconds The value of the timeout in seconds
      */
-    public function setTransactionTimeout($seconds);
+    public function setTransactionTimeout(int $seconds): void;
 }

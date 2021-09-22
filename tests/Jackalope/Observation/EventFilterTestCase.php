@@ -11,20 +11,9 @@ use PHPCR\SessionInterface;
  */
 abstract class EventFilterTestCase extends TestCase
 {
-    /**
-     * @var EventFilter
-     */
-    protected $eventFilter;
-
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
+    protected EventFilter $eventFilter;
+    protected FactoryInterface $factory;
+    protected SessionInterface $session;
 
     public function setUp(): void
     {
@@ -32,17 +21,15 @@ abstract class EventFilterTestCase extends TestCase
 
         $this->session = $this->getSessionMock();
         $this->session
-            ->expects($this->any())
             ->method('getNodes')
-            ->will(
-                $this->returnValue([])
+            ->willReturn(
+                []
             );
 
         $this->session
-            ->expects($this->any())
             ->method('getNodesByIdentifier')
-            ->will(
-                $this->returnValue([])
+            ->willReturn(
+                []
             );
 
         $this->eventFilter = new EventFilter($this->factory, $this->session);

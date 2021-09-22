@@ -6,11 +6,12 @@ use PHPCR\InvalidItemStateException;
 use PHPCR\ItemInterface;
 use PHPCR\ItemNotFoundException;
 use PHPCR\ItemVisitorInterface;
+use PHPCR\NodeInterface;
 use PHPCR\NodeType\ItemDefinitionInterface;
-use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\PropertyInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
+use PHPCR\SessionInterface;
 use PHPCR\Util\PathHelper;
 use PHPCR\Util\ValueConverter;
 
@@ -65,32 +66,7 @@ abstract class Item implements ItemInterface
      */
     public const STATE_DELETED = 4;
 
-    /**
-     * @var int The state of the item, one of the STATE_ constants
-     */
-    protected $state;
-
-    /**
-     * @var bool To know whether to keep changes or not when reloading in dirty state
-     */
-    protected $keepChanges = false;
-
-    /**
-     * @var int The state of the item saved when a transaction is started
-     *
-     * @see Item::rollbackTransaction()
-     */
-    protected $savedState;
-
-    /**
-     * @var int The state to take after this dirty node has been refreshed. One of the STATE_ constants
-     */
-    protected $postDirtyState = -1;
-
-    /**
-     * @var array The states an Item can take
-     */
-    protected $available_states = [
+    private const STATES = [
         self::STATE_NEW,
         self::STATE_DIRTY,
         self::STATE_CLEAN,
@@ -99,76 +75,76 @@ abstract class Item implements ItemInterface
     ];
 
     /**
-     * @var FactoryInterface The jackalope object factory for this object
+     * @var int The state of the item, one of the STATE_ constants
      */
-    protected $factory;
+    private int $state;
 
     /**
-     * @var Session The session this item belongs to
+     * @var int The state to take after this dirty node has been refreshed. One of the STATE_ constants
      */
-    protected $session;
+    private int $postDirtyState = -1;
 
     /**
-     * @var ObjectManager The object manager to get nodes and properties from
+     * @var int|null The state of the item saved when a transaction is started
+     *
+     * @see Item::rollbackTransaction()
      */
-    protected $objectManager;
+    private ?int $savedState = null;
+
+    protected FactoryInterface $factory;
+    protected Session $session;
+    protected ObjectManager $objectManager;
+    protected ValueConverter $valueConverter;
 
     /**
-     * @var ValueConverter
+     * @var bool To know whether to keep changes or not when reloading in dirty state
      */
-    protected $valueConverter;
-
-    /**
-     * @var bool false if item is read from backend, true if created locally in this session
-     */
-    protected $new;
+    private bool $keepChanges = false;
 
     /**
      * @var string the node or property name
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string normalized and absolute path to this item
      */
-    protected $path;
+    protected string $path;
 
     /**
-     * @var string while this item is moved but unsaved, stores the old path for refresh
+     * @var string|null while this item is moved but unsaved, stores the old path for refresh
      */
-    protected $oldPath = null;
+    protected ?string $oldPath = null;
 
     /**
-     * @var string normalized and absolute path to the parent item for convenience
+     * @var string|null normalized and absolute path to the parent item, or null if item already is the root node
      */
-    protected $parentPath;
+    protected ?string $parentPath;
 
     /**
      * @var int Depth in the workspace graph
      */
-    protected $depth;
+    private int $depth;
 
     /**
      * @var bool Whether this item is a node (otherwise it is a property)
      */
-    protected $isNode = false;
+    protected bool $isNode = false;
 
     /**
      * Initialize basic information common to nodes and properties.
      *
-     * @param FactoryInterface $factory the object factory
-     * @param string           $path    The normalized and absolute path to this item
-     * @param bool             $new     can be set to true to tell the object that it has
-     *                                  been created locally
+     * @param bool $new can be set to true to tell the object that it has
+     *                  been created locally
      *
      * @throws RepositoryException
      */
     protected function __construct(
         FactoryInterface $factory,
-        $path,
+        string $path,
         Session $session,
         ObjectManager $objectManager,
-        $new = false
+        bool $new
     ) {
         $this->factory = $factory;
         $this->valueConverter = $this->factory->get(ValueConverter::class);
@@ -195,7 +171,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function setPath($path, $move = false)
+    public function setPath(string $path, bool $move = false): void
     {
         if ($move && null === $this->oldPath) {
             try {
@@ -217,7 +193,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getPath()
+    public function getPath(): string
     {
         $this->checkState();
 
@@ -229,7 +205,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getName()
+    public function getName(): string
     {
         $this->checkState();
 
@@ -241,7 +217,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getAncestor($depth)
+    public function getAncestor($depth): ItemInterface
     {
         $this->checkState();
 
@@ -262,7 +238,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getParent()
+    public function getParent(): NodeInterface
     {
         $this->checkState();
 
@@ -278,7 +254,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getDepth()
+    public function getDepth(): int
     {
         $this->checkState();
 
@@ -290,7 +266,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function getSession()
+    public function getSession(): SessionInterface
     {
         $this->checkState();
 
@@ -302,7 +278,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function isNode()
+    public function isNode(): bool
     {
         $this->checkState();
 
@@ -314,7 +290,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return self::STATE_NEW === $this->state;
     }
@@ -324,7 +300,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function isModified()
+    public function isModified(): bool
     {
         return self::STATE_MODIFIED === $this->state
             || self::STATE_DIRTY === $this->state && self::STATE_MODIFIED === $this->postDirtyState;
@@ -335,9 +311,9 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function isMoved()
+    public function isMoved(): bool
     {
-        return isset($this->oldPath);
+        return null !== $this->oldPath;
     }
 
     /**
@@ -350,11 +326,9 @@ abstract class Item implements ItemInterface
      * current state in the backend (for instance if mix:referenceable mixin
      * type has been added to the item the backend creates a UUID on save).
      *
-     * @return bool
-     *
      * @private
      */
-    public function isDirty()
+    public function isDirty(): bool
     {
         return self::STATE_DIRTY === $this->state;
     }
@@ -362,11 +336,9 @@ abstract class Item implements ItemInterface
     /**
      * Whether this item has been deleted and can not be used anymore.
      *
-     * @return bool
-     *
      * @private
      */
-    public function isDeleted()
+    public function isDeleted(): bool
     {
         return self::STATE_DELETED === $this->state;
     }
@@ -375,11 +347,9 @@ abstract class Item implements ItemInterface
      * Whether this item is in STATE_CLEAN (meaning its data is fully
      * synchronized with the backend).
      *
-     * @return bool
-     *
      * @private
      */
-    public function isClean()
+    public function isClean(): bool
     {
         return self::STATE_CLEAN === $this->state;
     }
@@ -389,16 +359,16 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function isSame(ItemInterface $otherItem)
+    public function isSame(ItemInterface $otherItem): bool
     {
         $this->checkState();
 
         if ($this === $otherItem) { // trivial case
             return true;
         }
-        if ($this->session->getRepository() !== $otherItem->getSession()->getRepository()
+        if (get_class($this) !== get_class($otherItem)
+            || $this->session->getRepository() !== $otherItem->getSession()->getRepository()
             || $this->session->getWorkspace() !== $otherItem->getSession()->getWorkspace()
-            || get_class($this) !== get_class($otherItem)
         ) {
             return false;
         }
@@ -419,7 +389,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function accept(ItemVisitorInterface $visitor)
+    public function accept(ItemVisitorInterface $visitor): void
     {
         $this->checkState();
 
@@ -433,7 +403,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function remove()
+    public function remove(): void
     {
         $this->checkState(); // To avoid the possibility to delete an already deleted node
 
@@ -462,7 +432,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function setModified()
+    public function setModified(): void
     {
         if (!$this->isNew()) {
             $this->setState(self::STATE_MODIFIED);
@@ -472,13 +442,14 @@ abstract class Item implements ItemInterface
     /**
      * Tell this item that it is dirty and needs to be refreshed.
      *
-     * @param bool $keepChanges whether to keep changes when reloading or not
+     * @param bool     $keepChanges whether to keep changes when reloading or not
+     * @param bool|int $targetState
      *
      * @throws RepositoryException
      *
      * @private
      */
-    public function setDirty($keepChanges = false, $targetState = false)
+    public function setDirty(bool $keepChanges = false, $targetState = false): void
     {
         if (false === $targetState) {
             $targetState = $keepChanges ? $this->getState() : self::STATE_CLEAN;
@@ -505,7 +476,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function setDeleted()
+    public function setDeleted(): void
     {
         $this->setState(self::STATE_DELETED);
     }
@@ -517,7 +488,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function setClean()
+    public function setClean(): void
     {
         $this->setState(self::STATE_CLEAN);
     }
@@ -530,7 +501,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function confirmSaved()
+    public function confirmSaved(): void
     {
         $this->oldPath = null; // in case this item has been moved
         $this->setDirty(false, self::STATE_CLEAN);
@@ -543,7 +514,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    public function getState()
+    public function getState(): int
     {
         return $this->state;
     }
@@ -553,7 +524,7 @@ abstract class Item implements ItemInterface
      *
      * @api
      */
-    public function revert()
+    public function revert(): void
     {
         $this->refresh(false);
     }
@@ -567,12 +538,11 @@ abstract class Item implements ItemInterface
      *
      * @throws RepositoryException if no definition can be found
      */
-    protected function findItemDefinition($definitions)
+    protected function findItemDefinition(callable $definitions): ItemDefinitionInterface
     {
         $fallbackDefinition = null;
         $types = $this->getParent()->getMixinNodeTypes();
-        array_push($types, $this->getParent()->getPrimaryNodeType());
-        /** @var $nt NodeTypeInterface */
+        $types[] = $this->getParent()->getPrimaryNodeType();
         foreach ($types as $nt) {
             /** @var $candidate ItemDefinitionInterface */
             foreach ($definitions($nt) as $candidate) {
@@ -624,7 +594,7 @@ abstract class Item implements ItemInterface
      *                                   another)
      * @throws RepositoryException       if another error occurs
      */
-    abstract protected function refresh($keepChanges);
+    abstract protected function refresh(bool $keepChanges, bool $internal = false): void;
 
     /**
      * Change the state of the item.
@@ -635,9 +605,9 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    private function setState($state)
+    private function setState(int $state): void
     {
-        if (!in_array($state, $this->available_states)) {
+        if (!in_array($state, self::STATES)) {
             throw new RepositoryException("Invalid state [$state]");
         }
         $this->state = $state;
@@ -665,7 +635,7 @@ abstract class Item implements ItemInterface
      *
      * @private
      */
-    protected function checkState()
+    protected function checkState(): void
     {
         if ($this->isDirty()) {
             $this->refresh($this->keepChanges);
@@ -695,7 +665,7 @@ abstract class Item implements ItemInterface
      *
      * @see Item::rollbackTransaction
      */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         // Save the item state
         $this->savedState = $this->state;
@@ -709,7 +679,7 @@ abstract class Item implements ItemInterface
      *
      * @see Item::rollbackTransaction
      */
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         // Unset the stored state
         $this->savedState = null;
@@ -761,7 +731,7 @@ abstract class Item implements ItemInterface
      *
      * @see ObjectManager::rollbackTransaction()
      */
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         if (null === $this->savedState) {
             $this->savedState = self::STATE_NEW;

@@ -12,31 +12,13 @@ use PHPCR\Query\QOM\SelectorInterface;
  *
  * @api
  */
-class Selector implements SelectorInterface
+final class Selector implements SelectorInterface
 {
-    /**
-     * @var string
-     */
-    protected $nodeTypeName;
+    private string $nodeTypeName;
+    private string $selectorName;
 
-    /**
-     * @var string
-     */
-    protected $selectorName;
-
-    /**
-     * Constructor.
-     *
-     * @param string $nodeTypeName
-     * @param string $selectorName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $nodeTypeName)
+    public function __construct(string $selectorName, string $nodeTypeName)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
         $this->selectorName = $selectorName;
         $this->nodeTypeName = $nodeTypeName;
     }
@@ -46,7 +28,7 @@ class Selector implements SelectorInterface
      *
      * @api
      */
-    public function getNodeTypeName()
+    public function getNodeTypeName(): string
     {
         return $this->nodeTypeName;
     }
@@ -56,7 +38,7 @@ class Selector implements SelectorInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }

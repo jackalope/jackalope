@@ -18,7 +18,7 @@ interface PermissionInterface extends TransportInterface
      *
      * @param string $path the path to the node we want to check
      *
-     * @return array of string
+     * @return string[]
      */
-    public function getPermissions($path);
+    public function getPermissions(string $path): array;
 }

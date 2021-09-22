@@ -17,21 +17,15 @@ use PHPCR\Util\PathHelper;
 abstract class BaseTransport implements TransportInterface
 {
     /**
-     * The current fetchDepth.
-     *
-     * @var int
-     *
      * @see TransportInterface::setFetchDepth($depth)
      */
-    protected $fetchDepth = 0;
+    protected int $fetchDepth = 0;
 
     /**
      * Flag to determine if mix:lastModified nodes should be updated
      * automatically.
-     *
-     * @var bool
      */
-    private $autoLastModified = true;
+    private bool $autoLastModified = true;
 
     /**
      * Minimal check according to the jcr spec to see if this node name
@@ -41,47 +35,33 @@ abstract class BaseTransport implements TransportInterface
      * additional checks. But this will reduce interchangeability, thus it is better to
      * properly encode and decode characters that are not natively allowed by the storage.
      *
-     * @param string $name The name to check
-     *
      * @return bool always true, if the name is not valid a RepositoryException is thrown
      *
-     * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
-     *
      * @throws RepositoryException if the name contains invalid characters
+     *
+     *@see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      */
-    public function assertValidName($name)
+    public function assertValidName($name): bool
     {
         return PathHelper::assertValidLocalName($name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setFetchDepth($depth)
+    public function setFetchDepth(int $depth): void
     {
         $this->fetchDepth = $depth;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFetchDepth()
+    public function getFetchDepth(): int
     {
         return $this->fetchDepth;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setAutoLastModified($autoLastModified)
+    public function setAutoLastModified(bool $autoLastModified): void
     {
         $this->autoLastModified = $autoLastModified;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAutoLastModified()
+    public function getAutoLastModified(): bool
     {
         return $this->autoLastModified;
     }

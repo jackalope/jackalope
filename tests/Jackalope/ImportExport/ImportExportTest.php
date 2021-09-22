@@ -9,7 +9,7 @@ class ImportExportTest extends TestCase
     /**
      * @dataProvider escapeDataProvider
      */
-    public function testEscapeXmlName($input, $expectedOutput)
+    public function testEscapeXmlName(string $input, string $expectedOutput): void
     {
         $this->assertEquals($expectedOutput, ImportExport::escapeXmlName($input));
     }
@@ -17,12 +17,12 @@ class ImportExportTest extends TestCase
     /**
      * @dataProvider escapeDataProvider
      */
-    public function testUnescapeXmlName($expectedOutput, $input)
+    public function testUnescapeXmlName(string $expectedOutput, string $input): void
     {
         $this->assertEquals($expectedOutput, ImportExport::unescapeXmlName($input, []));
     }
 
-    public function escapeDataProvider()
+    public function escapeDataProvider(): array
     {
         return [
             // The escaped characters

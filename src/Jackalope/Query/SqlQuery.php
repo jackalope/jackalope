@@ -16,11 +16,9 @@ class SqlQuery extends Query
     /**
      * Access the query statement from the transport layer.
      *
-     * @return string the sql2 query statement
-     *
      * @private
      */
-    public function getStatementSql2()
+    public function getStatementSql2(): string
     {
         return $this->getStatement();
         // TODO: should this expand bind variables? or the transport?
@@ -28,10 +26,8 @@ class SqlQuery extends Query
 
     /**
      * Returns the constant QueryInterface::JCR-SQL2.
-     *
-     * @return string the query language
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return self::JCR_SQL2;
     }

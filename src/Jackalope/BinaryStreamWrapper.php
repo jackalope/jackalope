@@ -37,24 +37,22 @@ class BinaryStreamWrapper
 
     /**
      * The backend path this stream represents.
-     *
-     * @var string
      */
-    private $path = null;
+    private ?string $path = null;
 
     /**
      * The stream once the wrapper has been accessed once.
      *
      * @var resource
      */
-    private $stream = null;
+    private $stream;
 
     /**
      * The PHPCR session to fetch data through it.
-     *
-     * @var SessionInterface
      */
-    private $session = null;
+    private ?SessionInterface $session = null;
+
+    public $context;
 
     /**
      * Get the information and store it for later usage.

@@ -2,6 +2,7 @@
 
 namespace Jackalope\NodeType;
 
+use Jackalope\Node;
 use Jackalope\Transport\AddNodeOperation;
 use PHPCR\ItemExistsException;
 use PHPCR\Lock\LockException;
@@ -61,26 +62,26 @@ $/xi";
     public const VALIDATE_STRING = '/[^\x{9}\x{a}\x{d}\x{20}-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]+/u';
 
     /**
-     * @var string ID of the connected user
+     * ID of the connected user.
      */
-    private $userId;
+    private string $userId;
 
     /**
-     * @var bool Whether the last modified property should be updated automatically
+     * Whether the last modified property should be updated automatically.
      */
-    private $autoLastModified;
+    private bool $autoLastModified;
 
     /**
-     * @var \ArrayObject List of namespaces known to the current session. Keys are prefix, values are URI.
+     * List of namespaces known to the current session. Keys are prefix, values are URI.
      */
-    private $namespaces;
+    private \ArrayObject $namespaces;
 
     /**
-     * @param string       $userId           ID of the connected user
-     * @param \ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
-     * @param bool         $autoLastModified Whether the last modified property should be updated automatically
+     * @param string|object $userId           ID of the connected user
+     * @param \ArrayObject  $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
+     * @param bool          $autoLastModified Whether the last modified property should be updated automatically
      */
-    public function __construct($userId, \ArrayObject $namespaces, $autoLastModified = true)
+    public function __construct($userId, \ArrayObject $namespaces, bool $autoLastModified = true)
     {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
@@ -92,7 +93,7 @@ $/xi";
      *
      * @return AddNodeOperation[] additional operations that the client must execute for autocreated nodes
      */
-    public function process(NodeInterface $node)
+    public function process(NodeInterface $node): array
     {
         $this->validateNamespace($node->getName());
 
@@ -127,7 +128,7 @@ $/xi";
      * @throws VersionException
      * @throws ValueFormatException
      */
-    private function processNodeWithType(NodeInterface $node, NodeType $nodeTypeDefinition)
+    private function processNodeWithType(NodeInterface $node, NodeType $nodeTypeDefinition): array
     {
         $additionalOperations = [];
 
@@ -151,6 +152,7 @@ $/xi";
                     $requiredPrimaryTypeNames = $childDef->getRequiredPrimaryTypeNames();
                     $primaryType = count($requiredPrimaryTypeNames) ? current($requiredPrimaryTypeNames) : null;
                     $newNode = $node->addNode($childDef->getName(), $primaryType);
+                    \assert($newNode instanceof Node);
                     $absPath = $node->getPath().'/'.$childDef->getName();
                     $operation = new AddNodeOperation($absPath, $newNode);
                     $additionalOperations[] = $operation;
@@ -252,7 +254,7 @@ $/xi";
      * @throws RepositoryException
      * @throws ValueFormatException
      */
-    private function assertValidProperty(PropertyInterface $property)
+    private function assertValidProperty(PropertyInterface $property): void
     {
         $type = $property->getType();
         switch ($type) {
@@ -322,14 +324,11 @@ $/xi";
     }
 
     /**
-     * Ensure that, if a namespace with an alias is passed,
-     * that the alias is registered.
-     *
-     * @param string $name
+     * Ensure that, if a namespace with an alias is passed, that the alias is registered.
      *
      * @throws NamespaceException
      */
-    private function validateNamespace($name)
+    private function validateNamespace(string $name): void
     {
         $aliasLength = strpos($name, ':');
 

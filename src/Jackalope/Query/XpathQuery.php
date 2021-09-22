@@ -20,7 +20,7 @@ class XpathQuery extends Query
      *
      * @private
      */
-    public function getStatementXpath()
+    public function getStatementXpath(): string
     {
         return $this->getStatement();
         // TODO: should this expand bind variables? or the transport?
@@ -28,10 +28,8 @@ class XpathQuery extends Query
 
     /**
      * Returns the constant QueryInterface::XPATH.
-     *
-     * @return string the query language
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return self::XPATH;
     }

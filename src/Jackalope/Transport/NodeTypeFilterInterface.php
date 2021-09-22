@@ -19,28 +19,27 @@ interface NodeTypeFilterInterface extends TransportInterface
      * list of node type names of which the nodes must be to be included in
      * the result.
      *
-     * @param array        $paths      absolute paths to the nodes
-     * @param array|string $typeFilter list of node types to find, with
-     *                                 semantics as in Node::getNodes meaning a supertype must also match
+     * @param string[] $paths      absolute paths to the nodes
+     * @param string[] $typeFilter list of node types to find, with
+     *                             semantics as in Node::getNodes meaning a supertype must also match
      *
-     * @return array keys are the absolute paths, values is the node data as
-     *               associative array (decoded from json with associative = true)
+     * @return array<string, \stdClass> keys are the absolute paths, values the node data decoded from json with associative = true
      *
      * @see TransportInterface::getNodes
      */
-    public function getNodesFiltered($paths, $typeFilter);
+    public function getNodesFiltered(array $paths, array $typeFilter): array;
 
     /**
      * Get the names of child nodes of a node filtered by a type filter.
      *
-     * @param array        $parentPath absolute path to the parent node
-     * @param array        $names      The child node names to filter by type
-     * @param array|string $typeFilter list of node types to find, with
-     *                                 semantics as in Node::getNodes meaning a supertype must also match
+     * @param string   $parentPath absolute path to the parent node
+     * @param string[] $names      The child node names to filter by type
+     * @param string[] $typeFilter list of node types to find, with
+     *                             semantics as in Node::getNodes meaning a supertype must also match
      *
-     * @return array list of relative node names at that parent that match the criteria
+     * @return string[] list of relative node names at that parent that match the criteria
      *
      * @see Node::getNodeNames
      */
-    public function filterChildNodeNamesByType($parentPath, $names, $typeFilter);
+    public function filterChildNodeNamesByType(string $parentPath, array $names, array $typeFilter): array;
 }

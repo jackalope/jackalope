@@ -11,43 +11,22 @@ namespace Jackalope\Transport\Logging;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
-class DebugStack implements LoggerInterface
+final class DebugStack implements LoggerInterface
 {
     /**
      * Executed calls.
-     *
-     * @var array
      */
-    public $calls = [];
-
-    /**
-     * If the logger is enabled (log calls) or not.
-     *
-     * @var bool
-     */
-    public $enabled = true;
+    public array $calls = [];
+    public bool $enabled = true;
 
     /**
      * Show the debug backtrace for each call.
-     *
-     * @var bool
      */
-    public $backtrace = false;
+    public bool $backtrace = false;
+    public ?float $start = null;
+    public int $currentQuery = 0;
 
-    /**
-     * @var float|null
-     */
-    public $start = null;
-
-    /**
-     * @var int
-     */
-    public $currentQuery = 0;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function startCall($method, array $params = null, array $env = null)
+    public function startCall(string $method, array $params = null, array $env = null): void
     {
         if ($this->enabled) {
             $this->start = microtime(true);
@@ -61,15 +40,12 @@ class DebugStack implements LoggerInterface
         }
     }
 
-    public function enableBacktrace()
+    public function enableBacktrace(): void
     {
         $this->backtrace = true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function stopCall()
+    public function stopCall(): void
     {
         if ($this->enabled) {
             $this->calls[$this->currentQuery]['executionMS'] = microtime(true) - $this->start;
@@ -78,10 +54,8 @@ class DebugStack implements LoggerInterface
 
     /**
      * Return a simple backtrace showing, for each caller, the class, function and line number.
-     *
-     * @return array
      */
-    private function getBacktrace()
+    private function getBacktrace(): array
     {
         $fullBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 

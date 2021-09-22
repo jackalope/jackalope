@@ -38,7 +38,7 @@ interface WritingInterface extends TransportInterface
      *
      * @see http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.2.2%20Local%20Names
      */
-    public function assertValidName($name);
+    public function assertValidName($name): bool;
 
     /**
      * Copies a Node from src (potentially from another workspace) to dst in
@@ -59,7 +59,7 @@ interface WritingInterface extends TransportInterface
      * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see WorkspaceInterface::copy
      */
-    public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null);
+    public function copyNode(string $srcAbsPath, string $destAbsPath, ?string $srcWorkspace = null): void;
 
     /**
      * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new
@@ -79,7 +79,7 @@ interface WritingInterface extends TransportInterface
      * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see WorkspaceInterface::cloneFrom
      */
-    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+    public function cloneFrom(string $srcWorkspace, string $srcAbsPath, string $destAbsPath, bool $removeExisting): void;
 
     /**
      * Update a node and its children to match its corresponding node in the specified workspace.
@@ -87,14 +87,14 @@ interface WritingInterface extends TransportInterface
      * @param Node   $node         the node to update
      * @param string $srcWorkspace The workspace where the corresponding source node can be found
      */
-    public function updateNode(Node $node, $srcWorkspace);
+    public function updateNode(Node $node, string $srcWorkspace): void;
 
     /**
      * Perform a batch of move operations in the order of the passed array.
      *
      * @param MoveNodeOperation[] $operations
      */
-    public function moveNodes(array $operations);
+    public function moveNodes(array $operations): void;
 
     /**
      * Moves a node from src to dst outside of a transaction.
@@ -106,7 +106,7 @@ interface WritingInterface extends TransportInterface
      * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see Workspace::moveNode
      */
-    public function moveNodeImmediately($srcAbsPath, $dstAbsPath);
+    public function moveNodeImmediately(string $srcAbsPath, string $dstAbsPath): void;
 
     /**
      * Reorder the children of $node as the node said it needs them reordered.
@@ -116,7 +116,7 @@ interface WritingInterface extends TransportInterface
      *
      * @param Node $node the node to reorder its children
      */
-    public function reorderChildren(Node $node);
+    public function reorderChildren(Node $node): void;
 
     /**
      * Perform a batch remove operation.
@@ -126,14 +126,14 @@ interface WritingInterface extends TransportInterface
      *
      * @param RemoveNodeOperation[] $operations
      */
-    public function deleteNodes(array $operations);
+    public function deleteNodes(array $operations): void;
 
     /**
      * Perform a batch remove operation.
      *
      * @param RemovePropertyOperation[] $operations
      */
-    public function deleteProperties(array $operations);
+    public function deleteProperties(array $operations): void;
 
     /**
      * Deletes a node and the whole subtree under it outside of a transaction.
@@ -147,7 +147,7 @@ interface WritingInterface extends TransportInterface
      *                               checking.
      * @throws RepositoryException   if error occurs
      */
-    public function deleteNodeImmediately($path);
+    public function deleteNodeImmediately(string $path): void;
 
     /**
      * Deletes a property outside of a transaction.
@@ -161,7 +161,7 @@ interface WritingInterface extends TransportInterface
      *                               checking.
      * @throws RepositoryException   if error occurs
      */
-    public function deletePropertyImmediately($path);
+    public function deletePropertyImmediately(string $path): void;
 
     /**
      * Store all nodes in the AddNodeOperations.
@@ -184,14 +184,14 @@ interface WritingInterface extends TransportInterface
      *
      * @throws RepositoryException if error occurs
      */
-    public function storeNodes(array $operations);
+    public function storeNodes(array $operations): void;
 
     /**
      * Update the properties of a node.
      *
      * @param Node $node the node to update
      */
-    public function updateProperties(Node $node);
+    public function updateProperties(Node $node): void;
 
     /**
      * Register a new namespace.
@@ -206,7 +206,7 @@ interface WritingInterface extends TransportInterface
      * @param string $prefix the prefix to be mapped
      * @param string $uri    the URI to be mapped
      */
-    public function registerNamespace($prefix, $uri);
+    public function registerNamespace(string $prefix, string $uri): void;
 
     /**
      * Unregister an existing namespace.
@@ -216,22 +216,22 @@ interface WritingInterface extends TransportInterface
      *
      * @param string $prefix the prefix to unregister
      */
-    public function unregisterNamespace($prefix);
+    public function unregisterNamespace(string $prefix): void;
 
     /**
      * Called before any data is written.
      */
-    public function prepareSave();
+    public function prepareSave(): void;
 
     /**
      * Called after everything internally is done in the save() method
      * so the transport has a chance to do final stuff (or commit everything
      * at once).
      */
-    public function finishSave();
+    public function finishSave(): void;
 
     /**
      * Called if a save operation caused an exception.
      */
-    public function rollbackSave();
+    public function rollbackSave(): void;
 }

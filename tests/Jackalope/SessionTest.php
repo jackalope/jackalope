@@ -6,7 +6,7 @@ use PHPCR\SimpleCredentials;
 
 class SessionTest extends TestCase
 {
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $factory = new Factory();
         $repository = $this->getRepositoryMock();
@@ -16,9 +16,9 @@ class SessionTest extends TestCase
         $cred->setAttribute('test', 'toast');
         $cred->setAttribute('other', 'value');
         $transport = $this->getTransportStub();
-        $transport->expects($this->any())
+        $transport
             ->method('getNamespaces')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $s = new Session($factory, $repository, $workspaceName, $cred, $transport);
         $this->assertSame($repository, $s->getRepository());
         $this->assertSame($userID, $s->getUserID());
@@ -27,7 +27,7 @@ class SessionTest extends TestCase
         $this->assertSame('value', $s->getAttribute('other'));
     }
 
-    public function testLogoutAndRegistry()
+    public function testLogoutAndRegistry(): void
     {
         $factory = new Factory();
         $repository = $this->getRepositoryMock();
@@ -43,14 +43,14 @@ class SessionTest extends TestCase
         $this->assertNull(Session::getSessionFromRegistry($key));
     }
 
-    public function testSessionRegistry()
+    public function testSessionRegistry(): void
     {
         $factory = new Factory();
         $repository = $this->getRepositoryMock();
         $transport = $this->getTransportStub();
-        $transport->expects($this->any())
+        $transport
             ->method('getNamespaces')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         $s = new Session($factory, $repository, 'workspaceName', new SimpleCredentials('foo', 'bar'), $transport);
 

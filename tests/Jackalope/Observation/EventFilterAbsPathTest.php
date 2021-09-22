@@ -5,9 +5,9 @@ namespace Jackalope\Observation;
 /**
  * Unit tests for the EventJournal.
  */
-class EventFilterAbsPathTest extends EventFilterTestCase
+final class EventFilterAbsPathTest extends EventFilterTestCase
 {
-    public function testFilter()
+    public function testFilter(): void
     {
         $this->eventFilter->setAbsPath('/somepath');
         $this->assertFilterMatch($this->eventFilter, true, '/somepath');
@@ -21,7 +21,7 @@ class EventFilterAbsPathTest extends EventFilterTestCase
         $this->assertFilterMatch($this->eventFilter, false, '/someotherpath');
     }
 
-    protected function assertFilterMatch(EventFilter $filter, $isSupposedToMatch, $path)
+    protected function assertFilterMatch(EventFilter $filter, $isSupposedToMatch, $path): void
     {
         $event = new Event($this->factory, $this->getNodeTypeManager());
         $event->setPath($path);

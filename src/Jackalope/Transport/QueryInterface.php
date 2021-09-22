@@ -44,7 +44,7 @@ interface QueryInterface extends TransportInterface
      *
      * @see QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */
-    public function query(Query $query);
+    public function query(Query $query): array;
 
     /**
      * The transport must at least support JCR_SQL2 and JCR_JQOM.
@@ -52,11 +52,11 @@ interface QueryInterface extends TransportInterface
      * Note that QueryObjectModel::getStatement() returns the query as JCR_SQL2
      * so it costs you nothing to support JQOM.
      *
-     * @return array a list of query languages supported by this transport
+     * @return string[] list of query languages supported by this transport
      *
      * @see QueryManagerInterface::getSupportedQueryLanguages
      */
-    public function getSupportedQueryLanguages();
+    public function getSupportedQueryLanguages(): array;
 
     // TODO: method for stored queries?
 }

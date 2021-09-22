@@ -25,43 +25,18 @@ use PHPCR\Util\ValueConverter;
  *
  * @api
  */
-class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterface
+final class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterface
 {
-    /**
-     * @var SourceInterface
-     */
-    protected $source;
+    private SourceInterface $source;
+    private ?ConstraintInterface $constraint;
+    private array $orderings;
+    private array $columns;
 
-    /**
-     * @var ConstraintInterface
-     */
-    protected $constraint;
-
-    /**
-     * @var array
-     */
-    protected $orderings;
-
-    /**
-     * @var array
-     */
-    protected $columns;
-
-    /**
-     * Constructor.
-     *
-     * @param FactoryInterface    $factory       the object factory
-     * @param ObjectManager       $objectManager (can be omitted if you do not want
-     *                                           to execute the query but just use it with a parser)
-     * @param ConstraintInterface $constraint
-     *
-     * @throws \InvalidArgumentException
-     */
     public function __construct(
         FactoryInterface $factory,
-        ObjectManager $objectManager = null,
+        ?ObjectManager $objectManager,
         SourceInterface $source,
-        ConstraintInterface $constraint = null,
+        ?ConstraintInterface $constraint,
         array $orderings,
         array $columns
     ) {
@@ -87,7 +62,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getSource()
+    public function getSource(): SourceInterface
     {
         return $this->source;
     }
@@ -97,7 +72,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getConstraint()
+    public function getConstraint(): ?ConstraintInterface
     {
         return $this->constraint;
     }
@@ -107,7 +82,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getOrderings()
+    public function getOrderings(): array
     {
         return $this->orderings;
     }
@@ -117,7 +92,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getColumns()
+    public function getColumns(): array
     {
         return $this->columns;
     }
@@ -138,7 +113,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getStatement()
+    public function getStatement(): string
     {
         $valueConverter = $this->factory->get(ValueConverter::class);
         $converter = new QomToSql1QueryConverter(new Sql1Generator($valueConverter));
@@ -151,7 +126,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *
      * @api
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return self::SQL;
     }
