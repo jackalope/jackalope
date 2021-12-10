@@ -217,6 +217,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
      *
      * @return Iterator over all namespaces, with prefix as key and url as value
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->lazyLoadNamespaces();
