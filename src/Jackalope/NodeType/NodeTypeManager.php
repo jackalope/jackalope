@@ -464,7 +464,8 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      * @return Iterator over all node types
      * @throws RepositoryException
      */
-    public function getIterator()
+    #[\ReturnTypeWillChange]
+    public function getIterator(): \Traversable
     {
         return $this->getAllNodeTypes();
     }
