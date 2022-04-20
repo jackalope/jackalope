@@ -79,6 +79,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->getLockTokens());

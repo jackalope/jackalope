@@ -1680,6 +1680,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @return Iterator over all child nodes
      * @throws RepositoryException
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->checkState();

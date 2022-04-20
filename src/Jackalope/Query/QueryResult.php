@@ -66,6 +66,7 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      *
      * @api
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->getRows();

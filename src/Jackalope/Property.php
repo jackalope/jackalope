@@ -614,6 +614,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @throws RepositoryException
      * @throws ValueFormatException
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->checkState();

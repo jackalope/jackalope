@@ -118,6 +118,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
      *
      * @see getRegisteredEventListeners
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->getRegisteredEventListeners();
