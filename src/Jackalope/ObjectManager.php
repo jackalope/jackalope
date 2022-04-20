@@ -468,7 +468,7 @@ class ObjectManager
         // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists. and do the moved/deleted checks that are done in node
         $n = $this->getNodeByPath($nodep);
         try {
-            return $n->getProperty($name); //throws PathNotFoundException if there is no such property
+            return $n->getProperty($name); // throws PathNotFoundException if there is no such property
         } catch (PathNotFoundException $e) {
             throw new ItemNotFoundException($e->getMessage(), $e->getCode(), $e);
         }
@@ -522,8 +522,8 @@ class ObjectManager
     {
         $absPath = PathHelper::normalizePath($absPath);
 
-        $name = PathHelper::getNodeName($absPath); //the property name
-        $nodep = PathHelper::getParentPath($absPath); //the node this property should be in
+        $name = PathHelper::getNodeName($absPath); // the property name
+        $nodep = PathHelper::getParentPath($absPath); // the node this property should be in
 
         return [$name, $nodep];
     }
@@ -576,7 +576,7 @@ class ObjectManager
             unset($data->{':jcr:path'});
             // TODO: $path is a backend path. we should inverse the getFetchPath operation here
             $node = $this->getNodeByPath($path, $class, $data);
-            $this->objectsByUuid[$identifier] = $path; //only do this once the getNodeByPath has worked
+            $this->objectsByUuid[$identifier] = $path; // only do this once the getNodeByPath has worked
 
             return $node;
         }
@@ -762,7 +762,7 @@ class ObjectManager
      */
     protected function pathArrayToPropertiesIterator($propertyPaths)
     {
-        //FIXME: this will break if we have non-persisted move
+        // FIXME: this will break if we have non-persisted move
         return new ArrayIterator($this->getPropertiesByPath($propertyPaths));
     }
 
@@ -869,7 +869,7 @@ class ObjectManager
             }
         }
 
-        //clear those lists before reloading the newly added nodes from backend, to avoid collisions
+        // clear those lists before reloading the newly added nodes from backend, to avoid collisions
         $this->nodesRemove = [];
         $this->propertiesRemove = [];
         $this->nodesMove = [];
@@ -978,7 +978,7 @@ class ObjectManager
      */
     public function checkin($absPath)
     {
-        $path = $this->transport->checkinItem($absPath); //FIXME: what about pending move operations?
+        $path = $this->transport->checkinItem($absPath); // FIXME: what about pending move operations?
 
         return $this->getNodeByPath($path, Version::class);
     }
@@ -992,7 +992,7 @@ class ObjectManager
      */
     public function checkout($absPath)
     {
-        $this->transport->checkoutItem($absPath); //FIXME: what about pending move operations?
+        $this->transport->checkoutItem($absPath); // FIXME: what about pending move operations?
     }
 
     /**
@@ -1539,7 +1539,7 @@ class ObjectManager
         }
 
         if (isset($this->objectsByPath[Node::class][$absPath])) {
-            throw new ItemExistsException($absPath); //FIXME: same-name-siblings...
+            throw new ItemExistsException($absPath); // FIXME: same-name-siblings...
         }
 
         $this->objectsByPath[Node::class][$absPath] = $node;

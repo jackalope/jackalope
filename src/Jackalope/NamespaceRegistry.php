@@ -106,7 +106,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         }
 
         $this->lazyLoadNamespaces();
-        //first try putting the stuff in backend, and only afterwards update local info
+        // first try putting the stuff in backend, and only afterwards update local info
 
         // this has no impact on running sessions, go directly to storage
         $this->transport->registerNamespace($prefix, $uri);
@@ -140,7 +140,7 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
         $this->checkPrefix($prefix);
 
         $this->transport->unregisterNamespace($prefix);
-        //remove the prefix from the local userNamespaces array
+        // remove the prefix from the local userNamespaces array
         unset($this->userNamespaces[$prefix]);
     }
 

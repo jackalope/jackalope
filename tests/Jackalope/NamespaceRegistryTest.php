@@ -63,9 +63,9 @@ class NamespaceRegistryTest extends TestCase
 
         $userNamespaces = $reflection->getProperty('userNamespaces');
         $userNamespaces->setAccessible(true);
-        //after construct, userNamespaces is supposed to be null due to lazyLoading
+        // after construct, userNamespaces is supposed to be null due to lazyLoading
         $this->assertNull($userNamespaces->getValue($nsr));
-        //after we get the prefixes, userNamespaces is supposed to have the userNamespaces
+        // after we get the prefixes, userNamespaces is supposed to have the userNamespaces
         $nsr->getPrefixes();
         $this->assertSame($expected, $userNamespaces->getValue($nsr));
     }

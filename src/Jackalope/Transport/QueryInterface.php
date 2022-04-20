@@ -58,5 +58,5 @@ interface QueryInterface extends TransportInterface
      */
     public function getSupportedQueryLanguages();
 
-    //TODO: method for stored queries?
+    // TODO: method for stored queries?
 }

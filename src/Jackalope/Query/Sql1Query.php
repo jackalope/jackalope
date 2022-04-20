@@ -23,7 +23,7 @@ class Sql1Query extends Query
     public function getStatementSql()
     {
         return $this->getStatement();
-        //TODO: should this expand bind variables? or the transport?
+        // TODO: should this expand bind variables? or the transport?
     }
 
     /**
