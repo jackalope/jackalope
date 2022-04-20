@@ -1681,6 +1681,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @throws RepositoryException
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->checkState();
