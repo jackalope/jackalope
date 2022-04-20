@@ -98,7 +98,7 @@ class VersionManager implements VersionManagerInterface
      */
     public function checkpoint($absPath)
     {
-        $version = $this->checkin($absPath); //just returns current version if already checked in
+        $version = $this->checkin($absPath); // just returns current version if already checked in
         $this->checkout($absPath);
 
         return $version;
@@ -164,7 +164,7 @@ class VersionManager implements VersionManagerInterface
     {
         $node = $this->objectManager->getNodeByPath($absPath);
         try {
-            //TODO: could check if node has versionable mixin type
+            // TODO: could check if node has versionable mixin type
             $uuid = $node->getProperty('jcr:baseVersion')->getString();
         } catch (PathNotFoundException $e) {
             throw new UnsupportedRepositoryOperationException("No jcr:baseVersion version for $absPath");

@@ -370,7 +370,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                     $val = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
                 } else {
                     $val = htmlspecialchars($value);
-                    //TODO: can we still have invalid characters after this? if so base64 and property, xsi:type="xsd:base64Binary"
+                    // TODO: can we still have invalid characters after this? if so base64 and property, xsi:type="xsd:base64Binary"
                 }
                 fwrite($stream, "<sv:value>$val</sv:value>");
             }

@@ -110,7 +110,7 @@ class Session implements SessionInterface
      * see jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/conversion/PathParser.java and friends
      * for how this is done in jackrabbit
      */
-    //protected $localNamespaces;
+    // protected $localNamespaces;
 
     /** Creates a session.
      *
@@ -158,7 +158,7 @@ class Session implements SessionInterface
             return null;
         }
 
-        return $this->credentials->getUserID(); //TODO: what if its not simple credentials? what about anonymous login?
+        return $this->credentials->getUserID(); // TODO: what if its not simple credentials? what about anonymous login?
     }
 
     /**
@@ -354,8 +354,8 @@ class Session implements SessionInterface
         }
 
         try {
-            //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
-            //would need to communicate to the lower layer that we do not want exceptions
+            // OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
+            // would need to communicate to the lower layer that we do not want exceptions
             $this->objectManager->getNodeByPath($absPath);
         } catch (ItemNotFoundException $e) {
             return false;
@@ -372,8 +372,8 @@ class Session implements SessionInterface
     public function propertyExists($absPath)
     {
         try {
-            //OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
-            //would need to communicate to the lower layer that we do not want exceptions
+            // OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
+            // would need to communicate to the lower layer that we do not want exceptions
             $this->getProperty($absPath);
         } catch (PathNotFoundException $e) {
             return false;
@@ -535,8 +535,8 @@ class Session implements SessionInterface
      */
     public function hasCapability($methodName, $target, array $arguments)
     {
-        //we never determine whether operation can be performed as it is optional ;-)
-        //TODO: could implement some
+        // we never determine whether operation can be performed as it is optional ;-)
+        // TODO: could implement some
         return true;
     }
 
@@ -596,7 +596,7 @@ class Session implements SessionInterface
     {
         $this->namespaceRegistry->checkPrefix($prefix);
         throw new NotImplementedException('TODO: implement session scope remapping of namespaces');
-        //this will lead to rewrite all names and paths in requests and replies. part of this can be done in ObjectManager::normalizePath
+        // this will lead to rewrite all names and paths in requests and replies. part of this can be done in ObjectManager::normalizePath
     }
 
     /**
@@ -606,7 +606,7 @@ class Session implements SessionInterface
      */
     public function getNamespacePrefixes()
     {
-        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getPrefixes();
     }
 
@@ -617,7 +617,7 @@ class Session implements SessionInterface
      */
     public function getNamespaceURI($prefix)
     {
-        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getURI($prefix);
     }
 
@@ -628,7 +628,7 @@ class Session implements SessionInterface
      */
     public function getNamespacePrefix($uri)
     {
-        //TODO: once setNamespacePrefix is implemented, must take session remaps into account
+        // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getPrefix($uri);
     }
 
@@ -639,7 +639,7 @@ class Session implements SessionInterface
      */
     public function logout()
     {
-        //OPTIMIZATION: flush object manager to help garbage collector
+        // OPTIMIZATION: flush object manager to help garbage collector
         $this->logout = true;
 
         if ($this->getRepository()->getDescriptor(RepositoryInterface::OPTION_LOCKING_SUPPORTED)) {

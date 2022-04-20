@@ -257,7 +257,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
         $value = $this->value;
         if (PropertyType::BINARY === $this->type) {
-            //from now on,
+            // from now on,
             $this->value = null;
         }
 
@@ -319,7 +319,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
                 $pos = ftell($s);
                 stream_copy_to_stream($s, $stream);
                 rewind($stream);
-                fseek($s, $pos); //go back to previous position
+                fseek($s, $pos); // go back to previous position
                 $ret[] = $stream;
             }
 
@@ -603,7 +603,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         $this->checkState();
 
         $parentNodeType = $this->getParent()->getPrimaryNodeType();
-        //will throw a ConstraintViolationException if this property can't be removed
+        // will throw a ConstraintViolationException if this property can't be removed
         $parentNodeType->canRemoveProperty($this->getName(), true);
 
         $this->getParent()->unsetProperty($this->name);
@@ -702,7 +702,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         } elseif (!is_numeric($type)) {
             throw new RepositoryException("INTERNAL ERROR -- No valid type specified ($type)");
         } else {
-            //sanity check. this will throw InvalidArgumentException if $type is not a valid type
+            // sanity check. this will throw InvalidArgumentException if $type is not a valid type
             PropertyType::nameFromValue($type);
         }
 
@@ -726,7 +726,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             }
         }
 
-        //TODO: check if changing type allowed.
+        // TODO: check if changing type allowed.
         /*
          * if ($type !== null && ! canHaveType($type)) {
          *   throw new ConstraintViolationException("Can not set this property to type ".PropertyType::nameFromValue($type));

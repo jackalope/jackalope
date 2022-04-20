@@ -31,5 +31,5 @@ class RepositoryTest extends TestCase
         $this->assertSame('bli', $repo->getDescriptor('bla'));
     }
 
-    //descriptors are tested by jackalope-api-tests Access/RepositoryDescriptorsTest.php
+    // descriptors are tested by jackalope-api-tests Access/RepositoryDescriptorsTest.php
 }

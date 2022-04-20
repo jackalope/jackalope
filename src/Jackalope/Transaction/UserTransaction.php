@@ -110,7 +110,7 @@ class UserTransaction implements UserTransactionInterface
      */
     public function inTransaction()
     {
-        //TODO Is there a way to ask for the transaction status via webdav?
+        // TODO Is there a way to ask for the transaction status via webdav?
         return $this->inTransaction;
     }
 

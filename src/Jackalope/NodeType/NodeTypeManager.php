@@ -116,10 +116,10 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
         if (null !== $name) {
             if (!empty($this->primaryTypes[$name]) || !empty($this->mixinTypes[$name])) {
-                return; //we already know this node
+                return; // we already know this node
             }
 
-            //OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
+            // OPTIMIZE: also avoid trying to fetch nonexisting definitions we already tried to get
             $nodeTypes = $this->objectManager->getNodeType($name);
         } else {
             $nodeTypes = $this->objectManager->getNodeTypes();
@@ -130,7 +130,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             /** @var NodeType $nodeType */
             $nodeType = $this->factory->get(NodeType::class, [$this, $nodeType]);
             $name = $nodeType->getName();
-            //do not overwrite existing types. maybe they where changed locally
+            // do not overwrite existing types. maybe they where changed locally
             if (empty($this->primaryTypes[$name]) && empty($this->mixinTypes[$name])) {
                 $this->addNodeType($nodeType);
             }
@@ -409,12 +409,12 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
      */
     public function registerNodeTypesCnd($cnd, $allowUpdate)
     {
-        //set fetched from backend to false to allow to load the new types from backend
+        // set fetched from backend to false to allow to load the new types from backend
         $fetched = $this->fetchedAllFromBackend;
         $this->fetchedAllFromBackend = false;
         $this->objectManager->registerNodeTypesCnd($cnd, $allowUpdate);
 
-        //parse out type names and fetch types to return definitions of the new nodes
+        // parse out type names and fetch types to return definitions of the new nodes
         preg_match_all('/\[([^\]]*)\]/', $cnd, $names);
         $types = [];
         foreach ($names[1] as $name) {

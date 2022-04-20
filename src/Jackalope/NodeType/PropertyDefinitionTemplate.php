@@ -32,7 +32,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
         $this->valueConstraints = null;
         $this->defaultValues = null;
         $this->isMultiple = false;
-        //$this->availableQueryOperators = ?
+        // $this->availableQueryOperators = ?
         $this->isFullTextSearchable = false;
         $this->isQueryOrderable = false;
         $this->name = null;

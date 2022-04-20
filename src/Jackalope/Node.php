@@ -146,7 +146,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      */
     private function parseData($rawData, $update, $keepChanges = false)
     {
-        //TODO: refactor to use hash array instead of stdClass struct
+        // TODO: refactor to use hash array instead of stdClass struct
 
         $oldNodes = [];
         $oldProperties = [];
@@ -185,7 +185,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                     unset($oldNodes[$key]);
                 }
             } else {
-                //property or meta information
+                // property or meta information
 
                 /* Property type declarations start with :, the value then is
                  * the type string from the NodeType constants. We skip that and
@@ -225,9 +225,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                                 $this->_setProperty($key, $value, PropertyType::BINARY, true);
                             }
                         }
-                    } //else this is a type declaration
+                    } // else this is a type declaration
 
-                    //skip this entry (if its binary, its already processed
+                    // skip this entry (if its binary, its already processed
                     continue;
                 }
 
@@ -380,7 +380,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             try {
                 $parentNode = $this->objectManager->getNodeByPath($parentPath);
             } catch (ItemNotFoundException $e) {
-                //we have to throw a different exception if there is a property
+                // we have to throw a different exception if there is a property
                 // with that name than if there is nothing at the path at all.
                 // lets see if the property exists
                 if ($this->session->propertyExists($parentPath)) {
@@ -413,12 +413,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         // create child node
-        //sanity check: no index allowed. TODO: we should verify this is a valid node name
+        // sanity check: no index allowed. TODO: we should verify this is a valid node name
         if (false !== strpos($relPath, ']')) {
             throw new RepositoryException("The node '{$this->path}' does not allow an index in name of newly created node: $relPath");
         }
         if (in_array($relPath, $this->nodes, true)) {
-            throw new ItemExistsException("The node '{$this->path}' already has a child named '$relPath''."); //TODO: same-name siblings if nodetype allows for them
+            throw new ItemExistsException("The node '{$this->path}' already has a child named '$relPath''."); // TODO: same-name siblings if nodetype allows for them
         }
 
         $data = ['jcr:primaryType' => $primaryNodeTypeName];
@@ -432,7 +432,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             // new nodes are added at the end
             $this->originalNodesOrder[] = $relPath;
         }
-        //by definition, adding a node sets the parent to modified
+        // by definition, adding a node sets the parent to modified
         $this->setModified();
 
         return $node;
@@ -476,7 +476,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     public function orderBefore($srcChildRelPath, $destChildRelPath)
     {
         if ($srcChildRelPath === $destChildRelPath) {
-            //nothing to move
+            // nothing to move
             return;
         }
 
@@ -627,10 +627,10 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
         }
 
-        //try to get a namespace for the set property
+        // try to get a namespace for the set property
         if (false !== strpos($name, ':')) {
             list($prefix) = explode(':', $name);
-            //Check if the namespace exists. If not, throw an NamespaceException
+            // Check if the namespace exists. If not, throw an NamespaceException
             $this->session->getNamespaceURI($prefix);
         }
 
@@ -830,12 +830,12 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     {
         $this->checkState();
 
-        //OPTIMIZE: lazy iterator?
+        // OPTIMIZE: lazy iterator?
         $names = self::filterNames($nameFilter, array_keys($this->properties));
         $result = [];
 
         foreach ($names as $name) {
-            //we know for sure the properties exist, as they come from the
+            // we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
             $result[$name] = $this->properties[$name];
         }
@@ -862,7 +862,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $result = [];
 
         foreach ($names as $name) {
-            //we know for sure the properties exist, as they come from the
+            // we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
             $type = $this->properties[$name]->getType();
             if (!$dereference &&
@@ -1292,7 +1292,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $this->checkState();
 
         if ($this->isNew()) {
-            //no node in workspace
+            // no node in workspace
             return;
         }
 
@@ -1480,7 +1480,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         $parent = $this->getParent();
 
         $parentNodeType = $parent->getPrimaryNodeType();
-        //will throw a ConstraintViolationException if this node can't be removed
+        // will throw a ConstraintViolationException if this node can't be removed
         $parentNodeType->canRemoveNode($this->getName(), true);
 
         if ($parent) {
@@ -1549,7 +1549,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         $nt = $this->getPrimaryNodeType();
-        //will throw a ConstraintViolationException if this node can't be added
+        // will throw a ConstraintViolationException if this node can't be added
         $nt->canAddChildNode($name, $node->getPrimaryNodeType()->getName(), true);
 
         // TODO: same name siblings
@@ -1626,7 +1626,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         if ('/' == $p[0]) {
             return $p;
         }
-        //relative path, combine with base path for this node
+        // relative path, combine with base path for this node
         $path = '/' === $this->path ? '/' : $this->path.'/';
 
         return $path.$p;
@@ -1648,8 +1648,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             foreach ($filter as $k => $f) {
                 $f = trim($f);
                 $filter[$k] = strtr($f, [
-                    '*' => '.*', //wildcard
-                    '.' => '\\.', //escape regexp
+                    '*' => '.*', // wildcard
+                    '.' => '\\.', // escape regexp
                     '\\' => '\\\\',
                     '{' => '\\{',
                     '}' => '\\}',

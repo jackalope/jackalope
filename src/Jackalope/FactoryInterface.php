@@ -18,7 +18,7 @@ namespace Jackalope;
  * <pre>
  * $this->factory->get('Node', [...]);
  * $this->factory->get('NodeType\PropertyDefinition', [...]);
- * //note the \ for sub namespaces. the name is relative to the Jackalope namespace
+ * // note the \ for sub namespaces. the name is relative to the Jackalope namespace
  * </pre>
  *
  * The result will be an object for Jackalope with the factory and given parameters.

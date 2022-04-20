@@ -40,7 +40,7 @@ class NodeTest extends TestCase
     {
         $node = $this->createNode();
         $this->assertTrue($node->isNodeType('rep:root'), "Should return true on is 'rep:root' node type.");
-        //TODO: Activate this…
+        // TODO: Activate this…
         // $this->assertTrue($node->getPrimaryNodeType()->isNodeType('rep:root'));
     }
 

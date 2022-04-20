@@ -23,7 +23,7 @@ class XpathQuery extends Query
     public function getStatementXpath()
     {
         return $this->getStatement();
-        //TODO: should this expand bind variables? or the transport?
+        // TODO: should this expand bind variables? or the transport?
     }
 
     /**
