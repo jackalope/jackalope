@@ -77,6 +77,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->nodes[$this->paths[$this->position]];
@@ -85,6 +86,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->position++;
@@ -93,6 +95,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -101,6 +104,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if (!isset($this->paths[$this->position])) {
@@ -133,6 +137,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->paths[$this->position];
@@ -217,6 +222,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $this->ensurePathLoaded($offset);
@@ -227,6 +233,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $this->ensurePathLoaded($offset);
@@ -237,6 +244,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new InvalidArgumentException('Node path collection is read only');
@@ -245,6 +253,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new InvalidArgumentException('Node path collection is read only');
@@ -253,6 +262,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function seek($position)
     {
         $this->position = $position;
@@ -261,6 +271,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $this->ensurePathLoaded(count($this->paths));

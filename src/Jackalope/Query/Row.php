@@ -227,6 +227,7 @@ class Row implements Iterator, RowInterface
     /**
      * Implement Iterator
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -235,6 +236,7 @@ class Row implements Iterator, RowInterface
     /**
      * Implement Iterator
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->columns[$this->position]['dcr:value'];
@@ -243,6 +245,7 @@ class Row implements Iterator, RowInterface
     /**
      * Implement Iterator
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->columns[$this->position]['dcr:name'];
@@ -251,6 +254,7 @@ class Row implements Iterator, RowInterface
     /**
      * Implement Iterator
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
@@ -261,6 +265,7 @@ class Row implements Iterator, RowInterface
      *
      * @return boolean whether the current position is valid
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->columns[$this->position]);

@@ -55,6 +55,7 @@ class RowIterator implements SeekableIterator, Countable
      *
      * @throws OutOfBoundsException
      */
+    #[\ReturnTypeWillChange]
     public function seek($position)
     {
         $this->position = $position;
@@ -67,16 +68,19 @@ class RowIterator implements SeekableIterator, Countable
     /**
      * @return integer
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->rows);
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (!$this->valid()) {
@@ -86,11 +90,13 @@ class RowIterator implements SeekableIterator, Countable
         return $this->factory->get(Row::class, [$this->objectManager, $this->rows[$this->position]]);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
@@ -99,6 +105,7 @@ class RowIterator implements SeekableIterator, Countable
     /**
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->rows[$this->position]);
