@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.4.4
+-----
+
+* Fix some more deprecations about ReturnTypeWillChange.
+
 1.4.3
 -----
 
