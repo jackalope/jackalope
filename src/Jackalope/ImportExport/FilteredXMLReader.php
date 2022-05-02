@@ -17,6 +17,7 @@ use XMLReader;
  */
 class FilteredXMLReader extends XMLReader
 {
+    #[\ReturnTypeWillChange]
     public function read()
     {
         while (parent::read()) {

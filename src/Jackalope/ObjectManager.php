@@ -856,7 +856,7 @@ class ObjectManager
             $this->transport->rollbackSave();
 
             if (! $e instanceof RepositoryException) {
-                throw new RepositoryException('Error inside the transport layer: '.$e->getMessage(), null, $e);
+                throw new RepositoryException('Error inside the transport layer: '.$e->getMessage(), 0, $e);
             }
 
             throw $e;
