@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.4.5
+-----
+
+* Fix more deprecations for PHP 8.1
+
 1.4.4
 -----
 
