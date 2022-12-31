@@ -2,11 +2,8 @@
 
 namespace Jackalope\Query;
 
-use Countable;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
-use OutOfBoundsException;
-use SeekableIterator;
 
 /**
  * Iterator to efficiently iterate over the raw query result.
@@ -14,7 +11,7 @@ use SeekableIterator;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class RowIterator implements SeekableIterator, Countable
+class RowIterator implements \SeekableIterator, \Countable
 {
     /**
      * @var ObjectManager
@@ -52,14 +49,14 @@ class RowIterator implements SeekableIterator, Countable
     /**
      * @param int $position
      *
-     * @throws OutOfBoundsException
+     * @throws \OutOfBoundsException
      */
     public function seek($position)
     {
         $this->position = $position;
 
         if (!$this->valid()) {
-            throw new OutOfBoundsException("invalid seek position ($position)");
+            throw new \OutOfBoundsException("invalid seek position ($position)");
         }
     }
 

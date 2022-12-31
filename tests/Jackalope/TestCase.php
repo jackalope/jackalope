@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use DOMDocument;
 use Jackalope\NodeType\ItemDefinition;
 use Jackalope\NodeType\NodeDefinition;
 use Jackalope\NodeType\NodeType;
@@ -14,7 +13,6 @@ use PHPCR\NodeType\PropertyDefinitionInterface;
 use PHPCR\SimpleCredentials;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use ReflectionClass;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -66,7 +64,7 @@ abstract class TestCase extends BaseTestCase
             ->willReturn(json_decode($this->JSON))
         ;
 
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
         $transport->expects($this->any())
             ->method('getNodeTypes')
@@ -282,7 +280,7 @@ abstract class TestCase extends BaseTestCase
     protected function getNodeTypeManager(): NodeTypeManager
     {
         $factory = new Factory();
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
         $converter = new NodeTypeXmlConverter($factory);
         $om = $this->getObjectManagerMock();
@@ -310,7 +308,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getAndCallMethod($instance, string $method, array $args = [])
     {
-        $class = new ReflectionClass(get_class($instance));
+        $class = new \ReflectionClass(get_class($instance));
         $method = $class->getMethod($method);
         $method->setAccessible(true);
 
@@ -326,7 +324,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getAttributeValue($instance, string $attributeName)
     {
-        $class = new ReflectionClass(get_class($instance));
+        $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -345,7 +343,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function myAssertAttributeEquals($expectedValue, string $attributeName, $instance): void
     {
-        $class = new ReflectionClass(get_class($instance));
+        $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -354,7 +352,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function setAttributeValue($instance, string $attributeName, $value): void
     {
-        $class = new ReflectionClass(get_class($instance));
+        $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
         $prop->setAccessible(true);
 
@@ -363,7 +361,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function getDomElement(string $xml): \DOMNode
     {
-        $doc = new DOMDocument();
+        $doc = new \DOMDocument();
         $doc->loadXML('<wrapper>'.$xml.'</wrapper>');
         $list = $doc->getElementsByTagName('wrapper');
 

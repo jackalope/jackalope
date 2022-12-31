@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use PHPCR\Query\QOM\SameNodeInterface;
 
 /**
@@ -31,12 +30,12 @@ class SameNode implements SameNodeInterface
      * @param string $selectorName
      * @param string $path
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $path)
     {
         if (null === $selectorName) {
-            throw new InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
         }
         $this->selectorName = $selectorName;
         $this->path = $path;

@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use PHPCR\Query\QOM\ConstraintInterface;
@@ -183,7 +182,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -225,7 +224,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -247,7 +246,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -269,7 +268,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */

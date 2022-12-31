@@ -2,8 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayIterator;
-use Exception;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NoSuchNodeTypeException;
@@ -125,7 +123,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      */
     public function getSubtypes()
     {
-        return new ArrayIterator($this->nodeTypeManager->getSubtypes($this->name));
+        return new \ArrayIterator($this->nodeTypeManager->getSubtypes($this->name));
     }
 
     /**
@@ -135,7 +133,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      */
     public function getDeclaredSubtypes()
     {
-        return new ArrayIterator($this->nodeTypeManager->getDeclaredSubtypes($this->name));
+        return new \ArrayIterator($this->nodeTypeManager->getDeclaredSubtypes($this->name));
     }
 
     /**
@@ -305,7 +303,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
                 }
 
                 return false;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if ($throw) {
                     $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: ".$e->getMessage();
                     throw new ConstraintViolationException($errorMsg, null, $e);

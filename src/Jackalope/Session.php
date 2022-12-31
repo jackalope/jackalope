@@ -2,8 +2,6 @@
 
 namespace Jackalope;
 
-use Exception;
-use InvalidArgumentException;
 use Jackalope\ImportExport\ImportExport;
 use Jackalope\Transport\TransactionInterface;
 use Jackalope\Transport\TransportInterface;
@@ -18,7 +16,6 @@ use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
-use Traversable;
 
 /**
  * {@inheritDoc}
@@ -236,9 +233,9 @@ class Session implements SessionInterface
      */
     public function getNodesByIdentifier($ids)
     {
-        if (!is_array($ids) && !$ids instanceof Traversable) {
+        if (!is_array($ids) && !$ids instanceof \Traversable) {
             $hint = is_object($ids) ? get_class($ids) : gettype($ids);
-            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+            throw new \InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
 
         return $this->objectManager->getNodesByIdentifier($ids);
@@ -296,9 +293,9 @@ class Session implements SessionInterface
      */
     public function getNodes($absPaths)
     {
-        if (!is_array($absPaths) && !$absPaths instanceof Traversable) {
+        if (!is_array($absPaths) && !$absPaths instanceof \Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
-            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+            throw new \InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
 
         return $this->objectManager->getNodesByPath($absPaths);
@@ -320,9 +317,9 @@ class Session implements SessionInterface
 
     public function getProperties($absPaths)
     {
-        if (!is_array($absPaths) && !$absPaths instanceof Traversable) {
+        if (!is_array($absPaths) && !$absPaths instanceof \Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
-            throw new InvalidArgumentException("Not a valid array or Traversable: $hint");
+            throw new \InvalidArgumentException("Not a valid array or Traversable: $hint");
         }
 
         return $this->objectManager->getPropertiesByPath($absPaths);
@@ -445,11 +442,11 @@ class Session implements SessionInterface
             try {
                 $this->objectManager->save();
                 $utx->commit();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // if anything goes wrong, rollback this mess
                 try {
                     $utx->rollback();
-                } catch (Exception $rollbackException) {
+                } catch (\Exception $rollbackException) {
                     // ignore this exception
                 }
                 // but do not eat this exception
@@ -768,9 +765,9 @@ class Session implements SessionInterface
      * @param string $key   the key to be set
      * @param mixed  $value the value to be set
      *
-     * @throws InvalidArgumentException if the option is unknown
-     * @throws RepositoryException      if this option is not supported and is
-     *                                  a behaviour relevant option
+     * @throws \InvalidArgumentException if the option is unknown
+     * @throws RepositoryException       if this option is not supported and is
+     *                                   a behaviour relevant option
      *
      * @see BaseTransport::setFetchDepth($value);
      */
@@ -784,7 +781,7 @@ class Session implements SessionInterface
                 $this->getTransport()->setAutoLastModified($value);
                 break;
             default:
-                throw new InvalidArgumentException("Unknown option: $key");
+                throw new \InvalidArgumentException("Unknown option: $key");
         }
     }
 
@@ -795,7 +792,7 @@ class Session implements SessionInterface
      *
      * @return bool
      *
-     * @throws InvalidArgumentException if the option is unknown
+     * @throws \InvalidArgumentException if the option is unknown
      *
      * @see setSessionOption($key, $value);
      */
@@ -808,6 +805,6 @@ class Session implements SessionInterface
                 return $this->getTransport()->getAutoLastModified();
         }
 
-        throw new InvalidArgumentException("Unknown option: $key");
+        throw new \InvalidArgumentException("Unknown option: $key");
     }
 }

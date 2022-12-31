@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use DOMElement;
 use PHPCR\RepositoryException;
 
 /**
@@ -21,14 +20,14 @@ class Helper
      * The attribute can contain the string 'false' which is interpreted as
      * false, everything else is true.
      *
-     * @param DOMElement $node      to fetch from
-     * @param string     $attribute name to fetch
+     * @param \DOMElement $node      to fetch from
+     * @param string      $attribute name to fetch
      *
      * @return bool the value converted to bool
      *
      * @throws RepositoryException
      */
-    public static function getBoolAttribute(DOMElement $node, $attribute)
+    public static function getBoolAttribute(\DOMElement $node, $attribute)
     {
         if (!$node->hasAttribute($attribute)) {
             throw new RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());

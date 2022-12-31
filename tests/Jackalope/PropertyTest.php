@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayObject;
 use PHPCR\NodeInterface;
 use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
@@ -43,7 +42,7 @@ class PropertyTest extends TestCase
             $this->expectExceptionMessage($exceptionMessage);
         }
 
-        $nodes = new ArrayObject();
+        $nodes = new \ArrayObject();
 
         foreach ($nodeUuids as $nodeUuid) {
             $nodes[$nodeUuid] = $this->getNodeMock();

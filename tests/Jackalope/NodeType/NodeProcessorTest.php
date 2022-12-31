@@ -2,7 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayObject;
 use Jackalope\TestCase;
 use Jackalope\Transport\AddNodeOperation;
 use PHPCR\NamespaceException;
@@ -19,7 +18,7 @@ class NodeProcessorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->processor = new NodeProcessor('dtl', new ArrayObject([
+        $this->processor = new NodeProcessor('dtl', new \ArrayObject([
             'ns' => 'Namespace',
             'dtl' => 'http://www.dantleech.com/ns',
         ]));

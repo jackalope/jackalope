@@ -52,7 +52,7 @@ class JackrabbitPathValidator extends AbstractRegexValidator
 
         $this->PAT_NAME_SIMPLE_CHAR = '['.$this->PAT_NAME_SIMPLE_CHAR_NEGATION.']';
 
-        $this->PAT_NAME_SIMPLE_CHAR_NO_SPACE = '['.$this->PAT_NAME_SIMPLE_CHAR_NEGATION.'\s'.']';
+        $this->PAT_NAME_SIMPLE_CHAR_NO_SPACE = '['.$this->PAT_NAME_SIMPLE_CHAR_NEGATION.'\s]';
 
         $this->PAT_LOCAL_NAME = $this->PAT_NAME_SIMPLE_CHAR_NO_SPACE.'('.$this->PAT_NAME_SIMPLE_CHAR.'*'.$this->PAT_NAME_SIMPLE_CHAR.')?';
 
@@ -64,7 +64,7 @@ class JackrabbitPathValidator extends AbstractRegexValidator
 
         $this->LOCAL_NAME = '^'.$this->PAT_LOCAL_NAME.'$';
 
-        $this->PATH_WITHOUT_LAST_SLASH = '(\./|\.\./|/)?'.'('.$this->PAT_PATH_ELEMENT.'/)*'.$this->PAT_PATH_ELEMENT;
+        $this->PATH_WITHOUT_LAST_SLASH = '(\./|\.\./|/)?('.$this->PAT_PATH_ELEMENT.'/)*'.$this->PAT_PATH_ELEMENT;
 
         $this->PATH = '^'.$this->PATH_WITHOUT_LAST_SLASH.'/?$';
     }

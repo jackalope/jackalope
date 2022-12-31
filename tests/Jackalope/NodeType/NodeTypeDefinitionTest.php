@@ -2,20 +2,17 @@
 
 namespace Jackalope\NodeType;
 
-use DOMDocument;
-use InvalidArgumentException;
 use Jackalope\Factory;
 use Jackalope\TestCase;
 use PHPCR\PropertyType;
-use stdClass;
 
 class NodeTypeDefinitionTest extends TestCase
 {
     public function testInvalidNodeTypeDefinition()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
-        $this->getNodeTypeManager()->createNodeTypeTemplate(new stdClass());
+        $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdClass());
     }
 
     public function testCreateFromArray()
@@ -66,7 +63,7 @@ class NodeTypeDefinitionTest extends TestCase
     public function testCreateFromXml()
     {
         $factory = new Factory();
-        $dom = new DOMDocument();
+        $dom = new \DOMDocument();
         $dom->loadXML('<?xml version="1.0" encoding="UTF-8"?>
     <nodeType hasOrderableChildNodes="false" isAbstract="false" isMixin="true" isQueryable="true" name="mix:created">
         <propertyDefinition autoCreated="true" declaringNodeType="mix:created" fullTextSearchable="true" mandatory="false" multiple="false" name="jcr:createdBy" onParentVersion="COPY" protected="true" queryOrderable="true" requiredType="String">

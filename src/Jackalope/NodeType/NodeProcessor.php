@@ -2,9 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayObject;
-use DateTime;
-use InvalidArgumentException;
 use Jackalope\Transport\AddNodeOperation;
 use PHPCR\ItemExistsException;
 use PHPCR\Lock\LockException;
@@ -74,16 +71,16 @@ $/xi";
     private $autoLastModified;
 
     /**
-     * @var ArrayObject List of namespaces known to the current session. Keys are prefix, values are URI.
+     * @var \ArrayObject List of namespaces known to the current session. Keys are prefix, values are URI.
      */
     private $namespaces;
 
     /**
-     * @param string      $userId           ID of the connected user
-     * @param ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
-     * @param bool        $autoLastModified Whether the last modified property should be updated automatically
+     * @param string       $userId           ID of the connected user
+     * @param \ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
+     * @param bool         $autoLastModified Whether the last modified property should be updated automatically
      */
-    public function __construct($userId, ArrayObject $namespaces, $autoLastModified = true)
+    public function __construct($userId, \ArrayObject $namespaces, $autoLastModified = true)
     {
         $this->userId = (string) $userId;
         $this->autoLastModified = $autoLastModified;
@@ -121,7 +118,7 @@ $/xi";
      *
      * @return AddNodeOperation[] additional operations to handle autocreated nodes
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws RepositoryException
      * @throws ItemExistsException
      * @throws LockException
@@ -188,7 +185,7 @@ $/xi";
                             break;
                         case 'jcr:created':
                         case 'jcr:lastModified':
-                            $value = new DateTime();
+                            $value = new \DateTime();
                             break;
                         case 'jcr:etag':
                             // TODO: http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.7.12.1%20mix:etag
@@ -222,7 +219,7 @@ $/xi";
                     switch ($propertyDef->getName()) {
                         case 'jcr:lastModified':
                             if ($this->autoLastModified) {
-                                $prop->setValue(new DateTime());
+                                $prop->setValue(new \DateTime());
                             }
                             break;
                         case 'jcr:lastModifiedBy':

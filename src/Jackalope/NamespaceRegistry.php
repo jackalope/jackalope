@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
-use Iterator;
-use IteratorAggregate;
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
 use PHPCR\ItemNotFoundException;
@@ -18,7 +15,7 @@ use PHPCR\UnsupportedRepositoryOperationException;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
+class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterface
 {
     /**
      * Instance of an implementation of the TransportInterface.
@@ -214,14 +211,14 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * Provide Traversable interface: iterator over all namespaces.
      *
-     * @return Iterator over all namespaces, with prefix as key and url as value
+     * @return \Iterator over all namespaces, with prefix as key and url as value
      */
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $this->lazyLoadNamespaces();
 
-        return new ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
+        return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
     }
 
     /**

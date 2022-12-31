@@ -2,7 +2,6 @@
 
 namespace Jackalope\Observation;
 
-use ArrayIterator;
 use Jackalope\Factory;
 use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
@@ -110,7 +109,7 @@ class EventJournalTest extends TestCase
             ->expects($this->once())
             ->method('getEvents')
             ->with(2, $filter, $this->session)
-            ->willReturn(new ArrayIterator([$event1, $event2]))
+            ->willReturn(new \ArrayIterator([$event1, $event2]))
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);

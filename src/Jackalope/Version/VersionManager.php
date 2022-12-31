@@ -2,7 +2,6 @@
 
 namespace Jackalope\Version;
 
-use InvalidArgumentException;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
@@ -188,7 +187,7 @@ class VersionManager implements VersionManagerInterface
 
         if (is_string($version)) {
             if (!is_string($absPath)) {
-                throw new InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
+                throw new \InvalidArgumentException('To restore version by version name you need to specify the path to the node you want to restore to this name');
             }
             $vh = $this->getVersionHistory($absPath);
             $version = $vh->getVersion($version);
@@ -202,7 +201,7 @@ class VersionManager implements VersionManagerInterface
             $versionPath = $version->getPath();
             $nodePath = $this->objectManager->getNodeByIdentifier($version->getContainingHistory()->getVersionableIdentifier())->getPath();
         } else {
-            throw new InvalidArgumentException();
+            throw new \InvalidArgumentException();
         }
 
         $this->objectManager->restore($removeExisting, $versionPath, $nodePath);

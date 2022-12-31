@@ -2,7 +2,6 @@
 
 namespace Jackalope\Version;
 
-use InvalidArgumentException;
 use Jackalope\Node;
 use Jackalope\NotImplementedException;
 use PHPCR\ItemNotFoundException;
@@ -34,7 +33,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -47,7 +46,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -71,7 +70,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws PathNotFoundException
      *
      * @api
@@ -95,7 +94,7 @@ class Version extends Node implements VersionInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws PathNotFoundException
      * @throws ItemNotFoundException
      * @throws NoSuchWorkspaceException

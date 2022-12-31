@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
-use Exception;
-use InvalidArgumentException;
 use Jackalope\Transport\AddNodeOperation;
 use Jackalope\Transport\MoveNodeOperation;
 use Jackalope\Transport\NodeTypeCndManagementInterface;
@@ -39,7 +36,6 @@ use PHPCR\Util\CND\Writer\CndWriter;
 use PHPCR\Util\PathHelper;
 use PHPCR\Version\VersionException;
 use PHPCR\Version\VersionInterface;
-use RuntimeException;
 
 /**
  * Implementation specific class that talks to the Transport layer to get nodes
@@ -380,7 +376,7 @@ class ObjectManager
      * @param string|array $nameFilter
      * @param string|array $typeFilter
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
     public function filterChildNodeNamesByType(NodeInterface $node, $nameFilter, $typeFilter)
     {
@@ -389,7 +385,7 @@ class ObjectManager
         }
 
         // fallback: get the actual nodes and let that filter. this is expensive.
-        return new ArrayIterator(array_keys($node->getNodes($nameFilter, $typeFilter)->getArrayCopy()));
+        return new \ArrayIterator(array_keys($node->getNodes($nameFilter, $typeFilter)->getArrayCopy()));
     }
 
     /**
@@ -458,8 +454,8 @@ class ObjectManager
      *
      * @return PropertyInterface
      *
-     * @throws ItemNotFoundException    if item is not found at this path
-     * @throws InvalidArgumentException
+     * @throws ItemNotFoundException     if item is not found at this path
+     * @throws \InvalidArgumentException
      * @throws RepositoryException
      */
     public function getPropertyByPath($absPath)
@@ -478,10 +474,8 @@ class ObjectManager
      * Get all nodes of those properties in one batch, then collect the
      * properties of them.
      *
-     * @param $absPaths
-     *
-     * @return ArrayIterator that contains all found PropertyInterface
-     *                       instances keyed by their path
+     * @return \ArrayIterator that contains all found PropertyInterface
+     *                        instances keyed by their path
      */
     public function getPropertiesByPath($absPaths)
     {
@@ -506,7 +500,7 @@ class ObjectManager
             }
         }
 
-        return new ArrayIterator($properties);
+        return new \ArrayIterator($properties);
     }
 
     /**
@@ -593,7 +587,7 @@ class ObjectManager
      * @param array  $identifiers UUIDs of nodes to retrieve
      * @param string $class       optional class name for the factory
      *
-     * @return ArrayIterator|Node[] Iterator of the specified nodes keyed by their unique ids
+     * @return \ArrayIterator|Node[] Iterator of the specified nodes keyed by their unique ids
      *
      * @throws RepositoryException if another error occurs
      *
@@ -637,7 +631,7 @@ class ObjectManager
 
         reset($nodes);
 
-        return new ArrayIterator($nodes);
+        return new \ArrayIterator($nodes);
     }
 
     /**
@@ -722,7 +716,7 @@ class ObjectManager
      * @param string $name name of referring REFERENCE properties to be
      *                     returned; if null then all referring REFERENCEs are returned
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      *
      * @see Node::getReferences()
      */
@@ -741,7 +735,7 @@ class ObjectManager
      * @param string $name name of referring WEAKREFERENCE properties to be
      *                     returned; if null then all referring WEAKREFERENCEs are returned
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      *
      * @see Node::getWeakReferences()
      */
@@ -758,12 +752,12 @@ class ObjectManager
      *
      * @param array $propertyPaths an array of properties paths
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
     protected function pathArrayToPropertiesIterator($propertyPaths)
     {
         // FIXME: this will break if we have non-persisted move
-        return new ArrayIterator($this->getPropertiesByPath($propertyPaths));
+        return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));
     }
 
     /**
@@ -849,7 +843,7 @@ class ObjectManager
             }
 
             $this->transport->finishSave();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->transport->rollbackSave();
 
             if (!$e instanceof RepositoryException) {
@@ -958,7 +952,7 @@ class ObjectManager
                 $this->transport->deleteProperties($operations);
                 break;
             default:
-                throw new Exception("internal error: unknown operation '$type'");
+                throw new \Exception("internal error: unknown operation '$type'");
         }
     }
 
@@ -1609,9 +1603,9 @@ class ObjectManager
     /**
      * Begin new transaction associated with current session.
      *
-     * @throws RepositoryException      if the transaction implementation
-     *                                  encounters an unexpected error condition
-     * @throws InvalidArgumentException
+     * @throws RepositoryException       if the transaction implementation
+     *                                   encounters an unexpected error condition
+     * @throws \InvalidArgumentException
      */
     public function beginTransaction()
     {
@@ -1667,12 +1661,12 @@ class ObjectManager
      *                       notification (must be beginTransaction, commitTransaction or
      *                       rollbackTransaction)
      *
-     * @throws InvalidArgumentException if the passed $method is not valid
+     * @throws \InvalidArgumentException if the passed $method is not valid
      */
     protected function notifyItems($method)
     {
         if (!in_array($method, ['beginTransaction', 'commitTransaction', 'rollbackTransaction'])) {
-            throw new InvalidArgumentException("Unknown notification method '$method'");
+            throw new \InvalidArgumentException("Unknown notification method '$method'");
         }
 
         // Notify the loaded nodes
@@ -1773,7 +1767,7 @@ class ObjectManager
     }
 
     /**
-     * Return an ArrayIterator containing all the cached children of the given node.
+     * Returns an iterator containing all the cached children of the given node.
      * It makes no difference whether or not the node itself is cached.
      *
      * Note that this method will also return deleted node objects so you can
@@ -1782,7 +1776,7 @@ class ObjectManager
      * @param string $absPath
      * @param string $class
      *
-     * @return ArrayIterator
+     * @return \ArrayIterator
      */
     public function getCachedDescendants($absPath, $class = Node::class)
     {
@@ -1794,7 +1788,7 @@ class ObjectManager
             }
         }
 
-        return new ArrayIterator(array_values($descendants));
+        return new \ArrayIterator(array_values($descendants));
     }
 
     /**
@@ -1807,7 +1801,6 @@ class ObjectManager
      *
      * @see getCachedNode
      *
-     * @param $uuid
      * @param string $class
      *
      * @return NodeInterface or null
@@ -1872,7 +1865,7 @@ class ObjectManager
     public function registerUuid($uuid, $absPath)
     {
         if (array_key_exists($uuid, $this->objectsByUuid)) {
-            throw new RuntimeException(sprintf(
+            throw new \RuntimeException(sprintf(
                 'Object path for UUID "%s" has already been registered to "%s"',
                 $uuid,
                 $this->objectsByUuid[$uuid]

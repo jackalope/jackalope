@@ -2,13 +2,7 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
-use Exception;
-use InvalidArgumentException;
-use Iterator;
-use IteratorAggregate;
 use Jackalope\NodeType\NodeType;
-use LogicException;
 use PHPCR\AccessDeniedException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemExistsException;
@@ -38,7 +32,7 @@ use PHPCR\Version\VersionException;
  *
  * @api
  */
-class Node extends Item implements IteratorAggregate, NodeInterface
+class Node extends Item implements \IteratorAggregate, NodeInterface
 {
     /**
      * The index if this is a same-name sibling.
@@ -266,7 +260,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                         $this->_setProperty($key, $value, PropertyType::NAME, true);
                         break;
 
-                    // OPTIMIZE: do not instantiate properties until needed
+                        // OPTIMIZE: do not instantiate properties until needed
                     default:
                         if (isset($rawData->{':'.$key})) {
                             /*
@@ -321,7 +315,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
                 $this->originalNodesOrder = null;
             }
             foreach ($oldProperties as $name => $property) {
-                if (!($keepChanges && ($property->isNew()))) {
+                if (!($keepChanges && $property->isNew())) {
                     // may not call remove(), we don't want another delete with
                     // the backend to be attempted
                     $this->properties[$name]->setDeleted();
@@ -443,7 +437,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @api
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws ItemExistsException
      * @throws PathNotFoundException
      * @throws RepositoryException
@@ -702,7 +696,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             }
         }
 
-        return new ArrayIterator($result);
+        return new \ArrayIterator($result);
     }
 
     /**
@@ -720,7 +714,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
         $names = self::filterNames($nameFilter, $this->nodes);
 
-        return new ArrayIterator($names);
+        return new \ArrayIterator($names);
     }
 
     /**
@@ -840,7 +834,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             $result[$name] = $this->properties[$name];
         }
 
-        return new ArrayIterator($result);
+        return new \ArrayIterator($result);
     }
 
     /**
@@ -894,7 +888,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             if (null !== $item_name) {
                 $primary_item = $this->session->getItem($this->path.'/'.$item_name);
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new RepositoryException("An error occured while reading the primary item of the node '{$this->path}': ".$ex->getMessage());
         }
 
@@ -994,7 +988,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         }
 
         if (!strlen($relPath) || '/' === $relPath[0]) {
-            throw new InvalidArgumentException("'$relPath' is not a relative path");
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->nodeExists($this->getChildPath($relPath));
@@ -1013,7 +1007,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
             return isset($this->properties[$relPath]);
         }
         if (!strlen($relPath) || '/' === $relPath[0]) {
-            throw new InvalidArgumentException("'$relPath' is not a relative path");
+            throw new \InvalidArgumentException("'$relPath' is not a relative path");
         }
 
         return $this->session->propertyExists($this->getChildPath($relPath));
@@ -1442,7 +1436,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
         } catch (ItemNotFoundException $ex) {
             // The node was deleted in another session
             if (!$this->objectManager->purgeDisappearedNode($this->path, $keepChanges)) {
-                throw new LogicException($this->path.' should be purged and not kept');
+                throw new \LogicException($this->path.' should be purged and not kept');
             }
             $keepChanges = false; // delete never keeps changes
             if (!$internal) {
@@ -1621,7 +1615,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected function getChildPath($p)
     {
         if ('' == $p) {
-            throw new InvalidArgumentException('Name can not be empty');
+            throw new \InvalidArgumentException('Name can not be empty');
         }
         if ('/' == $p[0]) {
             return $p;
@@ -1677,7 +1671,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * Provide Traversable interface: redirect to getNodes with no filter.
      *
-     * @return Iterator over all child nodes
+     * @return \Iterator over all child nodes
      *
      * @throws RepositoryException
      */
@@ -1702,7 +1696,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      *
      * @return Property
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws LockException
      * @throws ConstraintViolationException
      * @throws RepositoryException
@@ -1717,7 +1711,7 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     protected function _setProperty($name, $value, $type, $internal)
     {
         if ('' === $name || false !== strpos($name, '/')) {
-            throw new InvalidArgumentException("The name '$name' is no valid property name");
+            throw new \InvalidArgumentException("The name '$name' is no valid property name");
         }
 
         if (!isset($this->properties[$name])) {

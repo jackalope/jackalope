@@ -2,8 +2,6 @@
 
 namespace Jackalope\ImportExport;
 
-use XMLReader;
-
 /**
  * An XML reader that can do what we need for jackalope:.
  *
@@ -14,7 +12,7 @@ use XMLReader;
  * @license http://opensource.org/licenses/MIT MIT License
  * @author David Buchmann <david@liip.ch>
  */
-class FilteredXMLReader extends XMLReader
+class FilteredXMLReader extends \XMLReader
 {
     public function read()
     {

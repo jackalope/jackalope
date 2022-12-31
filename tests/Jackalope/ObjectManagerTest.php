@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use DOMDocument;
-use Iterator;
-
 class ObjectManagerTest extends TestCase
 {
     /**
@@ -34,7 +31,7 @@ class ObjectManagerTest extends TestCase
         $node = $this->om->getNodeByPath($path);
         $this->assertInstanceOf(Node::class, $node);
         $children = $node->getNodes();
-        $this->assertInstanceOf(Iterator::class, $children);
+        $this->assertInstanceOf(\Iterator::class, $children);
         $this->assertCount(2, $children);
         $this->assertSame($node, $this->om->getNodeByPath($path));
     }
@@ -42,9 +39,9 @@ class ObjectManagerTest extends TestCase
     public function testGetNodeTypes()
     {
         $nodetypes = $this->om->getNodeTypes();
-        $this->assertInstanceOf(DOMDocument::class, $nodetypes);
+        $this->assertInstanceOf(\DOMDocument::class, $nodetypes);
         $nodetypes = $this->om->getNodeTypes(['nt:folder', 'nt:file']);
-        $this->assertInstanceOf(DOMDocument::class, $nodetypes);
+        $this->assertInstanceOf(\DOMDocument::class, $nodetypes);
     }
 
     public function testRegisterUuid()

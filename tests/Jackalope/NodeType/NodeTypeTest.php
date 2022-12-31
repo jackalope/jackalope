@@ -2,7 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use Iterator;
 use Jackalope\TestCase;
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
@@ -44,10 +43,10 @@ class NodeTypeTest extends TestCase
 
         $this->assertSame([$ntm->getNodeType('mix:versionable'), $ntm->getNodeType('nt:base')], $nt->getDeclaredSupertypes());
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertInstanceOf(Iterator::class, $declaredSubTypes);
+        $this->assertInstanceOf(\Iterator::class, $declaredSubTypes);
         $this->assertCount(0, $declaredSubTypes);
         $subTypes = $nt->getSubtypes();
-        $this->assertInstanceOf(Iterator::class, $subTypes);
+        $this->assertInstanceOf(\Iterator::class, $subTypes);
         $this->assertCount(0, $subTypes);
         $this->assertTrue($nt->isNodeType('nt:configuration'));
         $this->assertTrue($nt->isNodeType('nt:base'));
@@ -65,13 +64,13 @@ class NodeTypeTest extends TestCase
 
         $nt = $ntm->getNodeType('nt:hierarchyNode');
         $declaredSubTypes = $nt->getDeclaredSubtypes();
-        $this->assertInstanceOf(Iterator::class, $declaredSubTypes);
+        $this->assertInstanceOf(\Iterator::class, $declaredSubTypes);
         $this->assertCount(5, $declaredSubTypes);
         $subnode = $declaredSubTypes->current();
         $this->assertInstanceOf(NodeType::class, $subnode);
         $this->assertSame('nt:file', $subnode->getName());
         $subTypes = $nt->getSubtypes();
-        $this->assertInstanceOf(Iterator::class, $subTypes);
+        $this->assertInstanceOf(\Iterator::class, $subTypes);
         $this->assertCount(7, $subTypes);
         $subTypes->seek(4);
         $subnode = $subTypes->current();

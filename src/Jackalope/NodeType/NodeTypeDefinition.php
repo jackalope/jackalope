@@ -2,9 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayObject;
-use DOMElement;
-use InvalidArgumentException;
 use Jackalope\FactoryInterface;
 use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\Util\ValueConverter;
@@ -80,12 +77,12 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     protected $declaredSuperTypeNames = null;
 
     /**
-     * @var ArrayObject
+     * @var \ArrayObject
      */
     protected $declaredPropertyDefinitions = null;
 
     /**
-     * @var ArrayObject
+     * @var \ArrayObject
      */
     protected $declaredNodeDefinitions = null;
 
@@ -96,12 +93,12 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
      * NodeTypeDefinition.
      *
      * @param FactoryInterface $factory the object factory
-     * @param DOMElement|NodeTypeDefinitionInterface|null
+     * @param \DOMElement|NodeTypeDefinitionInterface|null
      *      $nodetype Either by XML or by NodeTypeDefinition or null for an
      *      empty definition
      *
-     * @throws InvalidArgumentException If it is not possible to read data
-     *                                  from $nodetype
+     * @throws \InvalidArgumentException If it is not possible to read data
+     *                                   from $nodetype
      */
     public function __construct(FactoryInterface $factory, NodeTypeManager $nodeTypeManager, $nodetype = null)
     {
@@ -109,14 +106,14 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->valueConverter = $this->factory->get(ValueConverter::class);
         $this->nodeTypeManager = $nodeTypeManager;
 
-        if ($nodetype instanceof DOMElement) {
+        if ($nodetype instanceof \DOMElement) {
             $this->fromXml($nodetype);
         } elseif (is_array($nodetype)) {
             $this->fromArray($nodetype);
         } elseif ($nodetype instanceof NodeTypeDefinitionInterface) {
             $this->fromNodeTypeDefinition($nodetype); // copy constructor
         } elseif (!is_null($nodetype)) {
-            throw new InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
+            throw new \InvalidArgumentException('Implementation Error -- unknown nodetype class: '.get_class($nodetype));
         }
     }
 
@@ -135,8 +132,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $ntd->hasOrderableChildNodes();
         $this->primaryItemName = $ntd->getPrimaryItemName();
         $this->declaredSuperTypeNames = $ntd->getDeclaredSupertypeNames();
-        $this->declaredPropertyDefinitions = new ArrayObject($ntd->getDeclaredPropertyDefinitions() ?: []);
-        $this->declaredNodeDefinitions = new ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: []);
+        $this->declaredPropertyDefinitions = new \ArrayObject($ntd->getDeclaredPropertyDefinitions() ?: []);
+        $this->declaredNodeDefinitions = new \ArrayObject($ntd->getDeclaredChildNodeDefinitions() ?: []);
     }
 
     /**
@@ -153,7 +150,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
         $this->hasOrderableChildNodes = $data['hasOrderableChildNodes'];
         $this->primaryItemName = $data['primaryItemName'] ?: null;
         $this->declaredSuperTypeNames = (isset($data['declaredSuperTypeNames']) && count($data['declaredSuperTypeNames'])) ? $data['declaredSuperTypeNames'] : [];
-        $this->declaredPropertyDefinitions = new ArrayObject();
+        $this->declaredPropertyDefinitions = new \ArrayObject();
 
         foreach ($data['declaredPropertyDefinitions'] as $propertyDef) {
             $this->declaredPropertyDefinitions[] = $this->factory->get(
@@ -161,7 +158,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
                 [$propertyDef, $this->nodeTypeManager]
             );
         }
-        $this->declaredNodeDefinitions = new ArrayObject();
+        $this->declaredNodeDefinitions = new \ArrayObject();
         foreach ($data['declaredNodeDefinitions'] as $nodeDef) {
             $this->declaredNodeDefinitions[] = $this->factory->get(
                 NodeDefinition::class,
@@ -173,9 +170,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * Reads the node type definition from an xml element.
      *
-     * @param DOMElement $node The dom element to read information from
+     * @param \DOMElement $node The dom element to read information from
      */
-    protected function fromXml(DOMElement $node)
+    protected function fromXml(\DOMElement $node)
     {
         $nodeTypeXmlConverter = new NodeTypeXmlConverter($this->factory);
         $this->fromArray($nodeTypeXmlConverter->getNodeTypeDefinitionFromXml($node));

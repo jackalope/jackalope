@@ -2,8 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use DOMDocument;
-use DOMXPath;
 use Jackalope\Factory;
 use Jackalope\TestCase;
 
@@ -160,10 +158,10 @@ class NodeTypeXmlConverterTest extends TestCase
 </nodeTypes>
 
 XML;
-        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($xml);
 
-        $xpath = new DOMXpath($dom);
+        $xpath = new \DOMXPath($dom);
         $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
         if (1 != $nodes->length) {
             $this->fail("Should have found exactly one element <nodeType> with name $name");

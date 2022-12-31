@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query;
 
-use Iterator;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use PHPCR\ItemNotFoundException;
@@ -21,7 +20,7 @@ use PHPCR\RepositoryException;
  *
  * @api
  */
-class Row implements Iterator, RowInterface
+class Row implements \Iterator, RowInterface
 {
     /**
      * @var ObjectManager
