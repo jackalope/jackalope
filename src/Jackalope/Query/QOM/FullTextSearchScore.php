@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use PHPCR\Query\QOM\FullTextSearchScoreInterface;
 
 /**
@@ -25,12 +24,12 @@ class FullTextSearchScore implements FullTextSearchScoreInterface
      *
      * @param string $selectorName
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName)
     {
         if (null === $selectorName) {
-            throw new InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
         }
 
         $this->selectorName = $selectorName;

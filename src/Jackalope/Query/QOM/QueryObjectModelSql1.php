@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
@@ -56,7 +55,7 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
      *                                           to execute the query but just use it with a parser)
      * @param ConstraintInterface $constraint
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function __construct(
         FactoryInterface $factory,
@@ -68,12 +67,12 @@ class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelInterfac
     ) {
         foreach ($orderings as $o) {
             if (!$o instanceof OrderingInterface) {
-                throw new InvalidArgumentException('Not a valid ordering: '.$o);
+                throw new \InvalidArgumentException('Not a valid ordering: '.$o);
             }
         }
         foreach ($columns as $c) {
             if (!$c instanceof ColumnInterface) {
-                throw new InvalidArgumentException('Not a valid column: '.$c);
+                throw new \InvalidArgumentException('Not a valid column: '.$c);
             }
         }
         parent::__construct($factory, '', $objectManager);

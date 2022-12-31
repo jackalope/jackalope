@@ -2,7 +2,6 @@
 
 namespace Jackalope\Observation;
 
-use IteratorAggregate;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Transport\ObservationInterface;
@@ -11,7 +10,6 @@ use PHPCR\Observation\EventListenerInterface;
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
-use Traversable;
 
 /**
  * {@inheritDoc}
@@ -26,7 +24,7 @@ use Traversable;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class ObservationManager implements IteratorAggregate, ObservationManagerInterface
+class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
 {
     /**
      * @var FactoryInterface
@@ -113,7 +111,7 @@ class ObservationManager implements IteratorAggregate, ObservationManagerInterfa
     }
 
     /**
-     * @return Traversable The list of event listeners
+     * @return \Traversable The list of event listeners
      *
      * @throws RepositoryException
      *

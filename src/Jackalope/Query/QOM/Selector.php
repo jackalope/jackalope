@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use PHPCR\Query\QOM\SelectorInterface;
 
 /**
@@ -31,12 +30,12 @@ class Selector implements SelectorInterface
      * @param string $nodeTypeName
      * @param string $selectorName
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $nodeTypeName)
     {
         if (null === $selectorName) {
-            throw new InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
         }
         $this->selectorName = $selectorName;
         $this->nodeTypeName = $nodeTypeName;

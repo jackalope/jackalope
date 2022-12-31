@@ -2,10 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use DOMDocument;
-use DOMElement;
-use DOMXPath;
-use InvalidArgumentException;
 use Jackalope\FactoryInterface;
 use Jackalope\Helper;
 use PHPCR\PropertyType;
@@ -38,7 +34,7 @@ class NodeTypeXmlConverter
     /**
      * @return array
      */
-    public function getItemDefinitionFromXml(DOMElement $node)
+    public function getItemDefinitionFromXml(\DOMElement $node)
     {
         $data = [];
         $data['declaringNodeType'] = $node->getAttribute('declaringNodeType');
@@ -58,7 +54,7 @@ class NodeTypeXmlConverter
      *
      * @throws \InvalidArgumentException
      */
-    public function getPropertyDefinitionFromXml(DOMElement $node)
+    public function getPropertyDefinitionFromXml(\DOMElement $node)
     {
         $data = $this->getItemDefinitionFromXml($node);
 
@@ -67,7 +63,7 @@ class NodeTypeXmlConverter
         $data['fullTextSearchable'] = Helper::getBoolAttribute($node, 'fullTextSearchable');
         $data['queryOrderable'] = Helper::getBoolAttribute($node, 'queryOrderable');
 
-        $xp = new DOMXPath($node->ownerDocument);
+        $xp = new \DOMXPath($node->ownerDocument);
         $valueConstraints = $xp->query('valueConstraints/valueConstraint', $node);
         foreach ($valueConstraints as $valueConstraint) {
             $data['valueConstraints'][] = $valueConstraint->nodeValue;
@@ -91,7 +87,7 @@ class NodeTypeXmlConverter
      *
      * @return array
      */
-    public function getNodeDefinitionFromXml(DOMElement $node)
+    public function getNodeDefinitionFromXml(\DOMElement $node)
     {
         $data = $this->getItemDefinitionFromXml($node);
 
@@ -99,7 +95,7 @@ class NodeTypeXmlConverter
         $data['allowsSameNameSiblings'] = Helper::getBoolAttribute($node, 'sameNameSiblings');
         $data['defaultPrimaryTypeName'] = $node->getAttribute('defaultPrimaryType') ?: null;
 
-        $xp = new DOMXPath($node->ownerDocument);
+        $xp = new \DOMXPath($node->ownerDocument);
         $requiredPrimaryTypes = $xp->query('requiredPrimaryTypes/requiredPrimaryType', $node);
         if (0 < $requiredPrimaryTypes->length) {
             foreach ($requiredPrimaryTypes as $requiredPrimaryType) {
@@ -118,9 +114,9 @@ class NodeTypeXmlConverter
      * @return array
      *
      * @throws RepositoryException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
-    public function getNodeTypeDefinitionFromXml(DOMElement $node)
+    public function getNodeTypeDefinitionFromXml(\DOMElement $node)
     {
         $data = [];
         // nodetype
@@ -133,7 +129,7 @@ class NodeTypeXmlConverter
         $data['primaryItemName'] = $node->getAttribute('primaryItemName') ?: null;
 
         $data['declaredSuperTypeNames'] = [];
-        $xp = new DOMXPath($node->ownerDocument);
+        $xp = new \DOMXPath($node->ownerDocument);
         $supertypes = $xp->query('supertypes/supertype', $node);
         foreach ($supertypes as $supertype) {
             $data['declaredSuperTypeNames'][] = $supertype->nodeValue;
@@ -154,9 +150,9 @@ class NodeTypeXmlConverter
         return $data;
     }
 
-    public function getNodeTypesFromXml(DOMDocument $dom)
+    public function getNodeTypesFromXml(\DOMDocument $dom)
     {
-        $xp = new DOMXpath($dom);
+        $xp = new \DOMXPath($dom);
         $nodeTypesElements = $xp->query('/nodeTypes/nodeType');
         $nodeTypes = [];
         foreach ($nodeTypesElements as $nodeTypeElement) {

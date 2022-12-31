@@ -2,8 +2,6 @@
 
 namespace Jackalope\ImportExport;
 
-use Exception;
-use InvalidArgumentException;
 use PHPCR\AccessDeniedException;
 use PHPCR\ImportUUIDBehaviorInterface;
 use PHPCR\InvalidSerializedDataException;
@@ -19,8 +17,6 @@ use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\NodeHelper;
-use RuntimeException;
-use XMLReader;
 
 /**
  * Helper class with static methods to import and export data.
@@ -105,7 +101,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         libxml_clear_errors();
 
         if (!file_exists($uri)) {
-            throw new RuntimeException("File $uri does not exist or is not readable");
+            throw new \RuntimeException("File $uri does not exist or is not readable");
         }
 
         $xml = new FilteredXMLReader();
@@ -127,7 +123,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             } else {
                 self::importDocumentView($parentNode, $ns, $xml, $uuidBehavior);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // restore libxml setting
             libxml_use_internal_errors($use_errors);
             // and rethrow exception to not hide it
@@ -323,7 +319,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
      *                                  it
      *
      * @throws RepositoryException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     private static function exportSystemViewRecursive(NodeInterface $node, NamespaceRegistryInterface $ns, $stream, $skipBinary, $noRecurse, $root = false)
     {
@@ -532,7 +528,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
         $xml->read(); // next thing
 
         // read the properties of the node. they must come first.
-        while (XMLReader::END_ELEMENT !== $xml->nodeType && 'property' === $xml->localName) {
+        while (\XMLReader::END_ELEMENT !== $xml->nodeType && 'property' === $xml->localName) {
             $xml->moveToAttributeNs('name', NamespaceRegistryInterface::NAMESPACE_SV);
             $name = $xml->value;
             $xml->moveToAttributeNs('type', NamespaceRegistryInterface::NAMESPACE_SV);
@@ -554,7 +550,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
                     $values[] = '';
                 } else {
                     $xml->read();
-                    if (XMLReader::END_ELEMENT === $xml->nodeType) {
+                    if (\XMLReader::END_ELEMENT === $xml->nodeType) {
                         // this is an empty tag
                         $values[] = '';
                     } else {
@@ -583,7 +579,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
              * and don't consume the closing node tag after a self-closing
              * empty property
              */
-            if (XMLReader::END_ELEMENT === $xml->nodeType && 'property' === $xml->localName) {
+            if (\XMLReader::END_ELEMENT === $xml->nodeType && 'property' === $xml->localName) {
                 $xml->read();
             }
         }
@@ -591,11 +587,11 @@ class ImportExport implements ImportUUIDBehaviorInterface
 
         // if there are child nodes, they all come after the properties
 
-        while (XMLReader::END_ELEMENT !== $xml->nodeType && 'node' === $xml->localName) {
+        while (\XMLReader::END_ELEMENT !== $xml->nodeType && 'node' === $xml->localName) {
             self::importSystemView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
         }
 
-        if (XMLReader::END_ELEMENT !== $xml->nodeType) {
+        if (\XMLReader::END_ELEMENT !== $xml->nodeType) {
             throw new InvalidSerializedDataException('Unexpected element "'.$xml->localName.'" type "'.$xml->nodeType.'" with content "'.$xml->value.'" after '.$node->getPath());
         }
         $xml->read(); // </node>
@@ -669,15 +665,15 @@ class ImportExport implements ImportUUIDBehaviorInterface
         // TODO: what about significant whitespace? maybe the read above should not even skip significant empty whitespace...
 
         // while we are on element and at same depth, these are children of the current node
-        while (XMLReader::ELEMENT === $xml->nodeType && $xml->depth === $depth) {
+        while (\XMLReader::ELEMENT === $xml->nodeType && $xml->depth === $depth) {
             self::importDocumentView($node, $ns, $xml, $uuidBehavior, $namespaceMap);
         }
 
-        if (XMLReader::END_ELEMENT !== $xml->nodeType && $xml->depth !== $depth - 1) {
+        if (\XMLReader::END_ELEMENT !== $xml->nodeType && $xml->depth !== $depth - 1) {
             throw new InvalidSerializedDataException('Unexpected element in stream: '.$xml->name.'="'.$xml->value.'"');
         }
 
-        if (XMLReader::END_ELEMENT === $xml->nodeType) {
+        if (\XMLReader::END_ELEMENT === $xml->nodeType) {
             $xml->read(); // end of element
         } // otherwise the previous element was self-closing and we are already on the next one
     }

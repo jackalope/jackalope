@@ -2,11 +2,8 @@
 
 namespace Jackalope\Query;
 
-use Countable;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
-use OutOfBoundsException;
-use SeekableIterator;
 
 /**
  * Lazy loading iterator for QueryResult->getNodes() that delays fetching the
@@ -18,7 +15,7 @@ use SeekableIterator;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodeIterator implements SeekableIterator, Countable
+class NodeIterator implements \SeekableIterator, \Countable
 {
     /**
      * @var ObjectManager
@@ -65,7 +62,7 @@ class NodeIterator implements SeekableIterator, Countable
             }
         }
 
-        throw new OutOfBoundsException("invalid seek position ($nodeName)");
+        throw new \OutOfBoundsException("invalid seek position ($nodeName)");
     }
 
     public function count()

@@ -2,7 +2,6 @@
 
 namespace Jackalope\Transport;
 
-use Iterator;
 use PHPCR\Observation\EventFilterInterface;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
@@ -31,7 +30,7 @@ interface ObservationInterface extends TransportInterface
      * @param SessionInterface     $session in case the transport needs this
      *                                      for filtering
      *
-     * @return Iterator
+     * @return \Iterator
      *
      * @throws RepositoryException if an error occurs
      */

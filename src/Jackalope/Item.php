@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use LogicException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemInterface;
 use PHPCR\ItemNotFoundException;
@@ -364,6 +363,7 @@ abstract class Item implements ItemInterface
      * Whether this item has been deleted and can not be used anymore.
      *
      * @return bool
+     *
      * @private
      */
     public function isDeleted()
@@ -376,6 +376,7 @@ abstract class Item implements ItemInterface
      * synchronized with the backend).
      *
      * @return bool
+     *
      * @private
      */
     public function isClean()
@@ -754,7 +755,7 @@ abstract class Item implements ItemInterface
      * <tr><td>9</td><td>DIRTY      </td><td>*       </td><td>   DIRTY</td></tr>
      * </table>
      *
-     * @throws LogicException if an unexpected state transition is encountered
+     * @throws \LogicException if an unexpected state transition is encountered
      *
      * @private
      *
@@ -788,7 +789,7 @@ abstract class Item implements ItemInterface
             $this->state = self::STATE_DIRTY;
         } else {
             // There might be some special case we do not handle. for the moment throw an exception
-            throw new LogicException('There was an unexpected state transition during the transaction: '.
+            throw new \LogicException('There was an unexpected state transition during the transaction: '.
                                       "old state = {$this->savedState}, new state = {$this->state}");
         }
 

@@ -2,10 +2,6 @@
 
 namespace Jackalope\Lock;
 
-use ArrayIterator;
-use Exception;
-use InvalidArgumentException;
-use IteratorAggregate;
 use Jackalope\FactoryInterface;
 use Jackalope\Item;
 use Jackalope\NotImplementedException;
@@ -28,7 +24,7 @@ use PHPCR\SessionInterface;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class LockManager implements IteratorAggregate, LockManagerInterface
+class LockManager implements \IteratorAggregate, LockManagerInterface
 {
     /**
      * @var ObjectManager
@@ -80,7 +76,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     #[\ReturnTypeWillChange]
     public function getIterator()
     {
-        return new ArrayIterator($this->getLockTokens());
+        return new \ArrayIterator($this->getLockTokens());
     }
 
     /**
@@ -127,7 +123,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -269,7 +265,7 @@ class LockManager implements IteratorAggregate, LockManagerInterface
             if ($lock->isSessionScoped() && $lock->isLockOwningSession()) {
                 try {
                     $this->unlock($path); // will tell the lock its no longer live
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // ignore exceptions here, we don't care too much. would be nice to log though
                 }
             }

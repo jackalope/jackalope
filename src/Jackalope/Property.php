@@ -2,11 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
-use Exception;
-use InvalidArgumentException;
-use IteratorAggregate;
-use LogicException;
 use PHPCR\AccessDeniedException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemNotFoundException;
@@ -31,7 +26,7 @@ use PHPCR\Version\VersionException;
  *
  * @api
  */
-class Property extends Item implements IteratorAggregate, PropertyInterface
+class Property extends Item implements \IteratorAggregate, PropertyInterface
 {
     /**
      * flag to know if binary streams should be wrapped or retrieved
@@ -124,7 +119,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
 
         if (!isset($data['value'])) {
-            throw new InvalidArgumentException("Can't create property at $path without any data");
+            throw new \InvalidArgumentException("Can't create property at $path without any data");
         }
 
         $this->_setValue($data['value'], isset($data['type']) ? $data['type'] : PropertyType::UNDEFINED, true);
@@ -268,7 +263,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * {@inheritDoc}
      *
      * @throws InvalidItemStateException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -290,8 +285,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
-     * @throws LogicException
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      *
      * @api
      */
@@ -327,7 +322,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         }
 
         if (!$this->wrapBinaryStreams) {
-            throw new LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not activated");
+            throw new \LogicException("Attempting to create 'jackalope' stream instances but stream wrapper is not activated");
         }
 
         // return wrapped stream
@@ -354,7 +349,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * {@inheritDoc}
      *
      * @throws InvalidItemStateException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -372,7 +367,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -391,7 +386,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * {@inheritDoc}
      *
      * @throws InvalidItemStateException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -409,7 +404,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -427,7 +422,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @api
      */
@@ -535,7 +530,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
         foreach ($vals as $value) {
             try {
                 $ret[] = strlen($this->valueConverter->convertType($value, PropertyType::STRING, $this->type));
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // @codeCoverageIgnoreStart
                 $ret[] = -1;
                 // @codeCoverageIgnoreEnd
@@ -631,7 +626,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
             $value = [$value];
         }
 
-        return new ArrayIterator($value);
+        return new \ArrayIterator($value);
     }
 
     /**
@@ -685,7 +680,7 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
      * @throws ConstraintViolationException
      * @throws RepositoryException
      * @throws VersionException
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      * @throws ValueFormatException
      *
      * @private

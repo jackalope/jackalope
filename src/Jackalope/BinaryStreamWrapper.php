@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use LogicException;
 use PHPCR\SessionInterface;
 
 /**
@@ -81,7 +80,7 @@ class BinaryStreamWrapper
      *
      * @return string data from the stream in utf-8 format
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_read($count)
     {
@@ -97,7 +96,7 @@ class BinaryStreamWrapper
      *
      * @return int
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_write($data)
     {
@@ -109,7 +108,7 @@ class BinaryStreamWrapper
     /**
      * Make sure the stream is ready and specify the position in the stream.
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_tell()
     {
@@ -123,7 +122,7 @@ class BinaryStreamWrapper
      *
      * @return bool true if the stream has ended
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_eof()
     {
@@ -137,7 +136,7 @@ class BinaryStreamWrapper
      *
      * @return array
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_stat()
     {
@@ -157,7 +156,7 @@ class BinaryStreamWrapper
      *               unavailable values should be set to a rational value
      *               (usually 0).
      *
-     * @throws LogicException
+     * @throws \LogicException
      *
      * @see http://php.net/manual/en/streamwrapper.url-stat.php
      */
@@ -177,7 +176,7 @@ class BinaryStreamWrapper
      *
      * @return int
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function stream_seek($offset, $whence)
     {
@@ -217,20 +216,20 @@ class BinaryStreamWrapper
      *
      * Always checks if the current session is still alive.
      *
-     * @throws LogicException when trying to use a stream from a closed session
-     *                        and on trying to access a nonexisting multivalue id
+     * @throws \LogicException when trying to use a stream from a closed session
+     *                         and on trying to access a nonexisting multivalue id
      */
     private function init_stream()
     {
         if (null === $this->stream) {
             if ($this->session && !$this->session->isLive()) {
-                throw new LogicException('Trying to read a stream from a closed transport.');
+                throw new \LogicException('Trying to read a stream from a closed transport.');
             }
 
             $url = parse_url($this->path);
             $this->session = Session::getSessionFromRegistry($url['host']);
             if (!$this->session) {
-                throw new LogicException('Trying to read a stream from a closed transport');
+                throw new \LogicException('Trying to read a stream from a closed transport');
             }
             $property_path = $url['path'];
             if (!empty($url['query'])) {
@@ -248,7 +247,7 @@ class BinaryStreamWrapper
                 }
                 $index = isset($url['port']) ? $url['port'] - 1 : 0;
                 if (!isset(self::$multiValueMap[$token][$index])) {
-                    throw new LogicException("Trying to read a stream from a non existent token '$token' or token index '$index'.");
+                    throw new \LogicException("Trying to read a stream from a non existent token '$token' or token index '$index'.");
                 }
                 $this->stream = self::$multiValueMap[$token][$index];
             }

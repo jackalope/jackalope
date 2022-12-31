@@ -51,6 +51,7 @@ class NamespaceRegistryTest extends TestCase
 
     /**
      * @dataProvider constructorDataprovider
+     *
      * @covers \Jackalope\NamespaceRegistry::__construct
      */
     public function testConstruct($expected, $namespaces)
@@ -199,6 +200,7 @@ class NamespaceRegistryTest extends TestCase
 
     /**
      * @dataProvider checkPrefixDataprovider
+     *
      * @covers \Jackalope\NamespaceRegistry::checkPrefix
      */
     public function testCheckPrefixExpexctingNamespaceException($prefix)

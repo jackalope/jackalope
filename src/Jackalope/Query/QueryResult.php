@@ -2,8 +2,6 @@
 
 namespace Jackalope\Query;
 
-use Iterator;
-use IteratorAggregate;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use PHPCR\Query\QueryResultInterface;
@@ -17,7 +15,7 @@ use PHPCR\RepositoryException;
  *
  * @api
  */
-class QueryResult implements IteratorAggregate, QueryResultInterface
+class QueryResult implements \IteratorAggregate, QueryResultInterface
 {
     /**
      * @var ObjectManager
@@ -57,9 +55,9 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
      * Implement the IteratorAggregate interface and returns exactly the same
      * iterator as QueryResult::getRows().
      *
-     * @return Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                  Keys are the row position in this result set, Values are the
-     *                  RowInterface instances.
+     * @return \Iterator implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                   Keys are the row position in this result set, Values are the
+     *                   RowInterface instances.
      *
      * @throws RepositoryException if this call is the second time
      *                             getIterator(), getRows() or getNodes() has been called on the same

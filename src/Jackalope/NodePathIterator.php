@@ -2,16 +2,11 @@
 
 namespace Jackalope;
 
-use ArrayAccess;
-use Countable;
-use InvalidArgumentException;
-use SeekableIterator;
-
 /**
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
+class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
 {
     private ObjectManager $objectManager;
 
@@ -241,7 +236,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
      */
     public function offsetSet($offset, $value)
     {
-        throw new InvalidArgumentException('Node path collection is read only');
+        throw new \InvalidArgumentException('Node path collection is read only');
     }
 
     /**
@@ -249,7 +244,7 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
      */
     public function offsetUnset($offset)
     {
-        throw new InvalidArgumentException('Node path collection is read only');
+        throw new \InvalidArgumentException('Node path collection is read only');
     }
 
     /**

@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use InvalidArgumentException;
-use ReflectionClass;
-
 /**
  * Jackalope implementation factory.
  *
@@ -26,7 +23,7 @@ class Factory implements FactoryInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function get($name, array $params = [])
     {
@@ -38,7 +35,7 @@ class Factory implements FactoryInterface
             if (class_exists('Jackalope\\'.$name)) {
                 $name = 'Jackalope\\'.$name;
             } elseif (!class_exists($name)) {
-                throw new InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
+                throw new \InvalidArgumentException("Neither class Jackalope\\$name nor class $name found. Please check your autoloader and the spelling of $name");
             }
 
             $this->classCache[$originalName] = $name;
@@ -55,7 +52,7 @@ class Factory implements FactoryInterface
         if (isset($this->reflectionCache[$name])) {
             $class = $this->reflectionCache[$name];
         } else {
-            $class = new ReflectionClass($name);
+            $class = new \ReflectionClass($name);
             $this->reflectionCache[$name] = $class;
         }
 

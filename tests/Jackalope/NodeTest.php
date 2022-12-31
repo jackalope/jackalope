@@ -2,9 +2,6 @@
 
 namespace Jackalope;
 
-use ArrayIterator;
-use Iterator;
-
 class NodeTest extends TestCase
 {
     protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
@@ -16,7 +13,7 @@ class NodeTest extends TestCase
         $objectManager = $this->getObjectManagerMock();
         $objectManager->expects($this->any())
             ->method('getNodesByPath')
-            ->will($this->returnValue(new ArrayIterator([
+            ->will($this->returnValue(new \ArrayIterator([
                 '/jcr:root/tests_level1_access_base' => new Node($factory, json_decode($this->JSON), '/jcr:root/tests_level1_access_base', $session, $objectManager),
                 '/jcr:root/jcr:system' => new Node($factory, json_decode($this->JSON), '/jcr:root/jcr:system', $session, $objectManager),
             ])))
@@ -32,7 +29,7 @@ class NodeTest extends TestCase
         $this->assertInstanceOf(Session::class, $node->getSession());
         $this->assertInstanceOf(Node::class, $node);
         $children = $node->getNodes();
-        $this->assertInstanceOf(Iterator::class, $children);
+        $this->assertInstanceOf(\Iterator::class, $children);
         $this->assertCount(2, $children);
     }
 

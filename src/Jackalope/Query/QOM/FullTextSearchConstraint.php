@@ -2,7 +2,6 @@
 
 namespace Jackalope\Query\QOM;
 
-use InvalidArgumentException;
 use PHPCR\Query\QOM\FullTextSearchInterface;
 use PHPCR\Query\QOM\StaticOperandInterface;
 
@@ -38,12 +37,12 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      * @param string $propertyName
      * @param string $fullTextSearchExpression
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     public function __construct($selectorName, $propertyName, $fullTextSearchExpression)
     {
         if (null === $selectorName) {
-            throw new InvalidArgumentException('Required argument selectorName may not be null.');
+            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
         }
 
         $this->propertyName = $propertyName;

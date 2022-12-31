@@ -2,7 +2,6 @@
 
 namespace Jackalope;
 
-use InvalidArgumentException;
 use Other\TestDummy;
 
 class FactoryTest extends TestCase
@@ -31,7 +30,7 @@ class FactoryTest extends TestCase
 
     public function testNotexisting()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $this->factory->get('ClassNotExisting');
     }

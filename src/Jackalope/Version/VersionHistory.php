@@ -2,7 +2,6 @@
 
 namespace Jackalope\Version;
 
-use ArrayIterator;
 use Jackalope\Node;
 use Jackalope\Property;
 use PHPCR\RepositoryException;
@@ -78,7 +77,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             } while ($version = $version->getLinearSuccessor());
         }
 
-        return new ArrayIterator($this->linearVersions);
+        return new \ArrayIterator($this->linearVersions);
     }
 
     /**
@@ -95,7 +94,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
         }
 
-        return new ArrayIterator($this->versions);
+        return new \ArrayIterator($this->versions);
     }
 
     /**
@@ -136,7 +135,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
 
-        return new ArrayIterator($frozenNodes);
+        return new \ArrayIterator($frozenNodes);
     }
 
     /**
@@ -152,7 +151,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
             $frozenNodes[$version->getName()] = $version->getFrozenNode();
         }
 
-        return new ArrayIterator($frozenNodes);
+        return new \ArrayIterator($frozenNodes);
     }
 
     /**

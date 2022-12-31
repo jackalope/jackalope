@@ -2,7 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayObject;
 use PHPCR\NodeType\NodeTypeTemplateInterface;
 
 /**
@@ -93,7 +92,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     public function getPropertyDefinitionTemplates()
     {
         if (null === $this->declaredPropertyDefinitions) {
-            $this->declaredPropertyDefinitions = new ArrayObject();
+            $this->declaredPropertyDefinitions = new \ArrayObject();
         }
 
         return $this->declaredPropertyDefinitions;
@@ -107,7 +106,7 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     public function getNodeDefinitionTemplates()
     {
         if (null === $this->declaredNodeDefinitions) {
-            $this->declaredNodeDefinitions = new ArrayObject();
+            $this->declaredNodeDefinitions = new \ArrayObject();
         }
 
         return $this->declaredNodeDefinitions;

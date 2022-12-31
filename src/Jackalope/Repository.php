@@ -8,7 +8,6 @@ use Jackalope\Transport\TransportInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
-use ReflectionClass;
 
 /**
  * {@inheritDoc}
@@ -183,7 +182,7 @@ class Repository implements RepositoryInterface
      */
     public function isStandardDescriptor($key)
     {
-        $ref = new ReflectionClass(RepositoryInterface::class);
+        $ref = new \ReflectionClass(RepositoryInterface::class);
         $consts = $ref->getConstants();
 
         return in_array($key, $consts);

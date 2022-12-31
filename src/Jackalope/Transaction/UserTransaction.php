@@ -5,7 +5,6 @@ namespace Jackalope\Transaction;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use Jackalope\Transport\TransactionInterface;
-use LogicException;
 use PHPCR\RepositoryException;
 use PHPCR\SessionInterface;
 use PHPCR\Transaction\UserTransactionInterface;
@@ -96,7 +95,7 @@ class UserTransaction implements UserTransactionInterface
     public function commit()
     {
         if (!$this->inTransaction) {
-            throw new LogicException('No transaction to commit.');
+            throw new \LogicException('No transaction to commit.');
         }
 
         $this->objectManager->commitTransaction();
@@ -125,7 +124,7 @@ class UserTransaction implements UserTransactionInterface
     public function rollback()
     {
         if (!$this->inTransaction) {
-            throw new LogicException('No transaction to rollback.');
+            throw new \LogicException('No transaction to rollback.');
         }
 
         $this->objectManager->rollbackTransaction();

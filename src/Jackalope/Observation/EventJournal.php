@@ -2,7 +2,6 @@
 
 namespace Jackalope\Observation;
 
-use ArrayIterator;
 use Jackalope\FactoryInterface;
 use Jackalope\Transport\ObservationInterface;
 use PHPCR\Observation\EventJournalInterface;
@@ -38,7 +37,7 @@ class EventJournal implements EventJournalInterface
     /**
      * Buffered events.
      *
-     * @var ArrayIterator
+     * @var \ArrayIterator
      */
     protected $events;
 

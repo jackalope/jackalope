@@ -2,9 +2,6 @@
 
 namespace Jackalope\NodeType;
 
-use ArrayIterator;
-use Iterator;
-use IteratorAggregate;
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\ObjectManager;
@@ -29,7 +26,7 @@ use PHPCR\RepositoryException;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
+class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
 {
     /**
      * The factory to instantiate objects.
@@ -286,7 +283,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     {
         $this->fetchNodeTypes();
 
-        return new ArrayIterator(array_merge($this->primaryTypes, $this->mixinTypes));
+        return new \ArrayIterator(array_merge($this->primaryTypes, $this->mixinTypes));
     }
 
     /**
@@ -298,7 +295,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     {
         $this->fetchNodeTypes();
 
-        return new ArrayIterator($this->primaryTypes);
+        return new \ArrayIterator($this->primaryTypes);
     }
 
     /**
@@ -310,7 +307,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     {
         $this->fetchNodeTypes();
 
-        return new ArrayIterator($this->mixinTypes);
+        return new \ArrayIterator($this->mixinTypes);
     }
 
     /**
@@ -396,7 +393,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
             $this->addNodeType($nt);
         }
 
-        return new ArrayIterator($nts);
+        return new \ArrayIterator($nts);
     }
 
     /**
@@ -458,7 +455,7 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * Provide Traversable interface: redirect to getAllNodeTypes.
      *
-     * @return Iterator over all node types
+     * @return \Iterator over all node types
      *
      * @throws RepositoryException
      */

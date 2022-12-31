@@ -2,7 +2,6 @@
 
 namespace Jackalope\Validation;
 
-use InvalidArgumentException;
 use Jackalope\TestCase;
 use Jackalope\Validation\Exception\InvalidPathException;
 use PHPCR\ValueFormatException;
@@ -52,7 +51,7 @@ abstract class PathValidatorTestCase extends TestCase
         $pathAnswers = $this->getPathAnswers();
 
         if (!isset($pathAnswers[$key])) {
-            throw new InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(sprintf(
                 'Validator test class "%s" did not provide an answer for path "%s" with key "%s"',
                 get_class($this),
                 $path,
@@ -113,7 +112,7 @@ abstract class PathValidatorTestCase extends TestCase
         $nameAnswers = $this->getNameAnswers();
 
         if (!isset($nameAnswers[$key])) {
-            throw new InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(sprintf(
                 'Validator test class "%s" did not provide an answer for name "%s" with key "%s"',
                 get_class($this),
                 $name,
