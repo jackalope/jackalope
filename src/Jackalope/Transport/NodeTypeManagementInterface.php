@@ -32,8 +32,6 @@ interface NodeTypeManagementInterface extends TransportInterface
      * @param bool  $allowUpdate whether to fail if node already exists or to
      *                           update it
      *
-     * @return bool true on success
-     *
      * @throws InvalidNodeTypeDefinitionException if the
      *                                            NodeTypeDefinitionInterface is invalid
      * @throws NodeTypeExistsException            if allowUpdate is false
@@ -41,5 +39,5 @@ interface NodeTypeManagementInterface extends TransportInterface
      *                                            already registered
      * @throws RepositoryException                if another error occurs
      */
-    public function registerNodeTypes($types, $allowUpdate);
+    public function registerNodeTypes(array $types, bool $allowUpdate): void;
 }

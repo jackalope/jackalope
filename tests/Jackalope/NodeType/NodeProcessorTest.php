@@ -9,12 +9,9 @@ use PHPCR\PropertyType;
 use PHPCR\RepositoryException;
 use PHPCR\ValueFormatException;
 
-class NodeProcessorTest extends TestCase
+final class NodeProcessorTest extends TestCase
 {
-    /**
-     * @var NodeProcessor
-     */
-    private $processor;
+    private NodeProcessor $processor;
 
     public function setUp(): void
     {
@@ -24,7 +21,7 @@ class NodeProcessorTest extends TestCase
         ]));
     }
 
-    public function testChildDefMandatoryNotPresent()
+    public function testChildDefMandatoryNotPresent(): void
     {
         $this->expectException(RepositoryException::class);
 
@@ -52,7 +49,7 @@ class NodeProcessorTest extends TestCase
         $this->processor->process($node);
     }
 
-    public function testChildDefAutoCreated()
+    public function testChildDefAutoCreated(): void
     {
         $newNode = $this->getNodeMock();
         $nodeDefinition = $this->getNodeDefinitionMock([
@@ -79,7 +76,7 @@ class NodeProcessorTest extends TestCase
         $node->expects($this->once())
             ->method('addNode')
             ->with('node-definition', 'type1')
-            ->will($this->returnValue($newNode));
+            ->willReturn($newNode);
 
         $res = $this->processor->process($node);
 
@@ -90,7 +87,7 @@ class NodeProcessorTest extends TestCase
         $this->assertSame($newNode, $operation->node);
     }
 
-    public function testPropertyDefMandatoryNotPresent()
+    public function testPropertyDefMandatoryNotPresent(): void
     {
         $this->expectException(RepositoryException::class);
 
@@ -118,7 +115,7 @@ class NodeProcessorTest extends TestCase
         $this->processor->process($node);
     }
 
-    public function testPropertyDefsAutoCreated()
+    public function testPropertyDefsAutoCreated(): void
     {
         $jcrUuidProperty = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:uuid',
@@ -187,7 +184,7 @@ class NodeProcessorTest extends TestCase
         ]);
 
         // expectations
-        $node->expects($this->any())
+        $node
             ->method('setProperty')
             ->withConsecutive(
                 ['jcr:uuid', $this->anything(), 'String'],
@@ -205,7 +202,7 @@ class NodeProcessorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testPropertyAutoCreatedNoDefaults()
+    public function testPropertyAutoCreatedNoDefaults(): void
     {
         $this->expectException(RepositoryException::class);
         $this->expectExceptionMessage('No default value for autocreated property');
@@ -234,7 +231,7 @@ class NodeProcessorTest extends TestCase
         $this->processor->process($node);
     }
 
-    public function testPropertyDefsAutoCreatedUpdate()
+    public function testPropertyDefsAutoCreatedUpdate(): void
     {
         $jcrModifiedByPropertyDefinition = $this->getPropertyDefinitionMock([
             'getName' => 'jcr:lastModifiedBy',
@@ -271,9 +268,9 @@ class NodeProcessorTest extends TestCase
             'getProperties' => [],
         ]);
 
-        $node->expects($this->any())
+        $node
             ->method('hasProperty')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         // expectations
         $jcrModifiedByProperty->expects($this->once())->method('setValue');
@@ -282,7 +279,7 @@ class NodeProcessorTest extends TestCase
         // todo: etags
         $jcrETagProperty->expects($this->never())->method('setValue');
 
-        $node->expects($this->any())
+        $node
             ->method('getProperty')
             ->withConsecutive(
                 ['jcr:lastModifiedBy'],
@@ -294,7 +291,7 @@ class NodeProcessorTest extends TestCase
         $this->processor->process($node);
     }
 
-    public function providePropertyValidation()
+    public function providePropertyValidation(): array
     {
         return [
             [
@@ -365,7 +362,7 @@ class NodeProcessorTest extends TestCase
     /**
      * @dataProvider providePropertyValidation
      */
-    public function testPropertyValidation($propertyConfig, $exception = null)
+    public function testPropertyValidation($propertyConfig, $exception = null): void
     {
         $property = $this->getPropertyMock($propertyConfig);
 
@@ -394,7 +391,7 @@ class NodeProcessorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function provideNamespaceValidation()
+    public function provideNamespaceValidation(): array
     {
         return [
             ['no-namespace', true],
@@ -407,7 +404,7 @@ class NodeProcessorTest extends TestCase
     /**
      * @dataProvider provideNamespaceValidation
      */
-    public function testNamespaceValidation($nodeName, $isValid)
+    public function testNamespaceValidation($nodeName, $isValid): void
     {
         if (false === $isValid) {
             $this->expectException(NamespaceException::class);
@@ -433,7 +430,7 @@ class NodeProcessorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function providePropertyValidationOutOfRangeCharacters()
+    public function providePropertyValidationOutOfRangeCharacters(): array
     {
         return [
             ['This is valid too!'.$this->translateCharFromCode('\u0009'), true],
@@ -453,7 +450,7 @@ class NodeProcessorTest extends TestCase
     /**
      * @dataProvider providePropertyValidationOutOfRangeCharacters
      */
-    public function testPropertyValidationOutOfRangeCharacters($value, $isValid)
+    public function testPropertyValidationOutOfRangeCharacters($value, $isValid): void
     {
         $property = $this->getPropertyMock([
             'getType' => PropertyType::STRING,

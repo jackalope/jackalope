@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\SameNodeInterface;
 
 /**
@@ -12,31 +13,13 @@ use PHPCR\Query\QOM\SameNodeInterface;
  *
  * @api
  */
-class SameNode implements SameNodeInterface
+final class SameNode implements SameNodeInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private string $path;
 
-    /**
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     * @param string $path
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $path)
+    public function __construct(string $selectorName, string $path)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
         $this->selectorName = $selectorName;
         $this->path = $path;
     }
@@ -46,7 +29,7 @@ class SameNode implements SameNodeInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -56,7 +39,7 @@ class SameNode implements SameNodeInterface
      *
      * @api
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -64,11 +47,11 @@ class SameNode implements SameNodeInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return [$this];
     }

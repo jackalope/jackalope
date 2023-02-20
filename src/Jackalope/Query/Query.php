@@ -5,7 +5,9 @@ namespace Jackalope\Query;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use PHPCR\ItemNotFoundException;
+use PHPCR\NodeInterface;
 use PHPCR\Query\QueryInterface;
+use PHPCR\Query\QueryResultInterface;
 use PHPCR\RepositoryException;
 use PHPCR\UnsupportedRepositoryOperationException;
 
@@ -22,59 +24,43 @@ use PHPCR\UnsupportedRepositoryOperationException;
  */
 abstract class Query implements QueryInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * The query statement.
-     *
-     * @var string
-     */
-    protected $statement;
-
-    /**
-     * Limit for the query.
-     *
-     * @var int
-     */
-    protected $limit;
-
-    /**
-     * Offset to start results from.
-     *
-     * @var int
-     */
-    protected $offset;
+    protected FactoryInterface $factory;
 
     /**
      * The object manager to execute the query with.
-     *
-     * @var ObjectManager
      */
-    protected $objectManager;
+    private ?ObjectManager $objectManager;
+
+    /**
+     * The query statement.
+     */
+    private string $statement;
+
+    /**
+     * Limit for the query.
+     */
+    private ?int $limit = null;
+
+    /**
+     * Offset to start results from.
+     */
+    private ?int $offset = null;
 
     /**
      * If this is a stored query, the path to the node that stores this query.
-     *
-     * @var string
      */
-    protected $path;
+    private ?string $path;
 
     /**
      * Create a new query instance.
      *
-     * @param FactoryInterface $factory       the object factory
-     * @param string           $statement     The statement for this query
-     * @param ObjectManager    $objectManager (can be omitted if you do not want
-     *                                        to execute the query but just use it with a parser)
-     * @param string           $path          If this query is loaded from workspace with
-     *                                        QueryManager::getQuery(), path has to be provided here
+     * @param FactoryInterface   $factory       the object factory
+     * @param string             $statement     The statement for this query
+     * @param ObjectManager|null $objectManager omit if you do not want to execute the query but just use it with a parser
+     * @param string             $path          If this query is loaded from workspace with
+     *                                          QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct(FactoryInterface $factory, $statement, ObjectManager $objectManager = null, $path = null)
+    public function __construct(FactoryInterface $factory, $statement, ?ObjectManager $objectManager = null, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;
@@ -87,7 +73,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function bindValue($varName, $value)
+    public function bindValue($varName, $value): void
     {
         throw new RepositoryException('Not Implemented...');
     }
@@ -97,7 +83,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function execute()
+    public function execute(): QueryResultInterface
     {
         if (null === $this->objectManager) {
             // if the ObjectManager was not injected in the header. this is only supposed to happen in the DBAL client.
@@ -105,9 +91,8 @@ abstract class Query implements QueryInterface
         }
         $transport = $this->objectManager->getTransport();
         $rawData = $transport->query($this);
-        $queryResult = $this->factory->get(QueryResult::class, [$rawData, $this->objectManager]);
 
-        return $queryResult;
+        return $this->factory->get(QueryResult::class, [$rawData, $this->objectManager]);
     }
 
     /**
@@ -115,7 +100,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function cancel()
+    public function cancel(): bool
     {
         return false;
     }
@@ -135,7 +120,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function setLimit($limit)
+    public function setLimit($limit): void
     {
         $this->limit = $limit;
     }
@@ -143,9 +128,9 @@ abstract class Query implements QueryInterface
     /**
      * Access the limit from the transport layer.
      *
-     * @return int the limit set with setLimit
+     * @return int|null the limit set with setLimit
      */
-    public function getLimit()
+    public function getLimit(): ?int
     {
         return $this->limit;
     }
@@ -155,7 +140,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function setOffset($offset)
+    public function setOffset($offset): void
     {
         $this->offset = $offset;
     }
@@ -163,9 +148,9 @@ abstract class Query implements QueryInterface
     /**
      * Access the offset from the transport layer.
      *
-     * @return int the offset set with setOffset
+     * @return int|null the offset set with setOffset
      */
-    public function getOffset()
+    public function getOffset(): ?int
     {
         return $this->offset;
     }
@@ -175,7 +160,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function getStatement()
+    public function getStatement(): string
     {
         return $this->statement;
     }
@@ -185,7 +170,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function getStoredQueryPath()
+    public function getStoredQueryPath(): ?string
     {
         if (null === $this->path) {
             throw new ItemNotFoundException('Not a stored query');
@@ -199,7 +184,7 @@ abstract class Query implements QueryInterface
      *
      * @api
      */
-    public function storeAsNode($absPath)
+    public function storeAsNode($absPath): NodeInterface
     {
         // when implementing this, use ->getStatement***() and not $this->statement
         // so this works for the extending QueryObjectModel as well

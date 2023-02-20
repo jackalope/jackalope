@@ -27,18 +27,14 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * Cache of the declared super NodeType instances so they need to be
      * instantiated only once.
-     *
-     * @var array
      */
-    protected $declaredSupertypes = null;
+    private array $declaredSupertypes;
 
     /**
      * Cache of the aggregated super node type names so they need to be
      * aggregated only once.
-     *
-     * @var array
      */
-    protected $superTypeNames = null;
+    private array $superTypeNames;
 
     /**
      * Cache of the aggregated super NodeType instances so they need to be
@@ -46,32 +42,28 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @var NodeTypeInterface[]
      */
-    protected $superTypes = null;
+    private array $superTypes;
 
     /**
      * Cache of the collected property definitions so they need to be
      * instantiated only once.
-     *
-     * @var array
      */
-    protected $propertyDefinitions = null;
+    private array $propertyDefinitions;
 
     /**
      * Cache of the aggregated child node definitions from this type and all
      * its super type so they need to be gathered and instantiated only once.
-     *
-     * @var array
      */
-    protected $childNodeDefinitions = null;
+    private array $childNodeDefinitions;
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    public function getSupertypes()
+    public function getSupertypes(): array
     {
-        if (null === $this->superTypes) {
+        if (!isset($this->superTypes)) {
             $this->superTypes = [];
             foreach ($this->getDeclaredSupertypes() as $superType) {
                 $this->superTypes[] = $superType;
@@ -87,9 +79,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getSupertypeNames()
+    public function getSupertypeNames(): array
     {
-        if (null === $this->superTypeNames) {
+        if (!isset($this->superTypeNames)) {
             $this->superTypeNames = [];
             foreach ($this->getSupertypes() as $superType) {
                 $this->superTypeNames[] = $superType->getName();
@@ -104,9 +96,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getDeclaredSupertypes()
+    public function getDeclaredSupertypes(): array
     {
-        if (null === $this->declaredSupertypes) {
+        if (!isset($this->declaredSupertypes)) {
             $this->declaredSupertypes = [];
             foreach ($this->declaredSuperTypeNames as $declaredSuperTypeName) {
                 $this->declaredSupertypes[] = $this->nodeTypeManager->getNodeType($declaredSuperTypeName);
@@ -121,7 +113,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getSubtypes()
+    public function getSubtypes(): \Iterator
     {
         return new \ArrayIterator($this->nodeTypeManager->getSubtypes($this->name));
     }
@@ -131,7 +123,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getDeclaredSubtypes()
+    public function getDeclaredSubtypes(): \Iterator
     {
         return new \ArrayIterator($this->nodeTypeManager->getDeclaredSubtypes($this->name));
     }
@@ -141,9 +133,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function isNodeType($nodeTypeName)
+    public function isNodeType($nodeTypeName): bool
     {
-        return $this->getName() === $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames());
+        return $this->getName() === $nodeTypeName || in_array($nodeTypeName, $this->getSupertypeNames(), true);
     }
 
     /**
@@ -151,9 +143,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getPropertyDefinitions()
+    public function getPropertyDefinitions(): array
     {
-        if (null === $this->propertyDefinitions) {
+        if (!isset($this->propertyDefinitions)) {
             $this->propertyDefinitions = $this->getDeclaredPropertyDefinitions();
             foreach ($this->getSupertypes() as $nodeType) {
                 $this->propertyDefinitions = array_merge($this->propertyDefinitions, $nodeType->getDeclaredPropertyDefinitions());
@@ -168,9 +160,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function getChildNodeDefinitions()
+    public function getChildNodeDefinitions(): array
     {
-        if (null === $this->childNodeDefinitions) {
+        if (!isset($this->childNodeDefinitions)) {
             $this->childNodeDefinitions = $this->getDeclaredChildNodeDefinitions();
             foreach ($this->getSupertypes() as $nodeType) {
                 $this->childNodeDefinitions = array_merge($this->childNodeDefinitions, $nodeType->getDeclaredChildNodeDefinitions());
@@ -190,7 +182,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canSetProperty($propertyName, $value, $throw = false)
+    public function canSetProperty($propertyName, $value, $throw = false): bool
     {
         $propDefs = $this->getPropertyDefinitions();
         try {
@@ -279,7 +271,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canAddChildNode($childNodeName, $nodeTypeName = null, $throw = false)
+    public function canAddChildNode($childNodeName, $nodeTypeName = null, $throw = false): bool
     {
         $childDefs = $this->getChildNodeDefinitions();
         if ($nodeTypeName) {
@@ -343,7 +335,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canRemoveNode($nodeName, $throw = false)
+    public function canRemoveNode($nodeName, $throw = false): bool
     {
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
@@ -373,7 +365,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      *
      * @api
      */
-    public function canRemoveProperty($propertyName, $throw = false)
+    public function canRemoveProperty($propertyName, $throw = false): bool
     {
         $propDefs = $this->getPropertyDefinitions();
         foreach ($propDefs as $prop) {
@@ -400,10 +392,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
      * Get a string representation of the passed value for error reporting.
      *
      * @param mixed $value
-     *
-     * @return string
      */
-    private function getValueAsString($value)
+    private function getValueAsString($value): string
     {
         if (is_object($value)) {
             return get_class($value);

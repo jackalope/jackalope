@@ -8,16 +8,19 @@ use PHPCR\ValueFormatException;
 
 abstract class PathValidatorTestCase extends TestCase
 {
+    abstract protected function getValidator(): PathValidatorInterface;
+
     /**
-     * @return PathValidatorInterface
+     * @return array<string, bool>
      */
-    abstract protected function getValidator();
+    abstract protected function getPathAnswers(): array;
 
-    abstract protected function getPathAnswers();
+    /**
+     * @return array<string, bool>
+     */
+    abstract protected function getNameAnswers(): array;
 
-    abstract protected function getNameAnswers();
-
-    public function provideValidatePath()
+    public function provideValidatePath(): array
     {
         return [
             // absolute paths
@@ -46,7 +49,7 @@ abstract class PathValidatorTestCase extends TestCase
     /**
      * @dataProvider provideValidatePath
      */
-    public function testValidatePath($key, $path, $absolute)
+    public function testValidatePath($key, $path, $absolute): void
     {
         $pathAnswers = $this->getPathAnswers();
 
@@ -74,7 +77,7 @@ abstract class PathValidatorTestCase extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function provideValidateName()
+    public function provideValidateName(): array
     {
         return [
             ['normal_1', 'this is invalid:foobar'],
@@ -107,7 +110,7 @@ abstract class PathValidatorTestCase extends TestCase
     /**
      * @dataProvider provideValidateName
      */
-    public function testValidateName($key, $name)
+    public function testValidateName($key, $name): void
     {
         $nameAnswers = $this->getNameAnswers();
 
@@ -136,7 +139,7 @@ abstract class PathValidatorTestCase extends TestCase
         return json_decode('"'.$char.'"');
     }
 
-    public function provideDestPath()
+    public function provideDestPath(): array
     {
         return [
             ['/path/to[0]', false],
@@ -151,7 +154,7 @@ abstract class PathValidatorTestCase extends TestCase
      *
      * @throws \PHPUnit_Framework_Exception
      */
-    public function testDestPath($path, $isValid)
+    public function testDestPath($path, $isValid): void
     {
         if (false === $isValid) {
             $this->expectException(InvalidPathException::class);

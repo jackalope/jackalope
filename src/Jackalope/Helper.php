@@ -12,7 +12,7 @@ use PHPCR\RepositoryException;
  *
  * @private
  */
-class Helper
+final class Helper
 {
     /**
      * Returns a dom attribute casted to boolean.
@@ -27,7 +27,7 @@ class Helper
      *
      * @throws RepositoryException
      */
-    public static function getBoolAttribute(\DOMElement $node, $attribute)
+    public static function getBoolAttribute(\DOMElement $node, string $attribute)
     {
         if (!$node->hasAttribute($attribute)) {
             throw new RepositoryException("Expected attribute $attribute not found on ".$node->getNodePath());

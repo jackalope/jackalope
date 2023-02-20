@@ -29,8 +29,8 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
 
         // initialize empty values
         $this->requiredType = PropertyType::STRING;
-        $this->valueConstraints = null;
-        $this->defaultValues = null;
+        $this->valueConstraints = [];
+        $this->defaultValues = [];
         $this->isMultiple = false;
         // $this->availableQueryOperators = ?
         $this->isFullTextSearchable = false;
@@ -47,7 +47,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -57,7 +57,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setAutoCreated($autoCreated)
+    public function setAutoCreated($autoCreated): void
     {
         $this->isAutoCreated = $autoCreated;
     }
@@ -67,7 +67,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setMandatory($mandatory)
+    public function setMandatory($mandatory): void
     {
         $this->isMandatory = $mandatory;
     }
@@ -77,7 +77,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setOnParentVersion($opv)
+    public function setOnParentVersion($opv): void
     {
         $this->onParentVersion = $opv;
     }
@@ -87,7 +87,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setProtected($protectedStatus)
+    public function setProtected($protectedStatus): void
     {
         $this->isProtected = $protectedStatus;
     }
@@ -97,7 +97,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setRequiredType($type)
+    public function setRequiredType($type): void
     {
         $this->requiredType = $type;
     }
@@ -107,7 +107,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setValueConstraints(array $constraints)
+    public function setValueConstraints(array $constraints): void
     {
         $this->valueConstraints = $constraints;
     }
@@ -117,7 +117,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setDefaultValues(array $defaultValues)
+    public function setDefaultValues(array $defaultValues): void
     {
         $this->defaultValues = $defaultValues;
     }
@@ -127,7 +127,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setMultiple($multiple)
+    public function setMultiple($multiple): void
     {
         $this->isMultiple = $multiple;
     }
@@ -137,7 +137,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setAvailableQueryOperators(array $operators)
+    public function setAvailableQueryOperators(array $operators): void
     {
         $this->availableQueryOperators = $operators;
     }
@@ -147,7 +147,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setFullTextSearchable($fullTextSearchable)
+    public function setFullTextSearchable($fullTextSearchable): void
     {
         $this->isFullTextSearchable = $fullTextSearchable;
     }
@@ -157,7 +157,7 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
      *
      * @api
      */
-    public function setQueryOrderable($queryOrderable)
+    public function setQueryOrderable($queryOrderable): void
     {
         $this->isQueryOrderable = $queryOrderable;
     }

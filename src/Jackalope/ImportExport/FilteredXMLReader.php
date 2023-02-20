@@ -14,7 +14,7 @@ namespace Jackalope\ImportExport;
  */
 class FilteredXMLReader extends \XMLReader
 {
-    public function read()
+    public function read(): bool
     {
         while (parent::read()) {
             if (self::WHITESPACE !== $this->nodeType
@@ -28,7 +28,7 @@ class FilteredXMLReader extends \XMLReader
         return false;
     }
 
-    public function moveToNextElement()
+    public function moveToNextElement(): bool
     {
         while (parent::read()) {
             if (self::ELEMENT === $this->nodeType) {

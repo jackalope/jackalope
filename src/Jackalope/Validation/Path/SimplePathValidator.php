@@ -16,27 +16,24 @@ namespace Jackalope\Validation\Path;
  */
 class SimplePathValidator extends AbstractRegexValidator
 {
-    private $NAMESPACE;
-    private $LOCALNAME_CHAR_NO_SPACES;
-    private $LOCALNAME;
-    private $NAME;
-    private $PATH;
+    private string $NAME;
+    private string $PATH;
 
     public function __construct()
     {
-        $this->NAMESPACE = '[-a-zA-Z0-9_]+';
-        $this->LOCALNAME_CHAR_NO_SPACES = '-a-zA-Z0-9_';
-        $this->LOCALNAME = '(['.$this->LOCALNAME_CHAR_NO_SPACES.'\s]+)?(['.$this->LOCALNAME_CHAR_NO_SPACES.'])';
-        $this->NAME = '(('.$this->NAMESPACE.'):)?'.$this->LOCALNAME;
+        $NAMESPACE = '[-a-zA-Z0-9_]+';
+        $LOCALNAME_CHAR_NO_SPACES = '-a-zA-Z0-9_';
+        $LOCALNAME = '(['.$LOCALNAME_CHAR_NO_SPACES.'\s]+)?(['.$LOCALNAME_CHAR_NO_SPACES.'])';
+        $this->NAME = '(('.$NAMESPACE.'):)?'.$LOCALNAME;
         $this->PATH = '((/|\.\./)?'.$this->NAME.')+';
     }
 
-    protected function getPathPattern()
+    protected function getPathPattern(): string
     {
         return '^'.$this->PATH.'$';
     }
 
-    protected function getNamePattern()
+    protected function getNamePattern(): string
     {
         return '^'.$this->NAME.'$';
     }

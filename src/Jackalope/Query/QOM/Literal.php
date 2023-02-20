@@ -12,17 +12,15 @@ use PHPCR\Query\QOM\LiteralInterface;
  *
  * @api
  */
-class Literal implements LiteralInterface
+final class Literal implements LiteralInterface
 {
     /**
-     * @var string
+     * @var bool|string|int|float
      */
-    protected $literalValue;
+    private $literalValue;
 
     /**
-     * Constructor.
-     *
-     * @param string $literalValue
+     * @param bool|string|int|float $literalValue
      */
     public function __construct($literalValue)
     {

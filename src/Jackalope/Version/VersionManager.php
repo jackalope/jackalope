@@ -14,6 +14,7 @@ use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
 use PHPCR\ValueFormatException;
 use PHPCR\Version\ActivityViolationException;
+use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
 
@@ -25,27 +26,13 @@ use PHPCR\Version\VersionManagerInterface;
  *
  * @api
  */
-class VersionManager implements VersionManagerInterface
+final class VersionManager implements VersionManagerInterface
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private ObjectManager $objectManager;
 
-    /**
-     * @var FactoryInterface The jackalope object factory for this object
-     */
-    protected $factory;
-
-    /**
-     * Create the version manager - there should be only one per session.
-     *
-     * @param FactoryInterface $factory the object factory
-     */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager)
     {
         $this->objectManager = $objectManager;
-        $this->factory = $factory;
     }
 
     /**
@@ -53,7 +40,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function checkin($absPath)
+    public function checkin($absPath): VersionInterface
     {
         if ($node = $this->objectManager->getCachedNode($absPath)) {
             if ($node->isModified()) {
@@ -79,7 +66,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function checkout($absPath)
+    public function checkout($absPath): void
     {
         $this->objectManager->checkout($absPath);
         if ($node = $this->objectManager->getCachedNode($absPath)) {
@@ -95,7 +82,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function checkpoint($absPath)
+    public function checkpoint($absPath): VersionInterface
     {
         $version = $this->checkin($absPath); // just returns current version if already checked in
         $this->checkout($absPath);
@@ -108,7 +95,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function isCheckedOut($absPath)
+    public function isCheckedOut($absPath): bool
     {
         $node = $this->objectManager->getNodeByPath($absPath);
         if (!$node->isNodeType('mix:simpleVersionable')) {
@@ -129,7 +116,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function getVersionHistory($absPath)
+    public function getVersionHistory($absPath): VersionHistoryInterface
     {
         $node = $this->objectManager->getNodeByPath($absPath);
         if (!$node->isNodeType('mix:simpleVersionable')) {
@@ -144,7 +131,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function removeVersionHistory($absPath)
+    public function removeVersionHistory($absPath): void
     {
         throw new UnsupportedRepositoryOperationException('Removing the version history is not supported.');
     }
@@ -159,7 +146,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function getBaseVersion($absPath)
+    public function getBaseVersion($absPath): VersionInterface
     {
         $node = $this->objectManager->getNodeByPath($absPath);
         try {
@@ -179,7 +166,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function restore($removeExisting, $version, $absPath = null)
+    public function restore($removeExisting, $version, $absPath = null): void
     {
         if ($this->objectManager->hasPendingChanges()) {
             throw new InvalidItemStateException('You may not call restore when there pending unsaved changes');
@@ -223,7 +210,7 @@ class VersionManager implements VersionManagerInterface
      *
      * @api
      */
-    public function restoreByLabel($absPath, $versionLabel, $removeExisting)
+    public function restoreByLabel($absPath, $versionLabel, $removeExisting): void
     {
         $vh = $this->getVersionHistory($absPath);
         $version = $vh->getVersionByLabel($versionLabel);

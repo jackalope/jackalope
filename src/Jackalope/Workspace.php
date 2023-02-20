@@ -16,9 +16,14 @@ use Jackalope\Transport\WorkspaceManagementInterface;
 use Jackalope\Transport\WritingInterface;
 use Jackalope\Version\VersionManager;
 use PHPCR\Lock\LockManagerInterface;
+use PHPCR\NamespaceRegistryInterface;
+use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\Observation\ObservationManagerInterface;
+use PHPCR\Query\QueryManagerInterface;
+use PHPCR\RepositoryManagerInterface;
 use PHPCR\Transaction\UserTransactionInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
+use PHPCR\Version\VersionManagerInterface;
 use PHPCR\WorkspaceInterface;
 
 /**
@@ -31,51 +36,18 @@ use PHPCR\WorkspaceInterface;
  */
 class Workspace implements WorkspaceInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private FactoryInterface $factory;
+    private Session $session;
+    private NodeTypeManager $nodeTypeManager;
+    private ?UserTransactionInterface $userTransactionManager = null;
 
     /**
-     * @var Session
+     * The name of the workspace this object represents.
      */
-    protected $session;
-
-    /**
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
-
-    /**
-     * @var UserTransactionInterface
-     */
-    protected $userTransactionManager = null;
-
-    /**
-     * The name of the workspace this workspace represents.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * The namespace registry.
-     *
-     * @var NamespaceRegistry
-     */
-    protected $namespaceRegistry;
-
-    /**
-     * @var LockManagerInterface
-     */
-    protected $lockManager;
-
-    /**
-     * @var ObservationManagerInterface
-     */
-    protected $observationManager;
+    private string $name;
+    private NamespaceRegistry $namespaceRegistry;
+    private LockManagerInterface $lockManager;
+    private ObservationManagerInterface $observationManager;
 
     /**
      * Instantiate a workspace referencing a workspace in the storage.
@@ -106,7 +78,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -116,7 +88,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null)
+    public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null): void
     {
         $this->session->getObjectManager()->copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace);
     }
@@ -126,7 +98,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting): void
     {
         if (!$this->session->getObjectManager()->getTransport() instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -142,7 +114,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function move($srcAbsPath, $destAbsPath)
+    public function move($srcAbsPath, $destAbsPath): void
     {
         $this->session->getObjectManager()->moveNodeImmediately($srcAbsPath, $destAbsPath);
     }
@@ -152,7 +124,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function removeItem($absPath)
+    public function removeItem($absPath): void
     {
         $this->session->getObjectManager()->removeItemImmediately($absPath);
     }
@@ -162,17 +134,16 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getLockManager()
+    public function getLockManager(): LockManagerInterface
     {
         if (!$this->session->getTransport() instanceof LockingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support locking');
         }
 
-        if (null === $this->lockManager) {
+        if (!isset($this->lockManager)) {
             $this->lockManager = $this->factory->get(
                 LockManager::class,
                 [
-                    $this->session->getObjectManager(),
                     $this->session,
                     $this->session->getTransport(),
                 ]
@@ -187,7 +158,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getQueryManager()
+    public function getQueryManager(): QueryManagerInterface
     {
         if (!$this->session->getTransport() instanceof QueryInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support queries');
@@ -206,7 +177,7 @@ class Workspace implements WorkspaceInterface
      *
      * @private
      */
-    public function setTransactionManager(UserTransactionInterface $userTransactionManager)
+    public function setTransactionManager(UserTransactionInterface $userTransactionManager): void
     {
         if (!$this->session->getTransport() instanceof TransactionInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
@@ -220,13 +191,13 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getTransactionManager()
+    public function getTransactionManager(): ?UserTransactionInterface
     {
         if (!$this->session->getTransport() instanceof TransactionInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support transactions');
         }
 
-        if (!$this->userTransactionManager) {
+        if (!isset($this->userTransactionManager)) {
             throw new UnsupportedRepositoryOperationException('Transactions are currently disabled');
         }
 
@@ -238,9 +209,9 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getNamespaceRegistry()
+    public function getNamespaceRegistry(): NamespaceRegistryInterface
     {
-        if (null === $this->namespaceRegistry) {
+        if (!isset($this->namespaceRegistry)) {
             $this->namespaceRegistry = $this->factory->get(NamespaceRegistry::class, [$this->session->getTransport()]);
         }
 
@@ -252,7 +223,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getNodeTypeManager()
+    public function getNodeTypeManager(): NodeTypeManagerInterface
     {
         return $this->nodeTypeManager;
     }
@@ -262,13 +233,13 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getObservationManager()
+    public function getObservationManager(): ObservationManagerInterface
     {
         if (!$this->session->getTransport() instanceof ObservationInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support observation');
         }
 
-        if (is_null($this->observationManager)) {
+        if (!isset($this->observationManager)) {
             $this->observationManager = $this->factory->get(
                 ObservationManager::class,
                 [
@@ -286,7 +257,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getRepositoryManager()
+    public function getRepositoryManager(): RepositoryManagerInterface
     {
         throw new UnsupportedRepositoryOperationException();
     }
@@ -296,7 +267,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getVersionManager()
+    public function getVersionManager(): VersionManagerInterface
     {
         if (!$this->session->getTransport() instanceof VersioningInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support versioning');
@@ -310,7 +281,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function getAccessibleWorkspaceNames()
+    public function getAccessibleWorkspaceNames(): array
     {
         return $this->session->getTransport()->getAccessibleWorkspaceNames();
     }
@@ -320,7 +291,7 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function importXML($parentAbsPath, $uri, $uuidBehavior)
+    public function importXML($parentAbsPath, $uri, $uuidBehavior): void
     {
         ImportExport::importXML(
             $this->getSession()->getNode($parentAbsPath),
@@ -335,13 +306,13 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function createWorkspace($name, $srcWorkspace = null)
+    public function createWorkspace($name, $srcWorkspace = null): void
     {
         if (!$this->session->getTransport() instanceof WorkspaceManagementInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support workspace management');
         }
 
-        return $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
+        $this->session->getTransport()->createWorkspace($name, $srcWorkspace);
     }
 
     /**
@@ -349,12 +320,12 @@ class Workspace implements WorkspaceInterface
      *
      * @api
      */
-    public function deleteWorkspace($name)
+    public function deleteWorkspace($name): void
     {
         if (!$this->session->getTransport() instanceof WorkspaceManagementInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support workspace management');
         }
 
-        return $this->session->getTransport()->deleteWorkspace($name);
+        $this->session->getTransport()->deleteWorkspace($name);
     }
 }

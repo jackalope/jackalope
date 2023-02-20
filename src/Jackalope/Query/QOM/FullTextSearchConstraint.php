@@ -13,41 +13,17 @@ use PHPCR\Query\QOM\StaticOperandInterface;
  *
  * @api
  */
-class FullTextSearchConstraint implements FullTextSearchInterface
+final class FullTextSearchConstraint implements FullTextSearchInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private ?string $propertyName;
+    private string $searchExpression;
 
-    /**
-     * @var string
-     */
-    protected $propertyName;
-
-    /**
-     * @var StaticOperandInterface
-     */
-    protected $searchExpression;
-
-    /**
-     * Create a new full text search constraint.
-     *
-     * @param string $selectorName
-     * @param string $propertyName
-     * @param string $fullTextSearchExpression
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $propertyName, $fullTextSearchExpression)
+    public function __construct(string $selectorName, ?string $propertyName, string $fullTextSearchExpression)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
-
+        $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
         $this->searchExpression = $fullTextSearchExpression;
-        $this->selectorName = $selectorName;
     }
 
     /**
@@ -55,7 +31,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -65,7 +41,7 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    public function getPropertyName()
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
@@ -75,9 +51,9 @@ class FullTextSearchConstraint implements FullTextSearchInterface
      *
      * @api
      */
-    public function getFullTextSearchExpression()
+    public function getFullTextSearchExpression(): StaticOperandInterface
     {
-        return $this->searchExpression;
+        return new Literal($this->searchExpression);
     }
 
     /**

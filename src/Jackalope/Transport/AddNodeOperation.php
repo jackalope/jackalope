@@ -18,12 +18,10 @@ class AddNodeOperation extends Operation
 {
     /**
      * The node to add.
-     *
-     * @var Node
      */
-    public $node;
+    public Node $node;
 
-    public function __construct($srcPath, Node $node)
+    public function __construct(string $srcPath, Node $node)
     {
         parent::__construct($srcPath, self::ADD_NODE);
         $this->node = $node;

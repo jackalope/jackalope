@@ -19,15 +19,11 @@ interface LoggerInterface
      * @param string     $method the call to be executed
      * @param array|null $params the call parameters
      * @param array|null $env    associative array with environment information
-     *
-     * @return void
      */
-    public function startCall($method, array $params = null, array $env = null);
+    public function startCall(string $method, array $params = null, array $env = null): void;
 
     /**
      * Marks the last started query as stopped. This can be used for timing of queries.
-     *
-     * @return void
      */
-    public function stopCall();
+    public function stopCall(): void;
 }

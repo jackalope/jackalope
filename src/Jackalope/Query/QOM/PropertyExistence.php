@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\PropertyExistenceInterface;
 
 /**
@@ -12,31 +13,13 @@ use PHPCR\Query\QOM\PropertyExistenceInterface;
  *
  * @api
  */
-class PropertyExistence implements PropertyExistenceInterface
+final class PropertyExistence implements PropertyExistenceInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private string $propertyName;
 
-    /**
-     * @var string
-     */
-    protected $propertyName;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     * @param string $propertyName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $propertyName)
+    public function __construct(string $selectorName, string $propertyName)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
         $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
     }
@@ -46,7 +29,7 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -56,7 +39,7 @@ class PropertyExistence implements PropertyExistenceInterface
      *
      * @api
      */
-    public function getPropertyName()
+    public function getPropertyName(): string
     {
         return $this->propertyName;
     }
@@ -64,11 +47,11 @@ class PropertyExistence implements PropertyExistenceInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return [$this];
     }

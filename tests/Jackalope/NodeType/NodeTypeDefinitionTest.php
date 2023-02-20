@@ -6,18 +6,18 @@ use Jackalope\Factory;
 use Jackalope\TestCase;
 use PHPCR\PropertyType;
 
-class NodeTypeDefinitionTest extends TestCase
+final class NodeTypeDefinitionTest extends TestCase
 {
-    public function testInvalidNodeTypeDefinition()
+    public function testInvalidNodeTypeDefinition(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         $this->getNodeTypeManager()->createNodeTypeTemplate(new \stdClass());
     }
 
-    public function testCreateFromArray()
+    public function testCreateFromArray(): void
     {
-        $factory = $this->createMock(Factory::class);
+        $factory = new Factory();
         $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
             'name' => 'test',
             'isAbstract' => true,
@@ -39,9 +39,9 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertEquals([], $typeDef->getDeclaredSupertypeNames(), 'Supertypes should be empty');
     }
 
-    public function testCreateFromArrayFalse()
+    public function testCreateFromArrayFalse(): void
     {
-        $factory = $this->createMock(Factory::class);
+        $factory = new Factory();
         $typeDef = new NodeTypeDefinition($factory, $this->getNodeTypeManagerMock(), [
             'name' => 'test',
             'isAbstract' => false,
@@ -60,7 +60,7 @@ class NodeTypeDefinitionTest extends TestCase
         $this->assertFalse($typeDef->hasOrderableChildNodes());
     }
 
-    public function testCreateFromXml()
+    public function testCreateFromXml(): void
     {
         $factory = new Factory();
         $dom = new \DOMDocument();

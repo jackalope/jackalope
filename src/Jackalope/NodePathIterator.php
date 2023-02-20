@@ -2,45 +2,32 @@
 
 namespace Jackalope;
 
+use PHPCR\NodeInterface;
+
 /**
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
+final class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
 {
     private ObjectManager $objectManager;
+    private int $offset = 0;
+    private array $nodes = [];
+    private array $paths;
+    private $typeFilter;
+    private string $class;
+    private int $count = 0;
+    private int $batchSize;
 
     /**
-     * @var int
+     * @param array|\Iterator $paths
      */
-    protected $position = 0;
-
-    /**
-     * @var array
-     */
-    protected $nodes = [];
-
-    /**
-     * @var array
-     */
-    protected $paths;
-
-    protected $typeFilter;
-    protected $class;
-
-    /**
-     * @var int
-     */
-    protected $count = 0;
-
-    protected $batchSize;
-
     public function __construct(
         ObjectManager $objectManager,
         $paths,
-        $class = Node::class,
+        string $class = Node::class,
         $typeFilter = [],
-        $batchSize = 50
+        int $batchSize = 50
     ) {
         $this->objectManager = $objectManager;
         $this->paths = array_values((array) $paths); // ensure paths are indexed numerically
@@ -51,12 +38,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         $this->loadBatch();
     }
 
-    /**
-     * Return the batchSize.
-     *
-     * @return int
-     */
-    public function getBatchSize()
+    public function getBatchSize(): int
     {
         return $this->batchSize;
     }
@@ -71,45 +53,33 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         return $this->typeFilter;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function current()
+    public function current(): ?NodeInterface
     {
-        return $this->nodes[$this->paths[$this->position]];
+        return $this->nodes[$this->paths[$this->offset]];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function next()
+    public function next(): void
     {
-        ++$this->position;
+        ++$this->offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function rewind()
+    public function rewind(): void
     {
-        $this->position = 0;
+        $this->offset = 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function valid()
+    public function valid(): bool
     {
-        if (!isset($this->paths[$this->position])) {
+        if (!isset($this->paths[$this->offset])) {
             return false;
         }
 
-        $path = $this->paths[$this->position];
+        $path = $this->paths[$this->offset];
 
         // skip any paths which have been filtered in userland
         // and move on
         if (null === $path) {
-            ++$this->position;
+            ++$this->offset;
 
             return $this->valid();
         }
@@ -119,7 +89,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         }
 
         if (empty($this->nodes[$path])) {
-            ++$this->position;
+            ++$this->offset;
 
             return $this->valid();
         }
@@ -127,21 +97,18 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function key()
+    public function key(): ?string
     {
-        return $this->paths[$this->position];
+        return $this->paths[$this->offset];
     }
 
     /**
      * Load a batch of records according to the
      * batch size.
      *
-     * @param int $position - Optional position to start from
+     * @param int|null $position - Optional position to start from
      */
-    protected function loadBatch($position = null)
+    private function loadBatch(?int $position = null): void
     {
         if (0 === count($this->paths)) {
             return;
@@ -149,7 +116,7 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
 
         $paths = array_slice(
             $this->paths,
-            $position ? $position : $this->position,
+            $position ?: $this->offset,
             $this->batchSize
         );
 
@@ -177,10 +144,8 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
      * Subsequent calls will start loading from the first path
      * which does not have a corresponding array key in the nodes array
      * - if the node is indeed not already loaded.
-     *
-     * @param int $offset
      */
-    protected function ensurePathLoaded($offset)
+    private function ensurePathLoaded($offset): void
     {
         if (count($this->paths) > 0) {
             if (!array_key_exists($offset, $this->nodes)) {
@@ -211,54 +176,36 @@ class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Countable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $this->ensurePathLoaded($offset);
 
         return null === $this->nodes[$offset] ? false : true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetGet($offset)
+    public function offsetGet($offset): ?NodeInterface
     {
         $this->ensurePathLoaded($offset);
 
         return $this->nodes[$offset];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new \InvalidArgumentException('Node path collection is read only');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new \InvalidArgumentException('Node path collection is read only');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function seek($position)
+    public function seek($offset): void
     {
-        $this->position = $position;
+        $this->offset = $offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function count()
+    public function count(): int
     {
         $this->ensurePathLoaded(count($this->paths));
 

@@ -7,7 +7,7 @@ use Jackalope\TestCase;
 
 class NodeTypeXmlConverterTest extends TestCase
 {
-    private $converter;
+    private NodeTypeXmlConverter $converter;
 
     public function setUp(): void
     {
@@ -15,7 +15,7 @@ class NodeTypeXmlConverterTest extends TestCase
         $this->converter = new NodeTypeXmlConverter($factory);
     }
 
-    public function testConvertNtBase()
+    public function testConvertNtBase(): void
     {
         $data = $this->converter->getNodeTypeDefinitionFromXml($this->getNodeTypeDOMElement('nt:base'));
 
@@ -57,7 +57,7 @@ class NodeTypeXmlConverterTest extends TestCase
         ], $data);
     }
 
-    public function testConvertNtUnstructured()
+    public function testConvertNtUnstructured(): void
     {
         $data = $this->converter->getNodeTypeDefinitionFromXml($this->getNodeTypeDOMElement('nt:unstructured'));
 
@@ -163,7 +163,7 @@ XML;
 
         $xpath = new \DOMXPath($dom);
         $nodes = $xpath->evaluate('//nodeTypes/nodeType[@name="'.$name.'"]');
-        if (1 != $nodes->length) {
+        if (1 !== $nodes->length) {
             $this->fail("Should have found exactly one element <nodeType> with name $name");
         }
 

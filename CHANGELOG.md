@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+2.0.0 (unreleased)
+------------------
+
+* Switch to strict static typing.
+* Fixed incorrect return type on `FullTextSearch::getFullTextSearchExpression` to return a QOM Literal instead of `string`, as per the PHPCR spec.
+
+1.x
+===
+
 1.4.4
 -----
 

@@ -12,37 +12,14 @@ use PHPCR\Query\QOM\EquiJoinConditionInterface;
  *
  * @api
  */
-class EquiJoinCondition implements EquiJoinConditionInterface
+final class EquiJoinCondition implements EquiJoinConditionInterface
 {
-    /**
-     * @var string
-     */
-    protected $selector1Name;
+    private string $selector1Name;
+    private string $property1Name;
+    private string $selector2Name;
+    private string $property2Name;
 
-    /**
-     * @var string
-     */
-    protected $property1Name;
-
-    /**
-     * @var string
-     */
-    protected $selector2Name;
-
-    /**
-     * @var string
-     */
-    protected $property2Name;
-
-    /**
-     * Create a new EquiJoinCondition.
-     *
-     * @param string $selector1Name
-     * @param string $property1Name
-     * @param string $selector2Name
-     * @param string $property2Name
-     */
-    public function __construct($selector1Name, $property1Name, $selector2Name, $property2Name)
+    public function __construct(string $selector1Name, string $property1Name, string $selector2Name, string $property2Name)
     {
         $this->selector1Name = $selector1Name;
         $this->selector2Name = $selector2Name;
@@ -55,7 +32,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    public function getSelector1Name()
+    public function getSelector1Name(): string
     {
         return $this->selector1Name;
     }
@@ -65,7 +42,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    public function getProperty1Name()
+    public function getProperty1Name(): string
     {
         return $this->property1Name;
     }
@@ -75,7 +52,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    public function getSelector2Name()
+    public function getSelector2Name(): string
     {
         return $this->selector2Name;
     }
@@ -85,7 +62,7 @@ class EquiJoinCondition implements EquiJoinConditionInterface
      *
      * @api
      */
-    public function getProperty2Name()
+    public function getProperty2Name(): string
     {
         return $this->property2Name;
     }

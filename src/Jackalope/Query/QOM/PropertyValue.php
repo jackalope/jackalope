@@ -12,32 +12,13 @@ use PHPCR\Query\QOM\PropertyValueInterface;
  *
  * @api
  */
-class PropertyValue implements PropertyValueInterface
+final class PropertyValue implements PropertyValueInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private string $propertyName;
 
-    /**
-     * @var string
-     */
-    protected $propertyName;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     * @param string $propertyName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $propertyName)
+    public function __construct(string $selectorName, string $propertyName)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
-
         $this->selectorName = $selectorName;
         $this->propertyName = $propertyName;
     }
@@ -47,7 +28,7 @@ class PropertyValue implements PropertyValueInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -57,7 +38,7 @@ class PropertyValue implements PropertyValueInterface
      *
      * @api
      */
-    public function getPropertyName()
+    public function getPropertyName(): string
     {
         return $this->propertyName;
     }

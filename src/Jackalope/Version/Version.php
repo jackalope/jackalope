@@ -5,9 +5,11 @@ namespace Jackalope\Version;
 use Jackalope\Node;
 use Jackalope\NotImplementedException;
 use PHPCR\ItemNotFoundException;
+use PHPCR\NodeInterface;
 use PHPCR\NoSuchWorkspaceException;
 use PHPCR\PathNotFoundException;
 use PHPCR\RepositoryException;
+use PHPCR\Version\VersionHistoryInterface;
 use PHPCR\Version\VersionInterface;
 
 /**
@@ -18,14 +20,14 @@ use PHPCR\Version\VersionInterface;
  *
  * @api
  */
-class Version extends Node implements VersionInterface
+final class Version extends Node implements VersionInterface
 {
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    public function getContainingHistory()
+    public function getContainingHistory(): VersionHistoryInterface
     {
         return $this->objectManager->getNode($this->parentPath, '/', VersionHistory::class);
     }
@@ -38,7 +40,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getCreated()
+    public function getCreated(): \DateTimeInterface
     {
         return $this->getProperty('jcr:created')->getValue();
     }
@@ -51,7 +53,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getLinearSuccessor()
+    public function getLinearSuccessor(): ?VersionInterface
     {
         $successors = $this->getProperty('jcr:successors')->getString();
         if (count($successors) > 1) {
@@ -75,7 +77,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getSuccessors()
+    public function getSuccessors(): array
     {
         /* successor is a multivalue property with REFERENCE.
          * get it as string so we can create the Version instances from uuid
@@ -101,7 +103,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getLinearPredecessor()
+    public function getLinearPredecessor(): ?VersionInterface
     {
         $predecessor = $this->getProperty('jcr:predecessors')->getString();
         if (count($predecessor) > 1) {
@@ -125,7 +127,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getPredecessors()
+    public function getPredecessors(): array
     {
         /*
          * predecessors is a multivalue property with REFERENCE.
@@ -147,7 +149,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function getFrozenNode()
+    public function getFrozenNode(): NodeInterface
     {
         return $this->getNode('jcr:frozenNode');
     }
@@ -157,7 +159,7 @@ class Version extends Node implements VersionInterface
      *
      * @api
      */
-    public function remove()
+    public function remove(): void
     {
         // A version node cannot be removed, so always throw an Exception
         throw new RepositoryException('You can not remove a version like this, use VersionHistory.removeVersion()');
@@ -168,7 +170,7 @@ class Version extends Node implements VersionInterface
      *
      * @private
      */
-    public function setCachedPredecessorsDirty()
+    public function setCachedPredecessorsDirty(): void
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
         foreach ($this->getProperty('jcr:predecessors')->getString() as $preuuid) {
@@ -184,7 +186,7 @@ class Version extends Node implements VersionInterface
      *
      * @private
      */
-    public function setCachedSuccessorsDirty()
+    public function setCachedSuccessorsDirty(): void
     {
         // only set other versions dirty if they are cached, no need to load them from backend just to tell they need to be reloaded
         foreach ($this->getProperty('jcr:successors')->getString() as $postuuid) {

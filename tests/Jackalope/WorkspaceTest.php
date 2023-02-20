@@ -8,25 +8,10 @@ use PHPCR\SessionInterface;
 
 class WorkspaceTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private $name = 'a3lkjas';
-
-    /**
-     * @var FactoryInterface
-     */
-    private $factory;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
-     * @var ObjectManager
-     */
-    private $om;
+    private string $name = 'a3lkjas';
+    private FactoryInterface $factory;
+    private SessionInterface $session;
+    private ObjectManager $om;
 
     public function setUp(): void
     {
@@ -39,21 +24,20 @@ class WorkspaceTest extends TestCase
 
         $this->session = $this->getSessionMock();
         $this->session
-            ->expects($this->any())
             ->method('getTransport')
-            ->will($this->returnValue($transport))
+            ->willReturn($transport)
         ;
-        $this->om = $this->getObjectManagerMock();
+        $this->om = $this->createMock(ObjectManager::class);
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
         $this->assertSame($this->session, $w->getSession());
         $this->assertSame($this->name, $w->getName());
     }
 
-    public function testGetNodeTypeManager()
+    public function testGetNodeTypeManager(): void
     {
         $w = new Workspace($this->factory, $this->session, $this->om, $this->name);
 

@@ -7,8 +7,11 @@ use Jackalope\Transport\TransactionInterface;
 use Jackalope\Transport\TransportInterface;
 use PHPCR\CredentialsInterface;
 use PHPCR\ItemExistsException;
+use PHPCR\ItemInterface;
 use PHPCR\ItemNotFoundException;
+use PHPCR\NodeInterface;
 use PHPCR\PathNotFoundException;
+use PHPCR\PropertyInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
 use PHPCR\Security\AccessControlException;
@@ -16,6 +19,7 @@ use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Util\PathHelper;
+use PHPCR\WorkspaceInterface;
 
 /**
  * {@inheritDoc}
@@ -53,52 +57,26 @@ class Session implements SessionInterface
      *
      * Keys are spl_object_hash'es for the sessions which are the values
      *
-     * @var array
+     * @var Session[]
      */
-    protected static $sessionRegistry = [];
+    private static array $sessionRegistry = [];
 
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var Repository
-     */
-    protected $repository;
-
-    /**
-     * @var Workspace
-     */
-    protected $workspace;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var SimpleCredentials
-     */
-    protected $credentials;
+    private RepositoryInterface $repository;
+    private Workspace $workspace;
+    private ObjectManager $objectManager;
+    private ?SimpleCredentials $credentials;
 
     /**
      * Whether this session is in logged out state and can not be used anymore.
-     *
-     * @var bool
      */
-    protected $logout = false;
+    private bool $logout = false;
 
     /**
      * The namespace registry.
      *
      * It is only used to check prefixes and at setup. Session namespace remapping must be handled locally.
-     *
-     * @var NamespaceRegistry
      */
-    protected $namespaceRegistry;
+    private NamespaceRegistry $namespaceRegistry;
 
     /**
      * List of local namespaces.
@@ -107,25 +85,20 @@ class Session implements SessionInterface
      * see jackrabbit-spi-commons/src/main/java/org/apache/jackrabbit/spi/commons/conversion/PathParser.java and friends
      * for how this is done in jackrabbit
      */
-    // protected $localNamespaces;
+    // private $localNamespaces;
 
-    /** Creates a session.
+    /**
+     * Builds the corresponding workspace instance.
      *
-     * Builds the corresponding workspace instance
-     *
-     * @param FactoryInterface   $factory       the object factory
-     * @param string             $workspaceName the workspace name that is used
-     * @param SimpleCredentials  $credentials   the credentials that where
-     *                                          used to log in, in order to implement Session::getUserID()
-     *                                          if they are null, getUserID returns null
-     * @param TransportInterface $transport     the transport implementation
+     * @param SimpleCredentials $credentials the credentials that where
+     *                                       used to log in, in order to implement Session::getUserID()
+     *                                       if they are null, getUserID returns null
      */
-    public function __construct(FactoryInterface $factory, Repository $repository, $workspaceName, SimpleCredentials $credentials = null, TransportInterface $transport)
+    public function __construct(FactoryInterface $factory, RepositoryInterface $repository, $workspaceName, ?SimpleCredentials $credentials, TransportInterface $transport)
     {
-        $this->factory = $factory;
         $this->repository = $repository;
-        $this->objectManager = $this->factory->get(ObjectManager::class, [$transport, $this]);
-        $this->workspace = $this->factory->get(Workspace::class, [$this, $this->objectManager, $workspaceName]);
+        $this->objectManager = $factory->get(ObjectManager::class, [$transport, $this]);
+        $this->workspace = $factory->get(Workspace::class, [$this, $this->objectManager, $workspaceName]);
         $this->credentials = $credentials;
         $this->namespaceRegistry = $this->workspace->getNamespaceRegistry();
 
@@ -139,7 +112,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getRepository()
+    public function getRepository(): RepositoryInterface
     {
         return $this->repository;
     }
@@ -149,7 +122,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getUserID()
+    public function getUserID(): ?string
     {
         if (null === $this->credentials) {
             return null;
@@ -163,7 +136,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getAttributeNames()
+    public function getAttributeNames(): array
     {
         if (null === $this->credentials) {
             return [];
@@ -191,7 +164,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getWorkspace()
+    public function getWorkspace(): WorkspaceInterface
     {
         return $this->workspace;
     }
@@ -201,7 +174,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getRootNode()
+    public function getRootNode(): NodeInterface
     {
         return $this->getNode('/');
     }
@@ -221,7 +194,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNodeByIdentifier($id)
+    public function getNodeByIdentifier($id): NodeInterface
     {
         return $this->objectManager->getNodeByIdentifier($id);
     }
@@ -246,9 +219,9 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getItem($absPath)
+    public function getItem($absPath): ItemInterface
     {
-        if (!is_string($absPath) || 0 === strlen($absPath) || '/' !== $absPath[0]) {
+        if (!is_string($absPath) || '' === $absPath || '/' !== $absPath[0]) {
             throw new PathNotFoundException('It is forbidden to call getItem on session with a relative path');
         }
 
@@ -264,7 +237,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNode($absPath, $depthHint = -1)
+    public function getNode($absPath, $depthHint = -1): NodeInterface
     {
         if (-1 !== $depthHint) {
             $depth = $this->getSessionOption(self::OPTION_FETCH_DEPTH);
@@ -306,7 +279,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getProperty($absPath)
+    public function getProperty($absPath): PropertyInterface
     {
         try {
             return $this->objectManager->getPropertyByPath($absPath);
@@ -330,7 +303,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function itemExists($absPath)
+    public function itemExists($absPath): bool
     {
         if ('/' === $absPath) {
             return true;
@@ -344,7 +317,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function nodeExists($absPath)
+    public function nodeExists($absPath): bool
     {
         if ('/' === $absPath) {
             return true;
@@ -366,7 +339,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function propertyExists($absPath)
+    public function propertyExists($absPath): bool
     {
         try {
             // OPTIMIZE: avoid throwing and catching errors would improve performance if many node exists calls are made
@@ -384,7 +357,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function move($srcAbsPath, $destAbsPath)
+    public function move($srcAbsPath, $destAbsPath): void
     {
         try {
             $parent = $this->objectManager->getNodeByPath(PathHelper::getParentPath($destAbsPath));
@@ -409,7 +382,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function removeItem($absPath)
+    public function removeItem($absPath): void
     {
         $item = $this->getItem($absPath);
         $item->remove();
@@ -426,7 +399,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function save()
+    public function save(): void
     {
         if ($this->getTransport() instanceof TransactionInterface) {
             try {
@@ -462,7 +435,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function refresh($keepChanges)
+    public function refresh($keepChanges): void
     {
         $this->objectManager->refresh($keepChanges);
     }
@@ -476,7 +449,7 @@ class Session implements SessionInterface
      *
      * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
-    public function clear()
+    public function clear(): void
     {
         trigger_error('Use Session::refresh instead, this method is extremely unsafe', E_USER_DEPRECATED);
         $this->objectManager->clear();
@@ -487,7 +460,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function hasPendingChanges()
+    public function hasPendingChanges(): bool
     {
         return $this->objectManager->hasPendingChanges();
     }
@@ -497,7 +470,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function hasPermission($absPath, $actions)
+    public function hasPermission($absPath, $actions): bool
     {
         $actualPermissions = $this->objectManager->getPermissions($absPath);
         $requestedPermissions = explode(',', $actions);
@@ -516,7 +489,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function checkPermission($absPath, $actions)
+    public function checkPermission($absPath, $actions): void
     {
         if (!$this->hasPermission($absPath, $actions)) {
             throw new AccessControlException($absPath);
@@ -530,7 +503,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function hasCapability($methodName, $target, array $arguments)
+    public function hasCapability($methodName, $target, array $arguments): bool
     {
         // we never determine whether operation can be performed as it is optional ;-)
         // TODO: could implement some
@@ -542,7 +515,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function importXML($parentAbsPath, $uri, $uuidBehavior)
+    public function importXML($parentAbsPath, $uri, $uuidBehavior): void
     {
         ImportExport::importXML(
             $this->getNode($parentAbsPath),
@@ -557,7 +530,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function exportSystemView($absPath, $stream, $skipBinary, $noRecurse)
+    public function exportSystemView($absPath, $stream, $skipBinary, $noRecurse): void
     {
         ImportExport::exportSystemView(
             $this->getNode($absPath),
@@ -573,7 +546,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function exportDocumentView($absPath, $stream, $skipBinary, $noRecurse)
+    public function exportDocumentView($absPath, $stream, $skipBinary, $noRecurse): void
     {
         ImportExport::exportDocumentView(
             $this->getNode($absPath),
@@ -589,7 +562,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function setNamespacePrefix($prefix, $uri)
+    public function setNamespacePrefix($prefix, $uri): void
     {
         $this->namespaceRegistry->checkPrefix($prefix);
         throw new NotImplementedException('TODO: implement session scope remapping of namespaces');
@@ -601,7 +574,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNamespacePrefixes()
+    public function getNamespacePrefixes(): array
     {
         // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getPrefixes();
@@ -612,7 +585,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNamespaceURI($prefix)
+    public function getNamespaceURI($prefix): string
     {
         // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getURI($prefix);
@@ -623,7 +596,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function getNamespacePrefix($uri)
+    public function getNamespacePrefix($uri): string
     {
         // TODO: once setNamespacePrefix is implemented, must take session remaps into account
         return $this->namespaceRegistry->getPrefix($uri);
@@ -634,7 +607,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function logout()
+    public function logout(): void
     {
         // OPTIMIZATION: flush object manager to help garbage collector
         $this->logout = true;
@@ -652,7 +625,7 @@ class Session implements SessionInterface
      *
      * @api
      */
-    public function isLive()
+    public function isLive(): bool
     {
         return !$this->logout;
     }
@@ -680,11 +653,9 @@ class Session implements SessionInterface
     /**
      * Implementation specific: The object manager is also used by other components, i.e. the QueryManager.
      *
-     * @return ObjectManager the object manager associated with this session
-     *
      * @private
      */
-    public function getObjectManager()
+    public function getObjectManager(): ObjectManager
     {
         return $this->objectManager;
     }
@@ -693,12 +664,9 @@ class Session implements SessionInterface
      * Implementation specific: The transport implementation is also used by other components,
      * i.e. the NamespaceRegistry.
      *
-     * @return TransportInterface the transport implementation associated with
-     *                            this session
-     *
      * @private
      */
-    public function getTransport()
+    public function getTransport(): TransportInterface
     {
         return $this->objectManager->getTransport();
     }
@@ -710,7 +678,7 @@ class Session implements SessionInterface
      *
      * @private
      */
-    protected static function registerSession(Session $session)
+    private static function registerSession(Session $session): void
     {
         $key = $session->getRegistryKey();
         self::$sessionRegistry[$key] = $session;
@@ -723,7 +691,7 @@ class Session implements SessionInterface
      *
      * @private
      */
-    protected static function unregisterSession(Session $session)
+    private static function unregisterSession(Session $session): void
     {
         $key = $session->getRegistryKey();
         unset(self::$sessionRegistry[$key]);
@@ -736,7 +704,7 @@ class Session implements SessionInterface
      *
      * @return string an id for this session
      */
-    public function getRegistryKey()
+    public function getRegistryKey(): string
     {
         return spl_object_hash($this);
     }
@@ -744,13 +712,9 @@ class Session implements SessionInterface
     /**
      * Implementation specific: get a session from the session registry for the stream wrapper.
      *
-     * @param string $key key for the session
-     *
-     * @return Session|null the session or null if none is registered with the given key
-     *
      * @private
      */
-    public static function getSessionFromRegistry($key)
+    public static function getSessionFromRegistry($key): ?Session
     {
         if (isset(self::$sessionRegistry[$key])) {
             return self::$sessionRegistry[$key];
@@ -760,18 +724,12 @@ class Session implements SessionInterface
     }
 
     /**
-     * Sets a session specific option.
-     *
-     * @param string $key   the key to be set
-     * @param mixed  $value the value to be set
-     *
      * @throws \InvalidArgumentException if the option is unknown
-     * @throws RepositoryException       if this option is not supported and is
-     *                                   a behaviour relevant option
+     * @throws RepositoryException       if this option is not supported and is a behaviour relevant option
      *
      * @see BaseTransport::setFetchDepth($value);
      */
-    public function setSessionOption($key, $value)
+    public function setSessionOption(string $key, bool $value): void
     {
         switch ($key) {
             case self::OPTION_FETCH_DEPTH:
@@ -786,17 +744,11 @@ class Session implements SessionInterface
     }
 
     /**
-     * Gets a session specific option.
-     *
-     * @param string $key the key to be gotten
-     *
-     * @return bool
-     *
      * @throws \InvalidArgumentException if the option is unknown
      *
      * @see setSessionOption($key, $value);
      */
-    public function getSessionOption($key)
+    public function getSessionOption($key): bool
     {
         switch ($key) {
             case self::OPTION_FETCH_DEPTH:

@@ -6,7 +6,7 @@ use PHPCR\SimpleCredentials;
 
 class RepositoryTest extends TestCase
 {
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $factory = new Factory();
         $credentials = new SimpleCredentials('test', 'cred');
@@ -15,13 +15,13 @@ class RepositoryTest extends TestCase
         $transport->expects($this->once())
             ->method('login')
             ->with($this->equalTo($credentials), $this->equalTo($workspaceName))
-            ->will($this->returnValue(true));
+            ->willReturn('default');
         $transport->expects($this->once())
             ->method('getRepositoryDescriptors')
-            ->will($this->returnValue(['bla' => 'bli']));
-        $transport->expects($this->any())
+            ->willReturn(['bla' => 'bli']);
+        $transport
             ->method('getNamespaces')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         $repo = new Repository($factory, $transport);
         $session = $repo->login($credentials, $workspaceName);

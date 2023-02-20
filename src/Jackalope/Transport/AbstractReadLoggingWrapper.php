@@ -3,6 +3,7 @@
 namespace Jackalope\Transport;
 
 use Jackalope\FactoryInterface;
+use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\Transport\Logging\LoggerInterface;
 use PHPCR\CredentialsInterface;
 
@@ -15,72 +16,41 @@ use PHPCR\CredentialsInterface;
  */
 abstract class AbstractReadLoggingWrapper implements TransportInterface
 {
-    /**
-     * @var TransportInterface
-     */
-    protected $transport;
+    protected TransportInterface $transport;
+    protected LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * Constructor.
-     *
-     * @param TransportInterface $transport A logger instance
-     * @param LoggerInterface    $logger    A logger instance
-     */
     public function __construct(FactoryInterface $factory, TransportInterface $transport, LoggerInterface $logger)
     {
         $this->transport = $transport;
         $this->logger = $logger;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getRepositoryDescriptors()
+    public function getRepositoryDescriptors(): array
     {
         return $this->transport->getRepositoryDescriptors();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAccessibleWorkspaceNames()
+    public function getAccessibleWorkspaceNames(): array
     {
         return $this->transport->getAccessibleWorkspaceNames();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null)
+    public function login(CredentialsInterface $credentials = null, $workspaceName = null): string
     {
         return $this->transport->login($credentials, $workspaceName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function logout()
+    public function logout(): void
     {
         $this->transport->logout();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNamespaces()
+    public function getNamespaces(): array
     {
         return $this->transport->getNamespaces();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNode($path)
+    public function getNode(string $path): \stdClass
     {
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNode($path);
@@ -89,10 +59,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNodes($paths)
+    public function getNodes($paths): array
     {
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodes($paths);
@@ -101,10 +68,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNodesByIdentifier($identifiers)
+    public function getNodesByIdentifier($identifiers): array
     {
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodesByIdentifier($identifiers);
@@ -113,10 +77,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getProperty($path)
+    public function getProperty($path): \stdClass
     {
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getProperty($path);
@@ -125,10 +86,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNodeByIdentifier($uuid)
+    public function getNodeByIdentifier(string $uuid): \stdClass
     {
         $this->logger->startCall(__FUNCTION__, func_get_args(), ['fetchDepth' => $this->transport->getFetchDepth()]);
         $result = $this->transport->getNodeByIdentifier($uuid);
@@ -137,10 +95,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNodePathForIdentifier($uuid, $workspace = null)
+    public function getNodePathForIdentifier($uuid, $workspace = null): string
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getNodePathForIdentifier($uuid, $workspace);
@@ -149,9 +104,6 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getBinaryStream($path)
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
@@ -161,10 +113,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReferences($path, $name = null)
+    public function getReferences($path, $name = null): array
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getReferences($path, $name);
@@ -173,10 +122,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getWeakReferences($path, $name = null)
+    public function getWeakReferences($path, $name = null): array
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getWeakReferences($path, $name);
@@ -185,18 +131,12 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setNodeTypeManager($nodeTypeManager)
+    public function setNodeTypeManager(NodeTypeManager $nodeTypeManager): void
     {
-        return $this->transport->setNodeTypeManager($nodeTypeManager);
+        $this->transport->setNodeTypeManager($nodeTypeManager);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getNodeTypes($nodeTypes = [])
+    public function getNodeTypes($nodeTypes = []): array
     {
         $this->logger->startCall(__FUNCTION__, func_get_args());
         $result = $this->transport->getNodeTypes($nodeTypes);
@@ -205,34 +145,22 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setFetchDepth($depth)
+    public function setFetchDepth($depth): void
     {
         $this->transport->setFetchDepth($depth);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFetchDepth()
+    public function getFetchDepth(): int
     {
         return $this->transport->getFetchDepth();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setAutoLastModified($autoLastModified)
+    public function setAutoLastModified(bool $autoLastModified): void
     {
-        return $this->transport->setAutoLastModified($autoLastModified);
+        $this->transport->setAutoLastModified($autoLastModified);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAutoLastModified()
+    public function getAutoLastModified(): bool
     {
         return $this->transport->getAutoLastModified();
     }

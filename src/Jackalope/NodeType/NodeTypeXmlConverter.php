@@ -15,7 +15,7 @@ use PHPCR\Version\OnParentVersionAction;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodeTypeXmlConverter
+final class NodeTypeXmlConverter
 {
     private const DEFAULT_PRIMARY_NODE = 'nt:base';
 
@@ -24,17 +24,12 @@ class NodeTypeXmlConverter
      *
      * Everything inside jackalope has to accept the factory in the
      * constructor. We define the constructor but do nothing at all.
-     *
-     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory)
     {
     }
 
-    /**
-     * @return array
-     */
-    public function getItemDefinitionFromXml(\DOMElement $node)
+    public function getItemDefinitionFromXml(\DOMElement $node): array
     {
         $data = [];
         $data['declaringNodeType'] = $node->getAttribute('declaringNodeType');
@@ -50,11 +45,9 @@ class NodeTypeXmlConverter
     /**
      * Convert property definition xml into array.
      *
-     * @return array
-     *
      * @throws \InvalidArgumentException
      */
-    public function getPropertyDefinitionFromXml(\DOMElement $node)
+    public function getPropertyDefinitionFromXml(\DOMElement $node): array
     {
         $data = $this->getItemDefinitionFromXml($node);
 
@@ -84,10 +77,8 @@ class NodeTypeXmlConverter
 
     /**
      * Convert Node Definition XML into array.
-     *
-     * @return array
      */
-    public function getNodeDefinitionFromXml(\DOMElement $node)
+    public function getNodeDefinitionFromXml(\DOMElement $node): array
     {
         $data = $this->getItemDefinitionFromXml($node);
 
@@ -111,12 +102,10 @@ class NodeTypeXmlConverter
     /**
      * Convert NodeTypeDefinition XML into array.
      *
-     * @return array
-     *
      * @throws RepositoryException
      * @throws \InvalidArgumentException
      */
-    public function getNodeTypeDefinitionFromXml(\DOMElement $node)
+    public function getNodeTypeDefinitionFromXml(\DOMElement $node): array
     {
         $data = [];
         // nodetype
@@ -150,7 +139,7 @@ class NodeTypeXmlConverter
         return $data;
     }
 
-    public function getNodeTypesFromXml(\DOMDocument $dom)
+    public function getNodeTypesFromXml(\DOMDocument $dom): array
     {
         $xp = new \DOMXPath($dom);
         $nodeTypesElements = $xp->query('/nodeTypes/nodeType');

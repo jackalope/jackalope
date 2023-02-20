@@ -19,35 +19,29 @@ use PHPCR\Version\VersionInterface;
  *
  * @api
  */
-class VersionHistory extends Node implements VersionHistoryInterface
+final class VersionHistory extends Node implements VersionHistoryInterface
 {
     /**
      * Cache of all versions to only build the list once.
-     *
-     * @var array
      */
-    protected $versions = null;
+    private array $versions;
 
     /**
      * Cache of the linear versions to only build the list once.
-     *
-     * @var array
      */
-    protected $linearVersions = null;
+    private array $linearVersions;
 
     /**
      * Cache of the version labels.
-     *
-     * @var array
      */
-    protected $versionLabels = null;
+    private array $versionLabels;
 
     /**
      * {@inheritDoc}
      *
      * @api
      */
-    public function getVersionableIdentifier()
+    public function getVersionableIdentifier(): string
     {
         return $this->getPropertyValue('jcr:versionableUuid');
     }
@@ -57,7 +51,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getRootVersion()
+    public function getRootVersion(): VersionInterface
     {
         return $this->objectManager->getNode('jcr:rootVersion', $this->getPath(), Version::class);
     }
@@ -67,10 +61,11 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getAllLinearVersions()
+    public function getAllLinearVersions(): \Iterator
     {
         // OPTIMIZE: special iterator that delays loading the versions
-        if (!$this->linearVersions) {
+        if (!isset($this->linearVersions)) {
+            $this->linearVersions = [];
             $version = $this->getRootVersion();
             do {
                 $this->linearVersions[$version->getName()] = $version;
@@ -85,10 +80,10 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getAllVersions()
+    public function getAllVersions(): \Iterator
     {
         // OPTIMIZE: special iterator that delays loading the versions
-        if (!$this->versions) {
+        if (!isset($this->versions)) {
             $rootVersion = $this->getRootVersion();
             $results = [$rootVersion->getName() => $rootVersion];
             $this->versions = array_merge($results, $this->getEventualSuccessors($rootVersion));
@@ -109,7 +104,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @throws RepositoryException
      */
-    protected function getEventualSuccessors($node)
+    private function getEventualSuccessors($node): array
     {
         $successors = $node->getSuccessors();
         $results = [];
@@ -127,7 +122,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getAllLinearFrozenNodes()
+    public function getAllLinearFrozenNodes(): \Iterator
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
         $frozenNodes = [];
@@ -143,7 +138,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getAllFrozenNodes()
+    public function getAllFrozenNodes(): \Iterator
     {
         // OPTIMIZE: special iterator that delays loading frozen nodes
         $frozenNodes = [];
@@ -159,10 +154,10 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getVersion($versionName)
+    public function getVersion($versionName): VersionInterface
     {
         $this->getAllVersions();
-        if (isset($this->versions[$versionName])) {
+        if (array_key_exists($versionName, $this->versions)) {
             return $this->versions[$versionName];
         }
 
@@ -174,7 +169,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getVersionByLabel($label)
+    public function getVersionByLabel($label): VersionInterface
     {
         if (!$this->hasVersionLabel($label)) {
             throw new VersionException("No label '$label'");
@@ -188,7 +183,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function addVersionLabel($versionName, $label, $moveLabel)
+    public function addVersionLabel($versionName, $label, $moveLabel): void
     {
         $this->initVersionLabels();
         $version = $this->getVersion($versionName);
@@ -203,7 +198,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function removeVersionLabel($label)
+    public function removeVersionLabel($label): void
     {
         if (!$this->hasVersionLabel($label)) {
             throw new VersionException("No label '$label'");
@@ -219,11 +214,11 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function hasVersionLabel($label, $version = null)
+    public function hasVersionLabel($label, $version = null): bool
     {
         $labels = $this->getVersionLabels($version);
 
-        return in_array($label, $labels);
+        return in_array($label, $labels, true);
     }
 
     /**
@@ -231,7 +226,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function getVersionLabels($version = null)
+    public function getVersionLabels($version = null): array
     {
         $this->initVersionLabels();
         if (null === $version) {
@@ -269,9 +264,9 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @throws RepositoryException
      */
-    private function initVersionLabels()
+    private function initVersionLabels(): void
     {
-        if (!is_null($this->versionLabels)) {
+        if (isset($this->versionLabels)) {
             return;
         }
 
@@ -294,7 +289,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @api
      */
-    public function removeVersion($versionName)
+    public function removeVersion($versionName): void
     {
         $version = $this->getVersion($versionName);
 
@@ -303,7 +298,7 @@ class VersionHistory extends Node implements VersionHistoryInterface
 
         $this->objectManager->removeVersion($this->getPath(), $versionName);
 
-        if (!is_null($this->versions)) {
+        if (isset($this->versions)) {
             unset($this->versions[$versionName]);
         }
     }
@@ -313,10 +308,8 @@ class VersionHistory extends Node implements VersionHistoryInterface
      *
      * @private
      */
-    public function notifyHistoryChanged()
+    public function notifyHistoryChanged(): void
     {
-        $this->versions = null;
-        $this->linearVersions = null;
-        $this->versionLabels = null;
+        unset($this->versions, $this->linearVersions, $this->versionLabels);
     }
 }

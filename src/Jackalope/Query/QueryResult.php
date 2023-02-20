@@ -15,36 +15,27 @@ use PHPCR\RepositoryException;
  *
  * @api
  */
-class QueryResult implements \IteratorAggregate, QueryResultInterface
+final class QueryResult implements \IteratorAggregate, QueryResultInterface
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectmanager;
+    private ObjectManager $objectmanager;
 
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private FactoryInterface $factory;
 
     /**
      * Storing the query result raw data.
      *
      * @see QueryInterface::query()
-     *
-     * @var array
      */
-    protected $rows = [];
+    private array $rows;
 
     /**
      * Create a new query result from raw data from transport.
      *
-     * @see QueryInterface::query() The raw data format
+     * @param array $rawData the data as returned by the transport
      *
-     * @param FactoryInterface $factory the object factory
-     * @param array            $rawData the data as returned by the transport
+     * @see QueryInterface::query() The raw data format
      */
-    public function __construct(FactoryInterface $factory, $rawData, ObjectManager $objectManager)
+    public function __construct(FactoryInterface $factory, array $rawData, ObjectManager $objectManager)
     {
         $this->factory = $factory;
         $this->rows = $rawData;
@@ -65,8 +56,7 @@ class QueryResult implements \IteratorAggregate, QueryResultInterface
      *
      * @api
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return $this->getRows();
     }
@@ -76,7 +66,7 @@ class QueryResult implements \IteratorAggregate, QueryResultInterface
      *
      * @api
      */
-    public function getColumnNames()
+    public function getColumnNames(): array
     {
         $columnNames = [];
 
@@ -129,7 +119,7 @@ class QueryResult implements \IteratorAggregate, QueryResultInterface
      *
      * @api
      */
-    public function getSelectorNames()
+    public function getSelectorNames(): array
     {
         $selectorNames = [];
 

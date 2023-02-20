@@ -4,6 +4,7 @@ namespace Jackalope\Observation;
 
 use Jackalope\FactoryInterface;
 use Jackalope\Transport\ObservationInterface;
+use PHPCR\Observation\EventInterface;
 use PHPCR\Observation\EventJournalInterface;
 use PHPCR\SessionInterface;
 
@@ -17,48 +18,23 @@ use PHPCR\SessionInterface;
  * @author David Buchmann <mail@davidbu.ch>
  * @author Daniel Barsotti <daniel.barsotti@liip.ch>
  */
-class EventJournal implements EventJournalInterface
+final class EventJournal implements EventJournalInterface
 {
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private SessionInterface $session;
 
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
-     * @var EventFilter
-     */
-    protected $filter;
+    private EventFilter $filter;
 
     /**
      * Buffered events.
-     *
-     * @var \ArrayIterator
      */
-    protected $events;
+    private ?\Iterator $events;
 
-    /**
-     * @var ObservationInterface
-     */
-    protected $transport;
+    private ObservationInterface $transport;
 
     /**
      * SkipTo timestamp for next fetch. Either manually set or next page.
-     *
-     * @var int
      */
-    protected $currentMillis;
-
-    /**
-     * The prefix to extract the path from the event href attribute.
-     *
-     * @var string
-     */
-    protected $workspaceRootUri;
+    private int $currentMillis;
 
     /**
      * Prepare a new EventJournal.
@@ -76,7 +52,6 @@ class EventJournal implements EventJournalInterface
         SessionInterface $session,
         ObservationInterface $transport
     ) {
-        $this->factory = $factory;
         $this->filter = $filter;
         $this->session = $session;
         $this->transport = $transport;
@@ -88,13 +63,13 @@ class EventJournal implements EventJournalInterface
      *
      * @api
      */
-    public function skipTo($date)
+    public function skipTo($date): void
     {
         $this->currentMillis = $date;
-        $this->events = false;
+        $this->events = null;
     }
 
-    public function current()
+    public function current(): ?EventInterface
     {
         if (!$this->events) {
             $this->fetchJournal();
@@ -103,7 +78,7 @@ class EventJournal implements EventJournalInterface
         return $this->events->current();
     }
 
-    public function next()
+    public function next(): void
     {
         if (!$this->events) {
             $this->fetchJournal();
@@ -112,7 +87,7 @@ class EventJournal implements EventJournalInterface
         $this->events->next();
     }
 
-    public function key()
+    public function key(): ?int
     {
         if (!$this->events) {
             $this->fetchJournal();
@@ -121,7 +96,7 @@ class EventJournal implements EventJournalInterface
         return $this->events->key();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         if (!$this->events) {
             $this->fetchJournal();
@@ -130,7 +105,7 @@ class EventJournal implements EventJournalInterface
         return $this->events->valid();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         if (!$this->events) {
             return;
@@ -139,12 +114,12 @@ class EventJournal implements EventJournalInterface
         $this->events->rewind();
     }
 
-    public function seek($position)
+    public function seek($offset): void
     {
-        $this->skipTo($position);
+        $this->skipTo($offset);
     }
 
-    protected function fetchJournal()
+    private function fetchJournal(): void
     {
         $this->events = $this->transport->getEvents($this->currentMillis, $this->filter, $this->session);
     }

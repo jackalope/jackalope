@@ -12,12 +12,10 @@ class MoveNodeOperation extends Operation
 {
     /**
      * The destination path where this node is to be moved to.
-     *
-     * @var string
      */
-    public $dstPath;
+    public string $dstPath;
 
-    public function __construct($srcPath, $dstPath)
+    public function __construct(string $srcPath, string $dstPath)
     {
         parent::__construct($srcPath, self::MOVE_NODE);
         $this->dstPath = $dstPath;

@@ -5,7 +5,7 @@ namespace Jackalope\Transport;
 use Jackalope\Node;
 
 /**
- * abstract class for logging transport wrapper.
+ * Abstract class for logging transport wrapper.
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
@@ -13,147 +13,93 @@ use Jackalope\Node;
  */
 abstract class AbstractReadWriteLoggingWrapper extends AbstractReadLoggingWrapper implements WritingInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function assertValidName($name)
+    public function assertValidName($name): bool
     {
         return $this->transport->assertValidName($name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null)
+    public function copyNode($srcAbsPath, $destAbsPath, $srcWorkspace = null): void
     {
-        return $this->transport->copyNode($srcAbsPath, $destAbsPath, $srcWorkspace);
+        $this->transport->copyNode($srcAbsPath, $destAbsPath, $srcWorkspace);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting): void
     {
-        return $this->transport->cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
+        $this->transport->cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function updateNode(Node $node, $srcWorkspace)
+    public function updateNode(Node $node, $srcWorkspace): void
     {
-        return $this->transport->updateNode($node, $srcWorkspace);
+        $this->transport->updateNode($node, $srcWorkspace);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function moveNodes(array $operations)
+    public function moveNodes(array $operations): void
     {
-        return $this->transport->moveNodes($operations);
+        $this->transport->moveNodes($operations);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function moveNodeImmediately($srcAbsPath, $dstAbsPath)
+    public function moveNodeImmediately($srcAbsPath, $dstAbsPath): void
     {
-        return $this->transport->moveNodeImmediately($srcAbsPath, $dstAbsPath);
+        $this->transport->moveNodeImmediately($srcAbsPath, $dstAbsPath);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function reorderChildren(Node $node)
+    public function reorderChildren(Node $node): void
     {
-        return $this->transport->reorderChildren($node);
+        $this->transport->reorderChildren($node);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function deleteNodes(array $operations)
+    public function deleteNodes(array $operations): void
     {
-        return $this->transport->deleteNodes($operations);
+        $this->transport->deleteNodes($operations);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function deleteProperties(array $operations)
+    public function deleteProperties(array $operations): void
     {
-        return $this->transport->deleteProperties($operations);
+        $this->transport->deleteProperties($operations);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function deleteNodeImmediately($path)
+    public function deleteNodeImmediately($path): void
     {
-        return $this->transport->deleteNodeImmediately($path);
+        $this->transport->deleteNodeImmediately($path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function deletePropertyImmediately($path)
+    public function deletePropertyImmediately($path): void
     {
-        return $this->transport->deletePropertyImmediately($path);
+        $this->transport->deletePropertyImmediately($path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function storeNodes(array $operations)
+    public function storeNodes(array $operations): void
     {
-        return $this->transport->storeNodes($operations);
+        $this->transport->storeNodes($operations);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function updateProperties(Node $node)
+    public function updateProperties(Node $node): void
     {
-        return $this->transport->updateProperties($node);
+        $this->transport->updateProperties($node);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function registerNamespace($prefix, $uri)
+    public function registerNamespace($prefix, $uri): void
     {
-        return $this->transport->registerNamespace($prefix, $uri);
+        $this->transport->registerNamespace($prefix, $uri);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function unregisterNamespace($prefix)
+    public function unregisterNamespace($prefix): void
     {
-        return $this->transport->unregisterNamespace($prefix);
+        $this->transport->unregisterNamespace($prefix);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function prepareSave()
+    public function prepareSave(): void
     {
-        return $this->transport->prepareSave();
+        $this->transport->prepareSave();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function finishSave()
+    public function finishSave(): void
     {
-        return $this->transport->finishSave();
+        $this->transport->finishSave();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function rollbackSave()
+    public function rollbackSave(): void
     {
-        return $this->transport->rollbackSave();
+        $this->transport->rollbackSave();
     }
 }

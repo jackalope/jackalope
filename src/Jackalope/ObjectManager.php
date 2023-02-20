@@ -21,6 +21,7 @@ use PHPCR\ItemNotFoundException;
 use PHPCR\NamespaceException;
 use PHPCR\NodeInterface;
 use PHPCR\NodeType\InvalidNodeTypeDefinitionException;
+use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\NodeType\NodeTypeExistsException;
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\NoSuchWorkspaceException;
@@ -58,42 +59,25 @@ use PHPCR\Version\VersionInterface;
  */
 class ObjectManager
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
-     * @var TransportInterface
-     */
-    protected $transport;
+    private FactoryInterface $factory;
+    private SessionInterface $session;
+    private TransportInterface $transport;
 
     /**
      * Mapping of typename => absolutePath => node or item object.
      *
      * There is no notion of order here. The order is defined by order in the
      * Node::nodes array.
-     *
-     * @var array
      */
-    protected $objectsByPath = [Node::class => []];
+    private array $objectsByPath = [Node::class => []];
 
     /**
      * Mapping of uuid => absolutePath.
      *
      * Take care never to put a path in here unless there is a node for that
      * path in objectsByPath.
-     *
-     * @var array
      */
-    protected $objectsByUuid = [];
+    private array $objectsByUuid = [];
 
     /**
      * This is an ordered list of all operations to commit to the transport
@@ -104,7 +88,7 @@ class ObjectManager
      *
      * @var Operation[]
      */
-    protected $operationsLog = [];
+    private array $operationsLog = [];
 
     /**
      * Contains the list of paths that have been added to the workspace in the
@@ -114,7 +98,7 @@ class ObjectManager
      *
      * @var AddNodeOperation[]
      */
-    protected $nodesAdd = [];
+    private array $nodesAdd = [];
 
     /**
      * Contains the list of node remove operations for the current session.
@@ -127,7 +111,7 @@ class ObjectManager
      *
      * @var RemoveNodeOperation[]
      */
-    protected $nodesRemove = [];
+    private array $nodesRemove = [];
 
     /**
      * Contains the list of property remove operations for the current session.
@@ -136,7 +120,7 @@ class ObjectManager
      *
      * @var RemovePropertyOperation[]
      */
-    protected $propertiesRemove = [];
+    private array $propertiesRemove = [];
 
     /**
      * Contains a list of nodes that where moved during this session.
@@ -155,12 +139,10 @@ class ObjectManager
      *
      * @var MoveNodeOperation[]
      */
-    protected $nodesMove = [];
+    private array $nodesMove = [];
 
     /**
      * Create the ObjectManager instance with associated session and transport.
-     *
-     * @param FactoryInterface $factory the object factory
      */
     public function __construct(FactoryInterface $factory, TransportInterface $transport, SessionInterface $session)
     {
@@ -178,13 +160,11 @@ class ObjectManager
      *
      * Uses the factory to create a Node object.
      *
-     * @param string $absPath the absolute path of the node to fetch
-     * @param string $class   The class of node to get. TODO: Is it sane to fetch
-     *                        data separately for Version and normal Node?
-     * @param object $object  A (prefetched) object (de-serialized json) from the backend
-     *                        only to be used if we get child nodes in one backend call
-     *
-     * @return NodeInterface
+     * @param string               $absPath the absolute path of the node to fetch
+     * @param string               $class   The class of node to get. TODO: Is it sane to fetch
+     *                                      data separately for Version and normal Node?
+     * @param \stdClass|array|null $object  A (prefetched) object (de-serialized json) from the backend
+     *                                      only to be used if we get child nodes in one backend call
      *
      * @throws ItemNotFoundException If nothing is found at that
      *                               absolute path
@@ -193,7 +173,7 @@ class ObjectManager
      *
      * @see Session::getNode()
      */
-    public function getNodeByPath($absPath, $class = Node::class, $object = null)
+    public function getNodeByPath(string $absPath, string $class = Node::class, $object = null): NodeInterface
     {
         $absPath = PathHelper::normalizePath($absPath);
 
@@ -246,24 +226,29 @@ class ObjectManager
      *
      * Uses the factory to create Node objects.
      *
-     * @param array      $absPaths   array containing the absolute paths of the nodes to
-     *                               fetch
-     * @param string     $class      The class of node to get. TODO: Is it sane to
-     *                               fetch data separately for Version and normal Node?
-     * @param array|null $typeFilter Node type list to skip some nodes
+     * @param array|\Iterator   $absPaths   array containing the absolute paths of the nodes to
+     *                                      fetch
+     * @param string            $class      The class of node to get. TODO: Is it sane to
+     *                                      fetch data separately for Version and normal Node?
+     * @param string|array|null $typeFilter Node type list to skip some nodes
      *
-     * @return Node[] Iterator that contains all found NodeInterface instances keyed by their path
+     * @return \Iterator|NodeInterface[] Iterator that contains all found NodeInterface instances keyed by their path
      *
      * @throws RepositoryException If the path is not absolute or not well-formed
      *
      * @see Session::getNodes()
      */
-    public function getNodesByPath($absPaths, $class = Node::class, $typeFilter = null)
+    public function getNodesByPath($absPaths, string $class = Node::class, $typeFilter = null): \Iterator
     {
         return new NodePathIterator($this, $absPaths, $class, $typeFilter);
     }
 
-    public function getNodesByPathAsArray($paths, $class = Node::class, $typeFilter = null)
+    /**
+     * @param string|array|null $typeFilter
+     *
+     * @return Node[]
+     */
+    public function getNodesByPathAsArray(array $paths, string $class = Node::class, $typeFilter = null): array
     {
         if (is_string($typeFilter)) {
             $typeFilter = [$typeFilter];
@@ -355,10 +340,8 @@ class ObjectManager
 
     /**
      * Check if a node is of any of the types listed in typeFilter.
-     *
-     * @return bool
      */
-    private function matchNodeType(NodeInterface $node, array $typeFilter)
+    private function matchNodeType(NodeInterface $node, array $typeFilter): bool
     {
         foreach ($typeFilter as $type) {
             if ($node->isNodeType($type)) {
@@ -375,10 +358,8 @@ class ObjectManager
      *
      * @param string|array $nameFilter
      * @param string|array $typeFilter
-     *
-     * @return \ArrayIterator
      */
-    public function filterChildNodeNamesByType(NodeInterface $node, $nameFilter, $typeFilter)
+    public function filterChildNodeNamesByType(NodeInterface $node, $nameFilter, $typeFilter): \ArrayIterator
     {
         if ($this->transport instanceof NodeTypeFilterInterface) {
             return $this->transport->filterChildNodeNamesByType($node->getPath(), $node->getNodeNames($nameFilter), $typeFilter);
@@ -396,13 +377,11 @@ class ObjectManager
      * @param string $class   The class of node to get. TODO: Is it sane to fetch
      *                        data separately for Version and normal Node?
      *
-     * @return string fetch path
-     *
      * @throws ItemNotFoundException if while walking backwards through the
      *                               operations log we see this path was moved away or got deleted
      * @throws RepositoryException
      */
-    protected function getFetchPath($absPath, $class)
+    private function getFetchPath(string $absPath, string $class): string
     {
         $absPath = PathHelper::normalizePath($absPath);
 
@@ -450,15 +429,11 @@ class ObjectManager
      * Currently Jackalope just loads the containing node and then returns
      * the requested property of the node instance.
      *
-     * @param string $absPath the absolute path of the property to create
-     *
-     * @return PropertyInterface
-     *
      * @throws ItemNotFoundException     if item is not found at this path
      * @throws \InvalidArgumentException
      * @throws RepositoryException
      */
-    public function getPropertyByPath($absPath)
+    public function getPropertyByPath(string $absPath): PropertyInterface
     {
         list($name, $nodep) = $this->getNodePath($absPath);
         // OPTIMIZE: should use transport->getProperty - when we implement this, we must make sure only one instance of each property ever exists. and do the moved/deleted checks that are done in node
@@ -474,10 +449,12 @@ class ObjectManager
      * Get all nodes of those properties in one batch, then collect the
      * properties of them.
      *
+     * @param array|\Iterator $absPaths
+     *
      * @return \ArrayIterator that contains all found PropertyInterface
      *                        instances keyed by their path
      */
-    public function getPropertiesByPath($absPaths)
+    public function getPropertiesByPath($absPaths): \ArrayIterator
     {
         // list of nodes to fetch
         $nodemap = [];
@@ -506,13 +483,11 @@ class ObjectManager
     /**
      * Get the node path for a property, and the property name.
      *
-     * @param string $absPath
-     *
      * @return array with name, node path
      *
      * @throws RepositoryException
      */
-    protected function getNodePath($absPath)
+    private function getNodePath(string $absPath): array
     {
         $absPath = PathHelper::normalizePath($absPath);
 
@@ -532,15 +507,12 @@ class ObjectManager
      * @param string $context context path
      * @param string $class   optional class name for the factory
      *
-     * @return NodeInterface The specified Node. if not available,
-     *                       ItemNotFoundException is thrown
-     *
      * @throws ItemNotFoundException If the path was not found
      * @throws RepositoryException   if another error occurs
      *
      * @see Session::getNode()
      */
-    public function getNode($relPath, $context, $class = Node::class)
+    public function getNode(string $relPath, string $context, string $class = Node::class): NodeInterface
     {
         $path = PathHelper::absolutizePath($relPath, $context);
 
@@ -550,11 +522,7 @@ class ObjectManager
     /**
      * Get the node identified by an uuid.
      *
-     * @param string $identifier uuid
-     * @param string $class      optional class name for factory
-     *
-     * @return NodeInterface The specified Node. if not available,
-     *                       ItemNotFoundException is thrown
+     * @param string $class optional class name for factory
      *
      * @throws ItemNotFoundException    If the path was not found
      * @throws RepositoryException      if another error occurs
@@ -562,7 +530,7 @@ class ObjectManager
      *
      * @see Session::getNodeByIdentifier()
      */
-    public function getNodeByIdentifier($identifier, $class = Node::class)
+    public function getNodeByIdentifier(string $identifier, string $class = Node::class): NodeInterface
     {
         if (empty($this->objectsByUuid[$identifier])) {
             $data = $this->transport->getNodeByIdentifier($identifier);
@@ -584,8 +552,8 @@ class ObjectManager
      * Note UUIDs that are not found will be ignored. Also, duplicate IDs
      * will be eliminated by nature of using the IDs as keys.
      *
-     * @param array  $identifiers UUIDs of nodes to retrieve
-     * @param string $class       optional class name for the factory
+     * @param array|\Iterator $identifiers
+     * @param string          $class       optional class name for the factory
      *
      * @return \ArrayIterator|Node[] Iterator of the specified nodes keyed by their unique ids
      *
@@ -593,7 +561,7 @@ class ObjectManager
      *
      * @see Session::getNodesByIdentifier()
      */
-    public function getNodesByIdentifier($identifiers, $class = Node::class)
+    public function getNodesByIdentifier($identifiers, string $class = Node::class): \ArrayIterator
     {
         $nodes = $fetchPaths = [];
 
@@ -637,14 +605,12 @@ class ObjectManager
     /**
      * Retrieves the stream for a binary value.
      *
-     * @param string $path The absolute path to the stream
-     *
      * @return resource
      *
      * @throws ItemNotFoundException
      * @throws RepositoryException
      */
-    public function getBinaryStream($path)
+    public function getBinaryStream(string $path)
     {
         return $this->transport->getBinaryStream($this->getFetchPath($path, Node::class));
     }
@@ -654,25 +620,21 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      *
-     * @param array $nodeTypes Empty for all or specify node types by name
-     *
-     * @return array|\DOMDocument containing the nodetype information
+     * @param string[] $nodeTypes Empty for all or specify node types by name
      */
-    public function getNodeTypes(array $nodeTypes = [])
+    public function getNodeTypes(array $nodeTypes = []): array
     {
         return $this->transport->getNodeTypes($nodeTypes);
     }
 
     /**
-     * Get a single nodetype.
+     * Get a list with a single node type.
      *
-     * @param string $nodeType the name of nodetype to get from the transport
-     *
-     * @return \DOMDocument containing the nodetype information
+     * @param string $nodeType the name of node type to get from the transport
      *
      * @see getNodeTypes()
      */
-    public function getNodeType($nodeType)
+    public function getNodeType(string $nodeType): array
     {
         return $this->getNodeTypes([$nodeType]);
     }
@@ -682,45 +644,45 @@ class ObjectManager
      *
      * This is only a proxy to the transport
      *
-     * @param array $types       an array of NodeTypeDefinitions
-     * @param bool  $allowUpdate whether to fail if node already exists or to
-     *                           update it
-     *
-     * @return bool true on success
+     * @param NodeTypeDefinitionInterface[] $types
+     * @param bool                          $allowUpdate whether to fail if node already exists or to
+     *                                                   update it
      *
      * @throws InvalidNodeTypeDefinitionException
      * @throws NodeTypeExistsException
      * @throws RepositoryException
      * @throws UnsupportedRepositoryOperationException
      */
-    public function registerNodeTypes($types, $allowUpdate)
+    public function registerNodeTypes(array $types, bool $allowUpdate): void
     {
         if ($this->transport instanceof NodeTypeManagementInterface) {
-            return $this->transport->registerNodeTypes($types, $allowUpdate);
+            $this->transport->registerNodeTypes($types, $allowUpdate);
+
+            return;
         }
 
         if ($this->transport instanceof NodeTypeCndManagementInterface) {
             $writer = new CndWriter($this->session->getWorkspace()->getNamespaceRegistry());
 
-            return $this->transport->registerNodeTypesCnd($writer->writeString($types), $allowUpdate);
+            $this->transport->registerNodeTypesCnd($writer->writeString($types), $allowUpdate);
+
+            return;
         }
 
-        throw new UnsupportedRepositoryOperationException('Transport does not support registering node types');
+        throw new UnsupportedRepositoryOperationException('Transport of class '.get_class($this->transport).' does not support registering node types');
     }
 
     /**
      * Returns all accessible REFERENCE properties in the workspace that point
      * to the node.
      *
-     * @param string $path the path of the referenced node
-     * @param string $name name of referring REFERENCE properties to be
-     *                     returned; if null then all referring REFERENCEs are returned
-     *
-     * @return \ArrayIterator
+     * @param string      $path the path of the referenced node
+     * @param string|null $name name of referring REFERENCE properties to be
+     *                          returned; if null then all referring REFERENCEs are returned
      *
      * @see Node::getReferences()
      */
-    public function getReferences($path, $name = null)
+    public function getReferences(string $path, ?string $name = null): \ArrayIterator
     {
         $references = $this->transport->getReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -731,15 +693,13 @@ class ObjectManager
      * Returns all accessible WEAKREFERENCE properties in the workspace that
      * point to the node.
      *
-     * @param string $path the path of the referenced node
-     * @param string $name name of referring WEAKREFERENCE properties to be
-     *                     returned; if null then all referring WEAKREFERENCEs are returned
-     *
-     * @return \ArrayIterator
+     * @param string      $path the path of the referenced node
+     * @param string|null $name name of referring WEAKREFERENCE properties to be
+     *                          returned; if null then all referring WEAKREFERENCEs are returned
      *
      * @see Node::getWeakReferences()
      */
-    public function getWeakReferences($path, $name = null)
+    public function getWeakReferences(string $path, ?string $name = null): \ArrayIterator
     {
         $references = $this->transport->getWeakReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -754,7 +714,7 @@ class ObjectManager
      *
      * @return \ArrayIterator
      */
-    protected function pathArrayToPropertiesIterator($propertyPaths)
+    private function pathArrayToPropertiesIterator($propertyPaths): \Iterator
     {
         // FIXME: this will break if we have non-persisted move
         return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));
@@ -780,7 +740,7 @@ class ObjectManager
      *
      * @see NodeTypeManagerInterface::registerNodeTypesCnd
      */
-    public function registerNodeTypesCnd($cnd, $allowUpdate)
+    public function registerNodeTypesCnd(string $cnd, bool $allowUpdate)
     {
         if ($this->transport instanceof NodeTypeCndManagementInterface) {
             return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
@@ -815,7 +775,7 @@ class ObjectManager
      * transaction, the session is responsible to start a transaction to make
      * sure the backend state does not get messed up in case of error.
      */
-    public function save()
+    public function save(): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -897,7 +857,7 @@ class ObjectManager
      *
      * @throws \Exception
      */
-    protected function executeOperations(array $operations)
+    private function executeOperations(array $operations): void
     {
         $lastType = null;
         $batch = [];
@@ -931,12 +891,11 @@ class ObjectManager
     /**
      * Execute a batch of operations of one type.
      *
-     * @param int         $type       type of the operations to be executed
      * @param Operation[] $operations list of same type operations
      *
      * @throws \Exception
      */
-    protected function executeBatch($type, $operations)
+    private function executeBatch(string $type, array $operations): void
     {
         switch ($type) {
             case Operation::ADD_NODE:
@@ -961,16 +920,14 @@ class ObjectManager
      *
      * TODO: document more clearly
      *
-     * @see VersionManager::checkin
-     *
-     * @param string $absPath
-     *
      * @return VersionInterface node version
      *
      * @throws ItemNotFoundException
      * @throws RepositoryException
+     *
+     *@see VersionManager::checkin
      */
-    public function checkin($absPath)
+    public function checkin(string $absPath): VersionInterface
     {
         $path = $this->transport->checkinItem($absPath); // FIXME: what about pending move operations?
 
@@ -984,7 +941,7 @@ class ObjectManager
      *
      * @see VersionManager::checkout
      */
-    public function checkout($absPath)
+    public function checkout(string $absPath): void
     {
         $this->transport->checkoutItem($absPath); // FIXME: what about pending move operations?
     }
@@ -992,7 +949,7 @@ class ObjectManager
     /**
      * @see VersioningInterface::addVersionLabel
      */
-    public function addVersionLabel($path, $label, $moveLabel)
+    public function addVersionLabel(string $path, string $label, bool $moveLabel): void
     {
         $this->transport->addVersionLabel($path, $label, $moveLabel);
     }
@@ -1000,7 +957,7 @@ class ObjectManager
     /**
      * @see VersioningInterface::addVersionLabel
      */
-    public function removeVersionLabel($path, $label)
+    public function removeVersionLabel(string $path, string $label): void
     {
         $this->transport->removeVersionLabel($path, $label);
     }
@@ -1012,12 +969,10 @@ class ObjectManager
      *
      * TODO: This is incomplete. Needs batch processing to implement restoring an array of versions
      *
-     * @param bool   $removeExisting whether to remove the existing current
-     *                               version or create a new version after that version
-     * @param string $versionPath
-     * @param string $nodePath       absolute path to the node
+     * @param bool $removeExisting whether to remove the existing current
+     *                             version or create a new version after that version
      */
-    public function restore($removeExisting, $versionPath, $nodePath)
+    public function restore(bool $removeExisting, string $versionPath, string $nodePath)
     {
         // TODO: handle pending move operations?
 
@@ -1043,7 +998,7 @@ class ObjectManager
      * @throws ReferentialIntegrityException
      * @throws VersionException
      */
-    public function removeVersion($versionPath, $versionName)
+    public function removeVersion(string $versionPath, string $versionName): void
     {
         $this->transport->removeVersion($versionPath, $versionName);
 
@@ -1075,12 +1030,9 @@ class ObjectManager
     /**
      * Refresh cached items from the backend.
      *
-     * @param bool $keepChanges whether to keep local changes or discard
-     *                          them
-     *
      * @see Session::refresh()
      */
-    public function refresh($keepChanges)
+    public function refresh(bool $keepChanges): void
     {
         if (!$keepChanges) {
             // revert all scheduled add, remove and move operations
@@ -1153,11 +1105,9 @@ class ObjectManager
     /**
      * Determine if any object is modified and not saved to storage.
      *
-     * @return bool true if this session has any pending changes
-     *
      * @see Session::hasPendingChanges()
      */
-    public function hasPendingChanges()
+    public function hasPendingChanges(): bool
     {
         if (count($this->operationsLog)) {
             return true;
@@ -1183,7 +1133,7 @@ class ObjectManager
      *
      * @see ObjectManager::removeItem()
      */
-    protected function performPropertyRemove($absPath, PropertyInterface $property, $sessionOperation = true)
+    private function performPropertyRemove(string $absPath, PropertyInterface $property, bool $sessionOperation = true): void
     {
         if ($sessionOperation) {
             if ($property->isNew()) {
@@ -1204,16 +1154,15 @@ class ObjectManager
     /**
      * Remove the item at absPath from local cache and keep information for undo.
      *
-     * @param string        $absPath          The absolute path of the item that is being
-     *                                        removed. Note that contrary to removeItem(), this path is the full
-     *                                        path for a property too.
-     * @param NodeInterface $node             The item that is being removed
-     * @param bool          $sessionOperation whether the node removal should be
-     *                                        dispatched immediately or needs to be scheduled in the operations log
+     * @param string $absPath          The absolute path of the item that is being
+     *                                 removed. Note that contrary to removeItem(), this path is the full
+     *                                 path for a property too.
+     * @param bool   $sessionOperation whether the node removal should be
+     *                                 dispatched immediately or needs to be scheduled in the operations log
      *
      * @see ObjectManager::removeItem()
      */
-    protected function performNodeRemove($absPath, NodeInterface $node, $sessionOperation = true, $cascading = false)
+    private function performNodeRemove(string $absPath, NodeInterface $node, bool $sessionOperation = true, bool $cascading = false): void
     {
         if (!$sessionOperation && !$cascading) {
             $this->transport->deleteNodeImmediately($absPath);
@@ -1241,7 +1190,7 @@ class ObjectManager
      * @param string $absPath          parent node that was removed
      * @param bool   $sessionOperation to carry over the session operation information
      */
-    protected function cascadeDelete($absPath, $sessionOperation = true)
+    private function cascadeDelete(string $absPath, bool $sessionOperation = true): void
     {
         foreach ($this->objectsByPath[Node::class] as $path => $node) {
             if (0 === strpos($path, "$absPath/")) {
@@ -1262,7 +1211,7 @@ class ObjectManager
      *
      * @param string $absPath parent version node that was removed
      */
-    protected function cascadeDeleteVersion($absPath)
+    private function cascadeDeleteVersion(string $absPath): void
     {
         // delete all versions, similar to cascadeDelete
         foreach ($this->objectsByPath[Version::class] as $path => $node) {
@@ -1288,17 +1237,17 @@ class ObjectManager
      * If property is set, the path denotes the node containing the property,
      * otherwise the node at path is removed.
      *
-     * @param string            $absPath  the absolute path to the node to be removed,
-     *                                    including the node name
-     * @param PropertyInterface $property optional, property instance to delete from the
-     *                                    given node path. If set, absPath is the path to the node containing
-     *                                    this property.
+     * @param string                 $absPath  the absolute path to the node to be removed,
+     *                                         including the node name
+     * @param PropertyInterface|null $property optional, property instance to delete from the
+     *                                         given node path. If set, absPath is the path to the node containing
+     *                                         this property.
      *
      * @throws RepositoryException If node cannot be found at given path
      *
      * @see Item::remove()
      */
-    public function removeItem($absPath, PropertyInterface $property = null)
+    public function removeItem(string $absPath, ?PropertyInterface $property = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1329,7 +1278,7 @@ class ObjectManager
      * @param string $curPath Absolute path of the node to rewrite
      * @param string $newPath The new absolute path
      */
-    protected function rewriteItemPaths($curPath, $newPath)
+    private function rewriteItemPaths(string $curPath, string $newPath): void
     {
         // update internal references in parent
         $parentCurPath = PathHelper::getParentPath($curPath);
@@ -1382,7 +1331,7 @@ class ObjectManager
      *
      * @see Session::move()
      */
-    public function moveNode($srcAbsPath, $destAbsPath)
+    public function moveNode(string $srcAbsPath, string $destAbsPath): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1415,7 +1364,7 @@ class ObjectManager
      *
      * @see Workspace::move()
      */
-    public function moveNodeImmediately($srcAbsPath, $destAbsPath)
+    public function moveNodeImmediately(string $srcAbsPath, string $destAbsPath): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1435,7 +1384,7 @@ class ObjectManager
      *
      * @see Workspace::removeItem
      */
-    public function removeItemImmediately($absPath)
+    public function removeItemImmediately(string $absPath): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1457,11 +1406,11 @@ class ObjectManager
     /**
      * Implement the workspace copy method. It is dispatched immediately.
      *
-     * @param string $srcAbsPath   the path of the node to be copied
-     * @param string $destAbsPath  the location to which the node at srcAbsPath
-     *                             is to be copied in this workspace
-     * @param string $srcWorkspace the name of the workspace from which the
-     *                             copy is to be made
+     * @param string      $srcAbsPath   the path of the node to be copied
+     * @param string      $destAbsPath  the location to which the node at srcAbsPath
+     *                                  is to be copied in this workspace
+     * @param string|null $srcWorkspace the name of the workspace from which the
+     *                                  copy is to be made
      *
      * @throws UnsupportedRepositoryOperationException
      * @throws RepositoryException
@@ -1469,7 +1418,7 @@ class ObjectManager
      *
      * @see Workspace::copy()
      */
-    public function copyNodeImmediately($srcAbsPath, $destAbsPath, $srcWorkspace)
+    public function copyNodeImmediately(string $srcAbsPath, string $destAbsPath, ?string $srcWorkspace = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1490,10 +1439,9 @@ class ObjectManager
      *      http://www.day.com/specs/jcr/2.0/3_Repository_Model.html#3.10%20Corresponding%20Nodes
      *      http://www.day.com/specs/jcr/2.0/10_Writing.html#10.8%20Cloning%20and%20Updating%20Nodes.
      *
-     * @param string $srcWorkspace   the name of the workspace from which the copy is to be made
-     * @param string $srcAbsPath     the path of the node to be cloned
-     * @param string $destAbsPath    the location to which the node at srcAbsPath is to be cloned in this workspace
-     * @param bool   $removeExisting
+     * @param string $srcWorkspace the name of the workspace from which the copy is to be made
+     * @param string $srcAbsPath   the path of the node to be cloned
+     * @param string $destAbsPath  the location to which the node at srcAbsPath is to be cloned in this workspace
      *
      * @throws UnsupportedRepositoryOperationException
      * @throws RepositoryException
@@ -1501,7 +1449,7 @@ class ObjectManager
      *
      * @see Workspace::cloneFrom()
      */
-    public function cloneFromImmediately($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting)
+    public function cloneFromImmediately(string $srcWorkspace, string $srcAbsPath, string $destAbsPath, bool $removeExisting): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1526,7 +1474,7 @@ class ObjectManager
      * @throws UnsupportedRepositoryOperationException
      * @throws ItemExistsException                     if a node already exists at that path
      */
-    public function addNode($absPath, NodeInterface $node)
+    public function addNode(string $absPath, NodeInterface $node): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1556,13 +1504,11 @@ class ObjectManager
      * This function will return an array containing zero, one or more of the
      * above strings.
      *
-     * @param string $absPath absolute path to node to get permissions for it
-     *
-     * @return array of string
+     * @return string[]
      *
      * @throws UnsupportedRepositoryOperationException
      */
-    public function getPermissions($absPath)
+    public function getPermissions(string $absPath): array
     {
         if (!$this->transport instanceof PermissionInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support permissions');
@@ -1579,7 +1525,7 @@ class ObjectManager
      *
      * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
      */
-    public function clear()
+    public function clear(): void
     {
         $this->objectsByPath = [Node::class => []];
         $this->objectsByUuid = [];
@@ -1592,10 +1538,8 @@ class ObjectManager
     /**
      * Implementation specific: Transport is used elsewhere, provide it here
      * for Session.
-     *
-     * @return TransportInterface
      */
-    public function getTransport()
+    public function getTransport(): TransportInterface
     {
         return $this->transport;
     }
@@ -1607,7 +1551,7 @@ class ObjectManager
      *                                   encounters an unexpected error condition
      * @throws \InvalidArgumentException
      */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->notifyItems('beginTransaction');
         $this->transport->beginTransaction();
@@ -1626,7 +1570,7 @@ class ObjectManager
      * @throws RepositoryException   if the transaction implementation
      *                               encounters an unexpected error condition
      */
-    public function commitTransaction()
+    public function commitTransaction(): void
     {
         $this->notifyItems('commitTransaction');
         $this->transport->commitTransaction();
@@ -1646,7 +1590,7 @@ class ObjectManager
      * @throws RepositoryException   if the transaction implementation
      *                               encounters an unexpected error condition
      */
-    public function rollbackTransaction()
+    public function rollbackTransaction(): void
     {
         $this->transport->rollbackTransaction();
         $this->notifyItems('rollbackTransaction');
@@ -1663,7 +1607,7 @@ class ObjectManager
      *
      * @throws \InvalidArgumentException if the passed $method is not valid
      */
-    protected function notifyItems($method)
+    private function notifyItems(string $method): void
     {
         if (!in_array($method, ['beginTransaction', 'commitTransaction', 'rollbackTransaction'])) {
             throw new \InvalidArgumentException("Unknown notification method '$method'");
@@ -1691,14 +1635,12 @@ class ObjectManager
      * This is a simplistic check to be used by the Node to determine if it
      * should not show one of the children the backend told it would exist.
      *
-     * @param string $absPath The absolute path of the node
-     *
      * @return bool true if the node has an unsaved move operation, false
      *              otherwise
      *
      * @see Node::__construct
      */
-    public function isNodeMoved($absPath)
+    public function isNodeMoved(string $absPath): bool
     {
         return array_key_exists($absPath, $this->nodesMove);
     }
@@ -1706,11 +1648,9 @@ class ObjectManager
     /**
      * Get the src path of a move operation knowing the target path.
      *
-     * @param string $dstPath
-     *
      * @return string|bool the source path if found, false otherwise
      */
-    private function getMoveSrcPath($dstPath)
+    private function getMoveSrcPath(string $dstPath)
     {
         foreach ($this->nodesMove as $operation) {
             if ($operation->dstPath === $dstPath) {
@@ -1728,13 +1668,11 @@ class ObjectManager
      * This is a simplistic check to be used by the Node to determine if it
      * should not show one of the children the backend told it would exist.
      *
-     * @param string $absPath The absolute path of the node
-     *
      * @return bool true if the current changed state has no node at this place
      *
      * @see Node::__construct
      */
-    public function isNodeDeleted($absPath)
+    public function isNodeDeleted(string $absPath): bool
     {
         return array_key_exists($absPath, $this->nodesRemove)
             && !(array_key_exists($absPath, $this->nodesAdd) && !$this->nodesAdd[$absPath]->skip
@@ -1747,13 +1685,9 @@ class ObjectManager
      * Note that this method will also return deleted node objects so you can
      * use them in refresh operations.
      *
-     * @param string $absPath the absolute path to the node to fetch from cache
-     *
-     * @return NodeInterface or null
-     *
      * @see Node::refresh()
      */
-    public function getCachedNode($absPath, $class = Node::class)
+    public function getCachedNode(string $absPath, string $class = Node::class): ?NodeInterface
     {
         if (isset($this->objectsByPath[$class][$absPath])) {
             return $this->objectsByPath[$class][$absPath];
@@ -1772,13 +1706,8 @@ class ObjectManager
      *
      * Note that this method will also return deleted node objects so you can
      * use them in refresh operations.
-     *
-     * @param string $absPath
-     * @param string $class
-     *
-     * @return \ArrayIterator
      */
-    public function getCachedDescendants($absPath, $class = Node::class)
+    public function getCachedDescendants(string $absPath, string $class = Node::class): \Iterator
     {
         $descendants = [];
 
@@ -1800,12 +1729,8 @@ class ObjectManager
      * removed from the map.
      *
      * @see getCachedNode
-     *
-     * @param string $class
-     *
-     * @return NodeInterface or null
      */
-    public function getCachedNodeByUuid($uuid, $class = Node::class)
+    public function getCachedNodeByUuid(string $uuid, string $class = Node::class): ?NodeInterface
     {
         if (array_key_exists($uuid, $this->objectsByUuid)) {
             return $this->getCachedNode($this->objectsByUuid[$uuid], $class);
@@ -1821,14 +1746,13 @@ class ObjectManager
      * This is used by Node::refresh() to let the object manager notify
      * deleted nodes or detect cases when not to delete.
      *
-     * @param string $absPath     The absolute path of the item
-     * @param bool   $keepChanges Whether to keep local changes or forget
-     *                            them
+     * @param bool $keepChanges Whether to keep local changes or forget
+     *                          them
      *
      * @return bool true if the node is to be forgotten by its parent (deleted or
      *              moved away), false if child should be kept
      */
-    public function purgeDisappearedNode($absPath, $keepChanges)
+    public function purgeDisappearedNode(string $absPath, bool $keepChanges): bool
     {
         if (array_key_exists($absPath, $this->objectsByPath[Node::class])) {
             $item = $this->objectsByPath[Node::class][$absPath];
@@ -1858,11 +1782,8 @@ class ObjectManager
      *
      * This is called when setting the UUID property of a node to ensure that
      * it can be subsequently referenced by the UUID.
-     *
-     * @param string $uuid
-     * @param string $absPath
      */
-    public function registerUuid($uuid, $absPath)
+    public function registerUuid(string $uuid, string $absPath): void
     {
         if (array_key_exists($uuid, $this->objectsByUuid)) {
             throw new \RuntimeException(sprintf(

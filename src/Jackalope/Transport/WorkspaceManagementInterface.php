@@ -31,9 +31,9 @@ interface WorkspaceManagementInterface extends TransportInterface
      *
      * The new workspace can be accessed through a login specifying its name.
      *
-     * @param string $name         a String, the name of the new workspace
-     * @param string $srcWorkspace the name of the workspace from which the new
-     *                             workspace is to be cloned
+     * @param string      $name         a String, the name of the new workspace
+     * @param string|null $srcWorkspace the name of the workspace from which the new workspace
+     *                                  is to be cloned. Pass null to not clone a workspace.
      *
      * @throws AccessDeniedException                   if the session through which this
      *                                                 Workspace object was acquired does not have sufficient access to
@@ -43,7 +43,7 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @throws NoSuchWorkspaceException                if $srcWorkspace does not exist
      * @throws RepositoryException                     if another error occurs
      */
-    public function createWorkspace($name, $srcWorkspace = null);
+    public function createWorkspace(string $name, ?string $srcWorkspace = null): void;
 
     /**
      * Deletes the workspace with the specified name from the repository,
@@ -55,5 +55,5 @@ interface WorkspaceManagementInterface extends TransportInterface
      *                                                 does not support the deletion of workspaces
      * @throws RepositoryException                     if another error occurs
      */
-    public function deleteWorkspace($name);
+    public function deleteWorkspace(string $name): void;
 }

@@ -2,6 +2,7 @@
 
 namespace Jackalope\Query\QOM;
 
+use PHPCR\Query\QOM\ConstraintInterface;
 use PHPCR\Query\QOM\DescendantNodeInterface;
 
 /**
@@ -12,31 +13,13 @@ use PHPCR\Query\QOM\DescendantNodeInterface;
  *
  * @api
  */
-class DescendantNodeConstraint implements DescendantNodeInterface
+final class DescendantNodeConstraint implements DescendantNodeInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
+    private string $ancestorPath;
 
-    /**
-     * @var string
-     */
-    protected $ancestorPath;
-
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     * @param string $path
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName, $path)
+    public function __construct(string $selectorName, string $path)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
         $this->selectorName = $selectorName;
         $this->ancestorPath = $path;
     }
@@ -46,7 +29,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }
@@ -56,7 +39,7 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      *
      * @api
      */
-    public function getAncestorPath()
+    public function getAncestorPath(): string
     {
         return $this->ancestorPath;
     }
@@ -64,11 +47,11 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return [$this];
     }

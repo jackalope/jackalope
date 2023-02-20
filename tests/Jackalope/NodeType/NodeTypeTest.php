@@ -13,7 +13,7 @@ use PHPCR\Version\OnParentVersionAction;
  */
 class NodeTypeTest extends TestCase
 {
-    public function testNodeGetSuperTypesMultiple()
+    public function testNodeGetSuperTypesMultiple(): void
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
@@ -23,7 +23,7 @@ class NodeTypeTest extends TestCase
         $this->assertEquals($superTypes, $superTypes2);
     }
 
-    public function testNodeTypeMethods()
+    public function testNodeTypeMethods(): void
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:configuration');
@@ -88,7 +88,7 @@ class NodeTypeTest extends TestCase
         }
     }
 
-    public function testGetDefinedChildNodesAndNodeDefinitions()
+    public function testGetDefinedChildNodesAndNodeDefinitions(): void
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:folder');
@@ -126,7 +126,7 @@ class NodeTypeTest extends TestCase
         $this->assertTrue($node->allowsSameNameSiblings());
     }
 
-    public function testGetDefinedPropertysAndPropertyDefinition()
+    public function testGetDefinedPropertysAndPropertyDefinition(): void
     {
         $ntm = $this->getNodeTypeManager();
         $nt = $ntm->getNodeType('nt:file');

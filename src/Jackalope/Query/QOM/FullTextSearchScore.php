@@ -12,26 +12,12 @@ use PHPCR\Query\QOM\FullTextSearchScoreInterface;
  *
  * @api
  */
-class FullTextSearchScore implements FullTextSearchScoreInterface
+final class FullTextSearchScore implements FullTextSearchScoreInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
 
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName)
+    public function __construct(string $selectorName)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
-
         $this->selectorName = $selectorName;
     }
 
@@ -40,7 +26,7 @@ class FullTextSearchScore implements FullTextSearchScoreInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }

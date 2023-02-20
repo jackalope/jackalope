@@ -12,28 +12,15 @@ use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
  *
  * @api
  */
-class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterface
+final class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterface
 {
-    /**
-     * @var string
-     */
-    protected $descendantSelectorName;
+    private string $descendantSelectorName;
+    private string $ancestorSelectorNode;
 
-    /**
-     * @var string
-     */
-    protected $ancestorSelectorNode;
-
-    /**
-     * Constructor.
-     *
-     * @param string $descendantSelectorName
-     * @param string $ancestorSelectorName
-     */
-    public function __construct($descendantSelectorName, $ancestorSelectorName)
+    public function __construct(string $descendantSelectorName, string $ancestorSelectorName)
     {
-        $this->ancestorSelectorNode = (string) $ancestorSelectorName;
-        $this->descendantSelectorName = (string) $descendantSelectorName;
+        $this->ancestorSelectorNode = $ancestorSelectorName;
+        $this->descendantSelectorName = $descendantSelectorName;
     }
 
     /**
@@ -41,7 +28,7 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      *
      * @api
      */
-    public function getDescendantSelectorName()
+    public function getDescendantSelectorName(): string
     {
         return $this->descendantSelectorName;
     }
@@ -51,7 +38,7 @@ class DescendantNodeJoinCondition implements DescendantNodeJoinConditionInterfac
      *
      * @api
      */
-    public function getAncestorSelectorName()
+    public function getAncestorSelectorName(): string
     {
         return $this->ancestorSelectorNode;
     }

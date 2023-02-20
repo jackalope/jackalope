@@ -10,22 +10,16 @@ namespace Jackalope;
  */
 class Factory implements FactoryInterface
 {
-    /**
-     * @var array
-     */
-    protected $classCache = [];
+    private array $classCache = [];
 
-    /**
-     * @var array
-     */
-    protected $reflectionCache = [];
+    private array $reflectionCache = [];
 
     /**
      * {@inheritDoc}
      *
      * @throws \InvalidArgumentException
      */
-    public function get($name, array $params = [])
+    public function get(string $name, array $params = [])
     {
         if (isset($this->classCache[$name])) {
             $name = $this->classCache[$name];

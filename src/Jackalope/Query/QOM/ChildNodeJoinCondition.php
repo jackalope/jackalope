@@ -14,26 +14,13 @@ use PHPCR\Query\QOM\ChildNodeJoinConditionInterface;
  */
 class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
 {
-    /**
-     * @var string
-     */
-    protected $childNodeSelectorName;
+    private string $childNodeSelectorName;
+    private string $parentSelectorName;
 
-    /**
-     * @var string
-     */
-    protected $parentSelectorName;
-
-    /**
-     * Constructor.
-     *
-     * @param string $childSelectorName
-     * @param string $parentSelectorName
-     */
-    public function __construct($childSelectorName, $parentSelectorName)
+    public function __construct(string $childSelectorName, string $parentSelectorName)
     {
-        $this->childNodeSelectorName = (string) $childSelectorName;
-        $this->parentSelectorName = (string) $parentSelectorName;
+        $this->childNodeSelectorName = $childSelectorName;
+        $this->parentSelectorName = $parentSelectorName;
     }
 
     /**
@@ -41,7 +28,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      *
      * @api
      */
-    public function getChildSelectorName()
+    public function getChildSelectorName(): string
     {
         return $this->childNodeSelectorName;
     }
@@ -51,7 +38,7 @@ class ChildNodeJoinCondition implements ChildNodeJoinConditionInterface
      *
      * @api
      */
-    public function getParentSelectorName()
+    public function getParentSelectorName(): string
     {
         return $this->parentSelectorName;
     }

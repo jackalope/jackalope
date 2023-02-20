@@ -21,22 +21,19 @@ use PHPCR\SessionInterface;
  */
 class EventFilter implements EventFilterInterface
 {
-    private $eventTypes = null;
+    private ?int $eventTypes = null;
 
-    private $absPath = null;
+    private ?string $absPath = null;
 
-    private $isDeep = false;
+    private bool $isDeep = false;
 
-    private $identifiers = null;
+    private ?array $identifiers = null;
 
-    private $nodeTypes = null;
+    private ?array $nodeTypes = null;
 
-    private $noLocal = false;
+    private bool $noLocal = false;
 
-    /**
-     * @var SessionInterface
-     */
-    private $session;
+    private SessionInterface $session;
 
     public function __construct(FactoryInterface $factory, SessionInterface $session)
     {
@@ -48,35 +45,29 @@ class EventFilter implements EventFilterInterface
      */
     public function match(EventInterface $event)
     {
-        if (null !== $this->eventTypes) {
-            if ($this->skipByType($event)) {
-                return false;
-            }
+        if ((null !== $this->eventTypes) && $this->skipByType($event)) {
+            return false;
         }
 
-        if (null !== $this->absPath) {
-            if ($this->skipByPath($event)) {
-                return false;
-            }
+        if ((null !== $this->absPath) && $this->skipByPath($event)) {
+            return false;
         }
 
-        if (null !== $this->identifiers) {
-            if ($this->skipByIdentifiers($event)) {
-                return false;
-            }
+        if ((null !== $this->identifiers) && $this->skipByIdentifiers($event)) {
+            return false;
         }
 
-        if (null !== $this->nodeTypes) {
-            if ($this->skipByNodeTypes($event)) {
-                return false;
-            }
+        if ((null !== $this->nodeTypes) && $this->skipByNodeTypes($event)) {
+            return false;
         }
 
         if ($this->noLocal) {
             throw new NotImplementedException();
+            /*
             if ($this->skipByNoLocal($event)) {
                 return false;
             }
+            */
         }
 
         return true;
@@ -84,52 +75,41 @@ class EventFilter implements EventFilterInterface
 
     /**
      * Bitwise and on the event type.
-     *
-     * @return bool
      */
-    private function skipByType(EventInterface $event)
+    private function skipByType(EventInterface $event): bool
     {
         return !($event->getType() & $this->eventTypes);
     }
 
-    /**
-     * @return bool
-     */
-    private function skipByPath(EventInterface $event)
+    private function skipByPath(EventInterface $event): bool
     {
         $eventPath = $event->getPath();
         if (!$this->isDeep && $eventPath !== $this->absPath) {
             // isDeep is false and the path is not the searched path
             return true;
         }
-
-        if (strlen($eventPath) < strlen($this->absPath)
-            || substr($eventPath, 0, strlen($this->absPath)) != $this->absPath
-        ) {
-            // the node path does not start with the given path
-            return true;
+        if (null === $this->absPath) {
+            return false;
         }
 
-        return false;
+        // the node path does not start with the given path
+        return null === $eventPath
+            || strlen($eventPath) < strlen($this->absPath)
+            || 0 !== strpos($eventPath, $this->absPath)
+        ;
     }
 
-    /**
-     * @return bool
-     */
-    private function skipByIdentifiers(EventInterface $event)
+    private function skipByIdentifiers(EventInterface $event): bool
     {
         if (!$identifier = $event->getIdentifier()) {
             // Some events (like PERSIST) do not provide an identifier
             return true;
         }
 
-        return !in_array($identifier, $this->identifiers);
+        return !in_array($identifier, $this->identifiers, true);
     }
 
-    /**
-     * @return bool
-     */
-    private function skipByNodeTypes(EventInterface $event)
+    private function skipByNodeTypes(EventInterface $event): bool
     {
         if (!$path = $event->getPath()) {
             // Some events (like PERSIST) do not provide an identifier
@@ -157,7 +137,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function setEventTypes($eventTypes)
+    public function setEventTypes($eventTypes): self
     {
         $this->eventTypes = $eventTypes;
 
@@ -169,7 +149,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getEventTypes()
+    public function getEventTypes(): ?int
     {
         return $this->eventTypes;
     }
@@ -179,7 +159,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function setAbsPath($absPath)
+    public function setAbsPath($absPath): self
     {
         $this->absPath = $absPath;
 
@@ -191,7 +171,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getAbsPath()
+    public function getAbsPath(): ?string
     {
         return $this->absPath;
     }
@@ -201,7 +181,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function setIsDeep($isDeep)
+    public function setIsDeep($isDeep): self
     {
         $this->isDeep = $isDeep;
 
@@ -213,7 +193,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getIsDeep()
+    public function getIsDeep(): bool
     {
         return $this->isDeep;
     }
@@ -223,7 +203,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function setIdentifiers(array $identifiers)
+    public function setIdentifiers(array $identifiers): self
     {
         $this->identifiers = $identifiers;
 
@@ -235,7 +215,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getIdentifiers()
+    public function getIdentifiers(): ?array
     {
         return $this->identifiers;
     }
@@ -245,7 +225,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function setNodeTypes(array $nodeTypes)
+    public function setNodeTypes(array $nodeTypes): self
     {
         $this->nodeTypes = $nodeTypes;
 
@@ -257,7 +237,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getNodeTypes()
+    public function getNodeTypes(): ?array
     {
         return $this->nodeTypes;
     }
@@ -269,10 +249,10 @@ class EventFilter implements EventFilterInterface
      */
     public function setNoLocal($noLocal)
     {
-        throw new NotImplementedException('TODO: how can we figure out if an event was local?');
         $this->noLocal = $noLocal;
 
-        return $this;
+        throw new NotImplementedException('TODO: how can we figure out if an event was local?');
+        // return $this;
     }
 
     /**
@@ -280,7 +260,7 @@ class EventFilter implements EventFilterInterface
      *
      * @api
      */
-    public function getNoLocal()
+    public function getNoLocal(): bool
     {
         return $this->noLocal;
     }

@@ -42,5 +42,5 @@ interface FactoryInterface
      *
      * @return object
      */
-    public function get($name, array $params = []);
+    public function get(string $name, array $params = []);
 }

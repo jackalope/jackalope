@@ -8,7 +8,7 @@ use PHPCR\RepositoryException;
 
 class PropertyTest extends TestCase
 {
-    public function provideGetNode()
+    public function provideGetNode(): array
     {
         return [
             [
@@ -35,21 +35,20 @@ class PropertyTest extends TestCase
     /**
      * @dataProvider provideGetNode
      */
-    public function testGetNode($values, $nodeUuids, $exceptionMessage = null)
+    public function testGetNode($values, $nodeUuids, $exceptionMessage = null): void
     {
         if ($exceptionMessage) {
             $this->expectException(RepositoryException::class);
             $this->expectExceptionMessage($exceptionMessage);
         }
 
-        $nodes = new \ArrayObject();
+        $nodes = [];
 
         foreach ($nodeUuids as $nodeUuid) {
             $nodes[$nodeUuid] = $this->getNodeMock();
             $nodes[$nodeUuid]
-                ->expects($this->any())
                 ->method('getIdentifier')
-                ->will($this->returnValue($nodeUuid))
+                ->willReturn($nodeUuid)
             ;
         }
 
@@ -57,22 +56,23 @@ class PropertyTest extends TestCase
 
         $factory = new Factory();
         $session = $this->getSessionMock();
-        $objectManager = $this->getObjectManagerMock([
-            'getNodesByIdentifier' => $nodes,
-        ]);
+        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager
+            ->method('getNodesByIdentifier')
+            ->willReturn(new \ArrayIterator($nodes))
+        ;
 
         $property = new Property($factory, $data, '/path/to', $session, $objectManager);
 
         $actualNodes = $property->getNode();
         $this->assertIsArray($actualNodes);
-        $expectedNodes = iterator_to_array($nodes);
-        $intersect = array_uintersect($expectedNodes, $actualNodes, function (NodeInterface $node1, NodeInterface $node2) {
+        $intersect = array_uintersect($nodes, $actualNodes, static function (NodeInterface $node1, NodeInterface $node2) {
             return $node1 === $node2 ? 1 : 0;
         });
-        $this->assertSame(count($expectedNodes), count($intersect));
+        $this->assertCount(count($nodes), $intersect);
     }
 
-    public function testTypeInstances()
+    public function testTypeInstances(): void
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*
@@ -109,7 +109,7 @@ class PropertyTest extends TestCase
         */
     }
 
-    public function testBaseConversions()
+    public function testBaseConversions(): void
     {
         $this->markTestSkipped('Port this over to test property types and the helper type conversions');
         /*

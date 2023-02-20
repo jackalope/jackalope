@@ -13,21 +13,11 @@ use PHPCR\Query\QOM\ConstraintInterface;
  *
  * @api
  */
-class AndConstraint implements AndInterface
+final class AndConstraint implements AndInterface
 {
-    /**
-     * @var ConstraintInterface
-     */
-    protected $constraint1;
+    private ConstraintInterface $constraint1;
+    private ConstraintInterface $constraint2;
 
-    /**
-     * @var ConstraintInterface
-     */
-    protected $constraint2;
-
-    /**
-     * Create an and constraint.
-     */
     public function __construct(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
     {
         $this->constraint1 = $constraint1;
@@ -39,7 +29,7 @@ class AndConstraint implements AndInterface
      *
      * @api
      */
-    public function getConstraint1()
+    public function getConstraint1(): ConstraintInterface
     {
         return $this->constraint1;
     }
@@ -49,7 +39,7 @@ class AndConstraint implements AndInterface
      *
      * @api
      */
-    public function getConstraint2()
+    public function getConstraint2(): ConstraintInterface
     {
         return $this->constraint2;
     }
@@ -57,11 +47,11 @@ class AndConstraint implements AndInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ConstraintInterface[]
      *
      * @api
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         $constraints = array_merge($this->getConstraint1()->getConstraints(), $this->getConstraint2()->getConstraints());
         $constraints[] = $this;

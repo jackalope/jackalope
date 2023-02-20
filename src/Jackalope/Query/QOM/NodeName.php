@@ -12,26 +12,12 @@ use PHPCR\Query\QOM\NodeNameInterface;
  *
  * @api
  */
-class NodeName implements NodeNameInterface
+final class NodeName implements NodeNameInterface
 {
-    /**
-     * @var string
-     */
-    protected $selectorName;
+    private string $selectorName;
 
-    /**
-     * Constructor.
-     *
-     * @param string $selectorName
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($selectorName)
+    public function __construct(string $selectorName)
     {
-        if (null === $selectorName) {
-            throw new \InvalidArgumentException('Required argument selectorName may not be null.');
-        }
-
         $this->selectorName = $selectorName;
     }
 
@@ -40,7 +26,7 @@ class NodeName implements NodeNameInterface
      *
      * @api
      */
-    public function getSelectorName()
+    public function getSelectorName(): string
     {
         return $this->selectorName;
     }

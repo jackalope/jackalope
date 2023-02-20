@@ -5,6 +5,7 @@ namespace Jackalope\Query;
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use PHPCR\ItemNotFoundException;
+use PHPCR\NodeInterface;
 use PHPCR\Query\RowInterface;
 use PHPCR\RepositoryException;
 
@@ -20,62 +21,42 @@ use PHPCR\RepositoryException;
  *
  * @api
  */
-class Row implements \Iterator, RowInterface
+final class Row implements \Iterator, RowInterface
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private ObjectManager $objectManager;
 
     /**
-     * @var FactoryInterface
+     * Columns of this result row: array of array with fields dcr:name and dcr:value.
      */
-    protected $factory;
-
-    /**
-     * Columns of this result row: array of array with fields dcr:name and
-     * dcr:value.
-     *
-     * @var array
-     */
-    protected $columns = [];
+    private array $columns = [];
 
     /**
      * Which column we are on when iterating over the columns.
-     *
-     * @var int
      */
-    protected $position = 0;
+    private int $position = 0;
 
     /**
      * The score this row has for each selector.
      *
-     * @var array of float
+     * @var float[]
      */
-    protected $score = [];
+    private array $score = [];
 
     /**
      * The path to the node for each selector.
      *
-     * @var array of string
+     * @var string[]
      */
-    protected $path = [];
+    private array $path = [];
 
     /**
      * Cached list of values extracted from columns to avoid double work.
      *
-     * @var array
-     *
      * @see Row::getValues()
      */
-    protected $values = [];
+    private array $values = [];
 
-    /**
-     * The default selector name.
-     *
-     * @var string
-     */
-    protected $defaultSelectorName;
+    private string $defaultSelectorName;
 
     /**
      * Create new Row instance.
@@ -83,9 +64,8 @@ class Row implements \Iterator, RowInterface
      * @param FactoryInterface $factory the object factory
      * @param array            $columns array of array with fields dcr:name and dcr:value
      */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $columns)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, array $columns)
     {
-        $this->factory = $factory;
         $this->objectManager = $objectManager;
 
         // TODO all of the normalization logic should better be moved to the Jackrabbit transport layer
@@ -126,7 +106,7 @@ class Row implements \Iterator, RowInterface
      *
      * @api
      */
-    public function getValues()
+    public function getValues(): array
     {
         $values = [];
         foreach ($this->values as $selectorName => $columns) {
@@ -176,7 +156,7 @@ class Row implements \Iterator, RowInterface
      *
      * @api
      */
-    public function getNode($selectorName = null)
+    public function getNode($selectorName = null): ?NodeInterface
     {
         $path = $this->getPath($selectorName);
         if (!$path) {
@@ -192,7 +172,7 @@ class Row implements \Iterator, RowInterface
      *
      * @api
      */
-    public function getPath($selectorName = null)
+    public function getPath($selectorName = null): ?string
     {
         if (null === $selectorName) {
             $selectorName = $this->defaultSelectorName;
@@ -211,7 +191,7 @@ class Row implements \Iterator, RowInterface
      *
      * @api
      */
-    public function getScore($selectorName = null)
+    public function getScore($selectorName = null): float
     {
         if (null === $selectorName) {
             $selectorName = $this->defaultSelectorName;
@@ -227,7 +207,7 @@ class Row implements \Iterator, RowInterface
     /**
      * Implement Iterator.
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
@@ -235,6 +215,7 @@ class Row implements \Iterator, RowInterface
     /**
      * Implement Iterator.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->columns[$this->position]['dcr:value'];
@@ -243,7 +224,7 @@ class Row implements \Iterator, RowInterface
     /**
      * Implement Iterator.
      */
-    public function key()
+    public function key(): ?string
     {
         return $this->columns[$this->position]['dcr:name'];
     }
@@ -251,7 +232,7 @@ class Row implements \Iterator, RowInterface
     /**
      * Implement Iterator.
      */
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
@@ -261,7 +242,7 @@ class Row implements \Iterator, RowInterface
      *
      * @return bool whether the current position is valid
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->columns[$this->position]);
     }

@@ -42,7 +42,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -52,7 +52,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setAutoCreated($autoCreated)
+    public function setAutoCreated($autoCreated): void
     {
         $this->isAutoCreated = $autoCreated;
     }
@@ -62,7 +62,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setMandatory($mandatory)
+    public function setMandatory($mandatory): void
     {
         $this->isMandatory = $mandatory;
     }
@@ -72,7 +72,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setOnParentVersion($opv)
+    public function setOnParentVersion($opv): void
     {
         $this->onParentVersion = $opv;
     }
@@ -82,7 +82,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setProtected($protectedStatus)
+    public function setProtected($protectedStatus): void
     {
         $this->isProtected = $protectedStatus;
     }
@@ -92,7 +92,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames)
+    public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames): void
     {
         $this->requiredPrimaryTypeNames = $requiredPrimaryTypeNames;
     }
@@ -102,7 +102,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setDefaultPrimaryTypeName($defaultPrimaryTypeName)
+    public function setDefaultPrimaryTypeName($defaultPrimaryTypeName): void
     {
         $this->defaultPrimaryTypeName = $defaultPrimaryTypeName;
     }
@@ -112,7 +112,7 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
      *
      * @api
      */
-    public function setSameNameSiblings($allowSameNameSiblings)
+    public function setSameNameSiblings($allowSameNameSiblings): void
     {
         $this->allowsSameNameSiblings = $allowSameNameSiblings;
     }

@@ -12,19 +12,11 @@ use PHPCR\Query\QOM\BindVariableValueInterface;
  *
  * @api
  */
-class BindVariableValue implements BindVariableValueInterface
+final class BindVariableValue implements BindVariableValueInterface
 {
-    /**
-     * @var string
-     */
-    protected $bindVariableName;
+    private string $bindVariableName;
 
-    /**
-     * Constructor.
-     *
-     * @param string $bindVariableName
-     */
-    public function __construct($bindVariableName)
+    public function __construct(string $bindVariableName)
     {
         $this->bindVariableName = $bindVariableName;
     }
@@ -34,7 +26,7 @@ class BindVariableValue implements BindVariableValueInterface
      *
      * @api
      */
-    public function getBindVariableName()
+    public function getBindVariableName(): string
     {
         return $this->bindVariableName;
     }

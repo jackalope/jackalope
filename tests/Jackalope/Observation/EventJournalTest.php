@@ -7,7 +7,7 @@ use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
 use Jackalope\Transport\ObservationInterface;
 use Jackalope\Transport\TransportInterface;
-use PHPCR\Observation\EventJournalInterface;
+use PHPCR\NodeInterface;
 use PHPCR\SessionInterface;
 
 /**
@@ -15,32 +15,16 @@ use PHPCR\SessionInterface;
  */
 class EventJournalTest extends TestCase
 {
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var EventJournalInterface
-     */
-    protected $journal;
-
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
-     * @var TransportInterface
-     */
-    protected $transport;
+    private FactoryInterface $factory;
+    private SessionInterface $session;
+    private TransportInterface $transport;
 
     public function setUp(): void
     {
         $this->session = $this->getSessionMock();
         $this->session
             ->method('getNode')
-            ->willReturn(null);
+            ->willReturn($this->createMock(NodeInterface::class));
         $this->session
             ->method('getNodesByIdentifier')
             ->willReturn([]);
@@ -58,42 +42,45 @@ class EventJournalTest extends TestCase
         $filter = new EventFilter($this->factory, $this->session);
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
 
-        $this->myAssertAttributeEquals($this->factory, 'factory', $journal);
+        $this->myAssertAttributeEquals($this->session, 'session', $journal);
     }
 
     public function testFetchBuffer(): void
     {
         $filter = new EventFilter($this->factory, $this->session);
 
+        $events = new \ArrayIterator([]);
+
         $this->transport
             ->expects($this->once())
             ->method('getEvents')
             ->with(0, $filter, $this->session)
-            ->willReturn('test')
+            ->willReturn($events)
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
 
         $this->getAndCallMethod($journal, 'fetchJournal', []);
-        $this->myAssertAttributeEquals('test', 'events', $journal);
+        $this->myAssertAttributeEquals($events, 'events', $journal);
     }
 
     public function testSkipTo(): void
     {
         $filter = new EventFilter($this->factory, $this->session);
 
+        $events = new \ArrayIterator([]);
         $this->transport
             ->expects($this->once())
             ->method('getEvents')
             ->with(2, $filter, $this->session)
-            ->willReturn('test-data')
+            ->willReturn($events)
         ;
 
         $journal = new EventJournal($this->factory, $filter, $this->session, $this->transport);
         $journal->skipTo(2);
 
         $this->getAndCallMethod($journal, 'fetchJournal', []);
-        $this->myAssertAttributeEquals('test-data', 'events', $journal);
+        $this->myAssertAttributeEquals($events, 'events', $journal);
     }
 
     public function testIterator(): void

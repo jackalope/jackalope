@@ -4,6 +4,7 @@ namespace Jackalope\Observation;
 
 use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\Observation\EventInterface;
 use PHPCR\RepositoryException;
@@ -18,64 +19,34 @@ use PHPCR\RepositoryException;
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  * @author David Buchmann <mail@davidbu.ch>
  */
-class Event implements EventInterface
+final class Event implements EventInterface
 {
-    /**
-     * @var int
-     */
-    protected $type;
+    private int $type;
 
-    /**
-     * @var string
-     */
-    protected $path;
+    private ?string $path = null;
 
-    /**
-     * @var string
-     */
-    protected $userId;
+    private string $userId;
 
-    /**
-     * @var string
-     */
-    protected $identifier;
+    private ?string $identifier = null;
 
-    /**
-     * @var array
-     */
-    protected $info = [];
+    private array $info = [];
 
-    /**
-     * @var string
-     */
-    protected $userData;
+    private ?string $userData = null;
 
-    /**
-     * @var int
-     */
-    protected $date;
+    private int $date;
 
-    /**
-     * @var string
-     */
-    protected $primaryNodeTypeName;
+    private string $primaryNodeTypeName;
 
-    /**
-     * @var array
-     */
-    protected $mixinNodeTypeNames = [];
+    private array $mixinNodeTypeNames = [];
 
-    /**
-     * @var NodeTypeManagerInterface
-     */
-    protected $ntm;
+    private NodeTypeManagerInterface $ntm;
 
     /**
      * Events that support getting the primary or mixin node types.
      *
      * @var array
      */
-    protected static $NODE_TYPE_EVENT = [
+    private static $NODE_TYPE_EVENT = [
         self::NODE_ADDED,
         self::NODE_REMOVED,
         self::NODE_MOVED,
@@ -89,7 +60,7 @@ class Event implements EventInterface
      *
      * @var array
      */
-    protected static $PROPERTY_TYPE_EVENT = [
+    private static $PROPERTY_TYPE_EVENT = [
         self::PROPERTY_ADDED,
         self::PROPERTY_REMOVED,
         self::PROPERTY_CHANGED,
@@ -111,15 +82,12 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType($type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -129,15 +97,12 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
 
-    /**
-     * @param string $path
-     */
-    public function setPath($path)
+    public function setPath(string $path): void
     {
         $this->path = $path;
     }
@@ -147,15 +112,12 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getUserID()
+    public function getUserID(): string
     {
         return $this->userId;
     }
 
-    /**
-     * @param string $userId
-     */
-    public function setUserId($userId)
+    public function setUserId(string $userId): void
     {
         $this->userId = $userId;
     }
@@ -165,15 +127,12 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getIdentifier()
+    public function getIdentifier(): ?string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     */
-    public function setIdentifier($identifier)
+    public function setIdentifier(?string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -183,16 +142,12 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getInfo()
+    public function getInfo(): array
     {
         return $this->info;
     }
 
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    public function addInfo($key, $value)
+    public function addInfo(string $key, string $value): void
     {
         $this->info[$key] = $value;
     }
@@ -202,15 +157,15 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getUserData()
+    public function getUserData(): ?string
     {
         return $this->userData;
     }
 
     /**
-     * @param string $data url-encoded string
+     * @param string|null $data url-encoded string or null to remove the data
      */
-    public function setUserData($data)
+    public function setUserData(?string $data): void
     {
         if (null === $data) {
             $this->userData = null;
@@ -224,23 +179,17 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getDate()
+    public function getDate(): int
     {
         return $this->date;
     }
 
-    /**
-     * @param int $date
-     */
-    public function setDate($date)
+    public function setDate(int $date): void
     {
         $this->date = $date;
     }
 
-    /**
-     * @param string $primaryNodeTypeName
-     */
-    public function setPrimaryNodeTypeName($primaryNodeTypeName)
+    public function setPrimaryNodeTypeName(string $primaryNodeTypeName): void
     {
         $this->primaryNodeTypeName = $primaryNodeTypeName;
     }
@@ -250,19 +199,19 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getPrimaryNodeType()
+    public function getPrimaryNodeType(): NodeTypeInterface
     {
         $this->checkNodeTypeEvent();
 
         return $this->ntm->getNodeType($this->primaryNodeTypeName);
     }
 
-    public function setMixinNodeTypeNames(array $mixinNodeTypeNames)
+    public function setMixinNodeTypeNames(array $mixinNodeTypeNames): void
     {
         $this->mixinNodeTypeNames = $mixinNodeTypeNames;
     }
 
-    public function addMixinNodeTypeName($mixinNodeTypeName)
+    public function addMixinNodeTypeName(string $mixinNodeTypeName): void
     {
         $this->mixinNodeTypeNames[] = $mixinNodeTypeName;
     }
@@ -272,7 +221,7 @@ class Event implements EventInterface
      *
      * @api
      */
-    public function getMixinNodeTypes()
+    public function getMixinNodeTypes(): array
     {
         $this->checkNodeTypeEvent();
         $nt = [];
@@ -308,7 +257,7 @@ class Event implements EventInterface
      * @throws RepositoryException if this event is not of a type that has node
      *                             type information
      */
-    private function checkNodeTypeEvent()
+    private function checkNodeTypeEvent(): void
     {
         if (!in_array($this->type, self::$NODE_TYPE_EVENT)) {
             throw new RepositoryException('Event of type '.$this->type.' does not have node type information');

@@ -17,44 +17,31 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
 {
     /**
      * Return a regular expression for a valid path.
-     *
-     * @return string
      */
-    abstract protected function getPathPattern();
+    abstract protected function getPathPattern(): string;
 
     /**
      * Return a regular expression for a valid name.
-     *
-     * @return string
      */
-    abstract protected function getNamePattern();
+    abstract protected function getNamePattern(): string;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function validatePath($path)
+    public function validatePath($path): void
     {
         if (false === $this->validate($path, $this->getPathPattern())) {
             throw new InvalidPathException(sprintf('Path "%s" is not valid', $path));
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function validateAbsPath($path)
+    public function validateAbsPath($path): void
     {
-        if ('/' !== substr($path, 0, 1)) {
+        if (0 !== strpos($path, '/')) {
             throw new InvalidPathException(sprintf('Path "%s" is not absolute', $path));
         }
 
         $this->validatePath($path);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function validateDestPath($path)
+    public function validateDestPath($path): void
     {
         $this->validateAbsPath($path);
 
@@ -63,10 +50,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function validateName($path)
+    public function validateName($path): void
     {
         if (false === $this->validate($path, $this->getNamePattern())) {
             throw new InvalidPathException(sprintf('Name "%s" is not valid', $path));
@@ -78,7 +62,7 @@ abstract class AbstractRegexValidator implements PathValidatorInterface
      *
      * @throws InvalidPathException
      */
-    private function validate($path, $pattern)
+    private function validate(string $path, string $pattern): bool
     {
         $pattern = '{'.$pattern.'}u';
         $isMatch = 1 === preg_match($pattern, $path);

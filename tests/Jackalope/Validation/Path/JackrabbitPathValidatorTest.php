@@ -3,16 +3,17 @@
 namespace Jackalope\NodeType\Path;
 
 use Jackalope\Validation\Path\JackrabbitPathValidator;
+use Jackalope\Validation\PathValidatorInterface;
 use Jackalope\Validation\PathValidatorTestCase;
 
 class JackrabbitPathValidatorTest extends PathValidatorTestCase
 {
-    public function getValidator()
+    public function getValidator(): PathValidatorInterface
     {
         return new JackrabbitPathValidator();
     }
 
-    public function getPathAnswers()
+    public function getPathAnswers(): array
     {
         return [
             'absolute_1' => true,
@@ -35,7 +36,7 @@ class JackrabbitPathValidatorTest extends PathValidatorTestCase
         ];
     }
 
-    public function getNameAnswers()
+    public function getNameAnswers(): array
     {
         return [
             'normal_1' => false,

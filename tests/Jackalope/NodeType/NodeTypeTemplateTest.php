@@ -4,12 +4,9 @@ namespace Jackalope\NodeType;
 
 use Jackalope\TestCase;
 
-class NodeTypeTemplateTest extends TestCase
+final class NodeTypeTemplateTest extends TestCase
 {
-    /**
-     * @var NodeTypeManager
-     */
-    protected $ntm;
+    private NodeTypeManager $ntm;
 
     protected function setUp(): void
     {
@@ -19,7 +16,7 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeType\NodeTypeTemplate::__construct
      */
-    public function testCreateNodeTypeTemplateEmpty()
+    public function testCreateNodeTypeTemplateEmpty(): void
     {
         $ntt = $this->ntm->createNodeTypeTemplate();
 
@@ -39,7 +36,7 @@ class NodeTypeTemplateTest extends TestCase
      * @covers \Jackalope\NodeType\NodeTypeTemplate::__construct
      * @covers \Jackalope\NodeType\NodeTypeDefinition::fromNodeTypeDefinition
      */
-    public function testCreateNodeTypeTemplateFromDefinition()
+    public function testCreateNodeTypeTemplateFromDefinition(): void
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $ntt = $this->ntm->createNodeTypeTemplate($nt);
@@ -60,7 +57,7 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
      */
-    public function testEmptyNodeTypeTemplatesMutable()
+    public function testEmptyNodeTypeTemplatesMutable(): void
     {
         $nt = $this->ntm->createNodeTypeTemplate();
         $childnt = $this->ntm->createNodeTypeTemplate();
@@ -82,7 +79,7 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getNodeDefinitionTemplates
      */
-    public function testNodeTypeTemplatesMutable()
+    public function testNodeTypeTemplatesMutable(): void
     {
         $ntd = $this->ntm->getNodeType('nt:file');
         $nt = $this->ntm->createNodeTypeTemplate($ntd);
@@ -106,7 +103,7 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
      */
-    public function testPropertyDefinitionTemplatesMutable()
+    public function testPropertyDefinitionTemplatesMutable(): void
     {
         $nt = $this->ntm->getNodeType('nt:file');
         $newnt = $this->ntm->createNodeTypeTemplate($nt);
@@ -130,7 +127,7 @@ class NodeTypeTemplateTest extends TestCase
     /**
      * @covers \Jackalope\NodeTYpe\NodeTypeTemplate::getPropertyDefinitionTemplates
      */
-    public function testEmptyPropertyDefinitionTemplatesMutable()
+    public function testEmptyPropertyDefinitionTemplatesMutable(): void
     {
         $nt = $this->ntm->createNodeTypeTemplate();
         $property = $this->ntm->createPropertyDefinitionTemplate();

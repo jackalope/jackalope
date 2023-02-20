@@ -13,16 +13,10 @@ use PHPCR\Query\QOM\PropertyValueInterface;
  *
  * @api
  */
-class Length implements LengthInterface
+final class Length implements LengthInterface
 {
-    /**
-     * @var PropertyValueInterface
-     */
-    protected $propertyValue;
+    private PropertyValueInterface $propertyValue;
 
-    /**
-     * Create a new length information.
-     */
     public function __construct(PropertyValueInterface $propertyValue)
     {
         $this->propertyValue = $propertyValue;
@@ -33,7 +27,7 @@ class Length implements LengthInterface
      *
      * @api
      */
-    public function getPropertyValue()
+    public function getPropertyValue(): PropertyValueInterface
     {
         return $this->propertyValue;
     }

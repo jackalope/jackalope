@@ -4,7 +4,6 @@ namespace Jackalope;
 
 use Jackalope\Transport\TransportInterface;
 use Jackalope\Transport\WritingInterface;
-use PHPCR\ItemNotFoundException;
 use PHPCR\NamespaceException;
 use PHPCR\NamespaceRegistryInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
@@ -15,28 +14,17 @@ use PHPCR\UnsupportedRepositoryOperationException;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterface
+final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterface
 {
     /**
      * Instance of an implementation of the TransportInterface.
-     *
-     * @var WritingInterface
      */
-    protected $transport;
-
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private TransportInterface $transport;
 
     /**
      * List of predefined namespaces.
-     *
-     * @var array
      */
-    protected $defaultNamespaces = [
+    private const DEFAULT_NAMESPACES = [
         self::PREFIX_JCR => self::NAMESPACE_JCR,
         self::PREFIX_SV => self::NAMESPACE_SV,
         self::PREFIX_NT => self::NAMESPACE_NT,
@@ -47,19 +35,11 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
 
     /**
      * Set of namespaces registered by the user.
-     *
-     * @var array
      */
-    protected $userNamespaces = null;
+    private array $userNamespaces;
 
-    /**
-     * Initializes the created object.
-     *
-     * @throws ItemNotFoundException If property not found
-     */
     public function __construct(FactoryInterface $factory, TransportInterface $transport)
     {
-        $this->factory = $factory;
         $this->transport = $transport;
     }
 
@@ -70,15 +50,16 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      * first time. This method has to be called by all methods that need to
      * do something with user defined namespaces.
      */
-    protected function lazyLoadNamespaces()
+    private function lazyLoadNamespaces(): void
     {
-        if (null === $this->userNamespaces) {
-            $namespaces = $this->transport->getNamespaces();
-            $this->userNamespaces = [];
-            foreach ($namespaces as $prefix => $uri) {
-                if (!array_key_exists($prefix, $this->defaultNamespaces)) {
-                    $this->userNamespaces[$prefix] = $uri;
-                }
+        if (isset($this->userNamespaces)) {
+            return;
+        }
+        $namespaces = $this->transport->getNamespaces();
+        $this->userNamespaces = [];
+        foreach ($namespaces as $prefix => $uri) {
+            if (!array_key_exists($prefix, self::DEFAULT_NAMESPACES)) {
+                $this->userNamespaces[$prefix] = $uri;
             }
         }
     }
@@ -88,7 +69,7 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function registerNamespace($prefix, $uri)
+    public function registerNamespace($prefix, $uri): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -98,7 +79,7 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
         $this->checkPrefix($prefix);
 
         // prevent default namespace uris to be overridden
-        if (false !== array_search($uri, $this->defaultNamespaces)) {
+        if (in_array($uri, self::DEFAULT_NAMESPACES, true)) {
             throw new NamespaceException("Can not change default namespace $prefix = $uri");
         }
 
@@ -109,7 +90,7 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
         $this->transport->registerNamespace($prefix, $uri);
 
         // update local info
-        if (false !== $oldpref = array_search($uri, $this->userNamespaces)) {
+        if (false !== $oldpref = array_search($uri, $this->userNamespaces, true)) {
             // the backend takes care of storing this, but we have to update frontend info
             unset($this->userNamespaces[$oldpref]);
         }
@@ -122,14 +103,14 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function unregisterNamespaceByURI($uri)
+    public function unregisterNamespaceByURI($uri): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
         }
 
         $this->lazyLoadNamespaces();
-        $prefix = array_search($uri, $this->userNamespaces);
+        $prefix = array_search($uri, $this->userNamespaces, true);
         if (false === $prefix) {
             throw new NamespaceException("Namespace '$uri' is not currently registered");
         }
@@ -146,12 +127,12 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function getPrefixes()
+    public function getPrefixes(): array
     {
         $this->lazyLoadNamespaces();
 
         return array_merge(
-            array_keys($this->defaultNamespaces),
+            array_keys(self::DEFAULT_NAMESPACES),
             array_keys($this->userNamespaces)
         );
     }
@@ -161,12 +142,12 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function getURIs()
+    public function getURIs(): array
     {
         $this->lazyLoadNamespaces();
 
         return array_merge(
-            array_values($this->defaultNamespaces),
+            array_values(self::DEFAULT_NAMESPACES),
             array_values($this->userNamespaces)
         );
     }
@@ -176,12 +157,13 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function getURI($prefix)
+    public function getURI($prefix): string
     {
         $this->lazyLoadNamespaces();
-        if (isset($this->defaultNamespaces[$prefix])) {
-            return $this->defaultNamespaces[$prefix];
-        } elseif (isset($this->userNamespaces[$prefix])) {
+        if (isset(self::DEFAULT_NAMESPACES[$prefix])) {
+            return self::DEFAULT_NAMESPACES[$prefix];
+        }
+        if (isset($this->userNamespaces[$prefix])) {
             $this->lazyLoadNamespaces();
 
             return $this->userNamespaces[$prefix];
@@ -194,12 +176,12 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @api
      */
-    public function getPrefix($uri)
+    public function getPrefix($uri): string
     {
-        $prefix = array_search($uri, $this->defaultNamespaces);
+        $prefix = array_search($uri, self::DEFAULT_NAMESPACES, true);
         if (false === $prefix) {
             $this->lazyLoadNamespaces();
-            $prefix = array_search($uri, $this->userNamespaces);
+            $prefix = array_search($uri, $this->userNamespaces, true);
             if (false === $prefix) {
                 throw new NamespaceException("URI '$uri' is not defined in registry");
             }
@@ -213,12 +195,11 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @return \Iterator over all namespaces, with prefix as key and url as value
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         $this->lazyLoadNamespaces();
 
-        return new \ArrayIterator(array_merge($this->defaultNamespaces, $this->userNamespaces));
+        return new \ArrayIterator(array_merge(self::DEFAULT_NAMESPACES, $this->userNamespaces));
     }
 
     /**
@@ -235,13 +216,13 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      * @private
      * TODO: can we refactor Session::setNamespacePrefix to not need to directly access this?
      */
-    public function checkPrefix($prefix)
+    public function checkPrefix($prefix): void
     {
         if (!strncasecmp('xml', $prefix, 3)) {
             throw new NamespaceException("Do not use xml in prefixes for namespace changes: '$prefix'");
         }
 
-        if (array_key_exists($prefix, $this->defaultNamespaces)) {
+        if (array_key_exists($prefix, self::DEFAULT_NAMESPACES)) {
             throw new NamespaceException("Do not change the predefined prefixes: '$prefix'");
         }
 
@@ -255,10 +236,10 @@ class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryInterfac
      *
      * @private
      */
-    public function getNamespaces()
+    public function getNamespaces(): array
     {
         $this->lazyLoadNamespaces();
 
-        return array_merge($this->defaultNamespaces, $this->userNamespaces);
+        return array_merge(self::DEFAULT_NAMESPACES, $this->userNamespaces);
     }
 }

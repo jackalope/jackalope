@@ -7,7 +7,7 @@ namespace Jackalope\Observation;
  */
 class EventFilterTest extends EventFilterTestCase
 {
-    public function testContainer()
+    public function testContainer(): void
     {
         $this->eventFilter->setEventTypes(123);
         $this->assertEquals(123, $this->eventFilter->getEventTypes());

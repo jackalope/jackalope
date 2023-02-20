@@ -20,27 +20,16 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
 
     /**
      * Cached list of NodeType instances populated in first call to getRequiredPrimaryTypes.
-     *
-     * @var array
      */
-    protected $requiredPrimaryTypes = [];
+    protected array $requiredPrimaryTypes = [];
 
     /**
-     * List of required primary type names as string.
-     *
-     * @var array
+     * @var string[]|null
      */
-    protected $requiredPrimaryTypeNames = [];
+    protected ?array $requiredPrimaryTypeNames = [];
 
-    /**
-     * @var string
-     */
-    protected $defaultPrimaryTypeName;
-
-    /**
-     * @var bool
-     */
-    protected $allowsSameNameSiblings;
+    protected ?string $defaultPrimaryTypeName;
+    protected bool $allowsSameNameSiblings;
 
     /**
      * Treat more information in addition to ItemDefinition::fromArray().
@@ -49,12 +38,12 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * @param array $data the node definition in array form
      */
-    protected function fromArray(array $data)
+    protected function fromArray(array $data): void
     {
         parent::fromArray($data);
         $this->allowsSameNameSiblings = $data['allowsSameNameSiblings'];
-        $this->defaultPrimaryTypeName = isset($data['defaultPrimaryTypeName']) ? $data['defaultPrimaryTypeName'] : null;
-        $this->requiredPrimaryTypeNames = (isset($data['requiredPrimaryTypeNames']) && count($data['requiredPrimaryTypeNames']))
+        $this->defaultPrimaryTypeName = $data['defaultPrimaryTypeName'] ?? null;
+        $this->requiredPrimaryTypeNames = (array_key_exists('requiredPrimaryTypeNames', $data) && count($data['requiredPrimaryTypeNames']))
                 ? $data['requiredPrimaryTypeNames'] : [self::DEFAULT_PRIMARY_NODE];
     }
 
@@ -63,7 +52,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * @api
      */
-    public function getRequiredPrimaryTypes()
+    public function getRequiredPrimaryTypes(): ?array
     {
         // TODO if this is not attached to a live NodeType, return null
         if (empty($this->requiredPrimaryTypes)) {
@@ -80,7 +69,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * @api
      */
-    public function getRequiredPrimaryTypeNames()
+    public function getRequiredPrimaryTypeNames(): ?array
     {
         return $this->requiredPrimaryTypeNames;
     }
@@ -104,7 +93,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * @api
      */
-    public function getDefaultPrimaryTypeName()
+    public function getDefaultPrimaryTypeName(): ?string
     {
         return $this->defaultPrimaryTypeName;
     }
@@ -114,7 +103,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * @api
      */
-    public function allowsSameNameSiblings()
+    public function allowsSameNameSiblings(): bool
     {
         return $this->allowsSameNameSiblings;
     }

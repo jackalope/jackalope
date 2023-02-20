@@ -6,7 +6,6 @@ use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
 use Jackalope\Transport\TransactionInterface;
 use PHPCR\RepositoryException;
-use PHPCR\SessionInterface;
 use PHPCR\Transaction\UserTransactionInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 
@@ -17,55 +16,19 @@ use PHPCR\UnsupportedRepositoryOperationException;
  *
  * @api
  */
-class UserTransaction implements UserTransactionInterface
+final class UserTransaction implements UserTransactionInterface
 {
-    /**
-     * The factory to instantiate objects.
-     *
-     * @var FactoryInterface
-     */
-    protected $factory;
+    private FactoryInterface $factory;
+    private ObjectManager $objectManager;
+    private TransactionInterface $transport;
+    private bool $inTransaction = false;
 
-    /**
-     * Instance of an implementation of the PHPCR\SessionInterface.
-     *
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * Instance of an implementation of the TransactionInterface transport.
-     *
-     * @var TransactionInterface
-     */
-    protected $transport;
-
-    /**
-     * Stores the current state of the application, whether it is inside a transaction or not.
-     *
-     * @var bool
-     */
-    protected $inTransaction = false;
-
-    /**
-     * Registers the provided parameters as attribute to the instance.
-     *
-     * @param FactoryInterface $factory the object factory
-     */
     public function __construct(
         FactoryInterface $factory,
         TransactionInterface $transport,
-        SessionInterface $session,
         ObjectManager $objectManager
     ) {
-        $this->factory = $factory;
         $this->transport = $transport;
-        $this->session = $session;
         $this->objectManager = $objectManager;
     }
 
@@ -74,7 +37,7 @@ class UserTransaction implements UserTransactionInterface
      *
      * @api
      */
-    public function begin()
+    public function begin(): void
     {
         if ($this->inTransaction) {
             throw new UnsupportedRepositoryOperationException('Nested transactions are not supported.');
@@ -92,7 +55,7 @@ class UserTransaction implements UserTransactionInterface
      *
      * @api
      */
-    public function commit()
+    public function commit(): void
     {
         if (!$this->inTransaction) {
             throw new \LogicException('No transaction to commit.');
@@ -107,7 +70,7 @@ class UserTransaction implements UserTransactionInterface
      *
      * @api
      */
-    public function inTransaction()
+    public function inTransaction(): bool
     {
         // TODO Is there a way to ask for the transaction status via webdav?
         return $this->inTransaction;
@@ -121,7 +84,7 @@ class UserTransaction implements UserTransactionInterface
      *
      * @api
      */
-    public function rollback()
+    public function rollback(): void
     {
         if (!$this->inTransaction) {
             throw new \LogicException('No transaction to rollback.');
@@ -136,7 +99,7 @@ class UserTransaction implements UserTransactionInterface
      *
      * @api
      */
-    public function setTransactionTimeout($seconds = 0)
+    public function setTransactionTimeout($seconds = 0): void
     {
         if ($seconds < 0) {
             throw new RepositoryException('Value must be positive or 0. '.$seconds.' given.');

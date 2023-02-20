@@ -7,10 +7,13 @@ use Jackalope\NodeType\NodeDefinition;
 use Jackalope\NodeType\NodeType;
 use Jackalope\NodeType\NodeTypeManager;
 use Jackalope\NodeType\NodeTypeXmlConverter;
-use Jackalope\Transaction\UserTransaction;
 use Jackalope\Transport\TransportInterface;
+use PHPCR\NamespaceRegistryInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
+use PHPCR\PropertyInterface;
+use PHPCR\RepositoryInterface;
 use PHPCR\SimpleCredentials;
+use PHPCR\Transaction\UserTransactionInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -19,7 +22,7 @@ abstract class TestCase extends BaseTestCase
     protected $config;
     protected $credentials;
 
-    protected $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
+    private string $JSON = '{":jcr:primaryType":"Name","jcr:primaryType":"rep:root","jcr:system":{},"tests_level1_access_base":{}}';
 
     protected function setUp(): void
     {
@@ -53,30 +56,30 @@ abstract class TestCase extends BaseTestCase
      *
      * @return TransportInterface|MockObject
      */
-    protected function getTransportStub()
+    protected function getTransportStub(): TransportInterface
     {
         $transport = $this->getMockBuilder(TransportInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $transport->expects($this->any())
+        $transport
             ->method('getNode')
             ->willReturn(json_decode($this->JSON))
         ;
 
         $dom = new \DOMDocument();
         $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
-        $transport->expects($this->any())
+        $transport
             ->method('getNodeTypes')
-            ->willReturn($dom)
+            ->willReturn($this->dom2Array($dom))
         ;
 
-        $transport->expects($this->any())
+        $transport
             ->method('getNodePathForIdentifier')
             ->willReturn('/jcr:root/uuid/to/path')
         ;
 
-        $transport->expects($this->any())
+        $transport
             ->method('getNodes')
             ->willReturn(['/jcr:root/tests_level1_access_base' => [], '/jcr:root/jcr:system' => []])
         ;
@@ -84,12 +87,49 @@ abstract class TestCase extends BaseTestCase
         return $transport;
     }
 
-    /**
-     * @return Session|MockObject
-     */
-    protected function getSessionMock()
+    protected function dom2Array(\DOMNode $document): array
     {
-        $mock = $this->getMockBuilder(Session::class)->disableOriginalConstructor()->getMock();
+        $array = [];
+
+        if ($document->hasAttributes()) {
+            foreach ($document->attributes as $attribute) {
+                $array['_attributes'][$attribute->name] = $attribute->value;
+            }
+        }
+
+        // handle classic node
+        if (XML_ELEMENT_NODE === $document->nodeType) {
+            $array['_type'] = $document->nodeName;
+            if ($document->hasChildNodes()) {
+                $children = $document->childNodes;
+                for ($i = 0; $i < $children->length; ++$i) {
+                    $child = $this->dom2Array($children->item($i));
+
+                    // don't keep textnode with only spaces and newline
+                    if (!empty($child)) {
+                        $array['_children'][] = $child;
+                    }
+                }
+            }
+
+        // handle text node
+        } elseif (XML_TEXT_NODE === $document->nodeType || XML_CDATA_SECTION_NODE === $document->nodeType) {
+            $value = $document->nodeValue;
+            if (!empty($value)) {
+                $array['_type'] = '_text';
+                $array['_content'] = $value;
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * @return Session&MockObject
+     */
+    protected function getSessionMock(): Session
+    {
+        $mock = $this->createMock(Session::class);
 
         $mock
              ->method('getWorkspace')
@@ -105,9 +145,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Workspace|MockObject
+     * @return Workspace&MockObject
      */
-    protected function getWorkspaceMock()
+    protected function getWorkspaceMock(): Workspace
     {
         $factory = new Factory();
         $mock = $this->getMockBuilder(Workspace::class)
@@ -116,7 +156,7 @@ abstract class TestCase extends BaseTestCase
             ->setMockClassName('')
             ->disableOriginalConstructor()
             ->getMock();
-        $mock->expects($this->any())
+        $mock
              ->method('getTransactionManager')
              ->willReturn($this->getInactiveTransactionMock())
         ;
@@ -125,16 +165,13 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return UserTransaction|MockObject
+     * @return UserTransactionInterface&MockObject
      */
-    protected function getInactiveTransactionMock()
+    protected function getInactiveTransactionMock(): UserTransactionInterface
     {
-        $mock = $this->getMockBuilder(UserTransaction::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $mock = $this->createMock(UserTransactionInterface::class);
 
-        $mock->expects($this->any())
+        $mock
              ->method('inTransaction')
              ->willReturn(false)
         ;
@@ -143,24 +180,34 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Repository|MockObject
+     * @return RepositoryInterface&MockObject
      */
-    protected function getRepositoryMock(array $methodValueMap = [])
+    protected function getRepositoryMock(array $methodValueMap = []): RepositoryInterface
     {
-        $mock = $this->getMockBuilder(Repository::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $mock = $this->createMock(RepositoryInterface::class);
 
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
+        $mock->method('getDescriptor')
+            ->willReturnCallback(function ($key) {
+                switch ($key) {
+                    case Repository::OPTION_TRANSACTIONS_SUPPORTED:
+                    case Repository::JACKALOPE_OPTION_STREAM_WRAPPER:
+                        return true;
+                    case RepositoryInterface::OPTION_LOCKING_SUPPORTED:
+                        return false;
+                }
+
+                throw new \Exception('todo: '.$key);
+            })
+        ;
 
         return $mock;
     }
 
     /**
-     * @return ObjectManager|MockObject
+     * @return ObjectManager&MockObject
      */
-    protected function getObjectManagerMock(array $methodValueMap = [])
+    protected function getObjectManagerMock(array $methodValueMap = []): ObjectManager
     {
         $mock = $this->getMockBuilder(ObjectManager::class)->disableOriginalConstructor()->getMock();
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
@@ -171,9 +218,9 @@ abstract class TestCase extends BaseTestCase
     /**
      * NOTE: This and other mock methods are public because they need to be accessed from within callbacks sometimes.
      *
-     * @return Node|MockObject
+     * @return Node&MockObject
      */
-    public function getNodeMock(array $methodValueMap = [])
+    public function getNodeMock(array $methodValueMap = []): Node
     {
         $mock = $this->getMockBuilder(Node::class)
             ->disableOriginalConstructor()
@@ -184,9 +231,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Node|MockObject
+     * @return NodeType&MockObject
      */
-    public function getNodeTypeMock(array $methodValueMap = [])
+    public function getNodeTypeMock(array $methodValueMap = []): NodeType
     {
         $mock = $this->getMockBuilder(NodeType::class)
             ->disableOriginalConstructor()
@@ -199,9 +246,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Node|MockObject
+     * @return ItemDefinition&MockObject
      */
-    public function getItemDefinitionMock(array $methodValueMap = [])
+    public function getItemDefinitionMock(array $methodValueMap = []): ItemDefinition
     {
         $mock = $this->getMockBuilder(ItemDefinition::class)
             ->disableOriginalConstructor()
@@ -214,9 +261,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Node|MockObject
+     * @return NodeDefinition&MockObject
      */
-    public function getNodeDefinitionMock(array $methodValueMap = [])
+    public function getNodeDefinitionMock(array $methodValueMap = []): NodeDefinition
     {
         $mock = $this->getMockBuilder(NodeDefinition::class)
             ->disableOriginalConstructor()
@@ -229,14 +276,11 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Node|MockObject
+     * @return PropertyDefinitionInterface&MockObject
      */
-    public function getPropertyDefinitionMock(array $methodValueMap = [])
+    public function getPropertyDefinitionMock(array $methodValueMap = []): PropertyDefinitionInterface
     {
-        $mock = $this->getMockBuilder(PropertyDefinitionInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $mock = $this->createMock(PropertyDefinitionInterface::class);
 
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
@@ -244,14 +288,11 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return Property|MockObject
+     * @return PropertyInterface&MockObject
      */
-    public function getPropertyMock(array $methodValueMap = [])
+    public function getPropertyMock(array $methodValueMap = []): PropertyInterface
     {
-        $mock = $this->getMockBuilder(Property::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $mock = $this->createMock(PropertyInterface::class);
 
         $this->mapMockMethodReturnValues($mock, $methodValueMap);
 
@@ -259,9 +300,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return NodeTypeManager|MockObject
+     * @return NodeTypeManager&MockObject
      */
-    public function getNodeTypeManagerMock(array $methodValueMap = [])
+    public function getNodeTypeManagerMock(array $methodValueMap = []): NodeTypeManager
     {
         $mock = $this->getMockBuilder(NodeTypeManager::class)
             ->disableOriginalConstructor()
@@ -283,12 +324,12 @@ abstract class TestCase extends BaseTestCase
         $dom = new \DOMDocument();
         $dom->load(__DIR__.'/../fixtures/nodetypes.xml');
         $converter = new NodeTypeXmlConverter($factory);
-        $om = $this->getObjectManagerMock();
+        $om = $this->createMock(ObjectManager::class);
         $om
             ->method('getNodeTypes')
             ->willReturn($converter->getNodeTypesFromXml($dom))
         ;
-        $ns = $this->getMockBuilder(NamespaceRegistry::class)->disableOriginalConstructor()->getMock();
+        $ns = $this->createMock(NamespaceRegistryInterface::class);
 
         $ntm = new NodeTypeManager($factory, $om, $ns);
         // we need to initialize as getting a single node type calls a different method on the om.
@@ -300,16 +341,16 @@ abstract class TestCase extends BaseTestCase
     /**
      * Call a protected or private method on an object instance.
      *
-     * @param object $instance The instance to call the method on
-     * @param string $method   The protected or private method to call
-     * @param array  $args     The arguments to the called method
+     * @param object $instance   The instance to call the method on
+     * @param string $methodName The protected or private method to call
+     * @param array  $args       The arguments to the called method
      *
      * @return mixed The result of the method call
      */
-    protected function getAndCallMethod($instance, string $method, array $args = [])
+    protected function getAndCallMethod($instance, string $methodName, array $args = [])
     {
         $class = new \ReflectionClass(get_class($instance));
-        $method = $class->getMethod($method);
+        $method = $class->getMethod($methodName);
         $method->setAccessible(true);
 
         return $method->invokeArgs($instance, $args);

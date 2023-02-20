@@ -6,6 +6,7 @@ use Jackalope\FactoryInterface;
 use Jackalope\NotImplementedException;
 use Jackalope\Transport\ObservationInterface;
 use PHPCR\Observation\EventFilterInterface;
+use PHPCR\Observation\EventJournalInterface;
 use PHPCR\Observation\EventListenerInterface;
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\RepositoryException;
@@ -24,22 +25,11 @@ use PHPCR\SessionInterface;
  *
  * @author D. Barsotti <daniel.barsotti@liip.ch>
  */
-class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
+final class ObservationManager implements \IteratorAggregate, ObservationManagerInterface
 {
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var ObservationInterface
-     */
-    protected $transport;
-
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
+    private FactoryInterface $factory;
+    private ObservationInterface $transport;
+    private SessionInterface $session;
 
     public function __construct(FactoryInterface $factory, SessionInterface $session, ObservationInterface $transport)
     {
@@ -56,7 +46,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
     public function addEventListener(
         EventListenerInterface $listener,
         EventFilterInterface $filter
-    ) {
+    ): void {
         throw new NotImplementedException();
     }
 
@@ -65,7 +55,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @api
      */
-    public function removeEventListener(EventListenerInterface $listener)
+    public function removeEventListener(EventListenerInterface $listener): void
     {
         throw new NotImplementedException();
     }
@@ -75,7 +65,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @api
      */
-    public function getRegisteredEventListeners()
+    public function getRegisteredEventListeners(): \Iterator
     {
         throw new NotImplementedException();
     }
@@ -85,7 +75,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @api
      */
-    public function setUserData($userData)
+    public function setUserData($userData): void
     {
         $this->transport->setUserData($userData);
     }
@@ -95,7 +85,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @api
      */
-    public function getEventJournal(EventFilterInterface $filter)
+    public function getEventJournal(EventFilterInterface $filter): EventJournalInterface
     {
         return $this->factory->get(EventJournal::class, [$filter, $this->session, $this->transport]);
     }
@@ -105,7 +95,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @api
      */
-    public function createEventFilter()
+    public function createEventFilter(): EventFilterInterface
     {
         return $this->factory->get(EventFilter::class, [$this->session]);
     }
@@ -117,8 +107,7 @@ class ObservationManager implements \IteratorAggregate, ObservationManagerInterf
      *
      * @see getRegisteredEventListeners
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->getRegisteredEventListeners();
     }

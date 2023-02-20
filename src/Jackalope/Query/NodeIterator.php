@@ -4,6 +4,7 @@ namespace Jackalope\Query;
 
 use Jackalope\FactoryInterface;
 use Jackalope\ObjectManager;
+use PHPCR\NodeInterface;
 
 /**
  * Lazy loading iterator for QueryResult->getNodes() that delays fetching the
@@ -15,40 +16,19 @@ use Jackalope\ObjectManager;
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
-class NodeIterator implements \SeekableIterator, \Countable
+final class NodeIterator implements \SeekableIterator, \Countable
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
+    private ObjectManager $objectManager;
+    private array $rows;
+    private int $position = 0;
 
-    /**
-     * @var FactoryInterface
-     */
-    protected $factory;
-
-    /**
-     * @var array
-     */
-    protected $rows;
-
-    /**
-     * @var int
-     */
-    protected $position = 0;
-
-    /**
-     * @param FactoryInterface $factory the object factory
-     * @param array            $rows
-     */
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager, array $rows)
     {
-        $this->factory = $factory;
         $this->objectManager = $objectManager;
         $this->rows = $rows;
     }
 
-    public function seek($nodeName)
+    public function seek($nodeName): void
     {
         foreach ($this->rows as $position => $columns) {
             foreach ($columns as $column) {
@@ -65,17 +45,17 @@ class NodeIterator implements \SeekableIterator, \Countable
         throw new \OutOfBoundsException("invalid seek position ($nodeName)");
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->rows);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
-    public function current()
+    public function current(): ?NodeInterface
     {
         $path = $this->key();
         if (!isset($path)) {
@@ -85,7 +65,7 @@ class NodeIterator implements \SeekableIterator, \Countable
         return $this->objectManager->getNodeByPath($path);
     }
 
-    public function key()
+    public function key(): ?string
     {
         if (!$this->valid()) {
             return null;
@@ -105,12 +85,12 @@ class NodeIterator implements \SeekableIterator, \Countable
         return $path;
     }
 
-    public function next()
+    public function next(): void
     {
         ++$this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->rows[$this->position]);
     }

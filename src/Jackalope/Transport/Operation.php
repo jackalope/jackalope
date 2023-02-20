@@ -20,31 +20,25 @@ abstract class Operation
 
     /**
      * One of the type constants to know what kind of operation this is.
-     *
-     * @var string
      */
-    public $type;
+    public string $type;
 
     /**
      * The source path is the path of the node this operation applies to.
-     *
-     * @var string
      */
-    public $srcPath;
+    public string $srcPath;
 
     /**
      * Whether this operation was later determined to be skipped
      * (i.e. a parent node is removed as well.).
-     *
-     * @var bool
      */
-    public $skip = false;
+    public bool $skip = false;
 
     /**
      * @param string $srcPath source path this operation applies to
      * @param string $type    one of the Operation constants
      */
-    public function __construct($srcPath, $type)
+    public function __construct(string $srcPath, string $type)
     {
         $this->srcPath = $srcPath;
         $this->type = $type;
