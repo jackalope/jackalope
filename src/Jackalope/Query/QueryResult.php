@@ -31,7 +31,7 @@ final class QueryResult implements \IteratorAggregate, QueryResultInterface
     /**
      * Create a new query result from raw data from transport.
      *
-     * @param array $rawData the data as returned by the transport
+     * @param array<array<string, mixed>> $rawData the data as returned by the transport
      *
      * @see QueryInterface::query() The raw data format
      */

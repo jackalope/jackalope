@@ -25,7 +25,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     protected int $requiredType;
 
     /**
-     * The constraint information array (array of strings).
+     * @var string[]
      */
     protected array $valueConstraints;
 
@@ -37,7 +37,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     protected bool $isMultiple = false;
 
     /**
-     * List of constants.
+     * List of constant values.
+     *
+     * @var string[]
      *
      * @see QueryObjectModelConstantsInterface
      */
@@ -52,7 +54,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * See class documentation for the fields supported in the array.
      *
-     * @param array $data the property definition in array form
+     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": boolean, "isMandatory": boolean, "isProtected": boolean, "onParentVersion": int, "requiredType": int, "multiple": boolean, "fullTextSearchable": boolean, "queryOrderable": boolean, "valueConstraints": string[], "availableQueryOperators": string[], "defaultValues": mixed} $data
      */
     protected function fromArray(array $data): void
     {

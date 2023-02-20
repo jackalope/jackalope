@@ -20,10 +20,7 @@ final class RowIterator implements \SeekableIterator, \Countable
     private int $offset = 0;
 
     /**
-     * Create the iterator.
-     *
-     * @param FactoryInterface $factory the object factory
-     * @param array            $rows    Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
+     * @param array<array<string, mixed>> $rows Raw data as described in QueryResult and \Jackalope\Transport\TransportInterface
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, $rows)
     {

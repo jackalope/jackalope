@@ -30,7 +30,7 @@ final class ComparisonConstraint implements ComparisonInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return ComparisonConstraint[] the constraints
      *
      * @api
      */

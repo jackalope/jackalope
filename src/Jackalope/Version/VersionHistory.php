@@ -97,14 +97,11 @@ final class VersionHistory extends Node implements VersionHistoryInterface
      *
      * According to spec, 3.13.1.4, these are called eventual successors
      *
-     * @param VersionInterface $node the node to get successors
-     *                               from
-     *
-     * @return array list of VersionInterface
+     * @return VersionInterface[] list of VersionInterface
      *
      * @throws RepositoryException
      */
-    private function getEventualSuccessors($node): array
+    private function getEventualSuccessors(VersionInterface $node): array
     {
         $successors = $node->getSuccessors();
         $results = [];

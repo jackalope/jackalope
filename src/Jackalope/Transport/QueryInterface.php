@@ -16,7 +16,7 @@ use Jackalope\Query\QueryResult;
 interface QueryInterface extends TransportInterface
 {
     /**
-     * Search something with the backend.
+     * Search for nodes.
      *
      * The language must be among those returned by getSupportedQueryLanguages
      *
@@ -40,7 +40,7 @@ interface QueryInterface extends TransportInterface
      *
      * @param Query $query the query object
      *
-     * @return array data with search result. TODO: what to return? should be some simple array
+     * @return array<array<string, mixed>> Rows of search result with each row a map of name to value
      *
      * @see QueryResult::__construct() for the xml format. TODO: have the transport return a QueryResult?
      */

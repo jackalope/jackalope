@@ -74,9 +74,11 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     private array $nodes = [];
 
     /**
-     * ordered list of the child node names as known to be at the backend.
+     * Ordered list of the child node names as known to be at the backend.
      *
-     * used to calculate reordering operations if orderBefore() was used
+     * Used to calculate reordering operations if orderBefore() was used
+     *
+     * @var array<string[]>|null
      */
     private ?array $originalNodesOrder = null;
 
@@ -515,7 +517,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      * Returns the orderBefore commands to be applied to the childnodes
      * to get from the original order to the new one.
      *
-     * @return array of arrays with 2 fields: name of node to order before second name
+     * @return array<string[]> of arrays with 2 fields: name of node to order before second name
      *
      * @throws AccessDeniedException
      * @throws ItemNotFoundException
@@ -1605,10 +1607,10 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * Filter the list of names according to the filter expression / array.
      *
-     * @param string|array $filter according to getNodes|getProperties
-     * @param array        $names  list of names to filter
+     * @param string|string[] $filter according to getNodes|getProperties
+     * @param string[]        $names  list of names to filter
      *
-     * @return array the names in $names that match the filter
+     * @return string[] the names in $names that match the filter
      */
     private static function filterNames($filter, array $names): array
     {

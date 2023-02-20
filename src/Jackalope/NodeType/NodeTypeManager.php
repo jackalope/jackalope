@@ -134,7 +134,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * Helper method for node types: Returns the declared subtypes of a given
      * nodename.
      *
-     * @return array with the names of the subnode types pointing to the node type instances
+     * @return array<string, NodeTypeInterface> Names of the subnode type pointing to node type instances
      *
      * @see NodeType::getDeclaredSubtypes
      *
@@ -156,7 +156,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * Helper method for NodeType: Returns all sub types of a node and their
      * sub types.
      *
-     * @return array with the names of the subnode types pointing to the node type instances
+     * @return array<string, NodeTypeInterface> with the names of the subnode types pointing to the node type instances
      *
      * @see NodeType::getSubtypes
      *
@@ -181,10 +181,8 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * fetch the sub types of those super types later on.
      *
      * Part of addNodeType.
-     *
-     * @param NodeTypeInterface $nodetype the node type to add
      */
-    private function addToNodeTree($nodetype)
+    private function addToNodeTree(NodeTypeInterface $nodetype)
     {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
