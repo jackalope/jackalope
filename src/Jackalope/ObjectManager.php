@@ -483,7 +483,7 @@ class ObjectManager
     /**
      * Get the node path for a property, and the property name.
      *
-     * @return array with name, node path
+     * @return string[] with name, node path
      *
      * @throws RepositoryException
      */
@@ -710,11 +710,11 @@ class ObjectManager
      * Transform an array containing properties paths to an ArrayIterator over
      * Property objects.
      *
-     * @param array $propertyPaths an array of properties paths
+     * @param string[] $propertyPaths an array of properties paths
      *
      * @return \ArrayIterator
      */
-    private function pathArrayToPropertiesIterator($propertyPaths): \Iterator
+    private function pathArrayToPropertiesIterator(string $propertyPaths): \Iterator
     {
         // FIXME: this will break if we have non-persisted move
         return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));

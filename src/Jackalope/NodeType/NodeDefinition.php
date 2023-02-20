@@ -36,7 +36,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
      *
      * See class documentation for the fields supported in the array.
      *
-     * @param array $data the node definition in array form
+     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": boolean, "isMandatory": boolean, "isProtected": boolean, "onParentVersion": int, "allowsSameNameSiblings": boolean, "defaultPrimaryTypeName": string, "requiredPrimaryTypeNames"?: string[]} $data
      */
     protected function fromArray(array $data): void
     {

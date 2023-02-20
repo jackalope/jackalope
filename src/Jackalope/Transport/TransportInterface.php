@@ -46,7 +46,7 @@ interface TransportInterface
      * but client code could check the descriptors and be confused if you
      * announce invalid capabilities here.
      *
-     * @return array with name => value/array of value for the descriptors
+     * @return array<string, mixed> with name => value/array of value for the descriptors
      *
      * @throws RepositoryException if error occurs
      *
@@ -58,7 +58,7 @@ interface TransportInterface
     /**
      * Returns the workspace names that can be used when logging in.
      *
-     * @return array List of workspaces that can be specified on login
+     * @return string[] List of workspaces that can be specified on login
      */
     public function getAccessibleWorkspaceNames(): array;
 
@@ -113,7 +113,7 @@ interface TransportInterface
      * Returns all additional namespaces. Does not return the ones defined as
      * constants in PHPCR\NamespaceRegistryInterface
      *
-     * @return array Associative array of prefix => uri
+     * @return array<string, string> Associative array of prefix => uri
      */
     public function getNamespaces(): array;
 

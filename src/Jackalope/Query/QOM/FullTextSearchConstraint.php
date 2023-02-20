@@ -59,7 +59,7 @@ final class FullTextSearchConstraint implements FullTextSearchInterface
     /**
      * Gets all constraints including itself.
      *
-     * @return array the constraints
+     * @return FullTextSearchConstraint[] the constraints
      *
      * @api
      */

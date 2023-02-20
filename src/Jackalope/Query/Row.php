@@ -59,10 +59,7 @@ final class Row implements \Iterator, RowInterface
     private string $defaultSelectorName;
 
     /**
-     * Create new Row instance.
-     *
-     * @param FactoryInterface $factory the object factory
-     * @param array            $columns array of array with fields dcr:name and dcr:value
+     * @param array<array<string, mixed>> $columns array of array with fields dcr:name and dcr:value
      */
     public function __construct(FactoryInterface $factory, ObjectManager $objectManager, array $columns)
     {

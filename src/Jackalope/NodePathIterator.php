@@ -12,7 +12,14 @@ final class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Counta
 {
     private ObjectManager $objectManager;
     private int $offset = 0;
+
+    /**
+     * @var array<string, NodeInterface> Hashmap of path => NodeInterface
+     */
     private array $nodes = [];
+    /**
+     * @var string[]
+     */
     private array $paths;
     private $typeFilter;
     private string $class;
@@ -144,6 +151,8 @@ final class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Counta
      * Subsequent calls will start loading from the first path
      * which does not have a corresponding array key in the nodes array
      * - if the node is indeed not already loaded.
+     *
+     * @param string|int $offset
      */
     private function ensurePathLoaded($offset): void
     {
