@@ -714,7 +714,7 @@ class ObjectManager
      *
      * @return \ArrayIterator
      */
-    private function pathArrayToPropertiesIterator(string $propertyPaths): \Iterator
+    private function pathArrayToPropertiesIterator(array $propertyPaths): \Iterator
     {
         // FIXME: this will break if we have non-persisted move
         return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));
