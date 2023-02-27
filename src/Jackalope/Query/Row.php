@@ -201,44 +201,26 @@ final class Row implements \Iterator, RowInterface
         return $this->score[$selectorName];
     }
 
-    /**
-     * Implement Iterator.
-     */
     public function rewind(): void
     {
         $this->position = 0;
     }
 
-    /**
-     * Implement Iterator.
-     */
-    #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->columns[$this->position]['dcr:value'];
     }
 
-    /**
-     * Implement Iterator.
-     */
     public function key(): ?string
     {
         return $this->columns[$this->position]['dcr:name'];
     }
 
-    /**
-     * Implement Iterator.
-     */
     public function next(): void
     {
         ++$this->position;
     }
 
-    /**
-     * Implement Iterator.
-     *
-     * @return bool whether the current position is valid
-     */
     public function valid(): bool
     {
         return isset($this->columns[$this->position]);
