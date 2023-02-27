@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+1.x
+===
+
+1.4.6
+-----
+
+* Fix dynamically declared variables
+* Add ReturnTypeWillChange to avoid PHP warnings.
+
 1.4.5
 -----
 

@@ -25,6 +25,8 @@ class DescendantNodeConstraint implements DescendantNodeInterface
      */
     protected $ancestorPath;
 
+    protected $path;
+
     /**
      * Constructor
      *
