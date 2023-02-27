@@ -29,11 +29,6 @@ final class RowIterator implements \SeekableIterator, \Countable
         $this->rows = $rows;
     }
 
-    /**
-     * @param int $position
-     *
-     * @throws \OutOfBoundsException
-     */
     public function seek($offset): void
     {
         $this->offset = $offset;
