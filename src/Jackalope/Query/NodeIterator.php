@@ -52,6 +52,7 @@ class NodeIterator implements SeekableIterator, Countable
         $this->rows = $rows;
     }
 
+    #[\ReturnTypeWillChange]
     public function seek($nodeName)
     {
         foreach ($this->rows as $position => $columns) {
@@ -69,16 +70,19 @@ class NodeIterator implements SeekableIterator, Countable
         throw new OutOfBoundsException("invalid seek position ($nodeName)");
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->rows);
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $path = $this->key();
@@ -89,6 +93,7 @@ class NodeIterator implements SeekableIterator, Countable
         return $this->objectManager->getNodeByPath($path);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (!$this->valid()) {
@@ -109,11 +114,13 @@ class NodeIterator implements SeekableIterator, Countable
         return $path;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->rows[$this->position]);

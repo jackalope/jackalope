@@ -38,6 +38,8 @@ class NodePathIterator implements SeekableIterator, ArrayAccess, Countable
 
     protected $batchSize;
 
+    protected $objectManager;
+
     public function __construct(
         ObjectManager $objectManager,
         $paths,
