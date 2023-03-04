@@ -202,6 +202,43 @@ final class NodeProcessorTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testPropertyDefsAutoCreatedSkipOnUseridNotSet(): void
+    {
+        $jcrCreatedByProperty = $this->getPropertyDefinitionMock([
+            'getName' => 'jcr:createdBy',
+            'isAutoCreated' => true,
+        ]);
+
+        $nodeType = $this->getNodeTypeMock([
+            'getDeclaredChildNodeDefinitions' => [],
+            'getDeclaredPropertyDefinitions' => [
+                $jcrCreatedByProperty,
+            ],
+            'getDeclaredSupertypes' => [],
+            'getName' => 'node-type-1',
+        ]);
+
+        $node = $this->getNodeMock([
+            'getPrimaryNodeType' => $nodeType,
+            'getMixinNodeTypes' => [],
+            'getProperties' => [],
+        ]);
+
+        // expectations
+        $node
+            ->expects($this->never())
+            ->method('setProperty')
+        ;
+
+        $processor = new NodeProcessor(null, new \ArrayObject([
+            'ns' => 'Namespace',
+            'dtl' => 'http://www.dantleech.com/ns',
+        ]));
+        $processor->process($node);
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testPropertyAutoCreatedNoDefaults(): void
     {
         $this->expectException(RepositoryException::class);
