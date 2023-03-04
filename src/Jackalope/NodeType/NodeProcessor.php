@@ -64,7 +64,7 @@ $/xi";
     /**
      * ID of the connected user.
      */
-    private string $userId;
+    private ?string $userId;
 
     /**
      * Whether the last modified property should be updated automatically.
@@ -77,13 +77,13 @@ $/xi";
     private \ArrayObject $namespaces;
 
     /**
-     * @param string|object $userId           ID of the connected user
-     * @param \ArrayObject  $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
-     * @param bool          $autoLastModified Whether the last modified property should be updated automatically
+     * @param string|null  $userId           ID of the connected user, if known
+     * @param \ArrayObject $namespaces       List of namespaces in the current session. Keys are prefix, values are URI.
+     * @param bool         $autoLastModified Whether the last modified property should be updated automatically
      */
-    public function __construct($userId, \ArrayObject $namespaces, bool $autoLastModified = true)
+    public function __construct(?string $userId, \ArrayObject $namespaces, bool $autoLastModified = true)
     {
-        $this->userId = (string) $userId;
+        $this->userId = $userId;
         $this->autoLastModified = $autoLastModified;
         $this->namespaces = $namespaces;
     }
@@ -183,6 +183,9 @@ $/xi";
                             break;
                         case 'jcr:createdBy':
                         case 'jcr:lastModifiedBy':
+                            if (null === $this->userId) {
+                                continue 2;
+                            }
                             $value = $this->userId;
                             break;
                         case 'jcr:created':
@@ -226,7 +229,12 @@ $/xi";
                             break;
                         case 'jcr:lastModifiedBy':
                             if ($this->autoLastModified) {
-                                $prop->setValue($this->userId);
+                                if (null === $this->userId) {
+                                    // we don't know the current user id, remove lastModifiedBy property
+                                    $node->setProperty($propertyDef->getName(), null);
+                                } else {
+                                    $prop->setValue($this->userId);
+                                }
                             }
                             break;
                         case 'jcr:etag':
