@@ -724,12 +724,14 @@ class Session implements SessionInterface
     }
 
     /**
+     * @param int|bool $value
+     *
      * @throws \InvalidArgumentException if the option is unknown
      * @throws RepositoryException       if this option is not supported and is a behaviour relevant option
      *
      * @see BaseTransport::setFetchDepth($value);
      */
-    public function setSessionOption(string $key, bool $value): void
+    public function setSessionOption(string $key, $value): void
     {
         switch ($key) {
             case self::OPTION_FETCH_DEPTH:
