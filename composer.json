@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.0",
         "ext-xml": "*",
         "phpcr/phpcr-utils": "^1.8.0",
         "phpcr/phpcr": "~2.1.0,>=2.1.0-beta12",
@@ -25,7 +25,7 @@
         "phpcr/phpcr-implementation": "2.1.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^5.0.4 || ^6.0"
+        "symfony/phpunit-bridge": "^6.2.7"
     },
     "autoload": {
         "psr-0": { "Jackalope\\": "src/" }
