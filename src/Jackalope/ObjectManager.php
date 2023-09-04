@@ -680,6 +680,8 @@ class ObjectManager
      * @param string|null $name name of referring REFERENCE properties to be
      *                          returned; if null then all referring REFERENCEs are returned
      *
+     * @return PropertyInterface[]
+     *
      * @see Node::getReferences()
      */
     public function getReferences(string $path, ?string $name = null): \ArrayIterator
@@ -697,6 +699,8 @@ class ObjectManager
      * @param string|null $name name of referring WEAKREFERENCE properties to be
      *                          returned; if null then all referring WEAKREFERENCEs are returned
      *
+     * @return PropertyInterface[]
+     *
      * @see Node::getWeakReferences()
      */
     public function getWeakReferences(string $path, ?string $name = null): \ArrayIterator
@@ -712,9 +716,9 @@ class ObjectManager
      *
      * @param string[] $propertyPaths an array of properties paths
      *
-     * @return \ArrayIterator
+     * @return PropertyInterface[]
      */
-    private function pathArrayToPropertiesIterator(array $propertyPaths): \Iterator
+    private function pathArrayToPropertiesIterator(array $propertyPaths): \ArrayIterator
     {
         // FIXME: this will break if we have non-persisted move
         return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));

@@ -274,12 +274,11 @@ interface TransportInterface
      ****************************************************************************/
 
     /**
-     * Returns the path of all accessible REFERENCE properties in the workspace
-     * that point to the node.
-     *
      * @param string      $path absolute path to the node we need the references to
      * @param string|null $name name of referring REFERENCE properties to be returned; if null, all
      *                          referring REFERENCEs are returned
+     *
+     * @return string[] The path of all accessible REFERENCE properties (called $name) that point to the node at $path.
      */
     public function getReferences(string $path, ?string $name = null): array;
 
