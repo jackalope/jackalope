@@ -1,4 +1,4 @@
-# Jackalope [![Test application](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml/badge.svg)](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml) [![Static analysis](https://github.com/jackalope/jackalope/actions/workflows/static.yml/badge.svg)](https://github.com/jackalope/jackalope/actions/workflows/static.yml)
+# Jackalope [![Test application](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml/badge.svg?branch=2.x)](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml) [![Static analysis](https://github.com/jackalope/jackalope/actions/workflows/static.yml/badge.svg?branch=2.x)](https://github.com/jackalope/jackalope/actions/workflows/static.yml)
 
 A powerful implementation of the [PHPCR API](http://phpcr.github.io).
 
