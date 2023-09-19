@@ -7,8 +7,6 @@ use PHPCR\NodeType\NodeTypeDefinitionInterface;
 use PHPCR\Util\ValueConverter;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -144,8 +142,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getName(): ?string
@@ -154,8 +150,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDeclaredSupertypeNames()
@@ -168,8 +162,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isAbstract(): bool
@@ -178,8 +170,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isMixin(): bool
@@ -188,8 +178,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasOrderableChildNodes(): bool
@@ -198,8 +186,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isQueryable(): bool
@@ -208,8 +194,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrimaryItemName(): ?string
@@ -218,8 +202,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDeclaredPropertyDefinitions(): ?array
@@ -228,8 +210,6 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDeclaredChildNodeDefinitions(): ?array

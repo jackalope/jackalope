@@ -99,8 +99,6 @@ final class Row implements \Iterator, RowInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getValues(): array
@@ -116,8 +114,6 @@ final class Row implements \Iterator, RowInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getValue($columnName)
@@ -149,8 +145,6 @@ final class Row implements \Iterator, RowInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNode($selectorName = null): ?NodeInterface
@@ -165,8 +159,6 @@ final class Row implements \Iterator, RowInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPath($selectorName = null): ?string
@@ -184,8 +176,6 @@ final class Row implements \Iterator, RowInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getScore($selectorName = null): float

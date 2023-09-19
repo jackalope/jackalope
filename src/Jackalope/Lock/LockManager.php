@@ -15,8 +15,6 @@ use PHPCR\PathNotFoundException;
 use PHPCR\SessionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -41,17 +39,12 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
         $this->transport = $transport;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->getLockTokens());
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function addLockToken($lockToken): void
@@ -60,8 +53,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLock($absPath): LockInterface
@@ -81,8 +72,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLockTokens()
@@ -91,8 +80,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -111,8 +98,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function lock($absPath, $isDeep, $isSessionScoped, $timeoutHint = PHP_INT_MAX, $ownerInfo = null): LockInterface
@@ -164,8 +149,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isLocked($absPath): bool
@@ -178,8 +161,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeLockToken($lockToken): void
@@ -188,8 +169,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function unlock($absPath): void
@@ -214,8 +193,6 @@ final class LockManager implements \IteratorAggregate, LockManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createLockInfo(): LockInfoInterface

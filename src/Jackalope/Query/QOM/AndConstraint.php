@@ -6,8 +6,6 @@ use PHPCR\Query\QOM\AndInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -25,8 +23,6 @@ final class AndConstraint implements AndInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getConstraint1(): ConstraintInterface
@@ -35,8 +31,6 @@ final class AndConstraint implements AndInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getConstraint2(): ConstraintInterface

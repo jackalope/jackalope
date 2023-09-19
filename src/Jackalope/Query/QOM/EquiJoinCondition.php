@@ -5,8 +5,6 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\EquiJoinConditionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -28,8 +26,6 @@ final class EquiJoinCondition implements EquiJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelector1Name(): string
@@ -38,8 +34,6 @@ final class EquiJoinCondition implements EquiJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getProperty1Name(): string
@@ -48,8 +42,6 @@ final class EquiJoinCondition implements EquiJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelector2Name(): string
@@ -58,8 +50,6 @@ final class EquiJoinCondition implements EquiJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getProperty2Name(): string

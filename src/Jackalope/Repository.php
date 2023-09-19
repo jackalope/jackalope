@@ -11,8 +11,6 @@ use PHPCR\RepositoryInterface;
 use PHPCR\SessionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -123,8 +121,6 @@ final class Repository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -147,8 +143,6 @@ final class Repository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDescriptorKeys(): array
@@ -161,8 +155,6 @@ final class Repository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isStandardDescriptor($key): bool
@@ -174,8 +166,6 @@ final class Repository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDescriptor($key)

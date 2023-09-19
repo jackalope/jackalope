@@ -189,8 +189,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPath(): string
@@ -201,8 +199,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getName(): string
@@ -213,8 +209,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAncestor($depth): ItemInterface
@@ -234,8 +228,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getParent(): NodeInterface
@@ -250,8 +242,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDepth(): int
@@ -262,8 +252,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSession(): SessionInterface
@@ -274,8 +262,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isNode(): bool
@@ -286,8 +272,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isNew(): bool
@@ -296,8 +280,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isModified(): bool
@@ -307,8 +289,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @private
      */
     public function isMoved(): bool
@@ -355,8 +335,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isSame(ItemInterface $otherItem): bool
@@ -385,8 +363,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function accept(ItemVisitorInterface $visitor): void
@@ -397,8 +373,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -520,8 +494,6 @@ abstract class Item implements ItemInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function revert(): void

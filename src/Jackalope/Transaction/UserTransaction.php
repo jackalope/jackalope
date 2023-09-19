@@ -33,8 +33,6 @@ final class UserTransaction implements UserTransactionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function begin(): void
@@ -66,8 +64,6 @@ final class UserTransaction implements UserTransactionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function inTransaction(): bool
@@ -95,8 +91,6 @@ final class UserTransaction implements UserTransactionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setTransactionTimeout($seconds = 0): void

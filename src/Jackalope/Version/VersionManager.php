@@ -19,8 +19,6 @@ use PHPCR\Version\VersionInterface;
 use PHPCR\Version\VersionManagerInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -36,8 +34,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function checkin($absPath): VersionInterface
@@ -62,8 +58,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function checkout($absPath): void
@@ -76,8 +70,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ActivityViolationException
      *
      * @api
@@ -91,8 +83,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isCheckedOut($absPath): bool
@@ -106,8 +96,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ItemNotFoundException
      * @throws NoSuchWorkspaceException
      * @throws \InvalidArgumentException
@@ -127,8 +115,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeVersionHistory($absPath): void
@@ -137,8 +123,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ItemNotFoundException
      * @throws \InvalidArgumentException
      * @throws ValueFormatException
@@ -160,8 +144,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -200,8 +182,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws ItemNotFoundException
      * @throws NoSuchWorkspaceException
@@ -218,8 +198,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function merge($source, $srcWorkspace = null, $bestEffort = null, $isShallow = false)
@@ -230,8 +208,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function doneMerge($absPath, VersionInterface $version)
@@ -242,8 +218,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function cancelMerge($absPath, VersionInterface $version)
@@ -254,8 +228,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createConfiguration($absPath, VersionInterface $baseline)
@@ -266,8 +238,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setActivity(NodeInterface $activity)
@@ -278,8 +248,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getActivity()
@@ -290,8 +258,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createActivity($title)
@@ -302,8 +268,6 @@ final class VersionManager implements VersionManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeActivity(NodeInterface $activityNode)

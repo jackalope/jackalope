@@ -9,8 +9,6 @@ use PHPCR\NamespaceRegistryInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  */
@@ -65,8 +63,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function registerNamespace($prefix, $uri): void
@@ -99,8 +95,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function unregisterNamespaceByURI($uri): void
@@ -123,8 +117,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrefixes(): array
@@ -138,8 +130,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getURIs(): array
@@ -153,8 +143,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getURI($prefix): string
@@ -172,8 +160,6 @@ final class NamespaceRegistry implements \IteratorAggregate, NamespaceRegistryIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrefix($uri): string

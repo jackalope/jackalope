@@ -48,8 +48,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRequiredPrimaryTypes(): ?array
@@ -65,8 +63,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRequiredPrimaryTypeNames(): ?array
@@ -75,8 +71,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDefaultPrimaryType()
@@ -89,8 +83,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDefaultPrimaryTypeName(): ?string
@@ -99,8 +91,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function allowsSameNameSiblings(): bool

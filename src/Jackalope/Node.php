@@ -27,8 +27,6 @@ use PHPCR\ValueFormatException;
 use PHPCR\Version\VersionException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -425,8 +423,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @throws \InvalidArgumentException
@@ -475,8 +471,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws PathNotFoundException
      *
      * @api
@@ -537,8 +531,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param bool $validate When false, node types are not asked to validate
      *                       whether operation is allowed
      *
@@ -636,8 +628,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -662,8 +652,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodes($nameFilter = null, $typeFilter = null)
@@ -690,8 +678,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeNames($nameFilter = null, $typeFilter = null)
@@ -708,8 +694,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -767,8 +751,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      *
@@ -787,8 +769,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws InvalidItemStateException
      * @throws PathNotFoundException
@@ -806,8 +786,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getProperties($nameFilter = null)
@@ -828,8 +806,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws InvalidItemStateException
      * @throws ValueFormatException
@@ -849,8 +825,8 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
             // we know for sure the properties exist, as they come from the
             // array keys of the array we are accessing
             $type = $this->properties[$name]->getType();
-            if (!$dereference &&
-                    (PropertyType::REFERENCE === $type
+            if (!$dereference
+                    && (PropertyType::REFERENCE === $type
                     || PropertyType::WEAKREFERENCE === $type
                     || PropertyType::PATH === $type)
             ) {
@@ -865,8 +841,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrimaryItem(): ?ItemInterface
@@ -890,8 +864,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws AccessDeniedException
      * @throws InvalidItemStateException
@@ -921,8 +893,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIndex(): int
@@ -933,8 +903,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getReferences($name = null)
@@ -945,8 +913,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getWeakReferences($name = null)
@@ -957,8 +923,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasNode($relPath): bool
@@ -976,8 +940,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasProperty($relPath): bool
@@ -995,8 +957,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasNodes(): bool
@@ -1007,8 +967,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasProperties(): bool
@@ -1019,8 +977,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrimaryNodeType(): NodeTypeInterface
@@ -1033,8 +989,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getMixinNodeTypes(): array
@@ -1056,8 +1010,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isNodeType($nodeTypeName): bool
@@ -1143,8 +1095,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      * @throws AccessDeniedException
@@ -1175,8 +1125,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws AccessDeniedException
      * @throws InvalidItemStateException
@@ -1222,8 +1170,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1236,8 +1182,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDefinition()
@@ -1258,8 +1202,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function update($srcWorkspace): void
@@ -1277,8 +1219,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1293,8 +1233,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSharedSet(): void
@@ -1305,8 +1243,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1320,8 +1256,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1335,8 +1269,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isCheckedOut(): bool
@@ -1350,8 +1282,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isLocked(): bool
@@ -1362,8 +1292,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1377,8 +1305,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1512,7 +1438,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @private
      */
-    public function addChildNode(NodeInterface $node, bool $check, ?string $name = null): void
+    public function addChildNode(NodeInterface $node, bool $check, string $name = null): void
     {
         if ($check) {
             $this->checkState();
@@ -1664,7 +1590,6 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      * Implement the setProperty, but also used from constructor or in refresh,
      * when the backend has a new property that is not yet loaded in memory.
      *
-     * @param mixed      $value
      * @param string|int $type
      * @param bool       $internal whether we are setting this node through api or internally
      *

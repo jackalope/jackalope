@@ -7,8 +7,6 @@ use PHPCR\NodeType\NodeDefinitionTemplateInterface;
 use PHPCR\Version\OnParentVersionAction;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -38,8 +36,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setName($name): void
@@ -48,8 +44,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setAutoCreated($autoCreated): void
@@ -58,8 +52,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setMandatory($mandatory): void
@@ -68,8 +60,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setOnParentVersion($opv): void
@@ -78,8 +68,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setProtected($protectedStatus): void
@@ -88,8 +76,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setRequiredPrimaryTypeNames(array $requiredPrimaryTypeNames): void
@@ -98,8 +84,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setDefaultPrimaryTypeName($defaultPrimaryTypeName): void
@@ -108,8 +92,6 @@ class NodeDefinitionTemplate extends NodeDefinition implements NodeDefinitionTem
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setSameNameSiblings($allowSameNameSiblings): void

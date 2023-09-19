@@ -104,8 +104,6 @@ final class QomToSql1QueryConverterTest extends TestCase
 class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
 {
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createQuery(

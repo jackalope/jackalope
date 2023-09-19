@@ -12,8 +12,6 @@ use PHPCR\Query\QueryInterface;
 use PHPCR\Query\QueryManagerInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -32,8 +30,6 @@ final class QueryManager implements QueryManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createQuery($statement, $language)
@@ -57,8 +53,6 @@ final class QueryManager implements QueryManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getQOMFactory(): QueryObjectModelFactoryInterface
@@ -67,8 +61,6 @@ final class QueryManager implements QueryManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getQuery($node): QueryInterface
@@ -77,8 +69,6 @@ final class QueryManager implements QueryManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSupportedQueryLanguages(): array

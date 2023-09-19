@@ -5,8 +5,6 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\SameNodeJoinConditionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -18,7 +16,7 @@ final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     private string $selector2Name;
     private ?string $selector2Path;
 
-    public function __construct(string $selector1Name, string $selector2Name, ?string $selector2Path = null)
+    public function __construct(string $selector1Name, string $selector2Name, string $selector2Path = null)
     {
         $this->selector1Name = (string) $selector1Name;
         $this->selector2Name = (string) $selector2Name;
@@ -26,8 +24,6 @@ final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelector1Name(): string
@@ -36,8 +32,6 @@ final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelector2Name(): string
@@ -46,8 +40,6 @@ final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelector2Path(): ?string

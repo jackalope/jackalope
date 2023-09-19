@@ -39,8 +39,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function addEventListener(
@@ -51,8 +49,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeEventListener(EventListenerInterface $listener): void
@@ -61,8 +57,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRegisteredEventListeners(): \Iterator
@@ -71,8 +65,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setUserData($userData): void
@@ -81,8 +73,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getEventJournal(EventFilterInterface $filter): EventJournalInterface
@@ -91,8 +81,6 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createEventFilter(): EventFilterInterface

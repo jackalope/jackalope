@@ -43,7 +43,7 @@ interface WorkspaceManagementInterface extends TransportInterface
      * @throws NoSuchWorkspaceException                if $srcWorkspace does not exist
      * @throws RepositoryException                     if another error occurs
      */
-    public function createWorkspace(string $name, ?string $srcWorkspace = null): void;
+    public function createWorkspace(string $name, string $srcWorkspace = null): void;
 
     /**
      * Deletes the workspace with the specified name from the repository,

@@ -40,8 +40,6 @@ use PHPCR\Query\QOM\StaticOperandInterface;
 use PHPCR\Query\QOM\UpperCaseInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -52,15 +50,13 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     protected FactoryInterface $factory;
     protected ?ObjectManager $objectManager;
 
-    public function __construct(FactoryInterface $factory, ?ObjectManager $objectManager = null)
+    public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createQuery(
@@ -79,8 +75,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     // or refactor the factory to make the first param optional.
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function selector($selectorName, $nodeTypeName): SelectorInterface
@@ -89,8 +83,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function join(SourceInterface $left, SourceInterface $right, $joinType, JoinConditionInterface $joinCondition): JoinInterface
@@ -99,8 +91,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function equiJoinCondition($selector1Name, $property1Name, $selector2Name, $property2Name): EquiJoinConditionInterface
@@ -109,8 +99,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function sameNodeJoinCondition($selector1Name, $selector2Name, $selector2Path = null): SameNodeJoinConditionInterface
@@ -119,8 +107,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function childNodeJoinCondition($childSelectorName, $parentSelectorName): ChildNodeJoinConditionInterface
@@ -129,8 +115,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function descendantNodeJoinCondition($descendantSelectorName, $ancestorSelectorName): DescendantNodeJoinConditionInterface
@@ -139,8 +123,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function andConstraint(ConstraintInterface $constraint1, ConstraintInterface $constraint2): AndInterface
@@ -149,8 +131,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function orConstraint(ConstraintInterface $constraint1, ConstraintInterface $constraint2): OrInterface
@@ -159,8 +139,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function notConstraint(ConstraintInterface $constraint): NotInterface
@@ -169,8 +147,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function comparison(DynamicOperandInterface $operand1, $operator, StaticOperandInterface $operand2): ComparisonInterface
@@ -179,8 +155,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function propertyExistence($selectorName, $propertyName): PropertyExistenceInterface
@@ -189,8 +163,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -201,8 +173,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function sameNode($selectorName, $path): SameNodeInterface
@@ -211,8 +181,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function childNode($selectorName, $path): ChildNodeInterface
@@ -221,8 +189,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function descendantNode($selectorName, $path): DescendantNodeInterface
@@ -231,8 +197,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -243,8 +207,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function length(PropertyValueInterface $propertyValue): LengthInterface
@@ -253,8 +215,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -265,8 +225,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function nodeLocalName($selectorName): NodeLocalNameInterface
@@ -275,8 +233,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -287,8 +243,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function lowerCase(DynamicOperandInterface $operand): LowerCaseInterface
@@ -297,8 +251,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function upperCase(DynamicOperandInterface $operand): UpperCaseInterface
@@ -307,8 +259,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function bindVariable($bindVariableName): BindVariableValueInterface
@@ -317,8 +267,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function literal($literalValue): LiteralInterface
@@ -327,8 +275,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function ascending(DynamicOperandInterface $operand): OrderingInterface
@@ -337,8 +283,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function descending(DynamicOperandInterface $operand): OrderingInterface
@@ -347,8 +291,6 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api

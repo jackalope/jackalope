@@ -9,8 +9,6 @@ use PHPCR\Observation\EventJournalInterface;
 use PHPCR\SessionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @api
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
@@ -59,8 +57,6 @@ final class EventJournal implements EventJournalInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function skipTo($date): void

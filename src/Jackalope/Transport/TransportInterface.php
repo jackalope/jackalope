@@ -84,7 +84,7 @@ interface TransportInterface
      *                                  is not recognized
      * @throws RepositoryException      if another error occurs
      */
-    public function login(?CredentialsInterface $credentials = null, ?string $workspaceName = null): string;
+    public function login(CredentialsInterface $credentials = null, string $workspaceName = null): string;
 
     /***********************************************************************
      * all methods from here below require that login is called first. the *
@@ -257,7 +257,7 @@ interface TransportInterface
      *
      * @see getNodeByIdentifier
      */
-    public function getNodePathForIdentifier(string $uuid, ?string $workspace = null): string;
+    public function getNodePathForIdentifier(string $uuid, string $workspace = null): string;
 
     /**
      * Retrieve a stream of a binary property value.
@@ -278,9 +278,9 @@ interface TransportInterface
      * @param string|null $name name of referring REFERENCE properties to be returned; if null, all
      *                          referring REFERENCEs are returned
      *
-     * @return string[] The path of all accessible REFERENCE properties (called $name) that point to the node at $path.
+     * @return string[] the path of all accessible REFERENCE properties (called $name) that point to the node at $path
      */
-    public function getReferences(string $path, ?string $name = null): array;
+    public function getReferences(string $path, string $name = null): array;
 
     /**
      * Returns the path of all accessible WEAKREFERENCE properties in the
@@ -290,7 +290,7 @@ interface TransportInterface
      * @param string|null $name name of referring WEAKREFERENCE properties to be returned; if null,
      *                          all referring WEAKREFERENCEs are returned
      */
-    public function getWeakReferences(string $path, ?string $name = null): array;
+    public function getWeakReferences(string $path, string $name = null): array;
 
     /***********************************
      * Methods for NodeType discovery. *

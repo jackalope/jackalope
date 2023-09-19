@@ -6,8 +6,6 @@ use PHPCR\Query\QOM\DynamicOperandInterface as DynamicOperandInterfaceAlias;
 use PHPCR\Query\QOM\UpperCaseInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -23,8 +21,6 @@ final class UpperCase implements UpperCaseInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getOperand(): DynamicOperandInterfaceAlias

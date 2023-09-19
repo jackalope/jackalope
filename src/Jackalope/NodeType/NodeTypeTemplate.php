@@ -5,8 +5,6 @@ namespace Jackalope\NodeType;
 use PHPCR\NodeType\NodeTypeTemplateInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -15,8 +13,6 @@ use PHPCR\NodeType\NodeTypeTemplateInterface;
 class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setName($name): void
@@ -25,8 +21,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setDeclaredSuperTypeNames(array $names): void
@@ -35,8 +29,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setAbstract($abstractStatus): void
@@ -45,8 +37,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setMixin($mixin): void
@@ -55,8 +45,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setOrderableChildNodes($orderable): void
@@ -65,8 +53,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setPrimaryItemName($name): void
@@ -75,8 +61,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setQueryable($queryable): void
@@ -85,8 +69,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPropertyDefinitionTemplates(): \ArrayObject
@@ -99,8 +81,6 @@ class NodeTypeTemplate extends NodeTypeDefinition implements NodeTypeTemplateInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeDefinitionTemplates(): \ArrayObject

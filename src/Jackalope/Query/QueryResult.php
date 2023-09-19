@@ -8,8 +8,6 @@ use PHPCR\Query\QueryResultInterface;
 use PHPCR\RepositoryException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -62,8 +60,6 @@ final class QueryResult implements \IteratorAggregate, QueryResultInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getColumnNames(): array
@@ -85,8 +81,6 @@ final class QueryResult implements \IteratorAggregate, QueryResultInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRows()
@@ -95,8 +89,6 @@ final class QueryResult implements \IteratorAggregate, QueryResultInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodes($prefetch = false)
@@ -115,8 +107,6 @@ final class QueryResult implements \IteratorAggregate, QueryResultInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelectorNames(): array

@@ -37,8 +37,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     private array $versionLabels;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getVersionableIdentifier(): string
@@ -47,8 +45,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRootVersion(): VersionInterface
@@ -57,8 +53,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAllLinearVersions(): \Iterator
@@ -76,8 +70,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAllVersions(): \Iterator
@@ -115,8 +107,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAllLinearFrozenNodes(): \Iterator
@@ -131,8 +121,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAllFrozenNodes(): \Iterator
@@ -147,8 +135,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getVersion($versionName): VersionInterface
@@ -162,8 +148,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getVersionByLabel($label): VersionInterface
@@ -176,8 +160,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function addVersionLabel($versionName, $label, $moveLabel): void
@@ -191,8 +173,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeVersionLabel($label): void
@@ -207,8 +187,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasVersionLabel($label, $version = null): bool
@@ -219,8 +197,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getVersionLabels($version = null): array
@@ -282,8 +258,6 @@ final class VersionHistory extends Node implements VersionHistoryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeVersion($versionName): void

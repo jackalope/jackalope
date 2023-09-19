@@ -35,10 +35,10 @@ interface FactoryInterface
      * Get the object with the class name created with the factory plus any
      * passed parameters.
      *
-     * @param $name string class name with sub-namespace inside the Jackalope
-     *      namespace
+     * @param $name   string class name with sub-namespace inside the Jackalope
+     *                 namespace
      * @param $params array Parameters in order of their appearance in the
-     *      constructor. The factory will prepend itself to this list.
+     *                 constructor. The factory will prepend itself to this list.
      *
      * @return object
      */

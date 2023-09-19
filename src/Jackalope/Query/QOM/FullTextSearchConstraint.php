@@ -6,8 +6,6 @@ use PHPCR\Query\QOM\FullTextSearchInterface;
 use PHPCR\Query\QOM\StaticOperandInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -27,8 +25,6 @@ final class FullTextSearchConstraint implements FullTextSearchInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelectorName(): string
@@ -37,8 +33,6 @@ final class FullTextSearchConstraint implements FullTextSearchInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPropertyName(): ?string
@@ -47,8 +41,6 @@ final class FullTextSearchConstraint implements FullTextSearchInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getFullTextSearchExpression(): StaticOperandInterface
