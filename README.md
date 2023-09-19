@@ -1,4 +1,4 @@
-# Jackalope [![Build Status](https://secure.travis-ci.org/jackalope/jackalope.png?branch=master)](http://travis-ci.org/jackalope/jackalope)
+# Jackalope [![Test application](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml/badge.svg)](https://github.com/jackalope/jackalope/actions/workflows/test-application.yaml) [![Static analysis](https://github.com/jackalope/jackalope/actions/workflows/static.yml/badge.svg)](https://github.com/jackalope/jackalope/actions/workflows/static.yml)
 
 A powerful implementation of the [PHPCR API](http://phpcr.github.io).
 
