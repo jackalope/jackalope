@@ -5,8 +5,6 @@ namespace Jackalope\Query\QOM;
 use PHPCR\Query\QOM\DescendantNodeJoinConditionInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -24,8 +22,6 @@ final class DescendantNodeJoinCondition implements DescendantNodeJoinConditionIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDescendantSelectorName(): string
@@ -34,8 +30,6 @@ final class DescendantNodeJoinCondition implements DescendantNodeJoinConditionIn
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAncestorSelectorName(): string

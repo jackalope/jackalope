@@ -198,8 +198,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeType($nodeTypeName)
@@ -232,8 +230,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasNodeType($name)
@@ -250,8 +246,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAllNodeTypes(): \Iterator
@@ -262,8 +256,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrimaryNodeTypes(): \Iterator
@@ -274,8 +266,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getMixinNodeTypes(): \Iterator
@@ -286,8 +276,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createNodeTypeTemplate($ntd = null): NodeTypeTemplate
@@ -296,8 +284,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createNodeDefinitionTemplate(): NodeDefinitionTemplate
@@ -306,8 +292,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createPropertyDefinitionTemplate(): PropertyDefinitionTemplate
@@ -316,8 +300,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function registerNodeType(NodeTypeDefinitionInterface $ntd, $allowUpdate): NodeTypeDefinitionInterface
@@ -347,8 +329,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function registerNodeTypes(array $definitions, $allowUpdate): \Iterator
@@ -372,8 +352,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws AccessDeniedException
      * @throws NamespaceException
      *
@@ -398,8 +376,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function unregisterNodeType($name): void
@@ -416,8 +392,6 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function unregisterNodeTypes(array $names): void

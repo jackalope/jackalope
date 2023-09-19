@@ -40,9 +40,6 @@ class EventFilter implements EventFilterInterface
         $this->session = $session;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function match(EventInterface $event)
     {
         if ((null !== $this->eventTypes) && $this->skipByType($event)) {
@@ -133,8 +130,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setEventTypes($eventTypes): self
@@ -145,8 +140,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getEventTypes(): ?int
@@ -155,8 +148,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setAbsPath($absPath): self
@@ -167,8 +158,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAbsPath(): ?string
@@ -177,8 +166,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setIsDeep($isDeep): self
@@ -189,8 +176,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIsDeep(): bool
@@ -199,8 +184,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setIdentifiers(array $identifiers): self
@@ -211,8 +194,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIdentifiers(): ?array
@@ -221,8 +202,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setNodeTypes(array $nodeTypes): self
@@ -233,8 +212,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeTypes(): ?array
@@ -243,8 +220,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setNoLocal($noLocal)
@@ -256,8 +231,6 @@ class EventFilter implements EventFilterInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNoLocal(): bool

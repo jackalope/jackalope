@@ -97,8 +97,8 @@ abstract class TestCase extends BaseTestCase
             }
         }
 
-        // handle classic node
         if (XML_ELEMENT_NODE === $document->nodeType) {
+            // handle classic node
             $array['_type'] = $document->nodeName;
             if ($document->hasChildNodes()) {
                 $children = $document->childNodes;
@@ -111,9 +111,8 @@ abstract class TestCase extends BaseTestCase
                     }
                 }
             }
-
-        // handle text node
         } elseif (XML_TEXT_NODE === $document->nodeType || XML_CDATA_SECTION_NODE === $document->nodeType) {
+            // handle text node
             $value = $document->nodeValue;
             if (!empty($value)) {
                 $array['_type'] = '_text';
@@ -360,8 +359,6 @@ abstract class TestCase extends BaseTestCase
      * Get the value of a protected or private property of an object.
      *
      * @param object $instance
-     *
-     * @return mixed
      */
     protected function getAttributeValue($instance, string $attributeName)
     {

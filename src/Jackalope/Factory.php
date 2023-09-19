@@ -15,8 +15,6 @@ class Factory implements FactoryInterface
     private array $reflectionCache = [];
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      */
     public function get(string $name, array $params = [])

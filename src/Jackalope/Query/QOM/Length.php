@@ -6,8 +6,6 @@ use PHPCR\Query\QOM\LengthInterface;
 use PHPCR\Query\QOM\PropertyValueInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -23,8 +21,6 @@ final class Length implements LengthInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPropertyValue(): PropertyValueInterface

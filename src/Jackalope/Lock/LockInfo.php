@@ -5,8 +5,6 @@ namespace Jackalope\Lock;
 use PHPCR\Lock\LockInfoInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  * @author David Buchmann <david@liip.ch>
@@ -22,8 +20,6 @@ final class LockInfo implements LockInfoInterface
     private ?string $ownerInfo = null;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setIsDeep($isDeep): self
@@ -34,8 +30,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIsDeep(): bool
@@ -44,8 +38,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setIsSessionScoped($isSessionScoped): self
@@ -56,8 +48,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIsSessionScoped(): bool
@@ -66,8 +56,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setTimeoutHint($timeoutHint): self
@@ -78,8 +66,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getTimeoutHint(): int
@@ -88,8 +74,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setOwnerInfo($ownerInfo): self
@@ -100,8 +84,6 @@ final class LockInfo implements LockInfoInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getOwnerInfo(): ?string

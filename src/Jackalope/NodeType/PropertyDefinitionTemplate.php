@@ -8,8 +8,6 @@ use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -43,8 +41,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setName($name): void
@@ -53,8 +49,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setAutoCreated($autoCreated): void
@@ -63,8 +57,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setMandatory($mandatory): void
@@ -73,8 +65,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setOnParentVersion($opv): void
@@ -83,8 +73,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setProtected($protectedStatus): void
@@ -93,8 +81,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setRequiredType($type): void
@@ -103,8 +89,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setValueConstraints(array $constraints): void
@@ -113,8 +97,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setDefaultValues(array $defaultValues): void
@@ -123,8 +105,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setMultiple($multiple): void
@@ -133,8 +113,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setAvailableQueryOperators(array $operators): void
@@ -143,8 +121,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setFullTextSearchable($fullTextSearchable): void
@@ -153,8 +129,6 @@ class PropertyDefinitionTemplate extends PropertyDefinition implements PropertyD
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setQueryOrderable($queryOrderable): void

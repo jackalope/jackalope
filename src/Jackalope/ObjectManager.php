@@ -680,9 +680,11 @@ class ObjectManager
      * @param string|null $name name of referring REFERENCE properties to be
      *                          returned; if null then all referring REFERENCEs are returned
      *
+     * @return PropertyInterface[]
+     *
      * @see Node::getReferences()
      */
-    public function getReferences(string $path, ?string $name = null): \ArrayIterator
+    public function getReferences(string $path, string $name = null): \ArrayIterator
     {
         $references = $this->transport->getReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -697,9 +699,11 @@ class ObjectManager
      * @param string|null $name name of referring WEAKREFERENCE properties to be
      *                          returned; if null then all referring WEAKREFERENCEs are returned
      *
+     * @return PropertyInterface[]
+     *
      * @see Node::getWeakReferences()
      */
-    public function getWeakReferences(string $path, ?string $name = null): \ArrayIterator
+    public function getWeakReferences(string $path, string $name = null): \ArrayIterator
     {
         $references = $this->transport->getWeakReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -712,9 +716,9 @@ class ObjectManager
      *
      * @param string[] $propertyPaths an array of properties paths
      *
-     * @return \ArrayIterator
+     * @return PropertyInterface[]
      */
-    private function pathArrayToPropertiesIterator(array $propertyPaths): \Iterator
+    private function pathArrayToPropertiesIterator(array $propertyPaths): \ArrayIterator
     {
         // FIXME: this will break if we have non-persisted move
         return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));
@@ -1247,7 +1251,7 @@ class ObjectManager
      *
      * @see Item::remove()
      */
-    public function removeItem(string $absPath, ?PropertyInterface $property = null): void
+    public function removeItem(string $absPath, PropertyInterface $property = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1418,7 +1422,7 @@ class ObjectManager
      *
      * @see Workspace::copy()
      */
-    public function copyNodeImmediately(string $srcAbsPath, string $destAbsPath, ?string $srcWorkspace = null): void
+    public function copyNodeImmediately(string $srcAbsPath, string $destAbsPath, string $srcWorkspace = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1757,8 +1761,8 @@ class ObjectManager
         if (array_key_exists($absPath, $this->objectsByPath[Node::class])) {
             $item = $this->objectsByPath[Node::class][$absPath];
 
-            if ($keepChanges &&
-                ($item->isNew() || $this->getMoveSrcPath($absPath))
+            if ($keepChanges
+                && ($item->isNew() || $this->getMoveSrcPath($absPath))
             ) {
                 // we keep changes and this is a new node or it moved here
                 return false;
@@ -1772,6 +1776,7 @@ class ObjectManager
             unset($this->objectsByPath[Node::class][$absPath]);
             $item->setDeleted();
         }
+
         // if the node moved away from this node, we did not find it in
         // objectsByPath and the calling parent node can forget it
         return true;

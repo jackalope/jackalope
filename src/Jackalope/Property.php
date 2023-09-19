@@ -19,8 +19,6 @@ use PHPCR\ValueFormatException;
 use PHPCR\Version\VersionException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -116,8 +114,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws AccessDeniedException
      * @throws ItemNotFoundException
@@ -160,8 +156,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws RepositoryException
      * @throws \InvalidArgumentException
      *
@@ -199,8 +193,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @throws InvalidItemStateException
@@ -250,8 +242,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      *
@@ -273,8 +263,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      * @throws \LogicException
      *
@@ -336,8 +324,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      *
@@ -355,8 +341,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -373,8 +357,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      *
@@ -392,8 +374,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -410,8 +390,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws \InvalidArgumentException
      *
      * @api
@@ -428,8 +406,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      * @throws NoSuchWorkspaceException
      *
@@ -473,8 +449,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -502,8 +476,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLength()
@@ -531,8 +503,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDefinition(): PropertyDefinitionInterface
@@ -549,8 +519,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getType(): int
@@ -561,8 +529,6 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isMultiple(): bool

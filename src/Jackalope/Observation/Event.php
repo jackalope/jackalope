@@ -10,8 +10,6 @@ use PHPCR\Observation\EventInterface;
 use PHPCR\RepositoryException;
 
 /**
- * {@inheritDoc}
- *
  * @api
  *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
@@ -78,8 +76,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getType(): int
@@ -93,8 +89,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPath(): ?string
@@ -108,8 +102,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getUserID(): string
@@ -123,8 +115,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getIdentifier(): ?string
@@ -138,8 +128,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getInfo(): array
@@ -153,8 +141,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getUserData(): ?string
@@ -175,8 +161,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDate(): int
@@ -195,8 +179,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPrimaryNodeType(): NodeTypeInterface
@@ -217,8 +199,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getMixinNodeTypes(): array
@@ -233,8 +213,6 @@ final class Event implements EventInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPropertyType()

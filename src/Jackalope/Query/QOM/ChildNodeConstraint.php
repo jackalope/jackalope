@@ -6,8 +6,6 @@ use PHPCR\Query\QOM\ChildNodeInterface;
 use PHPCR\Query\QOM\ConstraintInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -25,8 +23,6 @@ final class ChildNodeConstraint implements ChildNodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSelectorName(): string
@@ -35,8 +31,6 @@ final class ChildNodeConstraint implements ChildNodeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getParentPath(): string

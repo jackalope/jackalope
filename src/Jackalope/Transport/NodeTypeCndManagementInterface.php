@@ -10,7 +10,7 @@ use Jackalope\NodeType\NodeTypeManager;
  *
  * If you only implement this interface, Jackalope will convert
  * NodeTypeDefinitions into the cnd format for you.
-
+ *
  * Note that this is about creating custom node types. The basic node type
  * discovery is part of the CoreInterface.
  *

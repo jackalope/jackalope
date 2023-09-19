@@ -108,8 +108,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRepository(): RepositoryInterface
@@ -118,8 +116,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getUserID(): ?string
@@ -132,8 +128,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAttributeNames(): array
@@ -146,8 +140,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAttribute($name)
@@ -160,8 +152,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getWorkspace(): WorkspaceInterface
@@ -170,8 +160,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRootNode(): NodeInterface
@@ -180,8 +168,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function impersonate(CredentialsInterface $credentials)
@@ -190,8 +176,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeByIdentifier($id): NodeInterface
@@ -200,8 +184,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodesByIdentifier($ids)
@@ -215,8 +197,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getItem($absPath): ItemInterface
@@ -233,8 +213,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNode($absPath, $depthHint = -1): NodeInterface
@@ -260,8 +238,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodes($absPaths)
@@ -275,8 +251,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getProperty($absPath): PropertyInterface
@@ -299,8 +273,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function itemExists($absPath): bool
@@ -313,8 +285,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function nodeExists($absPath): bool
@@ -335,8 +305,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function propertyExists($absPath): bool
@@ -353,8 +321,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function move($srcAbsPath, $destAbsPath): void
@@ -378,8 +344,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeItem($absPath): void
@@ -431,8 +395,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function refresh($keepChanges): void
@@ -456,8 +418,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasPendingChanges(): bool
@@ -466,8 +426,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function hasPermission($absPath, $actions): bool
@@ -485,8 +443,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function checkPermission($absPath, $actions): void
@@ -511,8 +467,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function importXML($parentAbsPath, $uri, $uuidBehavior): void
@@ -526,8 +480,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function exportSystemView($absPath, $stream, $skipBinary, $noRecurse): void
@@ -542,8 +494,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function exportDocumentView($absPath, $stream, $skipBinary, $noRecurse): void
@@ -558,8 +508,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setNamespacePrefix($prefix, $uri): void
@@ -570,8 +518,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNamespacePrefixes(): array
@@ -581,8 +527,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNamespaceURI($prefix): string
@@ -592,8 +536,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNamespacePrefix($uri): string
@@ -603,8 +545,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function logout(): void
@@ -621,8 +561,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isLive(): bool
@@ -631,8 +569,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAccessControlManager()
@@ -641,8 +577,6 @@ class Session implements SessionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRetentionManager()

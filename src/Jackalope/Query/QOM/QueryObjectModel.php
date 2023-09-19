@@ -60,8 +60,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSource(): SourceInterface
@@ -70,8 +68,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getConstraint(): ?ConstraintInterface
@@ -80,8 +76,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getOrderings(): array
@@ -90,8 +84,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getColumns(): array
@@ -100,8 +92,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getBindVariableNames()
@@ -111,8 +101,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getStatement(): string
@@ -124,8 +112,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLanguage(): string

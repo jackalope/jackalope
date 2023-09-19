@@ -29,9 +29,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      */
     protected array $valueConstraints;
 
-    /**
-     * @var mixed
-     */
     protected $defaultValues;
 
     protected bool $isMultiple = false;
@@ -69,8 +66,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRequiredType(): int
@@ -79,8 +74,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getValueConstraints(): array
@@ -89,8 +82,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDefaultValues()
@@ -99,8 +90,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isMultiple(): bool
@@ -109,8 +98,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAvailableQueryOperators(): array
@@ -119,8 +106,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isFullTextSearchable(): bool
@@ -129,8 +114,6 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isQueryOrderable(): bool

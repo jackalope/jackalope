@@ -27,8 +27,6 @@ use PHPCR\Version\VersionManagerInterface;
 use PHPCR\WorkspaceInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -64,8 +62,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSession()
@@ -74,8 +70,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getName(): string
@@ -84,8 +78,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function copy($srcAbsPath, $destAbsPath, $srcWorkspace = null): void
@@ -94,8 +86,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function cloneFrom($srcWorkspace, $srcAbsPath, $destAbsPath, $removeExisting): void
@@ -110,8 +100,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function move($srcAbsPath, $destAbsPath): void
@@ -120,8 +108,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function removeItem($absPath): void
@@ -130,8 +116,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLockManager(): LockManagerInterface
@@ -154,8 +138,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getQueryManager(): QueryManagerInterface
@@ -187,8 +169,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getTransactionManager(): ?UserTransactionInterface
@@ -205,8 +185,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNamespaceRegistry(): NamespaceRegistryInterface
@@ -219,8 +197,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getNodeTypeManager(): NodeTypeManagerInterface
@@ -229,8 +205,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getObservationManager(): ObservationManagerInterface
@@ -253,8 +227,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRepositoryManager(): RepositoryManagerInterface
@@ -263,8 +235,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getVersionManager(): VersionManagerInterface
@@ -277,8 +247,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getAccessibleWorkspaceNames(): array
@@ -287,8 +255,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function importXML($parentAbsPath, $uri, $uuidBehavior): void
@@ -302,8 +268,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function createWorkspace($name, $srcWorkspace = null): void
@@ -316,8 +280,6 @@ class Workspace implements WorkspaceInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function deleteWorkspace($name): void

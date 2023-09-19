@@ -60,7 +60,7 @@ abstract class Query implements QueryInterface
      * @param string             $path          If this query is loaded from workspace with
      *                                          QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct(FactoryInterface $factory, $statement, ?ObjectManager $objectManager = null, $path = null)
+    public function __construct(FactoryInterface $factory, $statement, ObjectManager $objectManager = null, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;
@@ -69,8 +69,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function bindValue($varName, $value): void
@@ -79,8 +77,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function execute(): QueryResultInterface
@@ -96,8 +92,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function cancel(): bool
@@ -106,8 +100,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getBindVariableNames()
@@ -116,8 +108,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setLimit($limit): void
@@ -136,8 +126,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function setOffset($offset): void
@@ -156,8 +144,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getStatement(): string
@@ -166,8 +152,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getStoredQueryPath(): ?string
@@ -180,8 +164,6 @@ abstract class Query implements QueryInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function storeAsNode($absPath): NodeInterface

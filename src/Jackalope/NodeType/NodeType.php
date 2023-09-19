@@ -57,8 +57,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     private array $childNodeDefinitions;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSupertypes(): array
@@ -75,8 +73,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSupertypeNames(): array
@@ -92,8 +88,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDeclaredSupertypes(): array
@@ -109,8 +103,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSubtypes(): \Iterator
@@ -119,8 +111,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getDeclaredSubtypes(): \Iterator
@@ -129,8 +119,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isNodeType($nodeTypeName): bool
@@ -139,8 +127,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getPropertyDefinitions(): array
@@ -156,8 +142,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getChildNodeDefinitions(): array
@@ -173,8 +157,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ValueFormatException
      * @throws ConstraintViolationException
      * @throws \InvalidArgumentException
@@ -265,8 +247,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ConstraintViolationException
      *
      * @api
@@ -329,8 +309,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ConstraintViolationException
      *
      * @api
@@ -339,8 +317,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     {
         $childDefs = $this->getChildNodeDefinitions();
         foreach ($childDefs as $child) {
-            if ($nodeName === $child->getName() &&
-                ($child->isMandatory() || $child->isProtected())
+            if ($nodeName === $child->getName()
+                && ($child->isMandatory() || $child->isProtected())
             ) {
                 if ($throw) {
                     if ($child->isMandatory()) {
@@ -359,8 +337,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws ConstraintViolationException
      *
      * @api
@@ -369,8 +345,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     {
         $propDefs = $this->getPropertyDefinitions();
         foreach ($propDefs as $prop) {
-            if ($propertyName === $prop->getName() &&
-                ($prop->isMandatory() || $prop->isProtected())
+            if ($propertyName === $prop->getName()
+                && ($prop->isMandatory() || $prop->isProtected())
             ) {
                 if ($throw) {
                     if ($prop->isMandatory()) {
@@ -390,8 +366,6 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * Get a string representation of the passed value for error reporting.
-     *
-     * @param mixed $value
      */
     private function getValueAsString($value): string
     {

@@ -8,8 +8,6 @@ use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\RepositoryException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -69,8 +67,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws NoSuchNodeTypeException
      * @throws RepositoryException
      *
@@ -82,8 +78,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getName(): ?string
@@ -92,8 +86,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isAutoCreated(): bool
@@ -102,8 +94,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isMandatory(): bool
@@ -112,8 +102,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getOnParentVersion(): int
@@ -122,8 +110,6 @@ class ItemDefinition implements ItemDefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isProtected(): bool

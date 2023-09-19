@@ -4,3 +4,6 @@ parameters:
         - src
     ignoreErrors:
         - '#Constructor of class Jackalope\\.* has an unused parameter \$factory.#'
+        # ignore bogus report with PHP 8.2 until https://github.com/phpstan/phpstan/issues/8629 is fixed
+        - '#Access to an undefined property Jackalope\\ImportExport\\FilteredXMLReader::\$nodeType.#'
+        - '#Access to an undefined property Jackalope\\ImportExport\\FilteredXMLReader::\$value.#'

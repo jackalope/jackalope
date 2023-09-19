@@ -216,9 +216,9 @@ class ImportExport implements ImportUUIDBehaviorInterface
                         throw new ItemExistsException('There already is a node with uuid '.$properties['jcr:uuid']['values'].' in this workspace.');
                     case self::IMPORT_UUID_COLLISION_REMOVE_EXISTING:
                     case self::IMPORT_UUID_COLLISION_REPLACE_EXISTING:
-                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior &&
-                            'jcr:root' === $nodename &&
-                            0 === $existing->getDepth()
+                        if (self::IMPORT_UUID_COLLISION_REPLACE_EXISTING === $uuidBehavior
+                            && 'jcr:root' === $nodename
+                            && 0 === $existing->getDepth()
                         ) {
                             break;
                         }

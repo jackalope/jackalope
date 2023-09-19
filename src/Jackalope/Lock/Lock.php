@@ -9,8 +9,6 @@ use PHPCR\PathNotFoundException;
 use PHPCR\RepositoryException;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -40,8 +38,6 @@ final class Lock implements LockInterface
     private ?int $expire;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLockOwner(): string
@@ -58,8 +54,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isDeep(): bool
@@ -76,8 +70,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @throws PathNotFoundException
@@ -105,8 +97,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLockToken(): string
@@ -123,8 +113,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getSecondsRemaining(): int
@@ -139,8 +127,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isLive(): bool
@@ -163,8 +149,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isSessionScoped(): bool
@@ -181,8 +165,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function isLockOwningSession(): bool
@@ -215,8 +197,6 @@ final class Lock implements LockInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function refresh(): void

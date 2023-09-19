@@ -7,8 +7,6 @@ use PHPCR\Query\QOM\JoinInterface;
 use PHPCR\Query\QOM\SourceInterface;
 
 /**
- * {@inheritDoc}
- *
  * @license http://www.apache.org/licenses Apache License Version 2.0, January 2004
  * @license http://opensource.org/licenses/MIT MIT License
  *
@@ -34,8 +32,6 @@ final class Join implements JoinInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getLeft(): SourceInterface
@@ -44,8 +40,6 @@ final class Join implements JoinInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getRight(): SourceInterface
@@ -54,8 +48,6 @@ final class Join implements JoinInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getJoinType(): string
@@ -64,8 +56,6 @@ final class Join implements JoinInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      */
     public function getJoinCondition(): JoinConditionInterface
