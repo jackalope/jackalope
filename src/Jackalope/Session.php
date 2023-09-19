@@ -409,11 +409,15 @@ class Session implements SessionInterface
      * objects aware of it. Was done as a cheap replacement for refresh
      * in testing.
      *
-     * @deprecated: this will screw up major, as the user of the api can still have references to nodes. USE refresh instead!
+     * Warning: This will make Jackalope forget about all Node and Property
+     * instances. Make sure that your code is not referencing any of them
+     * anymore. Changes to those detached nodes will not be seen.
+     *
+     * @see self::refresh() if you want to reload all data from the repository
+     * without disconnecting the Node and Property objects.
      */
     public function clear(): void
     {
-        trigger_error('Use Session::refresh instead, this method is extremely unsafe', E_USER_DEPRECATED);
         $this->objectManager->clear();
     }
 
