@@ -53,6 +53,8 @@ class RowIterator implements SeekableIterator, Countable
     /**
      * @param int $position
      *
+     * @return void
+     *
      * @throws OutOfBoundsException
      */
     #[\ReturnTypeWillChange]

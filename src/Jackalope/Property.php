@@ -209,12 +209,14 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
-     * @api
+     * @return mixed value of this property, or array in case of multi-value
      *
      * @throws InvalidItemStateException
      * @throws ItemNotFoundException
      * @throws RepositoryException
      * @throws ValueFormatException
+     *
+     * @api
      */
     public function getValue()
     {
@@ -260,6 +262,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return string|string[] a string representation of the value of this property, or
+     *                         an array of string for multi-valued properties
      * @throws InvalidItemStateException
      * @throws InvalidArgumentException
      *
@@ -282,6 +286,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return resource|resource[] A stream resource if the underlying binary
      *
      * @throws InvalidArgumentException
      * @throws LogicException
@@ -346,6 +352,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return int|int[] an integer representation of the value of this property,
+     *                   or an array of integer for multi-valued properties
+     *
      * @throws InvalidItemStateException
      * @throws InvalidArgumentException
      *
@@ -365,6 +374,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return float|float[] a float representation of the value of this property, or
+     *                       an array of float for multi-valued properties
+     *
      * @throws InvalidArgumentException
      *
      * @api
@@ -382,6 +394,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return string|string[] a string representation of the value of this property, or
+     *                         an array of strings for multi-valued properties
      *
      * @throws InvalidItemStateException
      * @throws InvalidArgumentException
@@ -402,6 +417,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return \DateTime|\DateTime[] a date representation of the value of this property,
+     *                               or an array of DateTime for multi-valued properties
+     *
      * @throws InvalidArgumentException
      *
      * @api
@@ -419,6 +437,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool|bool[] a boolean representation of the value of this property,
+     *                     or an array of boolean for multi-valued properties
      *
      * @throws InvalidArgumentException
      *
@@ -438,6 +459,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\NodeInterface|\PHPCR\NodeInterface[] the referenced Node, or an array of Nodes
+     *                                                     for multi-valued properties
      * @throws InvalidItemStateException
      * @throws NoSuchWorkspaceException
      *
@@ -483,6 +506,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return PropertyInterface|PropertyInterface[] the referenced property, or an array of
+     *                                                properties for multi-valued properties
+     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -511,6 +537,9 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return int|int[] the length of this value, or an array of lengths
+     *                    for multi-valued properties
      *
      * @api
      */
@@ -541,6 +570,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return PropertyDefinitionInterface a PropertyDefinition
+     *                                     object
      * @api
      */
     public function getDefinition()
@@ -559,6 +590,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
     /**
      * {@inheritDoc}
      *
+     * @return int the numerical representation of a property type
+     *
      * @api
      */
     public function getType()
@@ -570,6 +603,8 @@ class Property extends Item implements IteratorAggregate, PropertyInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true if this property is multi-valued; false otherwise
      *
      * @api
      */

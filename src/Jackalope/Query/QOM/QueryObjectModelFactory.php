@@ -53,6 +53,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\QueryObjectModelInterface the query
+     *
      * @api
      */
     public function createQuery(
@@ -73,6 +75,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\SelectorInterface the selector
+     *
      * @api
      */
     public function selector($selectorName, $nodeTypeName)
@@ -82,6 +86,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\JoinInterface the join
      *
      * @api
      */
@@ -93,6 +99,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\EquiJoinConditionInterface the constraint
+     *
      * @api
      */
     public function equiJoinCondition($selector1Name, $property1Name, $selector2Name, $property2Name)
@@ -102,6 +110,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\SameNodeJoinConditionInterface the constraint
      *
      * @api
      */
@@ -113,6 +123,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\ChildNodeJoinConditionInterface the constraint
+     *
      * @api
      */
     public function childNodeJoinCondition($childSelectorName, $parentSelectorName)
@@ -122,6 +134,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\DescendantNodeJoinConditionInterface the constraint
      *
      * @api
      */
@@ -133,6 +147,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\AndInterface the And constraint
+     *
      * @api
      */
     public function andConstraint(ConstraintInterface $constraint1, ConstraintInterface $constraint2)
@@ -142,6 +158,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\OrInterface the Or constraint
      *
      * @api
      */
@@ -153,6 +171,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\NotInterface the Not constraint
+     *
      * @api
      */
     public function notConstraint(ConstraintInterface $constraint)
@@ -162,6 +182,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\ComparisonInterface the constraint
      *
      * @api
      */
@@ -173,6 +195,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\PropertyExistenceInterface the constraint
+     *
      * @api
      */
     public function propertyExistence($selectorName, $propertyName)
@@ -182,6 +206,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\FullTextSearchInterface the constraint
      *
      * @throws InvalidArgumentException
      *
@@ -195,6 +221,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\SameNodeInterface the constraint
+     *
      * @api
      */
     public function sameNode($selectorName, $path)
@@ -204,6 +232,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\ChildNodeInterface the constraint
      *
      * @api
      */
@@ -215,6 +245,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\DescendantNodeInterface the constraint
+     *
      * @api
      */
     public function descendantNode($selectorName, $path)
@@ -224,6 +256,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\PropertyValueInterface the operand
      *
      * @throws InvalidArgumentException
      *
@@ -237,6 +271,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\LengthInterface the operand
+     *
      * @api
      */
     public function length(PropertyValueInterface $propertyValue)
@@ -246,6 +282,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\NodeNameInterface the operand
      *
      * @throws InvalidArgumentException
      *
@@ -259,6 +297,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\NodeLocalNameInterface the operand
+     *
      * @api
      */
     public function nodeLocalName($selectorName)
@@ -268,6 +308,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\FullTextSearchScoreInterface the operand
      *
      * @throws InvalidArgumentException
      *
@@ -281,6 +323,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\LowerCaseInterface the operand
+     *
      * @api
      */
     public function lowerCase(DynamicOperandInterface $operand)
@@ -290,6 +334,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\UpperCaseInterface the operand
      *
      * @api
      */
@@ -301,6 +347,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\BindVariableValueInterface the operand
+     *
      * @api
      */
     public function bindVariable($bindVariableName)
@@ -310,6 +358,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return mixed the operand
      *
      * @api
      */
@@ -321,6 +371,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\OrderingInterface the ordering
+     *
      * @api
      */
     public function ascending(DynamicOperandInterface $operand)
@@ -331,6 +383,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\Query\QOM\OrderingInterface the ordering
+     *
      * @api
      */
     public function descending(DynamicOperandInterface $operand)
@@ -340,6 +394,8 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\Query\QOM\ColumnInterface the column
      *
      * @throws \InvalidArgumentException
      *

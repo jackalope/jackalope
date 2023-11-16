@@ -40,6 +40,8 @@ class OrConstraint implements OrInterface
     /**
      * {@inheritDoc}
      *
+     * @return ConstraintInterface the constraint
+     *
      * @api
      */
     public function getConstraint1()
@@ -49,6 +51,8 @@ class OrConstraint implements OrInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return ConstraintInterface the constraint
      *
      * @api
      */

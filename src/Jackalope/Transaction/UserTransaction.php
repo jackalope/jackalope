@@ -77,6 +77,8 @@ class UserTransaction implements UserTransactionInterface
     /**
      * {@inheritDoc}
      *
+     * @return void
+     *
      * @api
      */
     public function begin()
@@ -95,6 +97,8 @@ class UserTransaction implements UserTransactionInterface
      * TODO: Make sure RollbackException and AccessDeniedException are thrown
      * by the transport if corresponding problems occur
      *
+     * @return void
+     *
      * @api
      */
     public function commit()
@@ -110,6 +114,8 @@ class UserTransaction implements UserTransactionInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool
+     *
      * @api
      */
     public function inTransaction()
@@ -123,6 +129,8 @@ class UserTransaction implements UserTransactionInterface
      *
      * TODO: Make sure RollbackException and AccessDeniedException are thrown
      * by the transport if corresponding problems occur
+     *
+     * @return void
      *
      * @api
      */
@@ -138,6 +146,8 @@ class UserTransaction implements UserTransactionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      *
      * @api
      */

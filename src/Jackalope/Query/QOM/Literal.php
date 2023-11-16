@@ -31,6 +31,8 @@ class Literal implements LiteralInterface
     /**
      * {@inheritDoc}
      *
+     * @return string the literal value
+     *
      * @api
      */
     public function getLiteralValue()

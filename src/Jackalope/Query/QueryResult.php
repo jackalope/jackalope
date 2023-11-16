@@ -75,6 +75,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     /**
      * {@inheritDoc}
      *
+     * @return string[]
+     *
      * @api
      */
     public function getColumnNames()
@@ -98,6 +100,9 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<\PHPCR\Query\RowInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                                 Keys are the row position in this result set
+     *
      * @api
      */
     public function getRows()
@@ -107,6 +112,9 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \Iterator<string, \PHPCR\NodeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                                           Keys are the paths.
      *
      * @api
      */
@@ -127,6 +135,8 @@ class QueryResult implements IteratorAggregate, QueryResultInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return string[]
      *
      * @api
      */

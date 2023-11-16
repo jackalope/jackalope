@@ -66,6 +66,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return NodeTypeInterface[] all parent NodeTypes
+     *
      * @api
      */
     public function getSupertypes()
@@ -84,6 +86,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return string[]
+     *
      * @api
      */
     public function getSupertypeNames()
@@ -100,6 +104,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return NodeTypeInterface[] the direct parents of this type
      *
      * @api
      */
@@ -118,6 +124,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<string, NodeTypeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                                               Keys are the node type names.
+     *
      * @api
      */
     public function getSubtypes()
@@ -128,6 +137,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<string, NodeTypeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
+     *                                               Keys are the node type names.
      * @api
      */
     public function getDeclaredSubtypes()
@@ -138,6 +149,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool
+     *
      * @api
      */
     public function isNodeType($nodeTypeName)
@@ -147,6 +160,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\NodeType\PropertyDefinitionInterface[]
      *
      * @api
      */
@@ -165,6 +180,8 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\NodeType\NodeDefinitionInterface[]
+     *
      * @api
      */
     public function getChildNodeDefinitions()
@@ -181,6 +198,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true if setting propertyName to value is allowed by this
+     *               node type, else false
      *
      * @throws ValueFormatException
      * @throws ConstraintViolationException
@@ -274,6 +294,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true, if the node type allows the addition of a child
+     *              node, else false
+     *
      * @throws ConstraintViolationException
      *
      * @api
@@ -337,6 +360,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true, if the node type allows to remove the passed node,
+     *              else false
+     *
      * @throws ConstraintViolationException
      *
      * @api
@@ -366,6 +392,9 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true, if the removal of the property is allowed, else
+     *              false
      *
      * @throws ConstraintViolationException
      *

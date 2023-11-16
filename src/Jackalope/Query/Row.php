@@ -124,6 +124,9 @@ class Row implements Iterator, RowInterface
     /**
      * {@inheritDoc}
      *
+     * @return array<string, mixed> hashmap of column name to value of each column of the
+     *                              current result row
+     *
      * @api
      */
     public function getValues()
@@ -140,6 +143,8 @@ class Row implements Iterator, RowInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return mixed the value of the given column of the current result row
      *
      * @api
      */
@@ -174,6 +179,8 @@ class Row implements Iterator, RowInterface
     /**
      * {@inheritDoc}
      *
+     * @return \PHPCR\NodeInterface|null the result node or null on incomplete outer joins
+     *
      * @api
      */
     public function getNode($selectorName = null)
@@ -189,6 +196,9 @@ class Row implements Iterator, RowInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return string|null the path representing the node identified by the given
+     *                      selector or null on incomplete outer joins
      *
      * @api
      */
@@ -208,6 +218,8 @@ class Row implements Iterator, RowInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return float the full text search score for this row
      *
      * @api
      */
