@@ -57,8 +57,6 @@ class Column implements ColumnInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the selector name
-     *
      * @api
      */
     public function getSelectorName()
@@ -69,9 +67,6 @@ class Column implements ColumnInterface
     /**
      * {@inheritDoc}
      *
-     * @return string|null the property name, or null to include a column for
-     *                     each single-value non-residual property of the selector's node type
-     *
      * @api
      */
     public function getPropertyName()
@@ -81,9 +76,6 @@ class Column implements ColumnInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string|null the column name; must be null if getPropertyName is
-     *                     null and contain the name for this column otherwise
      *
      * @api
      */

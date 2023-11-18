@@ -46,8 +46,6 @@ class PropertyValue implements PropertyValueInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the selector name
-     *
      * @api
      */
     public function getSelectorName()
@@ -57,8 +55,6 @@ class PropertyValue implements PropertyValueInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the property name
      *
      * @api
      */

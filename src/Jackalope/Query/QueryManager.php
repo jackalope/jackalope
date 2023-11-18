@@ -46,8 +46,6 @@ class QueryManager implements QueryManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return QueryInterface a Query object
-     *
      * @api
      */
     public function createQuery($statement, $language)
@@ -73,8 +71,6 @@ class QueryManager implements QueryManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\Query\QOM\QueryObjectModelFactoryInterface a QueryObjectModelFactory object
-     *
      * @api
      */
     public function getQOMFactory()
@@ -85,8 +81,6 @@ class QueryManager implements QueryManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return QueryInterface a Query object
-     *
      * @api
      */
     public function getQuery($node)
@@ -96,8 +90,6 @@ class QueryManager implements QueryManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string[]
      *
      * @api
      */

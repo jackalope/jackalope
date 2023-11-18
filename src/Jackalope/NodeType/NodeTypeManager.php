@@ -230,8 +230,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return NodeTypeInterface a NodeType object
-     *
      * @api
      */
     public function getNodeType($nodeTypeName)
@@ -266,9 +264,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return bool true, if the node type identified by its name is
-     *              registered, else false
-     *
      * @api
      */
     public function hasNodeType($name)
@@ -287,9 +282,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \Iterator<string, NodeTypeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                                              Keys are the node type names.
-     *
      * @api
      */
     public function getAllNodeTypes()
@@ -301,9 +293,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \Iterator<string, NodeTypeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                                              Keys are the node type names.
      *
      * @api
      */
@@ -317,9 +306,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \Iterator<string, NodeTypeInterface> implementing <b>SeekableIterator</b> and <b>Countable</b>.
-     *                                              Keys are the node type names.
-     *
      * @api
      */
     public function getMixinNodeTypes()
@@ -332,8 +318,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeType\NodeTypeTemplateInterface a NodeTypeTemplate
-     *
      * @api
      */
     public function createNodeTypeTemplate($ntd = null)
@@ -343,8 +327,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \PHPCR\NodeType\NodeDefinitionTemplateInterface a NodeDefinitionTemplate
      *
      * @api
      */
@@ -356,8 +338,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeType\PropertyDefinitionTemplateInterface an empty
-     *                                              PropertyDefinitionTemplateInterface instance
      * @api
      */
     public function createPropertyDefinitionTemplate()
@@ -367,8 +347,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return NodeTypeInterface the registered node type
      *
      * @api
      */
@@ -402,8 +380,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return \Iterator<string, NodeTypeInterface> over the registered node types implementing <b>SeekableIterator</b>
-     *                                              and <b>Countable</b>. Keys are the node type names.
      * @api
      */
     public function registerNodeTypes(array $definitions, $allowUpdate)
@@ -428,9 +404,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \Iterator<string, NodeTypeInterface> over the registered node types implementing <b>SeekableIterator</b>
-     *                                              and <b>Countable</b>. Keys are the node type names.
      *
      * @throws AccessDeniedException
      * @throws NamespaceException
@@ -458,8 +431,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
     /**
      * {@inheritDoc}
      *
-     * @return void
-     *
      * @api
      */
     public function unregisterNodeType($name)
@@ -477,8 +448,6 @@ class NodeTypeManager implements IteratorAggregate, NodeTypeManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      *
      * @api
      */

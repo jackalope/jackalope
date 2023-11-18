@@ -95,8 +95,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\SessionInterface a Session object
-     *
      * @api
      */
     public function getSession()
@@ -106,8 +104,6 @@ class Workspace implements WorkspaceInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the name of this workspace
      *
      * @api
      */
@@ -165,8 +161,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return LockManagerInterface
-     *
      * @api
      */
     public function getLockManager()
@@ -191,8 +185,6 @@ class Workspace implements WorkspaceInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \PHPCR\Query\QueryManagerInterface the QueryManager object
      *
      * @api
      */
@@ -227,8 +219,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return UserTransactionInterface a UserTransaction object
-     *
      * @api
      */
     public function getTransactionManager()
@@ -247,8 +237,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NamespaceRegistryInterface the NamespaceRegistry
-     *
      * @api
      */
     public function getNamespaceRegistry()
@@ -263,8 +251,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeType\NodeTypeManagerInterface a NodeTypeManager object
-     *
      * @api
      */
     public function getNodeTypeManager()
@@ -274,8 +260,6 @@ class Workspace implements WorkspaceInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return ObservationManagerInterface an ObservationManager object
      *
      * @api
      */
@@ -301,8 +285,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\RepositoryManagerInterface
-     *
      * @api
      */
     public function getRepositoryManager()
@@ -312,8 +294,6 @@ class Workspace implements WorkspaceInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \PHPCR\VersionManagerInterface a VersionManager object
      *
      * @api
      */
@@ -329,8 +309,6 @@ class Workspace implements WorkspaceInterface
     /**
      * {@inheritDoc}
      *
-     * @return string[]
-     *
      * @api
      */
     public function getAccessibleWorkspaceNames()
@@ -340,8 +318,6 @@ class Workspace implements WorkspaceInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return void
      *
      * @api
      */

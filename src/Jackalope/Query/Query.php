@@ -95,8 +95,6 @@ abstract class Query implements QueryInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\Query\QueryResultInterface a QueryResult object
-     *
      * @api
      */
     public function execute()
@@ -115,11 +113,6 @@ abstract class Query implements QueryInterface
     /**
      * {@inheritDoc}
      *
-     * @return bool true if the query was executing and will be cancelled,
-     *              or false if the query cannot not be cancelled because it has either
-     *              already finished executing, it has already been cancelled, or the
-     *              implementation does not support canceling queries
-     *
      * @api
      */
     public function cancel()
@@ -129,8 +122,6 @@ abstract class Query implements QueryInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string[]
      *
      * @api
      */
@@ -182,8 +173,6 @@ abstract class Query implements QueryInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the query statement
-     *
      * @api
      */
     public function getStatement()
@@ -193,8 +182,6 @@ abstract class Query implements QueryInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string path of the node representing this query
      *
      * @api
      */
@@ -209,8 +196,6 @@ abstract class Query implements QueryInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \PHPCR\NodeInterface the newly created node
      *
      * @api
      */

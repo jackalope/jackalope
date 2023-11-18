@@ -91,8 +91,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * {@inheritDoc}
      *
-     * @return SourceInterface the node-tuple source
-     *
      * @api
      */
     public function getSource()
@@ -102,9 +100,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return ConstraintInterface|null the constraint, or null if there is no
-     *                                   constraint
      *
      * @api
      */
@@ -116,9 +111,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * {@inheritDoc}
      *
-     * @return OrderingInterface[] an array of the orderings. If no orderings
-     *                              defined an empty array is returned.
-     *
      * @api
      */
     public function getOrderings()
@@ -128,9 +120,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return ColumnInterface[] an array of the columns to get. If none
-     *                            specified an empty array is returned.
      *
      * @api
      */
@@ -142,8 +131,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
     /**
      * {@inheritDoc}
      *
-     * @return string[]
-     *
      * @api
      */
     public function getBindVariableNames()
@@ -154,8 +141,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the query statement
      *
      * @api
      */
@@ -169,8 +154,6 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the query language
      *
      * @api
      */

@@ -90,8 +90,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * {@inheritDoc}
      *
-     * @return void
-     *
      * @api
      */
     public function registerNamespace($prefix, $uri)
@@ -126,8 +124,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * {@inheritDoc}
      *
-     * @return void
-     *
      * @api
      */
     public function unregisterNamespaceByURI($uri)
@@ -152,8 +148,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * {@inheritDoc}
      *
-     * @return string[]
-     *
      * @api
      */
     public function getPrefixes()
@@ -169,8 +163,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
     /**
      * {@inheritDoc}
      *
-     * @return string[]
-     *
      * @api
      */
     public function getURIs()
@@ -185,8 +177,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string a string
      *
      * @api
      */
@@ -205,8 +195,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string a string
      *
      * @api
      */
@@ -268,8 +256,6 @@ class NamespaceRegistry implements IteratorAggregate, NamespaceRegistryInterface
 
     /**
      * Get all defined namespaces
-     *
-     * @return array<string, string> a hashmap of prefix => namespace uri
      *
      * @private
      */

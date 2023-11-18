@@ -60,8 +60,6 @@ class ComparisonConstraint implements ComparisonInterface
     /**
      * {@inheritDoc}
      *
-     * @return DynamicOperandInterface the operand
-     *
      * @api
      */
     public function getOperand1()
@@ -72,8 +70,6 @@ class ComparisonConstraint implements ComparisonInterface
     /**
      * {@inheritDoc}
      *
-     * @return string one of QueryObjectModelConstantsInterface.JCR_OPERATOR_*
-     *
      * @api
      */
     public function getOperator()
@@ -83,8 +79,6 @@ class ComparisonConstraint implements ComparisonInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return StaticOperandInterface the operand
      *
      * @api
      */

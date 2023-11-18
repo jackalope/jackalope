@@ -108,8 +108,6 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType object
-     *
      * @throws NoSuchNodeTypeException
      * @throws RepositoryException
      *
@@ -123,8 +121,6 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return string a string denoting the name or "*"
-     *
      * @api
      */
     public function getName()
@@ -134,9 +130,6 @@ class ItemDefinition implements ItemDefinitionInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool true, if the item is automatically created when its
-     *              parent node is created, else false
      *
      * @api
      */
@@ -148,8 +141,6 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return bool true, if the item is mandatory, else false
-     *
      * @api
      */
     public function isMandatory()
@@ -160,8 +151,6 @@ class ItemDefinition implements ItemDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return int an int constant member of OnParentVersionAction
-     *
      * @api
      */
     public function getOnParentVersion()
@@ -171,8 +160,6 @@ class ItemDefinition implements ItemDefinitionInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool true, if the child item is protected, else false
      *
      * @api
      */

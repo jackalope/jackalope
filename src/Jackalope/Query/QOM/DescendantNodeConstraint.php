@@ -47,8 +47,6 @@ class DescendantNodeConstraint implements DescendantNodeInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the selector name
-     *
      * @api
      */
     public function getSelectorName()
@@ -58,8 +56,6 @@ class DescendantNodeConstraint implements DescendantNodeInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the path
      *
      * @api
      */

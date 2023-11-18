@@ -40,8 +40,6 @@ class AndConstraint implements AndInterface
     /**
      * {@inheritDoc}
      *
-     * @return ConstraintInterface the constraint
-     *
      * @api
      */
     public function getConstraint1()
@@ -51,8 +49,6 @@ class AndConstraint implements AndInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return ConstraintInterface the constraint
      *
      * @api
      */

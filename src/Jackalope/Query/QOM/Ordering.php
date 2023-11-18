@@ -40,8 +40,6 @@ class Ordering implements OrderingInterface
     /**
      * {@inheritDoc}
      *
-     * @return DynamicOperandInterface the operand
-     *
      * @api
      */
     public function getOperand()
@@ -51,9 +49,6 @@ class Ordering implements OrderingInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string either QueryObjectModelConstants.JCR_ORDER_ASCENDING or
-     *                QueryObjectModelConstants.JCR_ORDER_DESCENDING
      *
      * @api
      */

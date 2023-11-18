@@ -45,8 +45,6 @@ class Selector implements SelectorInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the node type name
-     *
      * @api
      */
     public function getNodeTypeName()
@@ -56,8 +54,6 @@ class Selector implements SelectorInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return string the selector name
      *
      * @api
      */

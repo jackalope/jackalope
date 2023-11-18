@@ -59,8 +59,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeType\NodeTypeInterface[] an array of NodeType objects
-     *
      * @api
      */
     public function getRequiredPrimaryTypes()
@@ -78,8 +76,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return string[]
-     *
      * @api
      */
     public function getRequiredPrimaryTypeNames()
@@ -89,8 +85,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return \PHPCR\NodeType\NodeTypeInterface a NodeType
      *
      * @api
      */
@@ -106,8 +100,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the name of the default primary type
-     *
      * @api
      */
     public function getDefaultPrimaryTypeName()
@@ -117,8 +109,6 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool true, if the node my have a same-name sibling, else false
      *
      * @api
      */

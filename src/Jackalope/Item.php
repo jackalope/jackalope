@@ -218,8 +218,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the normalized absolute path of this Item
-     *
      * @api
      */
     public function getPath()
@@ -232,9 +230,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return string the name of this Item in qualified form or an empty
-     *                string if this Item is the root node of a workspace
-     *
      * @api
      */
     public function getName()
@@ -246,8 +241,6 @@ abstract class Item implements ItemInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return ItemInterface the ancestor of this Item at the specified depth
      *
      * @api
      */
@@ -270,8 +263,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return \PHPCR\NodeInterface the parent of this Item
-     *
      * @api
      */
     public function getParent()
@@ -288,8 +279,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return int the depth of this Item in the workspace item graph
-     *
      * @api
      */
     public function getDepth()
@@ -301,8 +290,6 @@ abstract class Item implements ItemInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return SessionInterface the Session through which this Item was acquired
      *
      * @api
      */
@@ -316,8 +303,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return bool true if this Item is a Node, false if it is a Property
-     *
      * @api
      */
     public function isNode()
@@ -330,8 +315,6 @@ abstract class Item implements ItemInterface
     /**
      * {@inheritDoc}
      *
-     * @return bool true if this item is new; false otherwise
-     *
      * @api
      */
     public function isNew()
@@ -341,8 +324,6 @@ abstract class Item implements ItemInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool true if this item is modified; false otherwise
      *
      * @api
      */
@@ -354,8 +335,6 @@ abstract class Item implements ItemInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool
      *
      * @private
      */
@@ -408,9 +387,6 @@ abstract class Item implements ItemInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @return bool true if this Item object and otherItem represent the
-     *              same actual repository item; false otherwise
      *
      * @api
      */
