@@ -181,6 +181,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * {@inheritDoc}
      *
+     * @return string the name of the node type
+     *
      * @api
      */
     public function getName()
@@ -190,6 +192,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return string[]
      *
      * @api
      */
@@ -205,6 +209,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true, if the current type is abstract, else false
+     *
      * @api
      */
     public function isAbstract()
@@ -214,6 +220,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool True if this is a mixin type, else false;
      *
      * @api
      */
@@ -225,6 +233,9 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true, if nodes of this type must support orderable child
+     *              nodes, else false
+     *
      * @api
      */
     public function hasOrderableChildNodes()
@@ -234,6 +245,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true, if the node type is queryable, else false
      *
      * @api
      */
@@ -245,6 +258,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * {@inheritDoc}
      *
+     * @return string the name of the primary item
+     *
      * @api
      */
     public function getPrimaryItemName()
@@ -254,6 +269,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\NodeType\PropertyDefinitionInterface[]
      *
      * @api
      */
@@ -265,6 +282,8 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\NodeType\NodeDefinitionInterface[]
      *
      * @api
      */

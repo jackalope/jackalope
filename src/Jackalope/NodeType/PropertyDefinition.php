@@ -77,6 +77,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * {@inheritDoc}
      *
+     * @return int an integer constant member of PropertyType
+     *
      * @api
      */
     public function getRequiredType()
@@ -86,6 +88,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
 
     /**
      * {@inheritDoc}
+     *
+     * @return string[]
      *
      * @api
      */
@@ -97,6 +101,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * {@inheritDoc}
      *
+     * @return array<mixed>
+     *
      * @api
      */
     public function getDefaultValues()
@@ -106,6 +112,9 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true, if this property may have multiple values, else
+     *              false
      *
      * @api
      */
@@ -117,6 +126,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * {@inheritDoc}
      *
+     * @return string[] query operator constants as defined in \PHPCR\Query\QueryObjectModelConstantsInterface
+     *
      * @api
      */
     public function getAvailableQueryOperators()
@@ -127,6 +138,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * {@inheritDoc}
      *
+     * @return bool true, if this property is full-text searchable, else false
+     *
      * @api
      */
     public function isFullTextSearchable()
@@ -136,6 +149,8 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true, if this property is query orderable, else false
      *
      * @api
      */

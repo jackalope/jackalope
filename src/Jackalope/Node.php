@@ -357,6 +357,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * immediately.
      * Version and Lock related exceptions are delayed until save.
      *
+     * @return NodeInterface the node that was added
+     *
      * @api
      */
     public function addNode($relPath, $primaryNodeTypeName = null)
@@ -439,11 +441,13 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
-     * @api
+     * @return NodeInterface the newly created node
+     *
      * @throws InvalidArgumentException
      * @throws ItemExistsException
      * @throws PathNotFoundException
      * @throws RepositoryException
+     * @api
      */
     public function addNodeAutoNamed($nameHint = null, $primaryNodeTypeName = null)
     {
@@ -554,6 +558,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
      * @param boolean $validate When false, node types are not asked to validate
      *                          whether operation is allowed
      *
+     * @return \PHPCR\PropertyInterface The new resp. updated Property object
+     *
      * @throws InvalidItemStateException
      * @throws NamespaceException
      * @throws \InvalidArgumentException
@@ -650,6 +656,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return NodeInterface the node at relPath
+     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -675,6 +683,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \Iterator<string, NodeInterface> over all (matching) child Nodes implementing <b>SeekableIterator</b>
+     *                                          and <b>Countable</b>. Keys are the Node names.
      *
      * @api
      */
@@ -704,6 +715,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<string> over all child node names
+     *
      * @api
      */
     public function getNodeNames($nameFilter = null, $typeFilter = null)
@@ -721,6 +734,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \PHPCR\PropertyInterface the property at relPath
      *
      * @throws InvalidItemStateException
      *
@@ -781,6 +796,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return mixed the value of the property with $name
+     *
      * @throws InvalidItemStateException
      * @throws \InvalidArgumentException
      *
@@ -801,6 +818,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return mixed the value of the property at $relPath or $defaultValue
+     *
      * @throws \InvalidArgumentException
      *
      * @throws InvalidItemStateException
@@ -820,6 +839,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \Iterator<string, \PHPCR\PropertyInterface> implementing <b>SeekableIterator</b> and
+     *                                                     <b>Countable</b>. Keys are the property names.
      *
      * @api
      */
@@ -842,6 +864,11 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return array<string, mixed> keys are the property names, values the corresponding
+     *                              property value (or array of values in case of multi-valued properties)
+     *                              If $dereference is false, reference properties are uuid strings and
+     *                              path properties path strings instead of the referenced node instances
      *
      * @throws \InvalidArgumentException
      * @throws InvalidItemStateException
@@ -880,6 +907,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return ItemInterface the primary child item
+     *
      * @api
      */
     public function getPrimaryItem()
@@ -913,6 +942,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return string the identifier of this node
+     *
      * @throws \InvalidArgumentException
      *
      * @throws AccessDeniedException
@@ -945,6 +976,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return int the index of this node within the ordered set of its
+     *             same-name sibling nodes
+     *
      * @api
      */
     public function getIndex()
@@ -956,6 +990,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return \Iterator<string, \PHPCR\PropertyInterface> implementing <b>SeekableIterator</b> and
+     *                                                     <b>Countable</b>. Keys are the property names.
      *
      * @api
      */
@@ -969,6 +1006,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<string, \PHPCR\PropertyInterface> implementing <b>SeekableIterator</b> and
+     *                                                     <b>Countable</b>. Keys are the property names.
      * @api
      */
     public function getWeakReferences($name = null)
@@ -980,6 +1019,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool true if a node exists at relPath; false otherwise
      *
      * @api
      */
@@ -1001,6 +1042,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true if a property exists at relPath; false otherwise
+     *
      * @api
      */
     public function hasProperty($relPath)
@@ -1020,6 +1063,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true if this node has one or more child nodes; false
+     *              otherwise
+     *
      * @api
      */
     public function hasNodes()
@@ -1032,6 +1078,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true if this node has one or more properties; false
+     *              otherwise
+     *
      * @api
      */
     public function hasProperties()
@@ -1043,6 +1092,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return NodeTypeInterface a NodeType object
      *
      * @api
      */
@@ -1057,6 +1108,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return NodeTypeInterface[] an array of mixin node types
      *
      * @api
      */
@@ -1081,6 +1134,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true if this node is of the specified primary node type
+     *               or mixin type, or a subtype thereof. Returns false otherwise.
      * @api
      */
     public function isNodeType($nodeTypeName)
@@ -1248,6 +1303,9 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool true if the specified mixin node type, mixinName, can be
+     *              added to this node; false otherwise
+     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1261,6 +1319,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return NodeDefinitionInterface a NodeDefinition object
      *
      * @api
      */
@@ -1303,6 +1363,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return string the absolute path to the corresponding node
+     *
      * @throws InvalidItemStateException
      *
      * @api
@@ -1319,6 +1381,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return \Iterator<string, NodeInterface> implementing <b>SeekableIterator</b> and
+     *                                          <b>Countable</b>. Keys are the Node names.
      * @api
      */
     public function getSharedSet()
@@ -1330,6 +1394,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      *
      * @throws InvalidItemStateException
      *
@@ -1361,6 +1427,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
     /**
      * {@inheritDoc}
      *
+     * @return bool
+     *
      * @api
      */
     public function isCheckedOut()
@@ -1375,6 +1443,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return bool
      *
      * @api
      */
@@ -1402,6 +1472,8 @@ class Node extends Item implements IteratorAggregate, NodeInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @return string[]
      *
      * @throws InvalidItemStateException
      *
