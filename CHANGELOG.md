@@ -4,6 +4,11 @@ CHANGELOG
 1.x
 ===
 
+1.4.7
+-----
+
+* Added `@return` annotations to make Symfony deprecation helper happy. The actual return type declarations are added in 2.0.
+
 1.4.6
 -----
 
