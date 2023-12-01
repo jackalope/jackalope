@@ -18,7 +18,7 @@
         "php": "^8.0",
         "ext-dom": "*",
         "ext-xml": "*",
-        "phpcr/phpcr-utils": "^1.8.0",
+        "phpcr/phpcr-utils": "^1.8.0 || ^2.0",
         "phpcr/phpcr": "~2.1.0,>=2.1.0-beta12",
         "jackalope/jackalope-transport": "*"
     },
