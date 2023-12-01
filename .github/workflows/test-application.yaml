@@ -45,4 +45,4 @@ jobs:
           composer-options: --prefer-dist
 
       - name: Execute test cases
-        run: vendor/bin/simple-phpunit
+        run: vendor/bin/phpunit
