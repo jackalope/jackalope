@@ -25,14 +25,9 @@
         "phpcr/phpcr-implementation": "2.1.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^5.0.4"
+        "phpunit/phpunit": "^7.5.20 || ^8 || ^9"
     },
     "autoload": {
         "psr-0": { "Jackalope\\": "src/" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.x-dev"
-        }
     }
 }
