@@ -10,6 +10,7 @@ CHANGELOG
 * Switch to strict static typing.
 * Fixed incorrect return type on `FullTextSearch::getFullTextSearchExpression` to return a QOM Literal instead of `string`, as per the PHPCR spec.
 * Drop support for PHP 7.
+* Allow installation with phpcr-utils 2.
 
 1.x
 ===
