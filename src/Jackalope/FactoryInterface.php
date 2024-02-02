@@ -36,9 +36,9 @@ interface FactoryInterface
      * passed parameters.
      *
      * @param $name   string class name with sub-namespace inside the Jackalope
-     *                 namespace
+     *                namespace
      * @param $params array Parameters in order of their appearance in the
-     *                 constructor. The factory will prepend itself to this list.
+     *                constructor. The factory will prepend itself to this list.
      *
      * @return object
      */
