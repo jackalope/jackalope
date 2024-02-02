@@ -722,7 +722,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @return Property[] with just the jcr:primaryType property in it
      *
-     * @see \Jackalope\Transport\WritingInterface::storeNodes
+     * @see Transport\WritingInterface::storeNodes
      *
      * @throws InvalidItemStateException
      * @throws RepositoryException
