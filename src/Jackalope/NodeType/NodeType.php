@@ -278,7 +278,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             } catch (\Exception $e) {
                 if ($throw) {
                     $errorMsg = "Can't add the child node '$childNodeName' for node type '$nodeTypeName' because of an Exception: ".$e->getMessage();
-                    throw new ConstraintViolationException($errorMsg, null, $e);
+                    throw new ConstraintViolationException($errorMsg, $e->getCode(), $e);
                 }
 
                 return false;
