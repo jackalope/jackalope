@@ -1438,7 +1438,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @private
      */
-    public function addChildNode(NodeInterface $node, bool $check, string $name = null): void
+    public function addChildNode(NodeInterface $node, bool $check, ?string $name = null): void
     {
         if ($check) {
             $this->checkState();

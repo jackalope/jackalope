@@ -35,7 +35,7 @@ abstract class AbstractReadLoggingWrapper implements TransportInterface
         return $this->transport->getAccessibleWorkspaceNames();
     }
 
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null): string
+    public function login(?CredentialsInterface $credentials = null, $workspaceName = null): string
     {
         return $this->transport->login($credentials, $workspaceName);
     }

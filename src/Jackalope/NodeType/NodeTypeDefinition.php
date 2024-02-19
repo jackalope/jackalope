@@ -102,7 +102,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * Reads the node type definition from an array.
      *
-     * @param array{"name": string, "isAbstract": boolean, "isMixin": boolean, "isQueryAble": boolean, "hasOrderableChildNodex": boolean, "primaryItemName": string, "declaredSuperTypeNames"?: string[], "declaredPropertyDefinitions": mixed[], "declaredNodeDefinitions": mixed[]} $data
+     * @param array{"name": string, "isAbstract": bool, "isMixin": bool, "isQueryAble": bool, "hasOrderableChildNodex": bool, "primaryItemName": string, "declaredSuperTypeNames"?: string[], "declaredPropertyDefinitions": mixed[], "declaredNodeDefinitions": mixed[]} $data
      */
     protected function fromArray(array $data): void
     {

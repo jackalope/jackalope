@@ -684,7 +684,7 @@ class ObjectManager
      *
      * @see Node::getReferences()
      */
-    public function getReferences(string $path, string $name = null): \ArrayIterator
+    public function getReferences(string $path, ?string $name = null): \ArrayIterator
     {
         $references = $this->transport->getReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -703,7 +703,7 @@ class ObjectManager
      *
      * @see Node::getWeakReferences()
      */
-    public function getWeakReferences(string $path, string $name = null): \ArrayIterator
+    public function getWeakReferences(string $path, ?string $name = null): \ArrayIterator
     {
         $references = $this->transport->getWeakReferences($this->getFetchPath($path, Node::class), $name);
 
@@ -1251,7 +1251,7 @@ class ObjectManager
      *
      * @see Item::remove()
      */
-    public function removeItem(string $absPath, PropertyInterface $property = null): void
+    public function removeItem(string $absPath, ?PropertyInterface $property = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');
@@ -1422,7 +1422,7 @@ class ObjectManager
      *
      * @see Workspace::copy()
      */
-    public function copyNodeImmediately(string $srcAbsPath, string $destAbsPath, string $srcWorkspace = null): void
+    public function copyNodeImmediately(string $srcAbsPath, string $destAbsPath, ?string $srcWorkspace = null): void
     {
         if (!$this->transport instanceof WritingInterface) {
             throw new UnsupportedRepositoryOperationException('Transport does not support writing');

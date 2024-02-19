@@ -50,7 +50,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
     protected FactoryInterface $factory;
     protected ?ObjectManager $objectManager;
 
-    public function __construct(FactoryInterface $factory, ObjectManager $objectManager = null)
+    public function __construct(FactoryInterface $factory, ?ObjectManager $objectManager = null)
     {
         $this->factory = $factory;
         $this->objectManager = $objectManager;
@@ -61,7 +61,7 @@ class QueryObjectModelFactory implements QueryObjectModelFactoryInterface
      */
     public function createQuery(
         SourceInterface $source,
-        ConstraintInterface $constraint = null,
+        ?ConstraintInterface $constraint = null,
         array $orderings = [],
         array $columns = []
     ): QueryObjectModelInterface {

@@ -115,7 +115,7 @@ final class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Counta
      *
      * @param int|null $position - Optional position to start from
      */
-    private function loadBatch(int $position = null): void
+    private function loadBatch(?int $position = null): void
     {
         if (0 === count($this->paths)) {
             return;

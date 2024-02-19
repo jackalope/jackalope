@@ -16,7 +16,7 @@ final class SameNodeJoinCondition implements SameNodeJoinConditionInterface
     private string $selector2Name;
     private ?string $selector2Path;
 
-    public function __construct(string $selector1Name, string $selector2Name, string $selector2Path = null)
+    public function __construct(string $selector1Name, string $selector2Name, ?string $selector2Path = null)
     {
         $this->selector1Name = (string) $selector1Name;
         $this->selector2Name = (string) $selector2Name;

@@ -51,7 +51,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
      *
      * See class documentation for the fields supported in the array.
      *
-     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": boolean, "isMandatory": boolean, "isProtected": boolean, "onParentVersion": int, "requiredType": int, "multiple": boolean, "fullTextSearchable": boolean, "queryOrderable": boolean, "valueConstraints": string[], "availableQueryOperators": string[], "defaultValues": mixed} $data
+     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": bool, "isMandatory": bool, "isProtected": bool, "onParentVersion": int, "requiredType": int, "multiple": bool, "fullTextSearchable": bool, "queryOrderable": bool, "valueConstraints": string[], "availableQueryOperators": string[], "defaultValues": mixed} $data
      */
     protected function fromArray(array $data): void
     {

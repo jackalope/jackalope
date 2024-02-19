@@ -16,7 +16,7 @@ final class Ordering implements OrderingInterface
     private DynamicOperandInterface $operand;
     private ?string $order;
 
-    public function __construct(DynamicOperandInterface $operand, string $order = null)
+    public function __construct(DynamicOperandInterface $operand, ?string $order = null)
     {
         $this->operand = $operand;
         $this->order = $order;

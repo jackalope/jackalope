@@ -60,7 +60,7 @@ abstract class Query implements QueryInterface
      * @param string             $path          If this query is loaded from workspace with
      *                                          QueryManager::getQuery(), path has to be provided here
      */
-    public function __construct(FactoryInterface $factory, $statement, ObjectManager $objectManager = null, $path = null)
+    public function __construct(FactoryInterface $factory, $statement, ?ObjectManager $objectManager = null, $path = null)
     {
         $this->factory = $factory;
         $this->statement = $statement;

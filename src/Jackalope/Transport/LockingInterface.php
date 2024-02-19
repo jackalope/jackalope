@@ -19,7 +19,7 @@ interface LockingInterface extends TransportInterface
      * @param int    $timeoutHint     the optional timeout value, PHP_INT_MAX for no timeout
      * @param string $ownerInfo       optional string to identify the owner
      */
-    public function lockNode(string $absPath, bool $isDeep, bool $isSessionScoped, int $timeoutHint = PHP_INT_MAX, string $ownerInfo = null): LockInterface;
+    public function lockNode(string $absPath, bool $isDeep, bool $isSessionScoped, int $timeoutHint = PHP_INT_MAX, ?string $ownerInfo = null): LockInterface;
 
     /**
      * Return true if the node is locked and false otherwise.

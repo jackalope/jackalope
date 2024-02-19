@@ -17,12 +17,12 @@ final class Psr3Logger implements LoggerInterface
     private Psr3LoggerInterface $logger;
     private bool $enabled = true;
 
-    public function __construct(Psr3LoggerInterface $logger = null)
+    public function __construct(?Psr3LoggerInterface $logger = null)
     {
         $this->logger = $logger;
     }
 
-    public function startCall(string $method, array $params = null, array $env = null): void
+    public function startCall(string $method, ?array $params = null, ?array $env = null): void
     {
         if ($this->enabled && $this->logger) {
             if (is_array($params)) {

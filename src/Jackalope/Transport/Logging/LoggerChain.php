@@ -20,7 +20,7 @@ final class LoggerChain implements LoggerInterface
         $this->loggers[] = $logger;
     }
 
-    public function startCall(string $method, array $params = null, array $env = null): void
+    public function startCall(string $method, ?array $params = null, ?array $env = null): void
     {
         foreach ($this->loggers as $logger) {
             $logger->startCall($method, $params, $env);
