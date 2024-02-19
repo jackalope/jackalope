@@ -26,7 +26,7 @@ final class DebugStack implements LoggerInterface
     public ?float $start = null;
     public int $currentQuery = 0;
 
-    public function startCall(string $method, array $params = null, array $env = null): void
+    public function startCall(string $method, ?array $params = null, ?array $env = null): void
     {
         if ($this->enabled) {
             $this->start = microtime(true);

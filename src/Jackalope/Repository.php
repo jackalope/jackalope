@@ -105,7 +105,7 @@ final class Repository implements RepositoryInterface
      * @param array|null            $options   defines optional features to enable/disable (see
      *                                         $options property)
      */
-    public function __construct(?FactoryInterface $factory, TransportInterface $transport, array $options = null)
+    public function __construct(?FactoryInterface $factory, TransportInterface $transport, ?array $options = null)
     {
         $this->factory = $factory ?? new Factory();
         $this->transport = $transport;
@@ -125,7 +125,7 @@ final class Repository implements RepositoryInterface
      *
      * @api
      */
-    public function login(CredentialsInterface $credentials = null, $workspaceName = null): SessionInterface
+    public function login(?CredentialsInterface $credentials = null, $workspaceName = null): SessionInterface
     {
         if (!$workspaceName = $this->transport->login($credentials, $workspaceName)) {
             throw new RepositoryException('Transport failed to login without telling why');

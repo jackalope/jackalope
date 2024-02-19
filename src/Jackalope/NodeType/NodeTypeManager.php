@@ -86,7 +86,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      * @param string|null $name type name to fetch. defaults to null which will
      *                          fetch all nodes.
      */
-    private function fetchNodeTypes(string $name = null): void
+    private function fetchNodeTypes(?string $name = null): void
     {
         if ($this->fetchedAllFromBackend) {
             return;

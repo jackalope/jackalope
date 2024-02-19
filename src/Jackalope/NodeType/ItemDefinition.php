@@ -54,7 +54,7 @@ class ItemDefinition implements ItemDefinitionInterface
      * Overwritten for property and node to add more information, with a call
      * to this parent method for the common things.
      *
-     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": boolean, "isMandatory": boolean, "isProtected": boolean, "onParentVersion": int} $data
+     * @param array{"declaringNodeType": string, "name": string, "isAutoCreated": bool, "isMandatory": bool, "isProtected": bool, "onParentVersion": int} $data
      */
     protected function fromArray(array $data): void
     {

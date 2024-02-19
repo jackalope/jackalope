@@ -59,7 +59,7 @@ interface WritingInterface extends TransportInterface
      * @see http://www.ietf.org/rfc/rfc2518.txt
      * @see WorkspaceInterface::copy
      */
-    public function copyNode(string $srcAbsPath, string $destAbsPath, string $srcWorkspace = null): void;
+    public function copyNode(string $srcAbsPath, string $destAbsPath, ?string $srcWorkspace = null): void;
 
     /**
      * Clones the subgraph at the node srcAbsPath in srcWorkspace to the new

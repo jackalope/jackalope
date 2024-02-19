@@ -16,7 +16,7 @@ final class Column implements ColumnInterface
     private ?string $propertyName;
     private ?string $columnName;
 
-    public function __construct(string $selectorName, ?string $propertyName, string $columnName = null)
+    public function __construct(string $selectorName, ?string $propertyName, ?string $columnName = null)
     {
         if ((null === $propertyName) !== (null === $columnName)) {
             throw new \InvalidArgumentException('Either both propertyName and columnName must be both null, or both non-null.');
