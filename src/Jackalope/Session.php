@@ -14,7 +14,9 @@ use PHPCR\PathNotFoundException;
 use PHPCR\PropertyInterface;
 use PHPCR\RepositoryException;
 use PHPCR\RepositoryInterface;
+use PHPCR\Retention\RetentionManagerInterface;
 use PHPCR\Security\AccessControlException;
+use PHPCR\Security\AccessControlManagerInterface;
 use PHPCR\SessionInterface;
 use PHPCR\SimpleCredentials;
 use PHPCR\UnsupportedRepositoryOperationException;
@@ -142,7 +144,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function getAttribute($name)
+    public function getAttribute($name): mixed
     {
         if (null === $this->credentials) {
             return null;
@@ -170,7 +172,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function impersonate(CredentialsInterface $credentials)
+    public function impersonate(CredentialsInterface $credentials): SessionInterface
     {
         throw new UnsupportedRepositoryOperationException('Not supported');
     }
@@ -186,7 +188,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function getNodesByIdentifier($ids)
+    public function getNodesByIdentifier($ids): iterable
     {
         if (!is_array($ids) && !$ids instanceof \Traversable) {
             $hint = is_object($ids) ? get_class($ids) : gettype($ids);
@@ -240,7 +242,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function getNodes($absPaths)
+    public function getNodes($absPaths): iterable
     {
         if (!is_array($absPaths) && !$absPaths instanceof \Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
@@ -262,7 +264,7 @@ class Session implements SessionInterface
         }
     }
 
-    public function getProperties($absPaths)
+    public function getProperties($absPaths): iterable
     {
         if (!is_array($absPaths) && !$absPaths instanceof \Traversable) {
             $hint = is_object($absPaths) ? get_class($absPaths) : gettype($absPaths);
@@ -575,7 +577,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function getAccessControlManager()
+    public function getAccessControlManager(): AccessControlManagerInterface
     {
         throw new UnsupportedRepositoryOperationException();
     }
@@ -583,7 +585,7 @@ class Session implements SessionInterface
     /**
      * @api
      */
-    public function getRetentionManager()
+    public function getRetentionManager(): RetentionManagerInterface
     {
         throw new UnsupportedRepositoryOperationException();
     }

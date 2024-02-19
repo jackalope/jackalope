@@ -152,7 +152,7 @@ class NodeTypeDefinition implements NodeTypeDefinitionInterface
     /**
      * @api
      */
-    public function getDeclaredSupertypeNames()
+    public function getDeclaredSupertypeNames(): array
     {
         if (null === $this->declaredSuperTypeNames) {
             return [self::NAME_NT_BASE];

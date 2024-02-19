@@ -3,6 +3,7 @@
 namespace Jackalope\NodeType;
 
 use PHPCR\NodeType\NodeDefinitionInterface;
+use PHPCR\NodeType\NodeTypeInterface;
 
 /**
  * {@inheritDoc}
@@ -73,7 +74,7 @@ class NodeDefinition extends ItemDefinition implements NodeDefinitionInterface
     /**
      * @api
      */
-    public function getDefaultPrimaryType()
+    public function getDefaultPrimaryType(): ?NodeTypeInterface
     {
         if (null === $this->defaultPrimaryTypeName) {
             return null;

@@ -4,6 +4,7 @@ namespace Jackalope\NodeType;
 
 use Jackalope\FactoryInterface;
 use Jackalope\TestCase;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\PropertyType;
 use PHPCR\Version\OnParentVersionAction;
 
@@ -44,7 +45,7 @@ class PropertyDefinitionTest extends TestCase
 
     public function testGetDeclaringNodeType(): void
     {
-        $nodeType = $this->createMock(NodeTypeDefinition::class);
+        $nodeType = $this->createMock(NodeTypeInterface::class);
 
         $factory = $this->createMock(FactoryInterface::class);
         $nodeTypeManager = $this->getNodeTypeManagerMock();

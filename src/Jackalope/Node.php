@@ -654,7 +654,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getNodes($nameFilter = null, $typeFilter = null)
+    public function getNodes($nameFilter = null, $typeFilter = null): \Iterator
     {
         $this->checkState();
 
@@ -680,7 +680,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getNodeNames($nameFilter = null, $typeFilter = null)
+    public function getNodeNames($nameFilter = null, $typeFilter = null): \Iterator
     {
         $this->checkState();
 
@@ -698,7 +698,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getProperty($relPath)
+    public function getProperty($relPath): PropertyInterface
     {
         $this->checkState();
 
@@ -756,7 +756,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getPropertyValue($name, $type = null)
+    public function getPropertyValue($name, $type = null): mixed
     {
         $this->checkState();
 
@@ -776,7 +776,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getPropertyValueWithDefault($relPath, $defaultValue)
+    public function getPropertyValueWithDefault($relPath, $defaultValue): mixed
     {
         if ($this->hasProperty($relPath)) {
             return $this->getPropertyValue($relPath);
@@ -788,7 +788,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getProperties($nameFilter = null)
+    public function getProperties($nameFilter = null): \Iterator
     {
         $this->checkState();
 
@@ -877,7 +877,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         $this->checkState();
 
@@ -905,7 +905,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getReferences($name = null)
+    public function getReferences($name = null): \Iterator
     {
         $this->checkState();
 
@@ -915,7 +915,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getWeakReferences($name = null)
+    public function getWeakReferences($name = null): \Iterator
     {
         $this->checkState();
 
@@ -1174,7 +1174,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function canAddMixin($mixinName)
+    public function canAddMixin($mixinName): bool
     {
         $this->checkState();
 
@@ -1184,7 +1184,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
     /**
      * @api
      */
-    public function getDefinition()
+    public function getDefinition(): NodeDefinitionInterface
     {
         $this->checkState();
 
@@ -1309,7 +1309,7 @@ class Node extends Item implements \IteratorAggregate, NodeInterface
      *
      * @api
      */
-    public function getAllowedLifecycleTransitions()
+    public function getAllowedLifecycleTransitions(): array
     {
         $this->checkState();
 

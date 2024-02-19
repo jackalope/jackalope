@@ -41,7 +41,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);
@@ -68,7 +68,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);
@@ -107,7 +107,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);
@@ -180,7 +180,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
         ]);
 
         // expectations
@@ -221,7 +221,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
         ]);
 
         // expectations
@@ -260,7 +260,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);
@@ -302,7 +302,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
         ]);
 
         $node
@@ -418,7 +418,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [$property],
+            'getProperties' => new \ArrayIterator([$property]),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);
@@ -457,7 +457,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [],
+            'getProperties' => new \ArrayIterator(),
             'getName' => $nodeName,
             'getPath' => 'path/to/node',
         ]);
@@ -511,7 +511,7 @@ final class NodeProcessorTest extends TestCase
         $node = $this->getNodeMock([
             'getPrimaryNodeType' => $nodeType,
             'getMixinNodeTypes' => [],
-            'getProperties' => [$property],
+            'getProperties' => new \ArrayIterator([$property]),
             'getName' => 'node1',
             'getPath' => 'path/to/node',
         ]);

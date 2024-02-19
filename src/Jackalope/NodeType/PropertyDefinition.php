@@ -84,7 +84,7 @@ class PropertyDefinition extends ItemDefinition implements PropertyDefinitionInt
     /**
      * @api
      */
-    public function getDefaultValues()
+    public function getDefaultValues(): array
     {
         return $this->defaultValues;
     }
