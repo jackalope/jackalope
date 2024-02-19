@@ -21,6 +21,7 @@ use PHPCR\NodeType\NodeTypeManagerInterface;
 use PHPCR\Observation\ObservationManagerInterface;
 use PHPCR\Query\QueryManagerInterface;
 use PHPCR\RepositoryManagerInterface;
+use PHPCR\SessionInterface;
 use PHPCR\Transaction\UserTransactionInterface;
 use PHPCR\UnsupportedRepositoryOperationException;
 use PHPCR\Version\VersionManagerInterface;
@@ -64,7 +65,7 @@ class Workspace implements WorkspaceInterface
     /**
      * @api
      */
-    public function getSession()
+    public function getSession(): SessionInterface
     {
         return $this->session;
     }

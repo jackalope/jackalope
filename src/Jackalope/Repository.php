@@ -168,7 +168,7 @@ final class Repository implements RepositoryInterface
     /**
      * @api
      */
-    public function getDescriptor($key)
+    public function getDescriptor($key): mixed
     {
         // handle some of the keys locally
         switch ($key) {

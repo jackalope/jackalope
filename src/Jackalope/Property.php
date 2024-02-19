@@ -6,6 +6,7 @@ use PHPCR\AccessDeniedException;
 use PHPCR\InvalidItemStateException;
 use PHPCR\ItemNotFoundException;
 use PHPCR\Lock\LockException;
+use PHPCR\NodeInterface;
 use PHPCR\NodeType\ConstraintViolationException;
 use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\PropertyDefinitionInterface;
@@ -200,7 +201,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      * @throws RepositoryException
      * @throws ValueFormatException
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         $this->checkState();
 
@@ -247,7 +248,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getString()
+    public function getString(): string|array
     {
         $this->checkState();
 
@@ -329,7 +330,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getLong()
+    public function getLong(): int|array
     {
         $this->checkState();
 
@@ -345,7 +346,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getDouble()
+    public function getDouble(): float|array
     {
         $this->checkState();
 
@@ -362,7 +363,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getDecimal()
+    public function getDecimal(): string|array
     {
         $this->checkState();
 
@@ -378,7 +379,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getDate()
+    public function getDate(): \DateTime|array
     {
         $this->checkState();
 
@@ -394,7 +395,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getBoolean()
+    public function getBoolean(): bool|array
     {
         $this->checkState();
 
@@ -411,7 +412,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getNode()
+    public function getNode(): NodeInterface|array
     {
         $this->checkState();
 
@@ -453,7 +454,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
      *
      * @api
      */
-    public function getProperty()
+    public function getProperty(): PropertyInterface|array
     {
         $this->checkState();
 
@@ -478,7 +479,7 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     /**
      * @api
      */
-    public function getLength()
+    public function getLength(): int|array
     {
         $this->checkState();
 

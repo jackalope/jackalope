@@ -4,6 +4,7 @@ namespace Jackalope\NodeType;
 
 use Jackalope\FactoryInterface;
 use PHPCR\NodeType\ItemDefinitionInterface;
+use PHPCR\NodeType\NodeTypeInterface;
 use PHPCR\NodeType\NoSuchNodeTypeException;
 use PHPCR\RepositoryException;
 
@@ -72,7 +73,7 @@ class ItemDefinition implements ItemDefinitionInterface
      *
      * @api
      */
-    public function getDeclaringNodeType()
+    public function getDeclaringNodeType(): NodeTypeInterface
     {
         return $this->nodeTypeManager->getNodeType($this->declaringNodeType);
     }

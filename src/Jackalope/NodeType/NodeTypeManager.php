@@ -182,7 +182,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
      *
      * Part of addNodeType.
      */
-    private function addToNodeTree(NodeTypeInterface $nodetype)
+    private function addToNodeTree(NodeTypeInterface $nodetype): void
     {
         foreach ($nodetype->getDeclaredSupertypeNames() as $declaredSupertypeName) {
             if (isset($this->nodeTree[$declaredSupertypeName])) {
@@ -200,7 +200,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     /**
      * @api
      */
-    public function getNodeType($nodeTypeName)
+    public function getNodeType($nodeTypeName): NodeTypeInterface
     {
         if (null === $nodeTypeName) {
             throw new NoSuchNodeTypeException('nodeTypeName is <null>');
@@ -232,7 +232,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     /**
      * @api
      */
-    public function hasNodeType($name)
+    public function hasNodeType($name): bool
     {
         try {
             $this->fetchNodeTypes($name);
