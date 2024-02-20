@@ -748,11 +748,11 @@ final class Property extends Item implements \IteratorAggregate, PropertyInterfa
     /**
      * Internally used after refresh from backend to set new length.
      *
-     * @param int $length the new length of this binary
+     * @param int|int[] $length the new length(s) of this binary property(ies)
      *
      * @private
      */
-    public function _setLength(int $length): void
+    public function _setLength(int|array $length): void
     {
         $this->length = $length;
         $this->value = null;
