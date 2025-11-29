@@ -38,7 +38,7 @@ class QueryObjectModel extends SqlQuery implements QueryObjectModelInterface
         SourceInterface $source,
         ?ConstraintInterface $constraint,
         array $orderings,
-        array $columns
+        array $columns,
     ) {
         foreach ($orderings as $o) {
             if (!$o instanceof OrderingInterface) {

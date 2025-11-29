@@ -66,7 +66,7 @@ class NodeTypeManager implements \IteratorAggregate, NodeTypeManagerInterface
     public function __construct(
         FactoryInterface $factory,
         ObjectManager $objectManager,
-        NamespaceRegistryInterface $namespaceRegistry
+        NamespaceRegistryInterface $namespaceRegistry,
     ) {
         $this->factory = $factory;
         $this->objectManager = $objectManager;

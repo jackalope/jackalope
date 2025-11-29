@@ -111,7 +111,7 @@ class QueryObjectModelFactorySql1 extends QueryObjectModelFactory
         ?ConstraintInterface $constraint = null,
         array $orderings = [],
         array $columns = [],
-        $simpleQuery = false
+        $simpleQuery = false,
     ): QueryObjectModelInterface {
         return $this->factory->get(
             QueryObjectModelSql1::class,

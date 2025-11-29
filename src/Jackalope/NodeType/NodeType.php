@@ -215,7 +215,7 @@ class NodeType extends NodeTypeDefinition implements NodeTypeInterface
             }
         }
         // now check if any of the wildcards matches
-        /** @var $prop PropertyDefinition */
+        /** @var PropertyDefinition $prop */
         foreach ($wildcards as $prop) {
             if (is_array($value) !== $prop->isMultiple()) {
                 continue;

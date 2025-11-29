@@ -144,7 +144,7 @@ abstract class Item implements ItemInterface
         string $path,
         Session $session,
         ObjectManager $objectManager,
-        bool $new
+        bool $new,
     ) {
         $this->factory = $factory;
         $this->valueConverter = $this->factory->get(ValueConverter::class);
@@ -516,7 +516,7 @@ abstract class Item implements ItemInterface
         $types = $this->getParent()->getMixinNodeTypes();
         $types[] = $this->getParent()->getPrimaryNodeType();
         foreach ($types as $nt) {
-            /** @var $candidate ItemDefinitionInterface */
+            /** @var ItemDefinitionInterface $candidate */
             foreach ($definitions($nt) as $candidate) {
                 if ($candidate->getName() === $this->name) {
                     return $candidate;

@@ -38,7 +38,7 @@ class NodePathIteratorTest extends TestCase
             ->willReturnCallback(function (
                 $cPaths,
                 $cClass,
-                $cFilter
+                $cFilter,
             ) use (
                 $me,
                 $class,

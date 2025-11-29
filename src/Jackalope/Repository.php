@@ -131,7 +131,7 @@ final class Repository implements RepositoryInterface
             throw new RepositoryException('Transport failed to login without telling why');
         }
 
-        /** @var $session Session */
+        /** @var Session $session */
         $session = $this->factory->get(Session::class, [$this, $workspaceName, $credentials, $this->transport]);
         $session->setSessionOption(Session::OPTION_AUTO_LASTMODIFIED, $this->options[Session::OPTION_AUTO_LASTMODIFIED]);
         if ($this->options['transactions']) {

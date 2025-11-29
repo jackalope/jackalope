@@ -48,7 +48,7 @@ final class EventJournal implements EventJournalInterface
         FactoryInterface $factory,
         EventFilter $filter,
         SessionInterface $session,
-        ObservationInterface $transport
+        ObservationInterface $transport,
     ) {
         $this->filter = $filter;
         $this->session = $session;

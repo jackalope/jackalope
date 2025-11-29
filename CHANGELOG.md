@@ -4,6 +4,11 @@ CHANGELOG
 2.x
 ===
 
+2.0.1
+-----
+
+* Test with PHP 8.5 and fix deprecations.
+
 2.0.0
 -----
 

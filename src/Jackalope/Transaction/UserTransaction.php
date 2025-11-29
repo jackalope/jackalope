@@ -26,7 +26,7 @@ final class UserTransaction implements UserTransactionInterface
     public function __construct(
         FactoryInterface $factory,
         TransactionInterface $transport,
-        ObjectManager $objectManager
+        ObjectManager $objectManager,
     ) {
         $this->transport = $transport;
         $this->objectManager = $objectManager;
