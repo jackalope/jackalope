@@ -23,7 +23,7 @@ final class Join implements JoinInterface
         SourceInterface $left,
         SourceInterface $right,
         string $joinType,
-        JoinConditionInterface $joinCondition
+        JoinConditionInterface $joinCondition,
     ) {
         $this->left = $left;
         $this->right = $right;

@@ -38,7 +38,7 @@ final class QueryObjectModelSql1 extends Sql1Query implements QueryObjectModelIn
         SourceInterface $source,
         ?ConstraintInterface $constraint,
         array $orderings,
-        array $columns
+        array $columns,
     ) {
         foreach ($orderings as $o) {
             if (!$o instanceof OrderingInterface) {

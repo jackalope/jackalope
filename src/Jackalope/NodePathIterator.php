@@ -34,7 +34,7 @@ final class NodePathIterator implements \SeekableIterator, \ArrayAccess, \Counta
         $paths,
         string $class = Node::class,
         $typeFilter = [],
-        int $batchSize = 50
+        int $batchSize = 50,
     ) {
         $this->objectManager = $objectManager;
         $this->paths = array_values((array) $paths); // ensure paths are indexed numerically

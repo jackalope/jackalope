@@ -207,7 +207,7 @@ class ObjectManager
             }
         }
 
-        /** @var $node NodeInterface */
+        /** @var NodeInterface $node */
         $node = $this->factory->get($class, [$object, $absPath, $this->session, $this]);
 
         if ($uuid = $node->getIdentifier()) {
@@ -795,7 +795,7 @@ class ObjectManager
             // loop through cached nodes and commit all dirty and set them to clean.
             if (isset($this->objectsByPath[Node::class])) {
                 foreach ($this->objectsByPath[Node::class] as $node) {
-                    /** @var $node Node */
+                    /** @var Node $node */
                     if ($node->isModified()) {
                         if (!$node instanceof NodeInterface) {
                             throw new RepositoryException('Internal Error: Unknown type '.get_class($node));
@@ -844,7 +844,7 @@ class ObjectManager
 
         if (isset($this->objectsByPath[Node::class])) {
             foreach ($this->objectsByPath[Node::class] as $item) {
-                /** @var $item Item */
+                /** @var Item $item */
                 if ($item->isModified() || $item->isMoved()) {
                     $item->confirmSaved();
                 }
@@ -1011,14 +1011,14 @@ class ObjectManager
         // Adjust the in memory state
         $absPath = $versionPath.'/'.$versionName;
         if (isset($this->objectsByPath[Node::class][$absPath])) {
-            /** @var $node Node */
+            /** @var Node $node */
             $node = $this->objectsByPath[Node::class][$absPath];
             unset($this->objectsByUuid[$node->getIdentifier()]);
             $node->setDeleted();
         }
 
         if (isset($this->objectsByPath[Version::class][$absPath])) {
-            /** @var $version Version */
+            /** @var Version $version */
             $version = $this->objectsByPath[Version::class][$absPath];
             unset($this->objectsByUuid[$version->getIdentifier()]);
             $version->setDeleted();
@@ -1098,7 +1098,7 @@ class ObjectManager
 
         $this->objectsByUuid = [];
 
-        /** @var $node Node */
+        /** @var Node $node */
         foreach ($this->objectsByPath[Node::class] as $node) {
             if (!$keepChanges || !($node->isDeleted() || $node->isNew())) {
                 // if we keep changes, do not restore a deleted item
@@ -1291,7 +1291,7 @@ class ObjectManager
         $parentNewPath = PathHelper::getParentPath($newPath);
 
         if (isset($this->objectsByPath[Node::class][$parentCurPath])) {
-            /** @var $node Node */
+            /** @var Node $node */
             $node = $this->objectsByPath[Node::class][$parentCurPath];
             if (!$node->hasNode(PathHelper::getNodeName($curPath))) {
                 throw new PathNotFoundException("Source path can not be found: $curPath");
@@ -1299,13 +1299,13 @@ class ObjectManager
             $node->unsetChildNode(PathHelper::getNodeName($curPath), true);
         }
         if (isset($this->objectsByPath[Node::class][$parentNewPath])) {
-            /** @var $node Node */
+            /** @var Node $node */
             $node = $this->objectsByPath[Node::class][$parentNewPath];
             $node->addChildNode($this->getNodeByPath($curPath), true, PathHelper::getNodeName($newPath));
         }
 
         // propagate to current and children items of $curPath, updating internal path
-        /** @var $node Node */
+        /** @var Node $node */
         foreach ($this->objectsByPath[Node::class] as $path => $node) {
             // is it current or child?
             if ((0 === strpos($path, $curPath.'/')) || ($path == $curPath)) {

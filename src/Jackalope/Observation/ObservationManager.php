@@ -43,7 +43,7 @@ final class ObservationManager implements \IteratorAggregate, ObservationManager
      */
     public function addEventListener(
         EventListenerInterface $listener,
-        EventFilterInterface $filter
+        EventFilterInterface $filter,
     ): void {
         throw new NotImplementedException();
     }

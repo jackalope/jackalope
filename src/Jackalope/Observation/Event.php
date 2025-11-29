@@ -70,7 +70,7 @@ final class Event implements EventInterface
      */
     public function __construct(
         FactoryInterface $factory,
-        NodeTypeManagerInterface $ntm
+        NodeTypeManagerInterface $ntm,
     ) {
         $this->ntm = $ntm;
     }

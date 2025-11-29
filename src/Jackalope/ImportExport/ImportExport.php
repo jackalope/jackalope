@@ -388,7 +388,7 @@ class ImportExport implements ImportUUIDBehaviorInterface
             self::exportNamespaceDeclarations($ns, $stream);
         }
         foreach ($node->getProperties() as $name => $property) {
-            /** @var $property PropertyInterface */
+            /** @var PropertyInterface $property */
             if ($property->isMultiple()) {
                 // skip multiple properties. jackrabbit does this too. cheap but whatever. use system view for a complete export
                 continue;
