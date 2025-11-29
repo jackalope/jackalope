@@ -721,7 +721,7 @@ class ObjectManager
     private function pathArrayToPropertiesIterator(array $propertyPaths): \ArrayIterator
     {
         // FIXME: this will break if we have non-persisted move
-        return new \ArrayIterator($this->getPropertiesByPath($propertyPaths));
+        return $this->getPropertiesByPath($propertyPaths);
     }
 
     /**
@@ -747,7 +747,9 @@ class ObjectManager
     public function registerNodeTypesCnd(string $cnd, bool $allowUpdate)
     {
         if ($this->transport instanceof NodeTypeCndManagementInterface) {
-            return $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
+            $this->transport->registerNodeTypesCnd($cnd, $allowUpdate);
+
+            return true;
         }
 
         if ($this->transport instanceof NodeTypeManagementInterface) {
