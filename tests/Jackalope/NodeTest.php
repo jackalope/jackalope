@@ -43,7 +43,10 @@ class NodeTest extends TestCase
     {
         $nodeReflection = new \ReflectionClass(Node::class);
         $filterNames = $nodeReflection->getMethod('filterNames');
-        $filterNames->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $filterNames->setAccessible(true);
+        }
 
         $filter = 'test';
         $names = ['test', 'toast'];

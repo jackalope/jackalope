@@ -56,11 +56,17 @@ class NamespaceRegistryTest extends TestCase
         $nsr = $this->getNamespaceRegistry($namespaces, false);
         $reflection = new \ReflectionClass($nsr);
         $transport = $reflection->getProperty('transport');
-        $transport->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $transport->setAccessible(true);
+        }
         $this->assertInstanceOf(TransportInterface::class, $transport->getValue($nsr));
 
         $userNamespaces = $reflection->getProperty('userNamespaces');
-        $userNamespaces->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $userNamespaces->setAccessible(true);
+        }
         // after we get the prefixes, userNamespaces is supposed to have the userNamespaces
         $nsr->getPrefixes();
         $this->assertSame($expected, $userNamespaces->getValue($nsr));

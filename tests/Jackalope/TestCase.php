@@ -350,7 +350,10 @@ abstract class TestCase extends BaseTestCase
     {
         $class = new \ReflectionClass(get_class($instance));
         $method = $class->getMethod($methodName);
-        $method->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         return $method->invokeArgs($instance, $args);
     }
@@ -364,7 +367,10 @@ abstract class TestCase extends BaseTestCase
     {
         $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
-        $prop->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $prop->setAccessible(true);
+        }
 
         return $prop->getValue($instance);
     }
@@ -383,7 +389,10 @@ abstract class TestCase extends BaseTestCase
     {
         $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
-        $prop->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $prop->setAccessible(true);
+        }
 
         $this->assertEquals($expectedValue, $prop->getValue($instance));
     }
@@ -392,7 +401,10 @@ abstract class TestCase extends BaseTestCase
     {
         $class = new \ReflectionClass(get_class($instance));
         $prop = $class->getProperty($attributeName);
-        $prop->setAccessible(true);
+        // remove when we drop PHP 8.0 support
+        if (PHP_VERSION_ID < 80100) {
+            $prop->setAccessible(true);
+        }
 
         $prop->setValue($instance, $value);
     }
